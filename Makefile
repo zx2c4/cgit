@@ -17,8 +17,4 @@ clean:
 cgit: $(OBJECTS)
 	$(CC) -o cgit $(OBJECTS) $(EXTLIBS)
 
-cgit.o: cgit.h git.h config.o html.o
-
-config.o: cgit.h git.h html.c
-
-html.o: cgit.h git.h html.c
+$(OBJECTS): cgit.h git.h
