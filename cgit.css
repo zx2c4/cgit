@@ -1,0 +1,63 @@
+body {
+	font-family: arial;
+	font-size: normal;
+	background: white;
+	padding: 0em;
+	margin: 0.5em;
+}
+
+
+h2 {
+	font-size: normal;
+	font-weight: bold;
+	margin-bottom: 0.1em;
+}
+
+
+table.list {
+	border: solid 1px black;
+	border-collapse: collapse;
+	border: solid 1px #aaa;
+}
+
+table.list th {
+	text-align: left;
+	font-weight: bold;
+	background: #ddd;
+	border-bottom: solid 1px #aaa;
+	padding: 0.1em 0.5em 0.1em;
+	vertical-align: baseline;
+}
+table.list td {
+	border: none;
+	padding: 0.1em 0.5em;
+	background: white;
+}
+
+img {
+	border: none;
+}
+
+
+div#header {
+	background-color: #ddd;
+	padding: 0.25em 0.25em 0.25em 0.5em;
+	font-size: 150%;
+	font-weight: bold;
+	border: solid 1px #aaa;
+	vertical-align: middle;
+}
+
+div#header img#logo {
+	float: right;
+}
+
+div#content {
+	margin: 0.5em 0.5em;
+}
+
+div.error {
+	color: red;
+	font-weight: bold;
+	margin: 1em 2em;
+}
