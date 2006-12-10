@@ -1,3 +1,11 @@
+/* cgit.c: cgi for the git scm
+ *
+ * Copyright (C) 2006 Lars Hjemli
+ *
+ * Licensed under GNU General Public License v2
+ *   (see COPYING for full license text)
+ */
+
 #include "cgit.h"
 
 static const char cgit_doctype[] =

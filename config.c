@@ -1,3 +1,11 @@
+/* config.c: parsing of config files
+ *
+ * Copyright (C) 2006 Lars Hjemli
+ *
+ * Licensed under GNU General Public License v2
+ *   (see COPYING for full license text)
+ */
+
 #include "cgit.h"
 
 int next_char(FILE *f)
