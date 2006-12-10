@@ -10,29 +10,47 @@ static const char cgit_error[] =
 static const char cgit_lib_error[] =
 "<div class='error'>%s: %s</div>";
 
+int htmlfd = 0;
 
-char *cgit_root         = "/var/git";
+char *cgit_root         = "/usr/src/git";
 char *cgit_root_title   = "Git repository browser";
 char *cgit_css          = "/cgit.css";
 char *cgit_logo         = "/git-logo.png";
 char *cgit_logo_link    = "http://www.kernel.org/pub/software/scm/git/docs/";
 char *cgit_virtual_root = NULL;
 
+char *cgit_cache_root   = "/var/cache/cgit";
+
+int cgit_cache_root_ttl        =  5;
+int cgit_cache_repo_ttl        =  5;
+int cgit_cache_dynamic_ttl     =  5;
+int cgit_cache_static_ttl      = -1;
+int cgit_cache_max_create_time =  5;
+
 char *cgit_repo_name    = NULL;
 char *cgit_repo_desc    = NULL;
 char *cgit_repo_owner   = NULL;
 
+int cgit_query_has_symref = 0;
+int cgit_query_has_sha1   = 0;
+
+char *cgit_querystring  = NULL;
 char *cgit_query_repo   = NULL;
 char *cgit_query_page   = NULL;
 char *cgit_query_head   = NULL;
+char *cgit_query_sha1   = NULL;
+
+struct cacheitem cacheitem;
 
 int cgit_parse_query(char *txt, configfn fn)
 {
-	char *t = txt, *value = NULL, c;
+	char *t, *value = NULL, c;
 
 	if (!txt)
 		return 0;
 
+	t = txt = xstrdup(txt);
+ 
 	while((c=*t) != '\0') {
 		if (c=='=') {
 			*t = '\0';
@@ -82,8 +100,13 @@ void cgit_querystring_cb(const char *name, const char *value)
 		cgit_query_repo = xstrdup(value);
 	else if (!strcmp(name, "p"))
 		cgit_query_page = xstrdup(value);
-	else if (!strcmp(name, "h"))
+	else if (!strcmp(name, "h")) {
 		cgit_query_head = xstrdup(value);
+		cgit_query_has_symref = 1;
+	} else if (!strcmp(name, "id")) {
+		cgit_query_sha1 = xstrdup(value);
+		cgit_query_has_sha1 = 1;
+	}
 }
 
 char *cgit_repourl(const char *reponame)
@@ -136,9 +159,32 @@ static int cgit_print_branch_cb(const char *refname, const unsigned char *sha1,
 	return 0;
 }
 
+/* Sun, 06 Nov 1994 08:49:37 GMT */
+static char *http_date(time_t t)
+{
+	static char day[][4] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
+	static char month[][4] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun",
+				  "Jul", "Aug", "Sep", "Oct", "Now", "Dec"};
+	struct tm *tm = gmtime(&t);
+	return fmt("%s, %02d %s %04d %02d:%02d:%02d GMT", day[tm->tm_wday],
+		   tm->tm_mday, month[tm->tm_mon], 1900+tm->tm_year,
+		   tm->tm_hour, tm->tm_min, tm->tm_sec);
+}
+
+static int ttl_seconds(int ttl)
+{
+	if (ttl<0)
+		return 60 * 60 * 24 * 365;
+	else 
+		return ttl * 60;
+}
+
 static void cgit_print_docstart(char *title)
 {
 	html("Content-Type: text/html; charset=utf-8\n");
+	htmlf("Last-Modified: %s\n", http_date(cacheitem.st.st_mtime));
+	htmlf("Expires: %s\n", http_date(cacheitem.st.st_mtime + 
+					 ttl_seconds(cacheitem.ttl)));
 	html("\n");
 	html(cgit_doctype);
 	html("<html>\n");
@@ -175,6 +221,7 @@ static void cgit_print_repolist()
 	struct stat st;
 	char *name;
 
+	chdir(cgit_root);
 	cgit_print_docstart(cgit_root_title);
 	cgit_print_pageheader(cgit_root_title);
 
@@ -197,7 +244,7 @@ static void cgit_print_repolist()
 			continue;
 
 		cgit_repo_name = cgit_repo_desc = cgit_repo_owner = NULL;
-		name = fmt("%s/.git/info/cgit", de->d_name);
+		name = fmt("%s/info/cgit", de->d_name);
 		if (cgit_read_config(name, cgit_repo_config_cb))
 			continue;
 
@@ -291,7 +338,7 @@ static void cgit_print_commit_shortlog(struct commit *commit)
 	strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", time);
 	html_txt(buf);
 	html("</td><td>");
-	char *qry = fmt("h=%s", sha1_to_hex(commit->object.sha1));
+	char *qry = fmt("id=%s", sha1_to_hex(commit->object.sha1));
 	char *url = cgit_pageurl(cgit_query_repo, "view", qry);
 	html_link_open(url, NULL, NULL);
 	html_txt(subject);
@@ -371,8 +418,8 @@ static void cgit_print_object(char *hex)
 
 static void cgit_print_repo_page()
 {
-	if (chdir(cgit_query_repo) || 
-	    cgit_read_config(".git/info/cgit", cgit_repo_config_cb)) {
+	if (chdir(fmt("%s/%s", cgit_root, cgit_query_repo)) || 
+	    cgit_read_config("info/cgit", cgit_repo_config_cb)) {
 		char *title = fmt("%s - %s", cgit_root_title, "Bad request");
 		cgit_print_docstart(title);
 		cgit_print_pageheader(title);
@@ -381,7 +428,7 @@ static void cgit_print_repo_page()
 		cgit_print_docend();
 		return;
 	}
-	
+	setenv("GIT_DIR", fmt("%s/%s", cgit_root, cgit_query_repo), 1);
 	char *title = fmt("%s - %s", cgit_repo_name, cgit_repo_desc);
 	cgit_print_docstart(title);
 	cgit_print_pageheader(title);
@@ -390,21 +437,61 @@ static void cgit_print_repo_page()
 	else if (!strcmp(cgit_query_page, "log")) {
 		cgit_print_log(cgit_query_head, 0, 100);
 	} else if (!strcmp(cgit_query_page, "view")) {
-		cgit_print_object(cgit_query_head);
+		cgit_print_object(cgit_query_sha1);
 	}
 	cgit_print_docend();
 }
 
-int main(int argc, const char **argv)
+static void cgit_fill_cache(struct cacheitem *item)
 {
-	if (cgit_read_config("/etc/cgitrc", cgit_global_config_cb))
-		die("Error reading config: %d %s", errno, strerror(errno));
-
-	chdir(cgit_root);
-	cgit_parse_query(getenv("QUERY_STRING"), cgit_querystring_cb);
+	htmlfd = item->fd;
+	item->st.st_mtime = time(NULL);
 	if (cgit_query_repo)
 		cgit_print_repo_page();
 	else
 		cgit_print_repolist();
+}
+
+static void cgit_refresh_cache(struct cacheitem *item)
+{
+ top:
+	if (!cache_lookup(item)) {
+		if (cache_lock(item)) {
+			cgit_fill_cache(item);
+			cache_unlock(item);
+		} else {
+			sched_yield();
+			goto top;
+		}
+	} else if (cache_expired(item)) {
+		if (cache_lock(item)) {
+			cgit_fill_cache(item);
+			cache_unlock(item);
+		}
+	}
+}
+
+static void cgit_print_cache(struct cacheitem *item)
+{
+	static char buf[4096];
+	ssize_t i;
+
+	int fd = open(item->name, O_RDONLY);
+	if (fd<0)
+		die("Unable to open cached file %s", item->name);
+
+	while((i=read(fd, buf, sizeof(buf))) > 0)
+		write(STDOUT_FILENO, buf, i);
+
+	close(fd);
+}
+
+int main(int argc, const char **argv)
+{
+	cgit_read_config("/etc/cgitrc", cgit_global_config_cb);
+	cgit_querystring = xstrdup(getenv("QUERY_STRING"));
+	cgit_parse_query(cgit_querystring, cgit_querystring_cb);
+	cgit_refresh_cache(&cacheitem);
+	cgit_print_cache(&cacheitem);
 	return 0;
 }

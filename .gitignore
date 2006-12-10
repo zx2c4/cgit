@@ -1,3 +1,4 @@
 # Files I don't care to see in git-status/commit
 cgit
 *.o
+*~

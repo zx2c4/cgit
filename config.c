@@ -32,7 +32,7 @@ int read_config_line(FILE *f, char *line, const char **value, int bufsize)
 			skip_line(f);
 			continue;
 		}
-		if (!isname && isblank(c))
+		if (!isname && isspace(c))
 			continue;
 
 		if (c=='=' && !*value) {
@@ -64,7 +64,7 @@ int cgit_read_config(const char *filename, configfn fn)
 	if (!f)
 		return -1;
 
-	while(len = read_config_line(f, line, &value, sizeof(line)))
+	while((len = read_config_line(f, line, &value, sizeof(line))) > 0)
 		(*fn)(line, value);
 
 	fclose(f);

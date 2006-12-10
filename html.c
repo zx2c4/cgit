@@ -20,16 +20,18 @@ char *fmt(const char *format, ...)
 
 void html(const char *txt)
 {
-	fputs(txt, stdout);
+	write(htmlfd, txt, strlen(txt));
 }
 
 void htmlf(const char *format, ...)
 {
+	static char buf[65536];
 	va_list args;
 
 	va_start(args, format);
-	vprintf(format, args);
+	vsnprintf(buf, sizeof(buf), format, args);
 	va_end(args);
+	html(buf);
 }
 
 void html_txt(char *txt)

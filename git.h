@@ -33,6 +33,26 @@
 #include <time.h>
 
 
+/* On most systems <limits.h> would have given us this, but
+ * not on some systems (e.g. GNU/Hurd).
+ */
+#ifndef PATH_MAX
+#define PATH_MAX 4096
+#endif
+
+#ifdef __GNUC__
+#define NORETURN __attribute__((__noreturn__))
+#else
+#define NORETURN
+#ifndef __attribute__
+#define __attribute__(x)
+#endif
+#endif
+
+
+extern void die(const char *err, ...) NORETURN __attribute__((format (printf, 1, 2)));
+
+
 static inline char* xstrdup(const char *str)
 {
 	char *ret = strdup(str);
@@ -108,9 +128,13 @@ static inline ssize_t xwrite(int fd, const void *buf, size_t len)
 #define MINIMUM_ABBREV 4
 #define DEFAULT_ABBREV 7
 
+extern int sha1_object_info(const unsigned char *, char *, unsigned long *);
 
 extern void * read_sha1_file(const unsigned char *sha1, char *type, unsigned long *size);
 
+extern int get_sha1(const char *str, unsigned char *sha1);
+extern int get_sha1_hex(const char *hex, unsigned char *sha1);
+extern char *sha1_to_hex(const unsigned char *sha1);	/* static buffer result! */
 
 
 
@@ -183,6 +207,21 @@ struct commit {
 };
 
 
+struct commit *lookup_commit(const unsigned char *sha1);
+struct commit *lookup_commit_reference(const unsigned char *sha1);
+struct commit *lookup_commit_reference_gently(const unsigned char *sha1,
+					      int quiet);
+
+int parse_commit_buffer(struct commit *item, void *buffer, unsigned long size);
+int parse_commit(struct commit *item);
+
+struct commit_list * commit_list_insert(struct commit *item, struct commit_list **list_p);
+struct commit_list * insert_by_date(struct commit *item, struct commit_list **list);
+
+void free_commit_list(struct commit_list *list);
+
+void sort_by_date(struct commit_list **list);
+
 /* Commit formats */
 enum cmit_fmt {
 	CMIT_FMT_RAW,
@@ -197,12 +236,8 @@ enum cmit_fmt {
 	CMIT_FMT_UNSPECIFIED,
 };
 
+extern unsigned long pretty_print_commit(enum cmit_fmt fmt, const struct commit *, unsigned long len, char *buf, unsigned long space, int abbrev, const char *subject, const char *after_subject, int relative_date);
 
-
-struct commit *lookup_commit(const unsigned char *sha1);
-struct commit *lookup_commit_reference(const unsigned char *sha1);
-struct commit *lookup_commit_reference_gently(const unsigned char *sha1,
-					      int quiet);
 
 typedef void (*topo_sort_set_fn_t)(struct commit*, void *data);
 typedef void* (*topo_sort_get_fn_t)(struct commit*);
@@ -306,6 +341,16 @@ enum color_diff {
 
 
 
+/*
+ * from git:refs.g
+ */
+
+typedef int each_ref_fn(const char *refname, const unsigned char *sha1, int flags, void *cb_data);
+extern int head_ref(each_ref_fn, void *);
+extern int for_each_ref(each_ref_fn, void *);
+extern int for_each_tag_ref(each_ref_fn, void *);
+extern int for_each_branch_ref(each_ref_fn, void *);
+extern int for_each_remote_ref(each_ref_fn, void *);
 
 
 
@@ -391,6 +436,11 @@ struct rev_info {
 };
 
 
+extern void init_revisions(struct rev_info *revs, const char *prefix);
+extern int setup_revisions(int argc, const char **argv, struct rev_info *revs, const char *def);
+extern int handle_revision_arg(const char *arg, struct rev_info *revs,int flags,int cant_be_filename);
+
+extern void prepare_revision_walk(struct rev_info *revs);
 extern struct commit *get_revision(struct rev_info *revs);
 
 
