@@ -8,14 +8,16 @@
 
 #include "cgit.h"
 
-static const char cgit_doctype[] =
+const char cgit_version[] = CGIT_VERSION;
+
+const char cgit_doctype[] =
 "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"\n"
 "  \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n";
 
-static const char cgit_error[] =
+const char cgit_error[] =
 "<div class='error'>%s</div>";
 
-static const char cgit_lib_error[] =
+const char cgit_lib_error[] =
 "<div class='error'>%s: %s</div>";
 
 int htmlfd = 0;
@@ -200,6 +202,7 @@ static void cgit_print_docstart(char *title)
 	html("<title>");
 	html_txt(title);
 	html("</title>\n");
+	htmlf("<meta name='generator' content='cgit v%s'/>\n", cgit_version);
 	html("<link rel='stylesheet' type='text/css' href='");
 	html_attr(cgit_css);
 	html("'/>\n");
