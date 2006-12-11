@@ -65,10 +65,18 @@ extern int cache_unlock(struct cacheitem *item);
 extern int cache_exist(struct cacheitem *item);
 extern int cache_expired(struct cacheitem *item);
 
+extern char *cgit_repourl(const char *reponame);
+extern char *cgit_pageurl(const char *reponame, const char *pagename, 
+			  const char *query);
+
 extern void cgit_print_error(char *msg);
 extern void cgit_print_docstart(char *title, struct cacheitem *item);
 extern void cgit_print_docend();
 extern void cgit_print_pageheader(char *title);
 
+extern void cgit_print_repolist(struct cacheitem *item);
+
+
+extern void cgit_repo_config_cb(const char *name, const char *value);
 
 #endif /* CGIT_H */

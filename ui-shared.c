@@ -39,6 +39,27 @@ void cgit_print_error(char *msg)
 	html_txt(msg);
 	html("</div>\n");
 }
+
+char *cgit_repourl(const char *reponame)
+{
+	if (cgit_virtual_root) {
+		return fmt("%s/%s/", cgit_virtual_root, reponame);
+	} else {
+		return fmt("?r=%s", reponame);
+	}
+}
+
+char *cgit_pageurl(const char *reponame, const char *pagename, 
+		   const char *query)
+{
+	if (cgit_virtual_root) {
+		return fmt("%s/%s/%s/?%s", cgit_virtual_root, reponame, 
+			   pagename, query);
+	} else {
+		return fmt("?r=%s&p=%s&%s", reponame, pagename, query);
+	}
+}
+
 void cgit_print_docstart(char *title, struct cacheitem *item)
 {
 	html("Content-Type: text/html; charset=utf-8\n");
