@@ -31,6 +31,7 @@ char *cgit_virtual_root = NULL;
 
 char *cgit_cache_root   = "/var/cache/cgit";
 
+int cgit_max_lock_attempts     =  5;
 int cgit_cache_root_ttl        =  5;
 int cgit_cache_repo_ttl        =  5;
 int cgit_cache_dynamic_ttl     =  5;
@@ -465,11 +466,17 @@ static void cgit_fill_cache(struct cacheitem *item)
 
 static void cgit_refresh_cache(struct cacheitem *item)
 {
+	int i = 0;
+
 	cache_prepare(item);
  top:
+	if (++i > cgit_max_lock_attempts) {
+		die("cgit_refresh_cache: unable to lock %s: %s",
+		    item->name, strerror(errno));
+	}
 	if (!cache_exist(item)) {
 		if (!cache_lock(item)) {
-			sched_yield();
+			sleep(1);
 			goto top;
 		}
 		if (!cache_exist(item))

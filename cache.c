@@ -61,26 +61,35 @@ int cache_create_dirs()
 	return 1;
 }
 
+int cache_refill_overdue(const char *lockfile)
+{
+	struct stat st;
+
+	if (stat(lockfile, &st))
+		return 0;
+	else
+		return (time(NULL) - st.st_mtime > cgit_cache_max_create_time);
+}
+
 int cache_lock(struct cacheitem *item)
 {
-	int ret;
+	int i = 0;
 	char *lockfile = fmt("%s.lock", item->name);
 
- top:  
-       	item->fd = open(lockfile, O_WRONLY | O_CREAT | O_EXCL, S_IRUSR|S_IWUSR);
+ top:
+	if (++i > cgit_max_lock_attempts)
+		die("cache_lock: unable to lock %s: %s",
+		    item->name, strerror(errno));
+
+       	item->fd = open(lockfile, O_WRONLY|O_CREAT|O_EXCL, S_IRUSR|S_IWUSR);
+
 	if (item->fd == NOLOCK && errno == ENOENT && cache_create_dirs())
 		goto top;
-	if (item->fd == NOLOCK && errno == EEXIST) {
-		struct stat st;
-		time_t t;
-		if (stat(lockfile, &st))
-			return ret;
-		t = time(NULL);
-		if (t-st.st_mtime > cgit_cache_max_create_time && 
-		    !unlink(lockfile))
+
+	if (item->fd == NOLOCK && errno == EEXIST &&
+	    cache_refill_overdue(lockfile) && !unlink(lockfile))
 			goto top;
-		return 0;
-	}
+
 	return (item->fd > 0);
 }
 
