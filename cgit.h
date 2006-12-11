@@ -15,6 +15,8 @@ struct cacheitem {
 	int fd;
 };
 
+extern const char cgit_version[];
+
 extern char *cgit_root;
 extern char *cgit_root_title;
 extern char *cgit_css;
@@ -54,7 +56,6 @@ extern void html_attr(char *txt);
 extern void html_link_open(char *url, char *title, char *class);
 extern void html_link_close(void);
 
-
 extern int cgit_read_config(const char *filename, configfn fn);
 extern int cgit_parse_query(char *txt, configfn fn);
 
@@ -63,5 +64,11 @@ extern int cache_lock(struct cacheitem *item);
 extern int cache_unlock(struct cacheitem *item);
 extern int cache_exist(struct cacheitem *item);
 extern int cache_expired(struct cacheitem *item);
+
+extern void cgit_print_error(char *msg);
+extern void cgit_print_docstart(char *title, struct cacheitem *item);
+extern void cgit_print_docend();
+extern void cgit_print_pageheader(char *title);
+
 
 #endif /* CGIT_H */

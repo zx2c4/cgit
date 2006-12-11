@@ -5,7 +5,7 @@ INSTALL_CSS = /var/www/htdocs/cgit.css
 CACHE_ROOT = /var/cache/cgit
 
 EXTLIBS = ../git/libgit.a ../git/xdiff/lib.a -lz -lcrypto
-OBJECTS = parsing.o html.o cache.o
+OBJECTS = parsing.o html.o cache.o ui-shared.o
 
 CFLAGS += -Wall
 

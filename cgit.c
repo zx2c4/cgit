@@ -10,16 +10,6 @@
 
 const char cgit_version[] = CGIT_VERSION;
 
-const char cgit_doctype[] =
-"<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"\n"
-"  \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n";
-
-const char cgit_error[] =
-"<div class='error'>%s</div>";
-
-const char cgit_lib_error[] =
-"<div class='error'>%s: %s</div>";
-
 int htmlfd = 0;
 
 char *cgit_root         = "/usr/src/git";
@@ -144,63 +134,7 @@ static int cgit_print_branch_cb(const char *refname, const unsigned char *sha1,
 	return 0;
 }
 
-/* Sun, 06 Nov 1994 08:49:37 GMT */
-static char *http_date(time_t t)
-{
-	static char day[][4] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
-	static char month[][4] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun",
-				  "Jul", "Aug", "Sep", "Oct", "Now", "Dec"};
-	struct tm *tm = gmtime(&t);
-	return fmt("%s, %02d %s %04d %02d:%02d:%02d GMT", day[tm->tm_wday],
-		   tm->tm_mday, month[tm->tm_mon], 1900+tm->tm_year,
-		   tm->tm_hour, tm->tm_min, tm->tm_sec);
-}
-
-static int ttl_seconds(int ttl)
-{
-	if (ttl<0)
-		return 60 * 60 * 24 * 365;
-	else 
-		return ttl * 60;
-}
-
-static void cgit_print_docstart(char *title)
-{
-	html("Content-Type: text/html; charset=utf-8\n");
-	htmlf("Last-Modified: %s\n", http_date(cacheitem.st.st_mtime));
-	htmlf("Expires: %s\n", http_date(cacheitem.st.st_mtime + 
-					 ttl_seconds(cacheitem.ttl)));
-	html("\n");
-	html(cgit_doctype);
-	html("<html>\n");
-	html("<head>\n");
-	html("<title>");
-	html_txt(title);
-	html("</title>\n");
-	htmlf("<meta name='generator' content='cgit v%s'/>\n", cgit_version);
-	html("<link rel='stylesheet' type='text/css' href='");
-	html_attr(cgit_css);
-	html("'/>\n");
-	html("</head>\n");
-	html("<body>\n");
-}
-
-static void cgit_print_docend()
-{
-	html("</body>\n</html>\n");
-}
-
-static void cgit_print_pageheader(char *title)
-{
-	html("<div id='header'>");
-	htmlf("<a href='%s'>", cgit_logo_link);
-	htmlf("<img id='logo' src='%s'/>\n", cgit_logo);
-	htmlf("</a>");
-	html_txt(title);
-	html("</div>");
-}
-
-static void cgit_print_repolist()
+static void cgit_print_repolist(struct cacheitem *item)
 {
 	DIR *d;
 	struct dirent *de;
@@ -208,12 +142,12 @@ static void cgit_print_repolist()
 	char *name;
 
 	chdir(cgit_root);
-	cgit_print_docstart(cgit_root_title);
+	cgit_print_docstart(cgit_root_title, item);
 	cgit_print_pageheader(cgit_root_title);
 
 	if (!(d = opendir("."))) {
-		htmlf(cgit_lib_error, "Unable to scan repository directory",
-		      strerror(errno));
+		cgit_print_error(fmt("Unable to scan repository directory: %s",
+				     strerror(errno)));
 		cgit_print_docend();
 		return;
 	}
@@ -379,18 +313,18 @@ static void cgit_print_object(char *hex)
 	unsigned long size;
 
 	if (get_sha1_hex(hex, sha1)){
-		htmlf(cgit_error, "Bad hex value");
+		cgit_print_error(fmt("Bad hex value: %s", hex));
 	        return;
 	}
 
 	if (sha1_object_info(sha1, type, NULL)){
-		htmlf(cgit_error, "Bad object name");
+		cgit_print_error("Bad object name");
 		return;
 	}
 
 	buf = read_sha1_file(sha1, type, &size);
 	if (!buf) {
-		htmlf(cgit_error, "Error reading object");
+		cgit_print_error("Error reading object");
 		return;
 	}
 
@@ -402,21 +336,21 @@ static void cgit_print_object(char *hex)
 	html("</pre>");
 }
 
-static void cgit_print_repo_page()
+static void cgit_print_repo_page(struct cacheitem *item)
 {
 	if (chdir(fmt("%s/%s", cgit_root, cgit_query_repo)) || 
 	    cgit_read_config("info/cgit", cgit_repo_config_cb)) {
 		char *title = fmt("%s - %s", cgit_root_title, "Bad request");
-		cgit_print_docstart(title);
+		cgit_print_docstart(title, item);
 		cgit_print_pageheader(title);
-		htmlf(cgit_lib_error, "Unable to scan repository",
-		      strerror(errno));
+		cgit_print_error(fmt("Unable to scan repository: %s",
+				     strerror(errno)));
 		cgit_print_docend();
 		return;
 	}
 	setenv("GIT_DIR", fmt("%s/%s", cgit_root, cgit_query_repo), 1);
 	char *title = fmt("%s - %s", cgit_repo_name, cgit_repo_desc);
-	cgit_print_docstart(title);
+	cgit_print_docstart(title, item);
 	cgit_print_pageheader(title);
 	if (!cgit_query_page)
 		cgit_print_repo_summary();
@@ -433,9 +367,9 @@ static void cgit_fill_cache(struct cacheitem *item)
 	htmlfd = item->fd;
 	item->st.st_mtime = time(NULL);
 	if (cgit_query_repo)
-		cgit_print_repo_page();
+		cgit_print_repo_page(item);
 	else
-		cgit_print_repolist();
+		cgit_print_repolist(item);
 }
 
 static void cgit_refresh_cache(struct cacheitem *item)
