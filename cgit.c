@@ -84,38 +84,6 @@ void cgit_querystring_cb(const char *name, const char *value)
 	}
 }
 
-static void cgit_print_object(char *hex)
-{
-	unsigned char sha1[20];
-	//struct object *object;
-	char type[20];
-	unsigned char *buf;
-	unsigned long size;
-
-	if (get_sha1_hex(hex, sha1)){
-		cgit_print_error(fmt("Bad hex value: %s", hex));
-	        return;
-	}
-
-	if (sha1_object_info(sha1, type, NULL)){
-		cgit_print_error("Bad object name");
-		return;
-	}
-
-	buf = read_sha1_file(sha1, type, &size);
-	if (!buf) {
-		cgit_print_error("Error reading object");
-		return;
-	}
-
-	buf[size] = '\0';
-	html("<h2>Object view</h2>");
-	htmlf("sha1=%s<br/>type=%s<br/>size=%i<br/>", hex, type, size);
-	html("<pre>");
-	html_txt(buf);
-	html("</pre>");
-}
-
 static void cgit_print_repo_page(struct cacheitem *item)
 {
 	if (chdir(fmt("%s/%s", cgit_root, cgit_query_repo)) || 
@@ -137,7 +105,7 @@ static void cgit_print_repo_page(struct cacheitem *item)
 	else if (!strcmp(cgit_query_page, "log")) {
 		cgit_print_log(cgit_query_head, 0, 100);
 	} else if (!strcmp(cgit_query_page, "view")) {
-		cgit_print_object(cgit_query_sha1);
+		cgit_print_view(cgit_query_sha1);
 	}
 	cgit_print_docend();
 }

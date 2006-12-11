@@ -77,6 +77,7 @@ extern void cgit_print_pageheader(char *title);
 extern void cgit_print_repolist(struct cacheitem *item);
 extern void cgit_print_summary();
 extern void cgit_print_log(const char *tip, int ofs, int cnt);
+extern void cgit_print_view(char *hex);
 
 extern void cgit_repo_config_cb(const char *name, const char *value);
 
