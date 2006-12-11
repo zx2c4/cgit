@@ -46,7 +46,7 @@ static void cgit_print_branches()
 	html("</table>");
 }
 
-void cgit_print_repo_summary()
+void cgit_print_summary()
 {
 	html("<h2>");
 	html_txt("Repo summary page");
