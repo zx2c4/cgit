@@ -79,4 +79,7 @@ extern void cgit_print_repolist(struct cacheitem *item);
 
 extern void cgit_repo_config_cb(const char *name, const char *value);
 
+extern void cgit_print_repo_summary();
+
+
 #endif /* CGIT_H */
