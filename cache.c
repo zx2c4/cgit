@@ -99,6 +99,11 @@ int cache_unlock(struct cacheitem *item)
 	return (rename(fmt("%s.lock", item->name), item->name) == 0);
 }
 
+int cache_cancel_lock(struct cacheitem *item)
+{
+	return (unlink(fmt("%s.lock", item->name)) == 0);
+}
+
 int cache_expired(struct cacheitem *item)
 {
 	if (item->ttl < 0)

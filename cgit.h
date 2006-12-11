@@ -66,6 +66,7 @@ extern int cgit_parse_query(char *txt, configfn fn);
 extern void cache_prepare(struct cacheitem *item);
 extern int cache_lock(struct cacheitem *item);
 extern int cache_unlock(struct cacheitem *item);
+extern int cache_cancel_lock(struct cacheitem *item);
 extern int cache_exist(struct cacheitem *item);
 extern int cache_expired(struct cacheitem *item);
 

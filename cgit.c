@@ -61,13 +61,19 @@ static void cgit_check_cache(struct cacheitem *item)
 			sleep(1);
 			goto top;
 		}
-		if (!cache_exist(item))
+		if (!cache_exist(item)) {
 			cgit_fill_cache(item);
-		cache_unlock(item);
+			cache_unlock(item);
+		} else {
+			cache_cancel_lock(item);
+		}
 	} else if (cache_expired(item) && cache_lock(item)) {
-		if (cache_expired(item))
+		if (cache_expired(item)) {
 			cgit_fill_cache(item);
-		cache_unlock(item);
+			cache_unlock(item);
+		} else {
+			cache_cancel_lock(item);
+		}
 	}
 }
 
