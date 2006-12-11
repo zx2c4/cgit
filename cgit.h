@@ -47,6 +47,10 @@ extern char *cgit_query_sha1;
 
 extern int htmlfd;
 
+extern void cgit_global_config_cb(const char *name, const char *value);
+extern void cgit_repo_config_cb(const char *name, const char *value);
+extern void cgit_querystring_cb(const char *name, const char *value);
+
 extern char *fmt(const char *format,...);
 
 extern void html(const char *txt);
@@ -78,8 +82,5 @@ extern void cgit_print_repolist(struct cacheitem *item);
 extern void cgit_print_summary();
 extern void cgit_print_log(const char *tip, int ofs, int cnt);
 extern void cgit_print_view(char *hex);
-
-extern void cgit_repo_config_cb(const char *name, const char *value);
-
 
 #endif /* CGIT_H */
