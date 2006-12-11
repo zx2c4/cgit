@@ -56,9 +56,10 @@ extern void html_link_close(void);
 
 extern int cgit_read_config(const char *filename, configfn fn);
 
-extern int cache_lookup(struct cacheitem *item);
+extern void cache_prepare(struct cacheitem *item);
 extern int cache_lock(struct cacheitem *item);
 extern int cache_unlock(struct cacheitem *item);
+extern int cache_exist(struct cacheitem *item);
 extern int cache_expired(struct cacheitem *item);
 
 #endif /* CGIT_H */

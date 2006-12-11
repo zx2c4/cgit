@@ -10,7 +10,7 @@
 
 const int NOLOCK = -1;
 
-int cache_lookup(struct cacheitem *item)
+void cache_prepare(struct cacheitem *item)
 {
 	if (!cgit_query_repo) {
 		item->name = xstrdup(fmt("%s/index.html", cgit_cache_root));
@@ -30,6 +30,10 @@ int cache_lookup(struct cacheitem *item)
 		else
 			item->ttl = cgit_cache_repo_ttl;
 	}
+}
+
+int cache_exist(struct cacheitem *item)
+{
 	if (stat(item->name, &item->st)) {
 		item->st.st_mtime = 0;
 		return 0;

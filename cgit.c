@@ -465,20 +465,20 @@ static void cgit_fill_cache(struct cacheitem *item)
 
 static void cgit_refresh_cache(struct cacheitem *item)
 {
+	cache_prepare(item);
  top:
-	if (!cache_lookup(item)) {
-		if (cache_lock(item)) {
-			cgit_fill_cache(item);
-			cache_unlock(item);
-		} else {
+	if (!cache_exist(item)) {
+		if (!cache_lock(item)) {
 			sched_yield();
 			goto top;
 		}
-	} else if (cache_expired(item)) {
-		if (cache_lock(item)) {
+		if (!cache_exist(item))
 			cgit_fill_cache(item);
-			cache_unlock(item);
-		}
+		cache_unlock(item);
+	} else if (cache_expired(item) && cache_lock(item)) {
+		if (cache_expired(item))
+			cgit_fill_cache(item);
+		cache_unlock(item);
 	}
 }
 
