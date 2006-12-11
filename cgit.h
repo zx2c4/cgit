@@ -56,6 +56,7 @@ extern void html_link_close(void);
 
 
 extern int cgit_read_config(const char *filename, configfn fn);
+extern int cgit_parse_query(char *txt, configfn fn);
 
 extern void cache_prepare(struct cacheitem *item);
 extern int cache_lock(struct cacheitem *item);

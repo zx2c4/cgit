@@ -79,3 +79,28 @@ int cgit_read_config(const char *filename, configfn fn)
 	return ret;
 }
 
+int cgit_parse_query(char *txt, configfn fn)
+{
+	char *t, *value = NULL, c;
+
+	if (!txt)
+		return 0;
+
+	t = txt = xstrdup(txt);
+ 
+	while((c=*t) != '\0') {
+		if (c=='=') {
+			*t = '\0';
+			value = t+1;
+		} else if (c=='&') {
+			*t = '\0';
+			(*fn)(txt, value);
+			txt = t+1;
+			value = NULL;
+		}
+		t++;
+	}
+	if (t!=txt)
+		(*fn)(txt, value);
+	return 0;
+}

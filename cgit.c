@@ -53,32 +53,6 @@ char *cgit_query_sha1   = NULL;
 
 struct cacheitem cacheitem;
 
-int cgit_parse_query(char *txt, configfn fn)
-{
-	char *t, *value = NULL, c;
-
-	if (!txt)
-		return 0;
-
-	t = txt = xstrdup(txt);
- 
-	while((c=*t) != '\0') {
-		if (c=='=') {
-			*t = '\0';
-			value = t+1;
-		} else if (c=='&') {
-			*t = '\0';
-			(*fn)(txt, value);
-			txt = t+1;
-			value = NULL;
-		}
-		t++;
-	}
-	if (t!=txt)
-		(*fn)(txt, value);
-	return 0;
-}
-
 void cgit_global_config_cb(const char *name, const char *value)
 {
 	if (!strcmp(name, "root"))
