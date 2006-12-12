@@ -74,7 +74,7 @@ int cache_refill_overdue(const char *lockfile)
 int cache_lock(struct cacheitem *item)
 {
 	int i = 0;
-	char *lockfile = fmt("%s.lock", item->name);
+	char *lockfile = xstrdup(fmt("%s.lock", item->name));
 
  top:
 	if (++i > cgit_max_lock_attempts)
@@ -90,6 +90,7 @@ int cache_lock(struct cacheitem *item)
 	    cache_refill_overdue(lockfile) && !unlink(lockfile))
 			goto top;
 
+	free(lockfile);
 	return (item->fd > 0);
 }
 
