@@ -46,7 +46,7 @@ static int cgit_print_branch_cb(const char *refname, const unsigned char *sha1,
 static void cgit_print_branches()
 {
 	html("<table class='list'>");
-	html("<tr><th>Branch name</th><th>Latest</th><th>Link</th></tr>\n");
+	html("<tr><th>Branch</th><th>Last commit</th><th>Link</th></tr>\n");
 	for_each_branch_ref(cgit_print_branch_cb, NULL);
 	html("</table>");
 }

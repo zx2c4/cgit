@@ -70,3 +70,9 @@ th.filesize, td.filesize {
 th.filemode, td.filemode {
 	text-align: center;
 }
+
+td.blob {
+	white-space: pre;
+	font-family: courier;
+	font-size: 100%;
+}
