@@ -30,7 +30,7 @@ table.list th {
 }
 table.list td {
 	border: none;
-	padding: 0.1em 0.5em;
+	padding: 0.1em 1em 0.1em 0.5em;
 	background: white;
 }
 
@@ -60,4 +60,13 @@ div.error {
 	color: red;
 	font-weight: bold;
 	margin: 1em 2em;
+}
+div.ls-dir a {
+	font-weight: bold;
+}
+th.filesize, td.filesize {
+	text-align: right;
+}
+th.filemode, td.filemode {
+	text-align: center;
 }

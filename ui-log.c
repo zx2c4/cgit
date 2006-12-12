@@ -82,6 +82,11 @@ static void cgit_print_commit_shortlog(struct commit *commit)
 	html_link_close();
 	html("</td><td>");
 	html_txt(author);
+	html("</td><td><a href='");
+	html_attr(cgit_pageurl(cgit_query_repo, "tree", 
+			       fmt("id=%s", 
+				   sha1_to_hex(commit->tree->object.sha1))));
+	html("'>tree</a>");
 	html("</td></tr>\n");
 }
 
@@ -102,7 +107,7 @@ void cgit_print_log(const char *tip, int ofs, int cnt)
 
 	html("<h2>Log</h2>");
 	html("<table class='list'>");
-	html("<tr><th>Date</th><th>Message</th><th>Author</th></tr>\n");
+	html("<tr><th>Date</th><th>Message</th><th>Author</th><th>Link</th></tr>\n");
 	while ((commit = get_revision(&rev)) != NULL && n++ < 100) {
 		cgit_print_commit_shortlog(commit);
 		free(commit->buffer);

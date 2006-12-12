@@ -26,10 +26,12 @@ static void cgit_print_repo_page(struct cacheitem *item)
 	char *title = fmt("%s - %s", cgit_repo_name, cgit_repo_desc);
 	cgit_print_docstart(title, item);
 	cgit_print_pageheader(title);
-	if (!cgit_query_page)
+	if (!cgit_query_page) {
 		cgit_print_summary();
-	else if (!strcmp(cgit_query_page, "log")) {
+	} else if (!strcmp(cgit_query_page, "log")) {
 		cgit_print_log(cgit_query_head, 0, 100);
+	} else if (!strcmp(cgit_query_page, "tree")) {
+		cgit_print_tree(cgit_query_sha1);
 	} else if (!strcmp(cgit_query_page, "view")) {
 		cgit_print_view(cgit_query_sha1);
 	}

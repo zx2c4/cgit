@@ -83,5 +83,6 @@ extern void cgit_print_repolist(struct cacheitem *item);
 extern void cgit_print_summary();
 extern void cgit_print_log(const char *tip, int ofs, int cnt);
 extern void cgit_print_view(char *hex);
+extern void cgit_print_tree(const char *sha1);
 
 #endif /* CGIT_H */

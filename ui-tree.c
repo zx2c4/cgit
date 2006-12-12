@@ -1,0 +1,70 @@
+/* ui-tree.c: functions for tree output
+ *
+ * Copyright (C) 2006 Lars Hjemli
+ *
+ * Licensed under GNU General Public License v2
+ *   (see COPYING for full license text)
+ */
+
+#include "cgit.h"
+
+
+static int print_entry(const unsigned char *sha1, const char *base, 
+		       int baselen, const char *pathname, unsigned int mode, 
+		       int stage)
+{
+	char *name;
+	char type[20];
+	unsigned long size;
+
+	if (sha1_object_info(sha1, type, &size)) {
+		cgit_print_error(fmt("Bad object name: %s", 
+				     sha1_to_hex(sha1)));
+		return 0;
+	}
+	name = xstrdup(pathname);
+	html("<tr><td>");
+	if (S_ISDIR(mode)) {
+		html("<div class='ls-dir'><a href='");
+		html_attr(cgit_pageurl(cgit_query_repo, "tree", 
+				       fmt("id=%s", sha1_to_hex(sha1))));
+	} else {
+		html("<div class='ls-blob'><a href='");
+		html_attr(cgit_pageurl(cgit_query_repo, "view",
+				      fmt("id=%s", sha1_to_hex(sha1))));
+	}
+	html("'>");
+	html_txt(name);
+	if (S_ISDIR(mode))
+		html("/");
+	html("</a></div></td>");
+	htmlf("<td class='filesize'>%li</td>", size);
+	htmlf("<td class='filemode'>%06o</td>", mode);
+	html("</tr>\n");
+	free(name);
+	return 0;
+}
+
+void cgit_print_tree(const char *hex)
+{
+	struct tree *tree;
+	unsigned char sha1[20];
+
+	if (get_sha1_hex(hex, sha1)) {
+		cgit_print_error(fmt("Invalid object id: %s", hex));
+		return;
+	}
+	tree = parse_tree_indirect(sha1);
+	if (!tree) {
+		cgit_print_error(fmt("Not a tree object: %s", hex));
+		return;
+	}
+
+	html("<h2>Tree content</h2>\n");
+	html("<table class='list'>\n");
+	html("<tr><th>Name</th>");
+	html("<th class='filesize'>Size</th>");
+	html("<th class='filemode'>Mode</th></tr>\n");
+	read_tree_recursive(tree, "", 0, 1, NULL, print_entry);
+	html("</table>\n");
+}

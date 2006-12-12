@@ -27,6 +27,11 @@ static int cgit_print_branch_cb(const char *refname, const unsigned char *sha1,
 		pretty_print_commit(CMIT_FMT_ONELINE, commit, ~0, buf,
 				    sizeof(buf), 0, NULL, NULL, 0);
 		html_txt(buf);
+		html("</td><td><a href='");
+		html_attr(cgit_pageurl(cgit_query_repo, "tree", 
+				       fmt("id=%s", 
+					   sha1_to_hex(commit->tree->object.sha1))));
+		html("'>tree</a>");
 		html("</td></tr>\n");
 	} else {
 		html("<tr><td>");
@@ -41,7 +46,7 @@ static int cgit_print_branch_cb(const char *refname, const unsigned char *sha1,
 static void cgit_print_branches()
 {
 	html("<table class='list'>");
-	html("<tr><th>Branch name</th><th>Head commit</th></tr>\n");
+	html("<tr><th>Branch name</th><th>Latest</th><th>Link</th></tr>\n");
 	for_each_branch_ref(cgit_print_branch_cb, NULL);
 	html("</table>");
 }

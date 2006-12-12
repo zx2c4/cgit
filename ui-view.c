@@ -20,7 +20,7 @@ void cgit_print_view(char *hex)
 	        return;
 	}
 
-	if (sha1_object_info(sha1, type, NULL)){
+	if (sha1_object_info(sha1, type, &size)){
 		cgit_print_error("Bad object name");
 		return;
 	}
