@@ -12,10 +12,9 @@ CFLAGS += -Wall
 
 all: cgit
 
-install: all
+install: all clean-cache
 	install cgit $(INSTALL_BIN)
 	install cgit.css $(INSTALL_CSS)
-	rm -rf $(CACHE_ROOT)/*
 
 cgit: cgit.c cgit.h git.h $(OBJECTS)
 	$(CC) $(CFLAGS) -DCGIT_VERSION='"$(CGIT_VERSION)"' cgit.c -o cgit \
@@ -26,3 +25,6 @@ $(OBJECTS): cgit.h git.h
 .PHONY: clean
 clean:
 	rm -f cgit *.o
+
+clean-cache:
+	rm -rf $(CACHE_ROOT)/*
