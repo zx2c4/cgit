@@ -1,54 +1,35 @@
-Cache algorithm
-===============
 
-Cgit normally returns cached pages when invoked. If there is no cache file, or
-the cache file has expired, it is regenerated. Finally, the cache file is 
-printed on stdout.
-
-When it is decided that a cache file needs to be regenerated, an attempt is 
-made to create a corresponding lockfile. If this fails, the process gives up
-and uses the expired cache file instead.
-
-When there is no cache file for a request, an attempt is made to create a 
-corresponding lockfile. If this fails, the process calls sched_yield(2) before
-restarting the request handling.
-
-In pseudocode:
-
-	name = generate_cache_name(request);
-top:
-	if (!exists(name)) {
-		if (lock_cache(name)) {
-			generate_cache(request, name);
-			unlock_cache(name);
-		} else {
-			sched_yield();
-			goto top;
-		}
-	} else if (expired(name)) {
-		if (lock_cache(name)) {
-			generate_cache(request, name);
-			unlock_cache(name);
-		}
-	}
-	print_file(name);
+                       cgit - cgi for git
 
 
-The following options can be set in /etc/cgitrc to control cache behaviour:
-  cache-root:        root directory for cache files
-  cache-root-ttl:    TTL for the repo listing page
-  cache-repo-ttl:    TTL for any repos summary page
-  cache-dynamic-ttl: TTL for pages with symbolic references (not SHA1)
-  cache-static-ttl:  TTL for pages with sha1 references
+This is an attempt to create a fast web interface for the git scm, using a 
+frontside cache to decrease server io-pressure.
 
-TTL is specified in minutes, -1 meaning "infinite caching". 
+When cgit is invoked, it looks for a cached page matching the request. If no
+such cachefile exist (or it has expired), it is (re)generated. Finally, the
+cachefile is returned to the client.
 
+If the cachefile has expired, but cgit is unable to lock the cachefile, the 
+client will get the stale cachefile after all. This is done to favour page
+throughput over page freshness.
 
-Naming of cache files
----------------------
-Repository listing:  <cachedir>/index.html
-Repository summary:  <cachedir>/<repo>/index.html
-Repository subpage:  <cachedir>/<repo>/<page>/<querystring>.html
+Also, when a cachefile is generated, a few cache-related http-headers are
+created: "Modified" is set to current time(2), while "Expires" is set to 
+time(2) + <cachefile TTL> * 60 (unless the TTL is negative, in which case it
+is read as "60 * 60 * 24 * 365"). This is done to avoid repeated requests for
+already visited pages.
 
-The corresponding lock files have a ".lock" suffix.
+The following cache-related options can be set in /etc/cgitrc:
 
+  cache-root=<path>           root directory for cache files
+  cache-root-ttl=<min>        TTL for the repo listing page
+  cache-repo-ttl=<min>        TTL for repo summary pages
+  cache-dynamic-ttl=<min>     TTL for pages with symbolic references
+  cache-static-ttl=<min>      TTL for pages with sha1 references
+
+The cachefiles are split into different directories, based on the requested
+repository and page:
+
+  Repo listing:  <cachedir>/index.html
+  Repo summary:  <cachedir>/<repo>/index.html
+  Repo subpage:  <cachedir>/<repo>/<page>/<querystring>.html
