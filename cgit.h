@@ -44,6 +44,7 @@ extern char *cgit_query_repo;
 extern char *cgit_query_page;
 extern char *cgit_query_head;
 extern char *cgit_query_sha1;
+extern int   cgit_query_ofs;
 
 extern int htmlfd;
 

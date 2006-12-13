@@ -29,7 +29,7 @@ static void cgit_print_repo_page(struct cacheitem *item)
 	if (!cgit_query_page) {
 		cgit_print_summary();
 	} else if (!strcmp(cgit_query_page, "log")) {
-		cgit_print_log(cgit_query_head, 0, 100);
+		cgit_print_log(cgit_query_head, cgit_query_ofs, 100);
 	} else if (!strcmp(cgit_query_page, "tree")) {
 		cgit_print_tree(cgit_query_sha1);
 	} else if (!strcmp(cgit_query_page, "view")) {

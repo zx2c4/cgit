@@ -95,7 +95,7 @@ void cgit_print_log(const char *tip, int ofs, int cnt)
 	struct rev_info rev;
 	struct commit *commit;
 	const char *argv[2] = {NULL, tip};
-	int n = 0;
+	int i;
 	
 	init_revisions(&rev, NULL);
 	rev.abbrev = DEFAULT_ABBREV;
@@ -108,7 +108,18 @@ void cgit_print_log(const char *tip, int ofs, int cnt)
 	html("<h2>Log</h2>");
 	html("<table class='list'>");
 	html("<tr><th>Date</th><th>Message</th><th>Author</th><th>Link</th></tr>\n");
-	while ((commit = get_revision(&rev)) != NULL && n++ < 100) {
+
+	if (ofs<0)
+		ofs = 0;
+
+	for (i = 0; i < ofs && (commit = get_revision(&rev)) != NULL; i++) {
+		free(commit->buffer);
+		commit->buffer = NULL;
+		free_commit_list(commit->parents);
+		commit->parents = NULL;
+	}
+
+	for (i = 0; i < cnt && (commit = get_revision(&rev)) != NULL; i++) {
 		cgit_print_commit_shortlog(commit);
 		free(commit->buffer);
 		commit->buffer = NULL;
@@ -116,5 +127,21 @@ void cgit_print_log(const char *tip, int ofs, int cnt)
 		commit->parents = NULL;
 	}
 	html("</table>\n");
+
+	html("<div class='pager'>");
+	if (ofs > 0) {
+		html("&nbsp;<a href='");
+		html(cgit_pageurl(cgit_query_repo, cgit_query_page,
+				  fmt("h=%s&ofs=%d", tip, ofs-cnt)));
+		html("'>[prev]</a>&nbsp;");
+       	}
+
+	if ((commit = get_revision(&rev)) != NULL) {
+		html("&nbsp;<a href='");
+		html(cgit_pageurl(cgit_query_repo, "log",
+				  fmt("h=%s&ofs=%d", tip, ofs+cnt)));
+		html("'>[next]</a>&nbsp;");
+	}
+	html("</div>");
 }
 
