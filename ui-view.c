@@ -8,7 +8,7 @@
 
 #include "cgit.h"
 
-void cgit_print_view(char *hex)
+void cgit_print_view(const char *hex)
 {
 	unsigned char sha1[20];
 	char type[20];

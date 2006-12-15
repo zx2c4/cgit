@@ -21,16 +21,15 @@ table.list {
 }
 
 table.list th {
-	text-align: left;
 	font-weight: bold;
 	background: #ddd;
 	border-bottom: solid 1px #aaa;
-	padding: 0.1em 0.5em 0.1em;
+	padding: 0.1em 0.5em 0.1em 0.5em;
 	vertical-align: baseline;
 }
 table.list td {
 	border: none;
-	padding: 0.1em 1em 0.1em 0.5em;
+	padding: 0.1em 0.5em 0.1em 0.5em;
 	background: white;
 }
 
@@ -56,6 +55,10 @@ div#content {
 	margin: 0.5em 0.5em;
 }
 
+div#blob {
+	border: solid 1px black;
+}
+
 div.error {
 	color: red;
 	font-weight: bold;
@@ -75,4 +78,43 @@ td.blob {
 	white-space: pre;
 	font-family: courier;
 	font-size: 100%;
+}
+
+table.log td {
+	white-space: nowrap;
+}
+
+table.commit-info {
+	border-collapse: collapse;
+	margin-top: 1em;
+	
+}
+table.commit-info th {
+	text-align: left;
+	font-weight: normal;
+	padding: 0.1em 1em 0.1em 0.1em;
+}
+table.commit-info td {
+	font-weight: normal;
+	padding: 0.1em 1em 0.1em 0.1em;
+}
+div.commit-subject {
+	font-weight: bold;
+	font-size: 110%;
+	margin: 1em 0em 1em;
+}
+div.commit-msg {
+	white-space: pre;
+	font-family: courier;
+	font-size: 100%;
+}
+.sha1 {
+	font-family: courier;
+	font-size: 90%;
+}
+.left {
+	text-align: left;
+}
+.right {
+	text-align: right;
 }

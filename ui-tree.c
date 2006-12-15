@@ -62,9 +62,9 @@ void cgit_print_tree(const char *hex)
 
 	html("<h2>Tree content</h2>\n");
 	html("<table class='list'>\n");
-	html("<tr><th>Name</th>");
-	html("<th class='filesize'>Size</th>");
-	html("<th class='filemode'>Mode</th></tr>\n");
+	html("<tr><th class='left'>Name</th>");
+	html("<th class='right'>Size</th>");
+	html("<th class='right'>Mode</th></tr>\n");
 	read_tree_recursive(tree, "", 0, 1, NULL, print_entry);
 	html("</table>\n");
 }

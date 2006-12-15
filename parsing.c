@@ -150,6 +150,7 @@ struct commitinfo *cgit_parse_commit(struct commit *commit)
 
 	t = strchr(p, '\n');
 	ret->subject = substr(p, t);
+	p = t + 1;
 
 	while (*p == '\n')
 		p = strchr(p, '\n') + 1;
