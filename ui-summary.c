@@ -12,10 +12,12 @@ static int cgit_print_branch_cb(const char *refname, const unsigned char *sha1,
 				int flags, void *cb_data)
 {
 	struct commit *commit;
+	struct commitinfo *info;
 	char buf[256], *url;
 
 	commit = lookup_commit(sha1);
 	if (commit && !parse_commit(commit)){
+		info = cgit_parse_commit(commit);
 		html("<tr><td>");
 		url = cgit_pageurl(cgit_query_repo, "log", 
 				   fmt("h=%s", refname));
@@ -24,14 +26,14 @@ static int cgit_print_branch_cb(const char *refname, const unsigned char *sha1,
 		html_txt(buf);
 		html_link_close();
 		html("</td><td>");
-		pretty_print_commit(CMIT_FMT_ONELINE, commit, ~0, buf,
-				    sizeof(buf), 0, NULL, NULL, 0);
-		html_txt(buf);
-		html("</td><td><a href='");
-		html_attr(cgit_pageurl(cgit_query_repo, "tree", 
-				       fmt("id=%s", 
-					   sha1_to_hex(commit->tree->object.sha1))));
-		html("'>tree</a>");
+		cgit_print_date(commit->date);
+		html("</td><td>");
+		url = cgit_pageurl(cgit_query_repo, "commit", fmt("id=%s", sha1_to_hex(sha1)));
+		html_link_open(url, NULL, NULL);
+		html_txt(info->subject);
+		html_link_close();
+		html("</td><td>");
+		html_txt(info->author);
 		html("</td></tr>\n");
 	} else {
 		html("<tr><td>");
@@ -46,7 +48,7 @@ static int cgit_print_branch_cb(const char *refname, const unsigned char *sha1,
 static void cgit_print_branches()
 {
 	html("<table class='list'>");
-	html("<tr><th>Branch</th><th>Last commit</th><th>Link</th></tr>\n");
+	html("<tr><th class='left'>Branch</th><th class='left'>Updated</th><th class='left'>Commit subject</th><th class='left'>Author</th></tr>\n");
 	for_each_branch_ref(cgit_print_branch_cb, NULL);
 	html("</table>");
 }

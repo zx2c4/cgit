@@ -60,6 +60,18 @@ char *cgit_pageurl(const char *reponame, const char *pagename,
 	}
 }
 
+
+void cgit_print_date(unsigned long secs)
+{
+	char buf[32];
+	struct tm *time;
+
+	time = gmtime(&secs);
+	strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", time);
+	html_txt(buf);
+	
+}
+
 void cgit_print_docstart(char *title, struct cacheitem *item)
 {
 	html("Content-Type: text/html; charset=utf-8\n");

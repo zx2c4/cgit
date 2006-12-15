@@ -85,6 +85,7 @@ extern char *cgit_pageurl(const char *reponame, const char *pagename,
 			  const char *query);
 
 extern void cgit_print_error(char *msg);
+extern void cgit_print_date(unsigned long secs);
 extern void cgit_print_docstart(char *title, struct cacheitem *item);
 extern void cgit_print_docend();
 extern void cgit_print_pageheader(char *title);

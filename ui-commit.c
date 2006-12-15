@@ -1,16 +1,5 @@
 #include "cgit.h"
 
-void cgit_print_date(unsigned long secs)
-{
-	char buf[32];
-	struct tm *time;
-
-	time = gmtime(&secs);
-	strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", time);
-	html_txt(buf);
-	
-}
-
 void cgit_print_commit(const char *hex)
 {
 	struct commit *commit;
