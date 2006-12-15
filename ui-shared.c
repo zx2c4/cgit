@@ -104,6 +104,10 @@ void cgit_print_pageheader(char *title)
 	htmlf("<a href='%s'>", cgit_logo_link);
 	htmlf("<img id='logo' src='%s'/>\n", cgit_logo);
 	htmlf("</a>");
+	if (cgit_query_repo)
+		htmlf("<a href='%s'>", cgit_repourl(cgit_query_repo));
 	html_txt(title);
+	if (cgit_query_repo)
+		html("</a>");
 	html("</div>");
 }

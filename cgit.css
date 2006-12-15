@@ -13,6 +13,14 @@ h2 {
 	margin-bottom: 0.1em;
 }
 
+a {
+	color: blue;
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
 
 table.list {
 	border: solid 1px black;
@@ -46,7 +54,6 @@ div#header {
 	border: solid 1px #aaa;
 	vertical-align: middle;
 }
-
 div#header img#logo {
 	float: right;
 }
