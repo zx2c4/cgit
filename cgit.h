@@ -15,6 +15,14 @@ struct cacheitem {
 	int fd;
 };
 
+struct commitinfo {
+	struct commit *commit;
+	char *author;
+	char *committer;
+	char *subject;
+	char *msg;
+};
+
 extern const char cgit_version[];
 
 extern char *cgit_root;
@@ -63,6 +71,7 @@ extern void html_link_close(void);
 
 extern int cgit_read_config(const char *filename, configfn fn);
 extern int cgit_parse_query(char *txt, configfn fn);
+extern struct commitinfo *cgit_parse_commit(struct commit *commit);
 
 extern void cache_prepare(struct cacheitem *item);
 extern int cache_lock(struct cacheitem *item);

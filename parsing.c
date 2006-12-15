@@ -104,3 +104,56 @@ int cgit_parse_query(char *txt, configfn fn)
 		(*fn)(txt, value);
 	return 0;
 }
+
+char *substr(const char *head, const char *tail)
+{
+	char *buf;
+
+	buf = xmalloc(tail - head + 1);
+	strncpy(buf, head, tail - head);
+	buf[tail - head] = '\0';
+	return buf;
+}
+
+struct commitinfo *cgit_parse_commit(struct commit *commit)
+{
+	struct commitinfo *ret;
+	char *p = commit->buffer, *t = commit->buffer;
+
+	ret = xmalloc(sizeof(*ret));
+	ret->commit = commit;
+
+	if (strncmp(p, "tree ", 5))
+		die("Bad commit: %s", sha1_to_hex(commit->object.sha1));
+	else
+		p += 46; // "tree " + hex[40] + "\n"
+
+	while (!strncmp(p, "parent ", 7))
+		p += 48; // "parent " + hex[40] + "\n"
+
+	if (!strncmp(p, "author ", 7)) {
+		p += 7;
+		t = strchr(p, '<') - 1;
+		ret->author = substr(p, t);
+		p = strchr(p, '\n') + 1;
+	}
+
+	if (!strncmp(p, "committer ", 9)) {
+		p += 9;
+		t = strchr(p, '<') - 1;
+		ret->committer = substr(p, t);
+		p = strchr(p, '\n') + 1;
+	}
+
+	while (*p == '\n')
+		p = strchr(p, '\n') + 1;
+
+	t = strchr(p, '\n');
+	ret->subject = substr(p, t);
+
+	while (*p == '\n')
+		p = strchr(p, '\n') + 1;
+	ret->msg = p;
+
+	return ret;
+}
