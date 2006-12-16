@@ -1,3 +1,11 @@
+/* ui-commit.c: generate commit view
+ *
+ * Copyright (C) 2006 Lars Hjemli
+ *
+ * Licensed under GNU General Public License v2
+ *   (see COPYING for full license text)
+ */
+
 #include "cgit.h"
 
 void cgit_print_commit(const char *hex)
