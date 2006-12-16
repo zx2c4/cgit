@@ -33,6 +33,7 @@ extern char *cgit_logo_link;
 extern char *cgit_virtual_root;
 extern char *cgit_cache_root;
 
+extern int cgit_nocache;
 extern int cgit_max_lock_attempts;
 extern int cgit_cache_root_ttl;
 extern int cgit_cache_repo_ttl;

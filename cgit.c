@@ -96,15 +96,59 @@ static void cgit_print_cache(struct cacheitem *item)
 	close(fd);
 }
 
+static void cgit_parse_args(int argc, const char **argv)
+{
+	int i;
+
+	for (i = 1; i < argc; i++) {
+		if (!strncmp(argv[i], "--root=", 7)) {
+			cgit_root = xstrdup(argv[i]+7);
+		}
+		if (!strncmp(argv[i], "--cache=", 8)) {
+			cgit_cache_root = xstrdup(argv[i]+8);
+		}
+		if (!strcmp(argv[i], "--nocache")) {
+			cgit_nocache = 1;
+		}
+		if (!strncmp(argv[i], "--query=", 8)) {
+			cgit_querystring = xstrdup(argv[i]+8);
+		}
+		if (!strncmp(argv[i], "--repo=", 7)) {
+			cgit_query_repo = xstrdup(argv[i]+7);
+		}
+		if (!strncmp(argv[i], "--page=", 7)) {
+			cgit_query_page = xstrdup(argv[i]+7);
+		}
+		if (!strncmp(argv[i], "--head=", 7)) {
+			cgit_query_head = xstrdup(argv[i]+7);
+			cgit_query_has_symref = 1;
+		}
+		if (!strncmp(argv[i], "--sha1=", 7)) {
+			cgit_query_sha1 = xstrdup(argv[i]+7);
+			cgit_query_has_sha1 = 1;
+		}
+		if (!strncmp(argv[i], "--ofs=", 6)) {
+			cgit_query_ofs = atoi(argv[i]+6);
+		}
+	}
+}
+
 int main(int argc, const char **argv)
 {
 	struct cacheitem item;
 
 	cgit_read_config("/etc/cgitrc", cgit_global_config_cb);
-	cgit_querystring = xstrdup(getenv("QUERY_STRING"));
+	if (getenv("QUERY_STRING"))
+		cgit_querystring = xstrdup(getenv("QUERY_STRING"));
+	cgit_parse_args(argc, argv);
 	cgit_parse_query(cgit_querystring, cgit_querystring_cb);
 
-	cgit_check_cache(&item);
-	cgit_print_cache(&item);
+	if (cgit_nocache) {
+		item.fd = STDOUT_FILENO;
+		cgit_fill_cache(&item);
+	} else {
+		cgit_check_cache(&item);
+		cgit_print_cache(&item);
+	}
 	return 0;
 }

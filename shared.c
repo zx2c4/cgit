@@ -17,6 +17,7 @@ char *cgit_virtual_root = NULL;
 
 char *cgit_cache_root   = "/var/cache/cgit";
 
+int cgit_nocache               =  0;
 int cgit_max_lock_attempts     =  5;
 int cgit_cache_root_ttl        =  5;
 int cgit_cache_repo_ttl        =  5;
@@ -54,6 +55,8 @@ void cgit_global_config_cb(const char *name, const char *value)
 		cgit_logo_link = xstrdup(value);
 	else if (!strcmp(name, "virtual-root"))
 		cgit_virtual_root = xstrdup(value);
+	else if (!strcmp(name, "nocache"))
+		cgit_nocache = atoi(value);
 }
 
 void cgit_repo_config_cb(const char *name, const char *value)
