@@ -13,9 +13,6 @@ void cgit_print_commit(const char *hex)
 	struct commit *commit;
 	struct commitinfo *info;
 	struct commit_list *p;
-	unsigned long size;
-	char type[20];
-	char *buf;
 
 	unsigned char sha1[20];
 
@@ -24,21 +21,9 @@ void cgit_print_commit(const char *hex)
 		return;
 	}
 
-	buf = read_sha1_file(sha1, type, &size);
-	if (!buf) {
-		cgit_print_error(fmt("Bad object reference: %s", hex));
-		return;
-	}
-
-	commit = lookup_commit(sha1);
+	commit = lookup_commit_reference(sha1);
 	if (!commit) {
 		cgit_print_error(fmt("Bad commit reference: %s", hex));
-		return;
-	}
-
-	commit->buffer = buf;
-	if (parse_commit_buffer(commit, buf, size)) {
-		cgit_print_error(fmt("Malformed commit buffer: %s", hex));
 		return;
 	}
 
