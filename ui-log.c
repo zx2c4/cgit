@@ -49,7 +49,9 @@ void cgit_print_log(const char *tip, int ofs, int cnt)
 
 	html("<h2>Log</h2>");
 	html("<table class='list log'>");
-	html("<tr><th class='left'>Date</th><th class='left'>Message</th><th class='left'>Author</th></tr>\n");
+	html("<tr><th class='left'>Date</th>"
+	     "<th class='left'>Message</th>"
+	     "<th class='left'>Author</th></tr>\n");
 
 	if (ofs<0)
 		ofs = 0;
