@@ -45,6 +45,10 @@ int cache_create_dirs()
 {
 	char *path;
 
+	path = fmt("%s", cgit_cache_root);
+	if (mkdir(path, S_IRWXU) && errno!=EEXIST)
+		return 0;
+
 	if (!cgit_query_repo)
 		return 0;
 

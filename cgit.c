@@ -42,12 +42,16 @@ static void cgit_print_repo_page(struct cacheitem *item)
 
 static void cgit_fill_cache(struct cacheitem *item)
 {
+	static char buf[PATH_MAX];
+
+	getcwd(buf, sizeof(buf));
 	htmlfd = item->fd;
 	item->st.st_mtime = time(NULL);
 	if (cgit_query_repo)
 		cgit_print_repo_page(item);
 	else
 		cgit_print_repolist(item);
+	chdir(buf);
 }
 
 static void cgit_check_cache(struct cacheitem *item)
