@@ -135,14 +135,22 @@ struct commitinfo *cgit_parse_commit(struct commit *commit)
 		p += 7;
 		t = strchr(p, '<') - 1;
 		ret->author = substr(p, t);
-		p = strchr(p, '\n') + 1;
+		p = t;
+		t = strchr(t, '>') + 1;
+		ret->author_email = substr(p, t);
+		ret->author_date = atol(++t);
+		p = strchr(t, '\n') + 1;
 	}
 
 	if (!strncmp(p, "committer ", 9)) {
 		p += 9;
 		t = strchr(p, '<') - 1;
 		ret->committer = substr(p, t);
-		p = strchr(p, '\n') + 1;
+		p = t;
+		t = strchr(t, '>') + 1;
+		ret->committer_email = substr(p, t);
+		ret->committer_date = atol(++t);
+		p = strchr(t, '\n') + 1;
 	}
 
 	while (*p == '\n')

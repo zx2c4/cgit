@@ -18,7 +18,11 @@ struct cacheitem {
 struct commitinfo {
 	struct commit *commit;
 	char *author;
+	char *author_email;
+	unsigned long author_date;
 	char *committer;
+	char *committer_email;
+	unsigned long committer_date;
 	char *subject;
 	char *msg;
 };
