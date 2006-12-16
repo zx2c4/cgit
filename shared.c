@@ -88,3 +88,13 @@ void cgit_querystring_cb(const char *name, const char *value)
 	}
 }
 
+void *cgit_free_commitinfo(struct commitinfo *info)
+{
+	free(info->author);
+	free(info->author_email);
+	free(info->committer);
+	free(info->committer_email);
+	free(info->subject);
+	free(info);
+	return NULL;
+}

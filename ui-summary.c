@@ -35,6 +35,7 @@ static int cgit_print_branch_cb(const char *refname, const unsigned char *sha1,
 		html("</td><td>");
 		html_txt(info->author);
 		html("</td></tr>\n");
+		cgit_free_commitinfo(info);
 	} else {
 		html("<tr><td>");
 		html_txt(buf);

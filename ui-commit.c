@@ -61,8 +61,5 @@ void cgit_print_commit(const char *hex)
 	html("<div class='commit-msg'>");
 	html_txt(info->msg);
 	html("</div>");
-	free(info->author);
-	free(info->committer);
-	free(info->subject);
-	free(info);
+	cgit_free_commitinfo(info);
 }

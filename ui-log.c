@@ -28,10 +28,7 @@ void print_commit(struct commit *commit)
 	html("</td><td>");
 	html_txt(info->author);
 	html("</td></tr>\n");
-	free(info->author);
-	free(info->committer);
-	free(info->subject);
-	free(info);
+	cgit_free_commitinfo(info);
 }
 
 

@@ -65,6 +65,8 @@ extern void cgit_global_config_cb(const char *name, const char *value);
 extern void cgit_repo_config_cb(const char *name, const char *value);
 extern void cgit_querystring_cb(const char *name, const char *value);
 
+extern void *cgit_free_commitinfo(struct commitinfo *info);
+
 extern char *fmt(const char *format,...);
 
 extern void html(const char *txt);
