@@ -45,13 +45,19 @@ void cgit_print_commit(const char *hex)
 	info = cgit_parse_commit(commit);
 
 	html("<table class='commit-info'>\n");
-	html("<tr><th>author</th><td colspan='2'>");
+	html("<tr><th>author</th><td>");
 	html_txt(info->author);
+	html(" ");
+	html_txt(info->author_email);
+	html("</td><td class='right'>");
+	cgit_print_date(info->author_date);
 	html("</td></tr>\n");
 	html("<tr><th>committer</th><td>");
 	html_txt(info->committer);
+	html(" ");
+	html_txt(info->committer_email);
 	html("</td><td class='right'>");
-	cgit_print_date(commit->date);
+	cgit_print_date(info->committer_date);
 	html("</td></tr>\n");
 	html("<tr><th>tree</th><td colspan='2' class='sha1'><a href='");
 	html_attr(cgit_pageurl(cgit_query_repo, "tree", fmt("id=%s", sha1_to_hex(commit->tree->object.sha1))));
