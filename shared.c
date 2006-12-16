@@ -57,6 +57,8 @@ void cgit_global_config_cb(const char *name, const char *value)
 		cgit_virtual_root = xstrdup(value);
 	else if (!strcmp(name, "nocache"))
 		cgit_nocache = atoi(value);
+	else if (!strcmp(name, "cache-root"))
+		cgit_cache_root = xstrdup(value);
 }
 
 void cgit_repo_config_cb(const char *name, const char *value)
