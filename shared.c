@@ -1,3 +1,11 @@
+/* shared.c: global vars + some callback functions
+ *
+ * Copyright (C) 2006 Lars Hjemli
+ *
+ * Licensed under GNU General Public License v2
+ *   (see COPYING for full license text)
+ */
+
 #include "cgit.h"
 
 char *cgit_root         = "/usr/src/git";
