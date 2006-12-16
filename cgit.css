@@ -27,7 +27,12 @@ table.list {
 	border-collapse: collapse;
 	border: solid 1px #aaa;
 }
-
+table.list tr {
+	background: white;
+}
+table.list tr:hover {
+	background: #eee;
+}
 table.list th {
 	font-weight: bold;
 	background: #ddd;
@@ -38,9 +43,7 @@ table.list th {
 table.list td {
 	border: none;
 	padding: 0.1em 0.5em 0.1em 0.5em;
-	background: white;
 }
-
 img {
 	border: none;
 }
@@ -85,6 +88,7 @@ td.blob {
 	white-space: pre;
 	font-family: courier;
 	font-size: 100%;
+	background-color: white;
 }
 
 table.log td {
