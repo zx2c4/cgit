@@ -46,8 +46,15 @@ void print_filepair(struct diff_filepair *pair)
 
 	html("<tr>");
 	htmlf("<td class='mode'>");
-	html_filemode(pair->two->mode);
-	if (pair->one->mode != pair->two->mode) {
+	if (is_null_sha1(pair->two->sha1)) {
+		html_filemode(pair->one->mode);
+	} else {
+		html_filemode(pair->two->mode);
+	}
+
+	if (pair->one->mode != pair->two->mode && 
+	    !is_null_sha1(pair->one->sha1) && 
+	    !is_null_sha1(pair->two->sha1)) {
 		html("<span class='modechange'>[");
 		html_filemode(pair->one->mode);
 		html("]</span>");
