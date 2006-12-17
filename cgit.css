@@ -83,8 +83,8 @@ div.ls-dir a {
 th.filesize, td.filesize {
 	text-align: right;
 }
-th.filemode, td.filemode {
-	text-align: center;
+td.filemode {
+	font-family: monospace;
 }
 
 td.blob {

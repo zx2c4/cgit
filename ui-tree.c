@@ -23,7 +23,9 @@ static int print_entry(const unsigned char *sha1, const char *base,
 		return 0;
 	}
 	name = xstrdup(pathname);
-	html("<tr><td>");
+	html("<tr><td class='filemode'>");
+	html_filemode(mode);
+	html("</td><td>");
 	if (S_ISDIR(mode)) {
 		html("<div class='ls-dir'><a href='");
 		html_attr(cgit_pageurl(cgit_query_repo, "tree", 
@@ -39,7 +41,6 @@ static int print_entry(const unsigned char *sha1, const char *base,
 		html("/");
 	html("</a></div></td>");
 	htmlf("<td class='filesize'>%li</td>", size);
-	htmlf("<td class='filemode'>%06o</td>", mode);
 	html("</tr>\n");
 	free(name);
 	return 0;
@@ -62,9 +63,11 @@ void cgit_print_tree(const char *hex)
 
 	html("<h2>Tree content</h2>\n");
 	html("<table class='list'>\n");
-	html("<tr><th class='left'>Name</th>");
+	html("<tr>");
+	html("<th class='left'>Mode</th>");
+	html("<th class='left'>Name</th>");
 	html("<th class='right'>Size</th>");
-	html("<th class='right'>Mode</th></tr>\n");
+	html("</tr>\n");
 	read_tree_recursive(tree, "", 0, 1, NULL, print_entry);
 	html("</table>\n");
 }
