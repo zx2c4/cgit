@@ -3,7 +3,7 @@ body {
 	font-size: normal;
 	background: white;
 	padding: 0em;
-	margin: 0.5em;
+	margin: 0.5em 1em;
 }
 
 
@@ -50,15 +50,18 @@ img {
 
 
 div#header {
-	background-color: #ddd;
+	background-color: #eee;
 	padding: 0.25em 0.25em 0.25em 0.5em;
 	font-size: 150%;
 	font-weight: bold;
-	border: solid 1px #aaa;
+	border: solid 1px #ccc;
 	vertical-align: middle;
 }
 div#header img#logo {
 	float: right;
+}
+div#header a {
+	color: black;
 }
 
 div#content {
@@ -97,8 +100,7 @@ table.log td {
 
 table.commit-info {
 	border-collapse: collapse;
-	margin-top: 1em;
-	
+	margin-top: 1.5em;
 }
 table.commit-info th {
 	text-align: left;
@@ -111,13 +113,46 @@ table.commit-info td {
 }
 div.commit-subject {
 	font-weight: bold;
-	font-size: 110%;
-	margin: 1em 0em 1em;
+	font-size: 125%;
+	margin: 1.5em 0em 0.5em 0em;
+	padding: 0em;
 }
 div.commit-msg {
 	white-space: pre;
-	font-family: courier;
+	font-family: monospace;
+}
+table.diffstat {
+	border-collapse: collapse;
+	margin-top: 1.5em;
+}
+table.diffstat th {
+	font-weight: normal;
+	text-align: left;
+	text-decoration: underline;
+	padding: 0.1em 1em 0.1em 0.1em;
 	font-size: 100%;
+}
+table.diffstat td {
+	padding: 0.1em 1em 0.1em 0.1em;
+	font-size: 100%;
+}
+table.diffstat td span.modechange {
+	padding-left: 1em;
+	color: red;
+}
+table.diffstat td.add a {
+	color: green;
+}
+table.diffstat td.del a {
+	color: red;
+}
+table.diffstat td.upd a {
+	color: blue;
+}
+table.diffstat td.summary {
+	/* border-top: solid 1px black; */
+	color: #888;
+	padding-top: 0.5em;
 }
 .sha1 {
 	font-family: courier;

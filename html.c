@@ -108,3 +108,23 @@ void html_link_close(void)
 {
 	html("</a>");
 }
+
+void html_fileperm(unsigned short mode)
+{
+	htmlf("%c%c%c", (mode & 4 ? 'r' : '-'), 
+	      (mode & 2 ? 'w' : '-'), (mode & 1 ? 'x' : '-'));
+}
+
+void html_filemode(unsigned short mode)
+{
+	if (S_ISDIR(mode))
+		html("d");
+	else if (S_ISLNK(mode))
+		html("l");
+	else
+		html("-");
+	html_fileperm(mode >> 6);
+	html_fileperm(mode >> 3);
+	html_fileperm(mode);
+}
+

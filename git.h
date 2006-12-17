@@ -128,6 +128,8 @@ static inline ssize_t xwrite(int fd, const void *buf, size_t len)
 #define MINIMUM_ABBREV 4
 #define DEFAULT_ABBREV 7
 
+extern const unsigned char null_sha1[20];
+
 extern int sha1_object_info(const unsigned char *, char *, unsigned long *);
 
 extern void * read_sha1_file(const unsigned char *sha1, char *type, unsigned long *size);
@@ -135,6 +137,24 @@ extern void * read_sha1_file(const unsigned char *sha1, char *type, unsigned lon
 extern int get_sha1(const char *str, unsigned char *sha1);
 extern int get_sha1_hex(const char *hex, unsigned char *sha1);
 extern char *sha1_to_hex(const unsigned char *sha1);	/* static buffer result! */
+
+static inline int is_null_sha1(const unsigned char *sha1)
+{
+	return !memcmp(sha1, null_sha1, 20);
+}
+static inline int hashcmp(const unsigned char *sha1, const unsigned char *sha2)
+{
+	return memcmp(sha1, sha2, 20);
+}
+static inline void hashcpy(unsigned char *sha_dst, const unsigned char *sha_src)
+{
+	memcpy(sha_dst, sha_src, 20);
+}
+static inline void hashclr(unsigned char *hash)
+{
+	memset(hash, 0, 20);
+}
+
 
 
 
@@ -257,6 +277,61 @@ typedef void* (*topo_sort_get_fn_t)(struct commit*);
 
 
 
+/*
+ * from git:diffcore.h
+ */
+
+struct diff_filespec {
+	unsigned char sha1[20];
+	char *path;
+	void *data;
+	void *cnt_data;
+	unsigned long size;
+	int xfrm_flags;		 /* for use by the xfrm */
+	unsigned short mode;	 /* file mode */
+	unsigned sha1_valid : 1; /* if true, use sha1 and trust mode;
+				  * if false, use the name and read from
+				  * the filesystem.
+				  */
+#define DIFF_FILE_VALID(spec) (((spec)->mode) != 0)
+	unsigned should_free : 1; /* data should be free()'ed */
+	unsigned should_munmap : 1; /* data should be munmap()'ed */
+};
+
+struct diff_filepair {
+	struct diff_filespec *one;
+	struct diff_filespec *two;
+	unsigned short int score;
+	char status; /* M C R N D U (see Documentation/diff-format.txt) */
+	unsigned source_stays : 1; /* all of R/C are copies */
+	unsigned broken_pair : 1;
+	unsigned renamed_pair : 1;
+};
+
+#define DIFF_PAIR_UNMERGED(p) \
+	(!DIFF_FILE_VALID((p)->one) && !DIFF_FILE_VALID((p)->two))
+
+#define DIFF_PAIR_RENAME(p) ((p)->renamed_pair)
+
+#define DIFF_PAIR_BROKEN(p) \
+	( (!DIFF_FILE_VALID((p)->one) != !DIFF_FILE_VALID((p)->two)) && \
+	  ((p)->broken_pair != 0) )
+
+#define DIFF_PAIR_TYPE_CHANGED(p) \
+	((S_IFMT & (p)->one->mode) != (S_IFMT & (p)->two->mode))
+
+#define DIFF_PAIR_MODE_CHANGED(p) ((p)->one->mode != (p)->two->mode)
+
+extern void diff_free_filepair(struct diff_filepair *);
+
+extern int diff_unmodified_pair(struct diff_filepair *);
+
+struct diff_queue_struct {
+	struct diff_filepair **queue;
+	int alloc;
+	int nr;
+};
+
 
 /*
  *  from git:diff.h
@@ -351,6 +426,32 @@ enum color_diff {
 	DIFF_WHITESPACE = 7,
 };
 
+
+extern int diff_tree_sha1(const unsigned char *old, const unsigned char *new,
+			  const char *base, struct diff_options *opt);
+
+extern int diff_root_tree_sha1(const unsigned char *new, const char *base,
+			       struct diff_options *opt);
+
+extern int git_diff_ui_config(const char *var, const char *value);
+extern void diff_setup(struct diff_options *);
+extern int diff_opt_parse(struct diff_options *, const char **, int);
+extern int diff_setup_done(struct diff_options *);
+
+
+extern void diffcore_std(struct diff_options *);
+extern void diff_flush(struct diff_options*);
+
+
+/* diff-raw status letters */
+#define DIFF_STATUS_ADDED		'A'
+#define DIFF_STATUS_COPIED		'C'
+#define DIFF_STATUS_DELETED		'D'
+#define DIFF_STATUS_MODIFIED		'M'
+#define DIFF_STATUS_RENAMED		'R'
+#define DIFF_STATUS_TYPE_CHANGED	'T'
+#define DIFF_STATUS_UNKNOWN		'X'
+#define DIFF_STATUS_UNMERGED		'U'
 
 
 
@@ -456,6 +557,11 @@ extern int handle_revision_arg(const char *arg, struct rev_info *revs,int flags,
 extern void prepare_revision_walk(struct rev_info *revs);
 extern struct commit *get_revision(struct rev_info *revs);
 
+
+
+/* from git:log-tree.h */
+
+int log_tree_commit(struct rev_info *, struct commit *);
 
 
 
