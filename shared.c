@@ -37,6 +37,7 @@ char *cgit_query_repo   = NULL;
 char *cgit_query_page   = NULL;
 char *cgit_query_head   = NULL;
 char *cgit_query_sha1   = NULL;
+char *cgit_query_sha2   = NULL;
 int   cgit_query_ofs    = 0;
 
 int htmlfd = 0;
@@ -82,6 +83,9 @@ void cgit_querystring_cb(const char *name, const char *value)
 		cgit_query_has_symref = 1;
 	} else if (!strcmp(name, "id")) {
 		cgit_query_sha1 = xstrdup(value);
+		cgit_query_has_sha1 = 1;
+	} else if (!strcmp(name, "id2")) {
+		cgit_query_sha2 = xstrdup(value);
 		cgit_query_has_sha1 = 1;
 	} else if (!strcmp(name, "ofs")) {
 		cgit_query_ofs = atoi(value);

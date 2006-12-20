@@ -77,11 +77,17 @@ div.error {
 	font-weight: bold;
 	margin: 1em 2em;
 }
+div.ls-blob, div.ls-dir {
+	font-family: monospace;
+}
 div.ls-dir a {
 	font-weight: bold;
 }
 th.filesize, td.filesize {
 	text-align: right;
+}
+td.filesize {
+	font-family: monospace;
 }
 td.filemode {
 	font-family: monospace;
@@ -154,6 +160,25 @@ table.diffstat td.summary {
 	color: #888;
 	padding-top: 0.5em;
 }
+
+table.diff td {
+	border: solid 1px black;
+	font-family: monospace;
+	white-space: pre;
+}
+
+table.diff td div.hunk {
+	background: #ccc;
+}
+
+table.diff td div.add {
+	color: green;
+}
+
+table.diff td div.del {
+	color: red;
+}
+
 .sha1 {
 	font-family: courier;
 	font-size: 90%;

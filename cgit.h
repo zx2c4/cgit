@@ -57,6 +57,7 @@ extern char *cgit_query_repo;
 extern char *cgit_query_page;
 extern char *cgit_query_head;
 extern char *cgit_query_sha1;
+extern char *cgit_query_sha2;
 extern int   cgit_query_ofs;
 
 extern int htmlfd;
@@ -104,5 +105,6 @@ extern void cgit_print_log(const char *tip, int ofs, int cnt);
 extern void cgit_print_view(const char *hex);
 extern void cgit_print_tree(const char *hex);
 extern void cgit_print_commit(const char *hex);
+extern void cgit_print_diff(const char *old_hex, const char *new_hex);
 
 #endif /* CGIT_H */
