@@ -22,6 +22,8 @@ cgit: cgit.c cgit.h git.h $(OBJECTS)
 
 $(OBJECTS): cgit.h git.h
 
+ui-diff.o: xdiff.h
+
 .PHONY: clean
 clean:
 	rm -f cgit *.o
