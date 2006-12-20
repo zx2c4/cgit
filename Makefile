@@ -1,4 +1,4 @@
-CGIT_VERSION = 0.1-pre
+CGIT_VERSION = 0.1
 
 INSTALL_BIN = /var/www/htdocs/cgit.cgi
 INSTALL_CSS = /var/www/htdocs/cgit.css
