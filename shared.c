@@ -60,6 +60,14 @@ void cgit_global_config_cb(const char *name, const char *value)
 		cgit_nocache = atoi(value);
 	else if (!strcmp(name, "cache-root"))
 		cgit_cache_root = xstrdup(value);
+	else if (!strcmp(name, "cache-root-ttl"))
+		cgit_cache_root_ttl = atoi(value);
+	else if (!strcmp(name, "cache-repo-ttl"))
+		cgit_cache_repo_ttl = atoi(value);
+	else if (!strcmp(name, "cache-static-ttl"))
+		cgit_cache_static_ttl = atoi(value);
+	else if (!strcmp(name, "cache-dynamic-ttl"))
+		cgit_cache_dynamic_ttl = atoi(value);
 }
 
 void cgit_repo_config_cb(const char *name, const char *value)
