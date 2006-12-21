@@ -31,7 +31,7 @@ static int cgit_print_branch_cb(const char *refname, const unsigned char *sha1,
 		url = cgit_pageurl(cgit_query_repo, "commit", 
 				   fmt("id=%s", sha1_to_hex(sha1)));
 		html_link_open(url, NULL, NULL);
-		html_txt(info->subject);
+		html_ntxt(80, info->subject);
 		html_link_close();
 		html("</td><td>");
 		html_txt(info->author);
@@ -49,7 +49,7 @@ static int cgit_print_branch_cb(const char *refname, const unsigned char *sha1,
 
 static void cgit_print_branches()
 {
-	html("<table class='list'>");
+	html("<table class='list nowrap'>");
 	html("<tr><th class='left'>Branch</th>"
 	     "<th class='left'>Updated</th>"
 	     "<th class='left'>Commit subject</th>"

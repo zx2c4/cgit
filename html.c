@@ -65,6 +65,34 @@ void html_txt(char *txt)
 		html(txt);
 }
 
+void html_ntxt(int len, char *txt)
+{
+	char *t = txt;
+	while(*t && len--){
+		int c = *t;
+		if (c=='<' || c=='>' || c=='&') {
+			*t = '\0';
+			html(txt);
+			*t = c;
+			if (c=='>')
+				html("&gt;");
+			else if (c=='<')
+				html("&lt;");
+			else if (c=='&')
+				html("&amp;");
+			txt = t+1;
+		}
+		t++;
+	}
+	if (t!=txt) {
+		char c = *t;
+		*t = '\0';
+		html(txt);
+		*t = c;
+	}
+	if (len<0)
+		html("...");
+}
 
 void html_attr(char *txt)
 {

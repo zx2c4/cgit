@@ -23,7 +23,7 @@ void print_commit(struct commit *commit)
 	char *qry = fmt("id=%s", sha1_to_hex(commit->object.sha1));
 	char *url = cgit_pageurl(cgit_query_repo, "commit", qry);
 	html_link_open(url, NULL, NULL);
-	html_txt(info->subject);
+	html_ntxt(80, info->subject);
 	html_link_close();
 	html("</td><td>");
 	html_txt(info->author);
@@ -48,7 +48,7 @@ void cgit_print_log(const char *tip, int ofs, int cnt)
 	prepare_revision_walk(&rev);
 
 	html("<h2>Log</h2>");
-	html("<table class='list log'>");
+	html("<table class='list nowrap'>");
 	html("<tr><th class='left'>Date</th>"
 	     "<th class='left'>Message</th>"
 	     "<th class='left'>Author</th></tr>\n");

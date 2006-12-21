@@ -100,7 +100,7 @@ td.blob {
 	background-color: white;
 }
 
-table.log td {
+table.nowrap td {
 	white-space: nowrap;
 }
 
