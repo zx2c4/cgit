@@ -8,7 +8,7 @@ body {
 
 
 h2 {
-	font-size: normal;
+	font-size: 100%;
 	font-weight: bold;
 	margin-bottom: 0.1em;
 }
@@ -31,10 +31,10 @@ table.list tr {
 	background: white;
 }
 table.list tr:hover {
-	background: #eee;
+	background: #eeb;
 }
 table.list th {
-	font-weight: bold;
+	font-weight: normal;
 	background: #ddd;
 	border-bottom: solid 1px #aaa;
 	padding: 0.1em 0.5em 0.1em 0.5em;
@@ -50,12 +50,13 @@ img {
 
 
 div#header {
-	background-color: #eee;
+	background-color: #ddd;
 	padding: 0.25em 0.25em 0.25em 0.5em;
 	font-size: 150%;
 	font-weight: bold;
-	border: solid 1px #ccc;
+	border: solid 1px #aaa;
 	vertical-align: middle;
+	margin-bottom: 2em;
 }
 div#header img#logo {
 	float: right;
@@ -95,8 +96,7 @@ td.filemode {
 
 td.blob {
 	white-space: pre;
-	font-family: courier;
-	font-size: 100%;
+	font-family: monospace;
 	background-color: white;
 }
 

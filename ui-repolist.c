@@ -27,8 +27,11 @@ void cgit_print_repolist(struct cacheitem *item)
 	}
 
 	html("<h2>Repositories</h2>\n");
-	html("<table class='list'>");
-	html("<tr><th>Name</th><th>Description</th><th>Owner</th></tr>\n");
+	html("<table class='list nowrap'>");
+	html("<tr>"
+	     "<th class='left'>Name</th>"
+	     "<th class='left'>Description</th>"
+	     "<th class='left'>Owner</th></tr>\n");
 	while ((de = readdir(d)) != NULL) {
 		if (de->d_name[0] == '.')
 			continue;
