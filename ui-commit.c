@@ -60,8 +60,9 @@ void print_filepair(struct diff_filepair *pair)
 		html("]</span>");
 	}
 	htmlf("</td><td class='%s'>", class);
-	query = fmt("id=%s", sha1_to_hex(pair->two->sha1));	
-	html_link_open(cgit_pageurl(cgit_query_repo, "view", query), 
+	query = fmt("id=%s&id2=%s", sha1_to_hex(pair->one->sha1), 
+		    sha1_to_hex(pair->two->sha1));	
+	html_link_open(cgit_pageurl(cgit_query_repo, "diff", query), 
 		       NULL, NULL);
 	if (pair->status == DIFF_STATUS_COPIED || 
 	    pair->status == DIFF_STATUS_RENAMED) {
