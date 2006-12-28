@@ -92,6 +92,8 @@ int cgit_parse_query(char *txt, configfn fn)
 		if (c=='=') {
 			*t = '\0';
 			value = t+1;
+		} else if (c=='+') {
+			*t = ' ';
 		} else if (c=='&') {
 			*t = '\0';
 			(*fn)(txt, value);
