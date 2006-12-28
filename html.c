@@ -45,7 +45,7 @@ void htmlf(const char *format, ...)
 void html_txt(char *txt)
 {
 	char *t = txt;
-	while(*t){
+	while(t && *t){
 		int c = *t;
 		if (c=='<' || c=='>' || c=='&') {
 			*t = '\0';
@@ -68,7 +68,7 @@ void html_txt(char *txt)
 void html_ntxt(int len, char *txt)
 {
 	char *t = txt;
-	while(*t && len--){
+	while(t && *t && len--){
 		int c = *t;
 		if (c=='<' || c=='>' || c=='&') {
 			*t = '\0';
@@ -97,7 +97,7 @@ void html_ntxt(int len, char *txt)
 void html_attr(char *txt)
 {
 	char *t = txt;
-	while(*t){
+	while(t && *t){
 		int c = *t;
 		if (c=='<' || c=='>' || c=='\'') {
 			*t = '\0';
@@ -155,4 +155,3 @@ void html_filemode(unsigned short mode)
 	html_fileperm(mode >> 3);
 	html_fileperm(mode);
 }
-
