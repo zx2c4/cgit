@@ -17,7 +17,7 @@ void cgit_print_repolist(struct cacheitem *item)
 
 	chdir(cgit_root);
 	cgit_print_docstart(cgit_root_title, item);
-	cgit_print_pageheader(cgit_root_title);
+	cgit_print_pageheader(cgit_root_title, 0);
 
 	if (!(d = opendir("."))) {
 		cgit_print_error(fmt("Unable to scan repository directory: %s",

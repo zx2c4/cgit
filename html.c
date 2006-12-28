@@ -117,6 +117,15 @@ void html_attr(char *txt)
 		html(txt);
 }
 
+void html_hidden(char *name, char *value)
+{
+	html("<input type='hidden' name='");
+	html_attr(name);
+	html("' value='");
+	html_attr(value);
+	html("'/>");
+}
+
 void html_link_open(char *url, char *title, char *class)
 {
 	html("<a href='");
@@ -155,3 +164,4 @@ void html_filemode(unsigned short mode)
 	html_fileperm(mode >> 3);
 	html_fileperm(mode);
 }
+

@@ -16,7 +16,7 @@ static void cgit_print_repo_page(struct cacheitem *item)
 	    cgit_read_config("info/cgit", cgit_repo_config_cb)) {
 		char *title = fmt("%s - %s", cgit_root_title, "Bad request");
 		cgit_print_docstart(title, item);
-		cgit_print_pageheader(title);
+		cgit_print_pageheader(title, 0);
 		cgit_print_error(fmt("Unable to scan repository: %s",
 				     strerror(errno)));
 		cgit_print_docend();
@@ -25,7 +25,7 @@ static void cgit_print_repo_page(struct cacheitem *item)
 	setenv("GIT_DIR", fmt("%s/%s", cgit_root, cgit_query_repo), 1);
 	char *title = fmt("%s - %s", cgit_repo_name, cgit_repo_desc);
 	cgit_print_docstart(title, item);
-	cgit_print_pageheader(title);
+	cgit_print_pageheader(title, 0);
 	if (!cgit_query_page) {
 		cgit_print_summary();
 	} else if (!strcmp(cgit_query_page, "log")) {

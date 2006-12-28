@@ -60,6 +60,18 @@ char *cgit_pageurl(const char *reponame, const char *pagename,
 	}
 }
 
+char *cgit_currurl()
+{
+	if (!cgit_virtual_root)
+		return "./cgit.cgi";
+	else if (cgit_query_page)
+		return fmt("%s/%s/%s/", cgit_virtual_root, cgit_query_repo, cgit_query_page);
+	else if (cgit_query_repo)
+		return fmt("%s/%s/", cgit_virtual_root, cgit_query_repo);
+	else
+		return fmt("%s/", cgit_virtual_root);
+}
+
 
 void cgit_print_date(unsigned long secs)
 {
@@ -98,12 +110,26 @@ void cgit_print_docend()
 	html("</body>\n</html>\n");
 }
 
-void cgit_print_pageheader(char *title)
+void cgit_print_pageheader(char *title, int show_search)
 {
 	html("<div id='header'>");
 	htmlf("<a href='%s'>", cgit_logo_link);
 	htmlf("<img id='logo' src='%s'/>\n", cgit_logo);
 	htmlf("</a>");
+	if (show_search) {
+		html("<form method='get' href='");
+		html_attr(cgit_currurl());
+		html("'>");
+		if (cgit_query_head)
+			html_hidden("h", cgit_query_head);
+		if (cgit_query_sha1)
+			html_hidden("id", cgit_query_sha1);
+		if (cgit_query_sha2)
+			html_hidden("id2", cgit_query_sha2);
+		html("<input type='text' name='q' value='");
+		html_attr(cgit_query_search);
+		html("'/></form>");
+	}
 	if (cgit_query_repo)
 		htmlf("<a href='%s'>", cgit_repourl(cgit_query_repo));
 	html_txt(title);

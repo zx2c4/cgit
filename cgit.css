@@ -61,6 +61,11 @@ div#header {
 div#header img#logo {
 	float: right;
 }
+
+div#header input {
+	float: right;
+	margin: 0.25em 1em;
+}
 div#header a {
 	color: black;
 }
