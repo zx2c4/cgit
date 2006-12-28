@@ -32,19 +32,26 @@ void print_commit(struct commit *commit)
 }
 
 
-void cgit_print_log(const char *tip, int ofs, int cnt)
+void cgit_print_log(const char *tip, int ofs, int cnt, char *grep)
 {
 	struct rev_info rev;
 	struct commit *commit;
-	const char *argv[2] = {NULL, tip};
+	const char *argv[3] = {NULL, tip, NULL};
+	int argc = 2;
 	int i;
 	
+	if (grep)
+		argv[argc++] = fmt("--grep=%s", grep);
 	init_revisions(&rev, NULL);
 	rev.abbrev = DEFAULT_ABBREV;
 	rev.commit_format = CMIT_FMT_DEFAULT;
 	rev.verbose_header = 1;
 	rev.show_root_diff = 0;
-	setup_revisions(2, argv, &rev, NULL);
+	setup_revisions(argc, argv, &rev, NULL);
+	if (rev.grep_filter) {
+		rev.grep_filter->regflags |= REG_ICASE;
+		compile_grep_patterns(rev.grep_filter);
+	}
 	prepare_revision_walk(&rev);
 
 	html("<h2>Log</h2>");

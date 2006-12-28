@@ -24,12 +24,15 @@ static void cgit_print_repo_page(struct cacheitem *item)
 	}
 	setenv("GIT_DIR", fmt("%s/%s", cgit_root, cgit_query_repo), 1);
 	char *title = fmt("%s - %s", cgit_repo_name, cgit_repo_desc);
+	int show_search = 0;
+	if (cgit_query_page && !strcmp(cgit_query_page, "log"))
+		show_search = 1;
 	cgit_print_docstart(title, item);
-	cgit_print_pageheader(title, 0);
+	cgit_print_pageheader(title, show_search);
 	if (!cgit_query_page) {
 		cgit_print_summary();
 	} else if (!strcmp(cgit_query_page, "log")) {
-		cgit_print_log(cgit_query_head, cgit_query_ofs, 100);
+		cgit_print_log(cgit_query_head, cgit_query_ofs, 100, cgit_query_search);
 	} else if (!strcmp(cgit_query_page, "tree")) {
 		cgit_print_tree(cgit_query_sha1);
 	} else if (!strcmp(cgit_query_page, "commit")) {
