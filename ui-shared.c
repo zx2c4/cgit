@@ -25,7 +25,7 @@ static char *http_date(time_t t)
 		   tm->tm_hour, tm->tm_min, tm->tm_sec);
 }
 
-static int ttl_seconds(int ttl)
+static long ttl_seconds(long ttl)
 {
 	if (ttl<0)
 		return 60 * 60 * 24 * 365;
