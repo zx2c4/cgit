@@ -153,6 +153,7 @@ int main(int argc, const char **argv)
 	cgit_parse_query(cgit_querystring, cgit_querystring_cb);
 
 	if (cgit_nocache) {
+		cache_prepare(&item);
 		item.fd = STDOUT_FILENO;
 		cgit_fill_cache(&item);
 	} else {
