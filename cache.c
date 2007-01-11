@@ -10,28 +10,6 @@
 
 const int NOLOCK = -1;
 
-void cache_prepare(struct cacheitem *item)
-{
-	if (!cgit_query_repo) {
-		item->name = xstrdup(fmt("%s/index.html", cgit_cache_root));
-		item->ttl = cgit_cache_root_ttl;
-	} else if (!cgit_query_page) {
-		item->name = xstrdup(fmt("%s/%s/index.html", cgit_cache_root, 
-			   cgit_query_repo));
-		item->ttl = cgit_cache_repo_ttl;
-	} else {
-		item->name = xstrdup(fmt("%s/%s/%s/%s.html", cgit_cache_root, 
-			   cgit_query_repo, cgit_query_page, 
-			   cgit_querystring));
-		if (cgit_query_has_symref)
-			item->ttl = cgit_cache_dynamic_ttl;
-		else if (cgit_query_has_sha1)
-			item->ttl = cgit_cache_static_ttl;
-		else
-			item->ttl = cgit_cache_repo_ttl;
-	}
-}
-
 int cache_exist(struct cacheitem *item)
 {
 	if (stat(item->name, &item->st)) {

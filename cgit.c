@@ -10,6 +10,28 @@
 
 const char cgit_version[] = CGIT_VERSION;
 
+static void cgit_prepare_cache(struct cacheitem *item)
+{
+	if (!cgit_query_repo) {
+		item->name = xstrdup(fmt("%s/index.html", cgit_cache_root));
+		item->ttl = cgit_cache_root_ttl;
+	} else if (!cgit_query_page) {
+		item->name = xstrdup(fmt("%s/%s/index.html", cgit_cache_root, 
+			   cgit_query_repo));
+		item->ttl = cgit_cache_repo_ttl;
+	} else {
+		item->name = xstrdup(fmt("%s/%s/%s/%s.html", cgit_cache_root, 
+			   cgit_query_repo, cgit_query_page, 
+			   cgit_querystring));
+		if (cgit_query_has_symref)
+			item->ttl = cgit_cache_dynamic_ttl;
+		else if (cgit_query_has_sha1)
+			item->ttl = cgit_cache_static_ttl;
+		else
+			item->ttl = cgit_cache_repo_ttl;
+	}
+}
+
 static void cgit_print_repo_page(struct cacheitem *item)
 {
 	if (chdir(fmt("%s/%s", cgit_root, cgit_query_repo)) || 
@@ -63,7 +85,6 @@ static void cgit_check_cache(struct cacheitem *item)
 {
 	int i = 0;
 
-	cache_prepare(item);
  top:
 	if (++i > cgit_max_lock_attempts) {
 		die("cgit_refresh_cache: unable to lock %s: %s",
@@ -152,8 +173,8 @@ int main(int argc, const char **argv)
 	cgit_parse_args(argc, argv);
 	cgit_parse_query(cgit_querystring, cgit_querystring_cb);
 
+	cgit_prepare_cache(&item);
 	if (cgit_nocache) {
-		cache_prepare(&item);
 		item.fd = STDOUT_FILENO;
 		cgit_fill_cache(&item);
 	} else {

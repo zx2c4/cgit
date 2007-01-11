@@ -87,7 +87,6 @@ extern int cgit_read_config(const char *filename, configfn fn);
 extern int cgit_parse_query(char *txt, configfn fn);
 extern struct commitinfo *cgit_parse_commit(struct commit *commit);
 
-extern void cache_prepare(struct cacheitem *item);
 extern int cache_lock(struct cacheitem *item);
 extern int cache_unlock(struct cacheitem *item);
 extern int cache_cancel_lock(struct cacheitem *item);
