@@ -22,7 +22,7 @@ static void cgit_prepare_cache(struct cacheitem *item)
 	} else {
 		item->name = xstrdup(fmt("%s/%s/%s/%s.html", cgit_cache_root, 
 			   cgit_query_repo, cgit_query_page, 
-			   cgit_querystring));
+			   cache_safe_filename(cgit_querystring)));
 		if (cgit_query_has_symref)
 			item->ttl = cgit_cache_dynamic_ttl;
 		else if (cgit_query_has_sha1)
