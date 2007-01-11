@@ -29,11 +29,16 @@ static int print_entry(const unsigned char *sha1, const char *base,
 	if (S_ISDIR(mode)) {
 		html("<div class='ls-dir'><a href='");
 		html_attr(cgit_pageurl(cgit_query_repo, "tree", 
-				       fmt("id=%s", sha1_to_hex(sha1))));
+				       fmt("id=%s&path=%s%s/", 
+					   sha1_to_hex(sha1),
+					   cgit_query_path ? cgit_query_path : "",
+					   pathname)));
 	} else {
 		html("<div class='ls-blob'><a href='");
 		html_attr(cgit_pageurl(cgit_query_repo, "view",
-				      fmt("id=%s", sha1_to_hex(sha1))));
+				      fmt("id=%s&path=%s%s", sha1_to_hex(sha1),
+					  cgit_query_path ? cgit_query_path : "",
+					  pathname)));
 	}
 	html("'>");
 	html_txt(name);
@@ -46,7 +51,7 @@ static int print_entry(const unsigned char *sha1, const char *base,
 	return 0;
 }
 
-void cgit_print_tree(const char *hex)
+void cgit_print_tree(const char *hex, char *path)
 {
 	struct tree *tree;
 	unsigned char sha1[20];
@@ -62,6 +67,7 @@ void cgit_print_tree(const char *hex)
 	}
 
 	html("<h2>Tree content</h2>\n");
+	html_txt(path);
 	html("<table class='list'>\n");
 	html("<tr>");
 	html("<th class='left'>Mode</th>");

@@ -59,6 +59,7 @@ extern char *cgit_query_search;
 extern char *cgit_query_head;
 extern char *cgit_query_sha1;
 extern char *cgit_query_sha2;
+extern char *cgit_query_path;
 extern int   cgit_query_ofs;
 
 extern int htmlfd;
@@ -108,7 +109,7 @@ extern void cgit_print_repolist(struct cacheitem *item);
 extern void cgit_print_summary();
 extern void cgit_print_log(const char *tip, int ofs, int cnt, char *grep);
 extern void cgit_print_view(const char *hex);
-extern void cgit_print_tree(const char *hex);
+extern void cgit_print_tree(const char *hex, char *path);
 extern void cgit_print_commit(const char *hex);
 extern void cgit_print_diff(const char *old_hex, const char *new_hex);
 
