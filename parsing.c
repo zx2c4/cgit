@@ -145,6 +145,12 @@ struct commitinfo *cgit_parse_commit(struct commit *commit)
 
 	ret = xmalloc(sizeof(*ret));
 	ret->commit = commit;
+	ret->author = NULL;
+	ret->author_email = NULL;
+	ret->committer = NULL;
+	ret->committer_email = NULL;
+	ret->subject = NULL;
+	ret->msg = NULL;
 
 	if (strncmp(p, "tree ", 5))
 		die("Bad commit: %s", sha1_to_hex(commit->object.sha1));
@@ -180,12 +186,13 @@ struct commitinfo *cgit_parse_commit(struct commit *commit)
 		p = strchr(p, '\n') + 1;
 
 	t = strchr(p, '\n');
-	ret->subject = substr(p, t);
-	p = t + 1;
+	if (t && *t) {
+		ret->subject = substr(p, t);
+		p = t + 1;
 
-	while (*p == '\n')
-		p = strchr(p, '\n') + 1;
-	ret->msg = p;
-
+		while (*p == '\n')
+			p = strchr(p, '\n') + 1;
+		ret->msg = p;
+	}
 	return ret;
 }
