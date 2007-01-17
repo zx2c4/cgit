@@ -196,3 +196,50 @@ struct commitinfo *cgit_parse_commit(struct commit *commit)
 	}
 	return ret;
 }
+
+
+struct taginfo *cgit_parse_tag(struct tag *tag)
+{
+	void *data;
+	char type[20];
+	unsigned long size;
+	char *p, *t;
+	struct taginfo *ret;
+
+	data = read_sha1_file(tag->object.sha1, type, &size);
+	if (!data || strcmp(type, tag_type)) {
+		free(data);
+		return 0;
+	}
+	
+	ret = xmalloc(sizeof(*ret));
+	ret->tagger = NULL;
+	ret->tagger_email = NULL;
+	ret->tagger_date = 0;
+	ret->msg = NULL;
+
+	p = data;
+
+	while (p) {
+		if (*p == '\n')
+			break;
+
+		if (!strncmp(p, "tagger ", 7)) {
+			p += 7;
+			t = strchr(p, '<') - 1;
+			ret->tagger = substr(p, t);
+			p = t;
+			t = strchr(t, '>') + 1;
+			ret->tagger_email = substr(p, t);
+			ret->tagger_date = atol(++t);
+		}
+		p = strchr(p, '\n') + 1;
+	}
+
+	while (p && (*p == '\n'))
+		p = strchr(p, '\n') + 1;
+	if (p)
+		ret->msg = xstrdup(p);
+	free(data);
+	return ret;
+}

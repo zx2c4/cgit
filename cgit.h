@@ -27,6 +27,13 @@ struct commitinfo {
 	char *msg;
 };
 
+struct taginfo {
+	char *tagger;
+	char *tagger_email;
+	int tagger_date;
+	char *msg;
+};
+
 extern const char cgit_version[];
 
 extern char *cgit_root;
@@ -87,6 +94,7 @@ extern void html_filemode(unsigned short mode);
 extern int cgit_read_config(const char *filename, configfn fn);
 extern int cgit_parse_query(char *txt, configfn fn);
 extern struct commitinfo *cgit_parse_commit(struct commit *commit);
+extern struct taginfo *cgit_parse_tag(struct tag *tag);
 
 extern char *cache_safe_filename(const char *unsafe);
 extern int cache_lock(struct cacheitem *item);
