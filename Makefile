@@ -10,6 +10,10 @@ OBJECTS = shared.o cache.o parsing.o html.o ui-shared.o ui-repolist.o \
 
 CFLAGS += -Wall
 
+ifdef DEBUG
+	CFLAGS += -g
+endif
+
 all: cgit
 
 install: all clean-cache
