@@ -124,6 +124,19 @@ static inline ssize_t xwrite(int fd, const void *buf, size_t len)
  */
 
 
+enum object_type {
+	OBJ_NONE = 0,
+	OBJ_COMMIT = 1,
+	OBJ_TREE = 2,
+	OBJ_BLOB = 3,
+	OBJ_TAG = 4,
+	/* 5 for future expansion */
+	OBJ_OFS_DELTA = 6,
+	OBJ_REF_DELTA = 7,
+	OBJ_BAD,
+};
+
+
 /* Convert to/from hex/sha1 representation */
 #define MINIMUM_ABBREV 4
 #define DEFAULT_ABBREV 7
@@ -227,6 +240,8 @@ extern void free_grep_patterns(struct grep_opt *opt);
 /*
  * from git:object.h 
  */
+
+extern const char *type_names[9];
 
 struct object_list {
 	struct object *item;
@@ -341,6 +356,25 @@ extern unsigned long pretty_print_commit(enum cmit_fmt fmt, const struct commit 
 typedef void (*topo_sort_set_fn_t)(struct commit*, void *data);
 typedef void* (*topo_sort_get_fn_t)(struct commit*);
 
+
+
+/*
+ * from git:tag.h
+ */
+
+extern const char *tag_type;
+
+struct tag {
+	struct object object;
+	struct object *tagged;
+	char *tag;
+	char *signature; /* not actually implemented */
+};
+
+extern struct tag *lookup_tag(const unsigned char *sha1);
+extern int parse_tag_buffer(struct tag *item, void *data, unsigned long size);
+extern int parse_tag(struct tag *item);
+extern struct object *deref_tag(struct object *, const char *, int);
 
 
 /*
