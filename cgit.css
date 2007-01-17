@@ -8,9 +8,9 @@ body {
 
 
 h2 {
-	font-size: 100%;
+	font-size: 120%;
 	font-weight: bold;
-	margin-bottom: 0.1em;
+	margin-bottom: 0.5em;
 }
 
 a {
@@ -33,9 +33,13 @@ table.list tr {
 table.list tr:hover {
 	background: #eeb;
 }
+table.list tr.nohover:hover {
+	background: white;
+}
 table.list th {
 	font-weight: normal;
 	background: #ddd;
+	border-top: solid 1px #aaa;
 	border-bottom: solid 1px #aaa;
 	padding: 0.1em 0.5em 0.1em 0.5em;
 	vertical-align: baseline;
