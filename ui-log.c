@@ -56,7 +56,7 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep)
 
 	html("<h2>Log</h2>");
 	html("<table class='list nowrap'>");
-	html("<tr><th class='left'>Date</th>"
+	html("<tr class='nohover'><th class='left'>Date</th>"
 	     "<th class='left'>Message</th>"
 	     "<th class='left'>Author</th></tr>\n");
 

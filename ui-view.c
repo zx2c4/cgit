@@ -34,7 +34,7 @@ void cgit_print_view(const char *hex)
 	buf[size] = '\0';
 	html("<h2>Object content</h2>\n");
 	html("<table class='list'>\n");
-	htmlf("<tr><th>%s %s, %li bytes</th></tr>\n", type, hex, size);
+	htmlf("<tr class='nohover'><th class='left'>%s %s, %li bytes</th></tr>\n", type, hex, size);
 	html("<tr><td class='blob'>\n");
 	html_txt(buf);
 	html("\n</td></tr>\n");

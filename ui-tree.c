@@ -69,7 +69,7 @@ void cgit_print_tree(const char *hex, char *path)
 	html("<h2>Tree content</h2>\n");
 	html_txt(path);
 	html("<table class='list'>\n");
-	html("<tr>");
+	html("<tr class='nohover'>");
 	html("<th class='left'>Mode</th>");
 	html("<th class='left'>Name</th>");
 	html("<th class='right'>Size</th>");

@@ -28,7 +28,7 @@ void cgit_print_repolist(struct cacheitem *item)
 
 	html("<h2>Repositories</h2>\n");
 	html("<table class='list nowrap'>");
-	html("<tr>"
+	html("<tr class='nohover'>"
 	     "<th class='left'>Name</th>"
 	     "<th class='left'>Description</th>"
 	     "<th class='left'>Owner</th></tr>\n");

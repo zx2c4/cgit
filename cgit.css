@@ -23,24 +23,21 @@ a:hover {
 }
 
 table.list {
-	border: solid 1px black;
+	border: none;
 	border-collapse: collapse;
-	border: solid 1px #aaa;
 }
 table.list tr {
 	background: white;
 }
 table.list tr:hover {
-	background: #eeb;
+	background: #eee;
 }
 table.list tr.nohover:hover {
 	background: white;
 }
 table.list th {
 	font-weight: normal;
-	background: #ddd;
-	border-top: solid 1px #aaa;
-	border-bottom: solid 1px #aaa;
+	border-bottom: solid 1px #777;
 	padding: 0.1em 0.5em 0.1em 0.5em;
 	vertical-align: baseline;
 }
@@ -51,7 +48,6 @@ table.list td {
 img {
 	border: none;
 }
-
 
 div#header {
 	background-color: #ddd;

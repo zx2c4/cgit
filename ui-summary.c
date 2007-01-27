@@ -96,7 +96,7 @@ static int cgit_print_tag_cb(const char *refname, const unsigned char *sha1,
 
 static void cgit_print_branches()
 {
-	html("<tr><th class='left'>Branch</th>"
+	html("<tr class='nohover'><th class='left'>Branch</th>"
 	     "<th class='left'>Updated</th>"
 	     "<th class='left'>Author</th>"
 	     "<th class='left'>Head commit</th></tr>\n");
@@ -105,7 +105,7 @@ static void cgit_print_branches()
 
 static void cgit_print_tags()
 {
-	html("<tr><th class='left'>Tag</th>"
+	html("<tr class='nohover'><th class='left'>Tag</th>"
 	     "<th class='left'>Created</th>"
 	     "<th class='left'>Author</th>"
 	     "<th class='left'>Reference</th></tr>\n");
