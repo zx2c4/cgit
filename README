@@ -2,34 +2,38 @@
                        cgit - cgi for git
 
 
-This is an attempt to create a fast web interface for the git scm, using a 
-frontside cache to decrease server io-pressure.
+This is an attempt to create a fast web interface for the git scm, using a
+builtin cache to decrease server io-pressure.
 
-When cgit is invoked, it looks for a cached page matching the request. If no
-such cachefile exist (or it has expired), it is (re)generated. Finally, the
-cachefile is returned to the client.
 
-If the cachefile has expired, but cgit is unable to lock the cachefile, the 
-client will get the stale cachefile after all. This is done to favour page
+Installation
+
+$ $EDITOR Makefile
+$ make
+$ sudo make install
+
+Note: cgit requires the git and xdiff libraries. Currently, the makefile
+expects these files to be found in '../git/libgit.a' and '../git/xdiff/lib.a',
+where they will be if you have built git from source in a parallell directory.
+
+
+Runtime configuration
+
+The file /etc/cgitrc is read by cgit before handling a request. A template 
+cgitrc is shipped with the sources, and all parameters and default values 
+can be found in this file.
+
+
+The cache
+
+When cgit is invoked it looks for a cachefile matching the request and 
+returns it to the client. If no such cachefile exist (or if it has expired), 
+the content for the request is written into the proper cachefile before the
+file is returned.
+
+If the cachefile has expired but cgit is unable to obtain a lock for it, the 
+stale cachefile is returned to the client. This is done to favour page
 throughput over page freshness.
 
-Also, when a cachefile is generated, a few cache-related http-headers are
-created: "Modified" is set to current time(2), while "Expires" is set to 
-time(2) + <cachefile TTL> * 60 (unless the TTL is negative, in which case it
-is read as "60 * 60 * 24 * 365"). This is done to avoid repeated requests for
-already visited pages.
-
-The following cache-related options can be set in /etc/cgitrc:
-
-  cache-root=<path>           root directory for cache files
-  cache-root-ttl=<min>        TTL for the repo listing page
-  cache-repo-ttl=<min>        TTL for repo summary pages
-  cache-dynamic-ttl=<min>     TTL for pages with symbolic references
-  cache-static-ttl=<min>      TTL for pages with sha1 references
-
-The cachefiles are split into different directories, based on the requested
-repository and page:
-
-  Repo listing:  <cachedir>/index.html
-  Repo summary:  <cachedir>/<repo>/index.html
-  Repo subpage:  <cachedir>/<repo>/<page>/<querystring>.html
+The generated content contains the complete response to the client, including
+the http-headers "Modified" and "Expires".
