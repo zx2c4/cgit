@@ -52,6 +52,8 @@ extern int cgit_cache_dynamic_ttl;
 extern int cgit_cache_static_ttl;
 extern int cgit_cache_max_create_time;
 
+extern int cgit_max_msg_len;
+
 extern char *cgit_repo_name;
 extern char *cgit_repo_desc;
 extern char *cgit_repo_owner;

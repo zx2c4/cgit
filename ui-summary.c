@@ -33,7 +33,7 @@ static int cgit_print_branch_cb(const char *refname, const unsigned char *sha1,
 		url = cgit_pageurl(cgit_query_repo, "commit", 
 				   fmt("id=%s", sha1_to_hex(sha1)));
 		html_link_open(url, NULL, NULL);
-		html_ntxt(80, info->subject);
+		html_ntxt(cgit_max_msg_len, info->subject);
 		html_link_close();
 		html("</td></tr>\n");
 		cgit_free_commitinfo(info);

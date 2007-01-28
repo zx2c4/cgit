@@ -23,7 +23,7 @@ void print_commit(struct commit *commit)
 	char *qry = fmt("id=%s", sha1_to_hex(commit->object.sha1));
 	char *url = cgit_pageurl(cgit_query_repo, "commit", qry);
 	html_link_open(url, NULL, NULL);
-	html_ntxt(80, info->subject);
+	html_ntxt(cgit_max_msg_len, info->subject);
 	html_link_close();
 	html("</td><td>");
 	html_txt(info->author);
