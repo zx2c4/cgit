@@ -1,7 +1,6 @@
 CGIT_VERSION = 0.1
 
-INSTALL_BIN = /var/www/htdocs/cgit.cgi
-INSTALL_CSS = /var/www/htdocs/cgit.css
+INSTALL_DIR = /var/www/htdocs/cgit
 CACHE_ROOT = /var/cache/cgit
 
 EXTLIBS = ../git/libgit.a ../git/xdiff/lib.a -lz -lcrypto
@@ -17,8 +16,8 @@ endif
 all: cgit
 
 install: all clean-cache
-	install cgit $(INSTALL_BIN)
-	install cgit.css $(INSTALL_CSS)
+	install cgit $(INSTALL_DIR)/cgit.cgi
+	install cgit.css $(INSTALL_DIR)/cgit.css
 
 cgit: cgit.c cgit.h git.h $(OBJECTS)
 	$(CC) $(CFLAGS) -DCGIT_VERSION='"$(CGIT_VERSION)"' cgit.c -o cgit \
