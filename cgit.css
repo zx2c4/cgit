@@ -3,7 +3,7 @@ body {
 	font-size: normal;
 	background: white;
 	padding: 0em;
-	margin: 0.5em 1em;
+	margin: 0em;
 }
 
 
@@ -48,30 +48,33 @@ table.list td {
 img {
 	border: none;
 }
-
-div#header {
+table#layout {
+	width: 100%;
+	border-collapse: collapse;
+	margin: 0px;
+}
+td#header {
 	background-color: #ddd;
 	padding: 0.25em 0.25em 0.25em 0.5em;
 	font-size: 150%;
 	font-weight: bold;
-	border: solid 1px #aaa;
+	border-bottom: solid 1px #aaa;
 	vertical-align: middle;
-	margin-bottom: 2em;
 }
-div#header img#logo {
+td#header img#logo {
 	float: right;
 }
 
-div#header input {
+td#header input {
 	float: right;
 	margin: 0.25em 1em;
 }
-div#header a {
+td#header a {
 	color: black;
 }
 
-div#content {
-	margin: 0.5em 0.5em;
+td#content {
+	padding: 1em 0.5em;
 }
 
 div#blob {

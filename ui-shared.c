@@ -107,12 +107,13 @@ void cgit_print_docstart(char *title, struct cacheitem *item)
 
 void cgit_print_docend()
 {
+	html("</td></tr></table>");
 	html("</body>\n</html>\n");
 }
 
 void cgit_print_pageheader(char *title, int show_search)
 {
-	html("<div id='header'>");
+	html("<table id='layout'><tr><td id='header'>");
 	htmlf("<a href='%s'>", cgit_logo_link);
 	htmlf("<img id='logo' src='%s'/>\n", cgit_logo);
 	htmlf("</a>");
@@ -135,5 +136,5 @@ void cgit_print_pageheader(char *title, int show_search)
 	html_txt(title);
 	if (cgit_query_repo)
 		html("</a>");
-	html("</div>");
+	html("</td></tr><tr><td id='content'>");
 }
