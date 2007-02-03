@@ -8,7 +8,9 @@
 
 #include "cgit.h"
 
-char *cgit_root         = "/usr/src/git";
+struct repolist cgit_repolist;
+struct repoinfo *cgit_repo;
+
 char *cgit_root_title   = "Git repository browser";
 char *cgit_css          = "/cgit.css";
 char *cgit_logo         = "/git-logo.png";
@@ -46,11 +48,32 @@ int   cgit_query_ofs    = 0;
 
 int htmlfd = 0;
 
+struct repoinfo *add_repo(const char *url)
+{
+	struct repoinfo *ret;
+
+	if (++cgit_repolist.count > cgit_repolist.length) {
+		if (cgit_repolist.length == 0)
+			cgit_repolist.length = 8;
+		else
+			cgit_repolist.length *= 2;
+		cgit_repolist.repos = xrealloc(cgit_repolist.repos, 
+					       cgit_repolist.length * 
+					       sizeof(struct repoinfo));
+	}
+
+	ret = &cgit_repolist.repos[cgit_repolist.count-1];
+	ret->url = xstrdup(url);
+	ret->name = ret->url;
+	ret->path = NULL;
+	ret->desc = NULL;
+	ret->owner = NULL;
+	return ret;
+}
+
 void cgit_global_config_cb(const char *name, const char *value)
 {
-	if (!strcmp(name, "root"))
-		cgit_root = xstrdup(value);
-	else if (!strcmp(name, "root-title"))
+	if (!strcmp(name, "root-title"))
 		cgit_root_title = xstrdup(value);
 	else if (!strcmp(name, "css"))
 		cgit_css = xstrdup(value);
@@ -74,6 +97,16 @@ void cgit_global_config_cb(const char *name, const char *value)
 		cgit_cache_dynamic_ttl = atoi(value);
 	else if (!strcmp(name, "max-message-length"))
 		cgit_max_msg_len = atoi(value);
+	else if (!strcmp(name, "repo.url"))
+		cgit_repo = add_repo(value);
+	else if (!strcmp(name, "repo.name"))
+		cgit_repo->name = xstrdup(value);
+	else if (cgit_repo && !strcmp(name, "repo.path"))
+		cgit_repo->path = xstrdup(value);
+	else if (cgit_repo && !strcmp(name, "repo.desc"))
+		cgit_repo->desc = xstrdup(value);
+	else if (cgit_repo && !strcmp(name, "repo.owner"))
+		cgit_repo->owner = xstrdup(value);
 }
 
 void cgit_repo_config_cb(const char *name, const char *value)

@@ -15,6 +15,20 @@ struct cacheitem {
 	int fd;
 };
 
+struct repoinfo {
+	char *url;
+	char *name;
+	char *path;
+	char *desc;
+	char *owner;
+};
+
+struct repolist {
+	int length;
+	int count;
+	struct repoinfo *repos;
+};
+
 struct commitinfo {
 	struct commit *commit;
 	char *author;
@@ -36,7 +50,9 @@ struct taginfo {
 
 extern const char cgit_version[];
 
-extern char *cgit_root;
+extern struct repolist cgit_repolist;
+extern struct repoinfo *cgit_repo;
+
 extern char *cgit_root_title;
 extern char *cgit_css;
 extern char *cgit_logo;

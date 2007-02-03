@@ -3,10 +3,6 @@
 ##
 
 
-## root folder for git repos
-#root=/usr/src/git
-
-
 ## base for virtual urls. If specified, rewrite rules must be added to 
 ## httpd.conf. Possible rules for /git/ when cgit.cgi is accessed as /cgit.cgi:
 ##
@@ -61,3 +57,12 @@
 
 ## ttl for static pages (addressed by SHA-1)
 #cache-static-ttl=-1
+
+
+
+## Example repository entry
+#repo.url=cgit
+#repo.name=cgit
+#repo.desc=the caching cgi for git
+#repo.path=/pub/git/cgit
+#repo.owner=Lars Hjemli

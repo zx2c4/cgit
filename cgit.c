@@ -10,18 +10,45 @@
 
 const char cgit_version[] = CGIT_VERSION;
 
-static void cgit_prepare_cache(struct cacheitem *item)
+
+static struct repoinfo *cgit_get_repoinfo(char *url)
+{
+	int i;
+	struct repoinfo *repo;
+	
+	for (i=0; i<cgit_repolist.count; i++) {
+		repo = &cgit_repolist.repos[i];
+		if (!strcmp(repo->url, url))
+			return repo;
+	}
+	return NULL;
+}
+
+
+static int cgit_prepare_cache(struct cacheitem *item)
 {
 	if (!cgit_query_repo) {
 		item->name = xstrdup(fmt("%s/index.html", cgit_cache_root));
 		item->ttl = cgit_cache_root_ttl;
-	} else if (!cgit_query_page) {
+		return 1;
+	}
+	cgit_repo = cgit_get_repoinfo(cgit_query_repo);
+	if (!cgit_repo) {
+		char *title = fmt("%s - %s", cgit_root_title, "Bad request");
+		cgit_print_docstart(title, item);
+		cgit_print_pageheader(title, 0);
+		cgit_print_error(fmt("Unknown repo: %s", cgit_query_repo));
+		cgit_print_docend();
+		return 0;
+	}
+
+	if (!cgit_query_page) {
 		item->name = xstrdup(fmt("%s/%s/index.html", cgit_cache_root, 
-			   cgit_query_repo));
+			   cgit_repo->url));
 		item->ttl = cgit_cache_repo_ttl;
 	} else {
 		item->name = xstrdup(fmt("%s/%s/%s/%s.html", cgit_cache_root, 
-			   cgit_query_repo, cgit_query_page, 
+			   cgit_repo->url, cgit_query_page, 
 			   cache_safe_filename(cgit_querystring)));
 		if (cgit_query_has_symref)
 			item->ttl = cgit_cache_dynamic_ttl;
@@ -30,13 +57,16 @@ static void cgit_prepare_cache(struct cacheitem *item)
 		else
 			item->ttl = cgit_cache_repo_ttl;
 	}
+	return 1;
 }
 
 static void cgit_print_repo_page(struct cacheitem *item)
 {
-	if (chdir(fmt("%s/%s", cgit_root, cgit_query_repo)) || 
-	    cgit_read_config("info/cgit", cgit_repo_config_cb)) {
-		char *title = fmt("%s - %s", cgit_root_title, "Bad request");
+	char *title;
+	int show_search;
+
+	if (chdir(cgit_repo->path)) {
+		title = fmt("%s - %s", cgit_root_title, "Bad request");
 		cgit_print_docstart(title, item);
 		cgit_print_pageheader(title, 0);
 		cgit_print_error(fmt("Unable to scan repository: %s",
@@ -44,9 +74,10 @@ static void cgit_print_repo_page(struct cacheitem *item)
 		cgit_print_docend();
 		return;
 	}
-	setenv("GIT_DIR", fmt("%s/%s", cgit_root, cgit_query_repo), 1);
-	char *title = fmt("%s - %s", cgit_repo_name, cgit_repo_desc);
-	int show_search = 0;
+
+	title = fmt("%s - %s", cgit_repo->name, cgit_repo->desc);
+	show_search = 0;
+	setenv("GIT_DIR", cgit_repo->path, 1);
 	if (cgit_query_page && !strcmp(cgit_query_page, "log"))
 		show_search = 1;
 	cgit_print_docstart(title, item);
@@ -131,9 +162,6 @@ static void cgit_parse_args(int argc, const char **argv)
 	int i;
 
 	for (i = 1; i < argc; i++) {
-		if (!strncmp(argv[i], "--root=", 7)) {
-			cgit_root = xstrdup(argv[i]+7);
-		}
 		if (!strncmp(argv[i], "--cache=", 8)) {
 			cgit_cache_root = xstrdup(argv[i]+8);
 		}
@@ -167,13 +195,19 @@ int main(int argc, const char **argv)
 {
 	struct cacheitem item;
 
+	htmlfd = STDOUT_FILENO;
+	item.st.st_mtime = time(NULL);
+	cgit_repolist.length = 0;
+	cgit_repolist.count = 0;
+	cgit_repolist.repos = NULL;
+
 	cgit_read_config("/etc/cgitrc", cgit_global_config_cb);
 	if (getenv("QUERY_STRING"))
 		cgit_querystring = xstrdup(getenv("QUERY_STRING"));
 	cgit_parse_args(argc, argv);
 	cgit_parse_query(cgit_querystring, cgit_querystring_cb);
-
-	cgit_prepare_cache(&item);
+	if (!cgit_prepare_cache(&item))
+		return 0;
 	if (cgit_nocache) {
 		item.fd = STDOUT_FILENO;
 		cgit_fill_cache(&item);
