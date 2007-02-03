@@ -121,6 +121,12 @@ void cgit_print_pageheader(char *title, int show_search)
 		html("<form method='get' href='");
 		html_attr(cgit_currurl());
 		html("'>");
+		if (!cgit_virtual_root) {
+			if (cgit_query_repo)
+				html_hidden("r", cgit_query_repo);
+			if (cgit_query_page)
+				html_hidden("p", cgit_query_page);
+		}
 		if (cgit_query_head)
 			html_hidden("h", cgit_query_head);
 		if (cgit_query_sha1)
