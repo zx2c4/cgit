@@ -47,16 +47,42 @@ static int cgit_print_branch_cb(const char *refname, const unsigned char *sha1,
 	return 0;
 }
 
+
+static void cgit_print_object_ref(struct object *obj)
+{
+	char *page, *url;
+
+	if (obj->type == OBJ_COMMIT)
+		page = "commit";
+	else if (obj->type == OBJ_TREE)
+		page = "tree";
+	else
+		page = "view";
+
+	url = cgit_pageurl(cgit_query_repo, page, 
+			   fmt("id=%s", sha1_to_hex(obj->sha1)));
+	html_link_open(url, NULL, NULL);
+	htmlf("%s %s", type_names[obj->type], 
+	      sha1_to_hex(obj->sha1));
+	html_link_close();
+}
+
 static int cgit_print_tag_cb(const char *refname, const unsigned char *sha1,
 				int flags, void *cb_data)
 {
 	struct tag *tag;
 	struct taginfo *info;
-	char buf[256], *page, *url;
-
+	struct object *obj;
+	char buf[256], *url;
+ 
 	strncpy(buf, refname, sizeof(buf));
-	tag = lookup_tag(sha1);
-	if (tag && !parse_tag(tag) && (info = cgit_parse_tag(tag))){
+	obj = parse_object(sha1);
+	if (!obj)
+		return 1;
+	if (obj->type == OBJ_TAG) {
+		tag = lookup_tag(sha1);
+		if (!tag || parse_tag(tag) || !(info = cgit_parse_tag(tag)))
+			return 2;
 		html("<tr><td>");
 		url = cgit_pageurl(cgit_query_repo, "view", 
 				   fmt("id=%s", sha1_to_hex(sha1)));
@@ -70,25 +96,13 @@ static int cgit_print_tag_cb(const char *refname, const unsigned char *sha1,
 		if (info->tagger)
 			html(info->tagger);
 		html("</td><td>");
-		if (tag->tagged->type == OBJ_COMMIT)
-			page = "commit";
-		else if (tag->tagged->type == OBJ_TREE)
-			page = "tree";
-		else
-			page = "view";
-		
-		url = cgit_pageurl(cgit_query_repo, page, 
-				   fmt("id=%s", sha1_to_hex(tag->tagged->sha1)));
-		html_link_open(url, NULL, NULL);
-		htmlf("%s %s", type_names[tag->tagged->type], 
-		      sha1_to_hex(tag->tagged->sha1));
-		html_link_close();
+		cgit_print_object_ref(tag->tagged);
 		html("</td></tr>\n");
 	} else {
 		html("<tr><td>");
 		html_txt(buf);
-		html("</td><td colspan='3'>");
-		htmlf("*** bad ref %s ***", sha1_to_hex(sha1));
+		html("</td><td colspan='2'/><td>");
+		cgit_print_object_ref(obj);
 		html("</td></tr>\n");
 	}
 	return 0;

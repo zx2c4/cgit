@@ -278,6 +278,10 @@ struct object {
 };
 
 
+/** Returns the object, having parsed it to find out what it is. **/
+struct object *parse_object(const unsigned char *sha1);
+
+
 /*
  * from git:tree.h
  */
