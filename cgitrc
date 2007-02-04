@@ -3,50 +3,60 @@
 ##
 
 
-## base for virtual urls. If specified, rewrite rules must be added to 
-## httpd.conf. Possible rules for /git/ when cgit.cgi is accessed as /cgit.cgi:
-##
-##   RewriteRule ^/git/$ /cgit.cgi                            [L,QSA]
-##   RewriteRule ^/git/([^/]+)/$ /cgit.cgi?r=$1               [L,QSA]
-##   RewriteRule ^/git/([^/]+)/([^/]+)/$ /cgit.cgi?r=$1&p=$2  [L,QSA]
-##
-#virtual-root=/git
-
-
-## page title for the root page (repo listing)
-#root-title=Git repository browser
-
-
-## link to css file
-#css=/cgit.css
-
-
-## link to logo file
-#logo=/git-logo.png
-
-
-## url loaded when clicking the logo
-#logo-link=http://www.kernel.org/pub/software/scm/git/docs/
-
-
-## set number of initial chars to show of commit subject message in log views
-#max-message-length=60
-
-
-## Set to 1 to deactivate caching of generated pages
+## Uncomment and set to 1 to deactivate caching of generated pages. Mostly
+## usefull for testing.
 #nocache=0
 
 
-## root path for cached output
+## Specify a root for virtual urls. This makes cgit generate urls like
+##
+##    http://localhost/git/repo/log/?id=master
+##
+## instead of
+##
+##    http://localhost/cgit/cgit.cgi?r=repo&p=log&id=master
+##
+## For this to work with apache, rewrite rules must be added to httpd.conf,
+## possibly looking something like this:
+##
+##   RewriteRule ^/git/$ /cgit/cgit.cgi                            [L,QSA]
+##   RewriteRule ^/git/([^/]+)/$ /cgit/cgit.cgi?r=$1               [L,QSA]
+##   RewriteRule ^/git/([^/]+)/([^/]+)/$ /cgit/cgit.cgi?r=$1&p=$2  [L,QSA]
+##
+## This setting is disabled by default.
+#virtual-root=/git
+
+
+## Set the title printed on the root page
+#root-title=Git repository browser
+
+
+## Link to css file
+#css=/cgit/cgit.css
+
+
+## Link to logo file
+#logo=/cgit/git-logo.png
+
+
+## Url loaded when clicking the logo
+#logo-link=http://www.kernel.org/pub/software/scm/git/docs/
+
+
+## Number of chars shown of commit subject message (in log view)
+#max-message-length=60
+
+
+## Root of cached output
 #cache-root=/var/cache/cgit
 
 
 ##
-## Time-To-Live settings: specify how long (in minutes) different pages should
-## be cached. Specify 0 for instant expiration and -1 for immortal pages
+## Time-To-Live settings: specifies how long (in minutes) different pages 
+## should be cached (0 for instant expiration, -1 for immortal pages)
 ##
 
-## ttl for root page (repo listing)
+## ttl for root page
 #cache-root-ttl=5
 
 ## ttl for repo summary page
@@ -60,7 +70,8 @@
 
 
 
-## Example repository entry
+## Example repository entry. Required values are repo.url and repo.path (each
+## repository section must start with repo.url).
 #repo.url=cgit
 #repo.name=cgit
 #repo.desc=the caching cgi for git
