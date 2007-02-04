@@ -1,9 +1,10 @@
 CGIT_VERSION = 0.1
 
-INSTALL_DIR = /var/www/htdocs/cgit
-CACHE_ROOT = /var/cache/cgit
+prefix = /var/www/htdocs/cgit
+gitsrc = ../git
 
-EXTLIBS = ../git/libgit.a ../git/xdiff/lib.a -lz -lcrypto
+CACHE_ROOT = /var/cache/cgit
+EXTLIBS = $(gitsrc)/libgit.a $(gitsrc)/xdiff/lib.a -lz -lcrypto
 OBJECTS = shared.o cache.o parsing.o html.o ui-shared.o ui-repolist.o \
 	ui-summary.o ui-log.o ui-view.c ui-tree.c ui-commit.c ui-diff.o
 
@@ -16,16 +17,21 @@ endif
 all: cgit
 
 install: all clean-cache
-	install cgit $(INSTALL_DIR)/cgit.cgi
-	install cgit.css $(INSTALL_DIR)/cgit.css
+	mkdir -p $(prefix)
+	install cgit $(prefix)/cgit.cgi
+	install cgit.css $(prefix)/cgit.css
 
-cgit: cgit.c cgit.h git.h $(OBJECTS)
+cgit: cgit.c cgit.h git.h $(OBJECTS) $(gitsrc)/libgit.a
 	$(CC) $(CFLAGS) -DCGIT_VERSION='"$(CGIT_VERSION)"' cgit.c -o cgit \
 		$(OBJECTS) $(EXTLIBS)
 
 $(OBJECTS): cgit.h git.h
 
 ui-diff.o: xdiff.h
+
+$(gitsrc)/libgit.a:
+	$(MAKE) -C $(gitsrc)
+
 
 .PHONY: clean
 clean:

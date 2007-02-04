@@ -8,20 +8,36 @@ builtin cache to decrease server io-pressure.
 
 Installation
 
-$ $EDITOR Makefile
-$ make
-$ sudo make install
+  $ make gitsrc=<path>
+  $ su
+  $ make prefix=<path> install
 
-Note: cgit requires the git and xdiff libraries. Currently, the makefile
-expects these files to be found in '../git/libgit.a' and '../git/xdiff/lib.a',
-where they will be if you have built git from source in a parallell directory.
+
+Default value for gitsrc is "../git", and this directory should contain the
+git sources.
+
+Default value for prefix is "/var/www/htdocs/cgit". This directory will 
+contain "cgit.cgi" and "cgit.css" after 'make install'.
+
+After installation, httpd.conf probably must be updated with a Directory-
+section for cgit, possibly something like this:
+
+  <Directory "/var/www/htdocs/cgit/">
+      AllowOverride None
+      Options ExecCGI
+      Order allow,deny
+      Allow from all
+  </Directory>
 
 
 Runtime configuration
 
-The file /etc/cgitrc is read by cgit before handling a request. A template 
-cgitrc is shipped with the sources, and all parameters and default values 
-can be found in this file.
+The file /etc/cgitrc is read by cgit before handling a request. In addition
+to runtime parameters, this file also contains a list of the repositories 
+displayed by cgit.
+
+A template cgitrc is shipped with the sources, and all parameters and default
+values are documented in this file. 
 
 
 The cache
