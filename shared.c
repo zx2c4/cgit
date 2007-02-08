@@ -20,6 +20,7 @@ char *cgit_virtual_root = NULL;
 char *cgit_cache_root   = "/var/cache/cgit";
 
 int cgit_nocache               =  0;
+int cgit_snapshots             =  0;
 int cgit_max_lock_attempts     =  5;
 int cgit_cache_root_ttl        =  5;
 int cgit_cache_repo_ttl        =  5;
@@ -83,6 +84,7 @@ struct repoinfo *add_repo(const char *url)
 	ret->path = NULL;
 	ret->desc = NULL;
 	ret->owner = NULL;
+	ret->snapshots = cgit_snapshots;
 	return ret;
 }
 
@@ -100,6 +102,8 @@ void cgit_global_config_cb(const char *name, const char *value)
 		cgit_virtual_root = xstrdup(value);
 	else if (!strcmp(name, "nocache"))
 		cgit_nocache = atoi(value);
+	else if (!strcmp(name, "snapshots"))
+		cgit_snapshots = atoi(value);
 	else if (!strcmp(name, "cache-root"))
 		cgit_cache_root = xstrdup(value);
 	else if (!strcmp(name, "cache-root-ttl"))
@@ -122,6 +126,8 @@ void cgit_global_config_cb(const char *name, const char *value)
 		cgit_repo->desc = xstrdup(value);
 	else if (cgit_repo && !strcmp(name, "repo.owner"))
 		cgit_repo->owner = xstrdup(value);
+	else if (cgit_repo && !strcmp(name, "repo.snapshots"))
+		cgit_repo->snapshots = atoi(value);
 }
 
 void cgit_repo_config_cb(const char *name, const char *value)

@@ -79,7 +79,8 @@ static void cgit_print_repo_page(struct cacheitem *item)
 	show_search = 0;
 	setenv("GIT_DIR", cgit_repo->path, 1);
 
-	if (cgit_query_page && !strcmp(cgit_query_page, "snapshot")) {
+	if (cgit_repo->snapshots && cgit_query_page && 
+	    !strcmp(cgit_query_page, "snapshot")) {
 		cgit_print_snapshot(item, cgit_query_sha1, "zip", 
 				    cgit_repo->url, cgit_query_name);
 		return;

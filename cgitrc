@@ -8,6 +8,10 @@
 #nocache=0
 
 
+## Enable/disable snapshots by default. This can be overridden per repo
+#snapshots=0
+
+
 ## Specify a root for virtual urls. This makes cgit generate urls like
 ##
 ##    http://localhost/git/repo/log/?id=master
@@ -77,3 +81,4 @@
 #repo.desc=the caching cgi for git
 #repo.path=/pub/git/cgit
 #repo.owner=Lars Hjemli
+#repo.snapshots=1    # override a sitewide snapshot-setting
