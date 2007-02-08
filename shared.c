@@ -44,9 +44,24 @@ char *cgit_query_search = NULL;
 char *cgit_query_sha1   = NULL;
 char *cgit_query_sha2   = NULL;
 char *cgit_query_path   = NULL;
+char *cgit_query_name   = NULL;
 int   cgit_query_ofs    = 0;
 
 int htmlfd = 0;
+
+int chk_zero(int result, char *msg)
+{
+	if (result != 0)
+		die("%s: %s", msg, strerror(errno));
+	return result;
+}
+
+int chk_positive(int result, char *msg)
+{
+	if (result <= 0)
+		die("%s: %s", msg, strerror(errno));
+	return result;
+}
 
 struct repoinfo *add_repo(const char *url)
 {
@@ -140,6 +155,8 @@ void cgit_querystring_cb(const char *name, const char *value)
 		cgit_query_ofs = atoi(value);
 	} else if (!strcmp(name, "path")) {
 		cgit_query_path = xstrdup(value);
+	} else if (!strcmp(name, "name")) {
+		cgit_query_name = xstrdup(value);
 	}
 }
 

@@ -78,6 +78,13 @@ static void cgit_print_repo_page(struct cacheitem *item)
 	title = fmt("%s - %s", cgit_repo->name, cgit_repo->desc);
 	show_search = 0;
 	setenv("GIT_DIR", cgit_repo->path, 1);
+
+	if (cgit_query_page && !strcmp(cgit_query_page, "snapshot")) {
+		cgit_print_snapshot(item, cgit_query_sha1, "zip", 
+				    cgit_repo->url, cgit_query_name);
+		return;
+	}
+
 	if (cgit_query_page && !strcmp(cgit_query_page, "log"))
 		show_search = 1;
 	cgit_print_docstart(title, item);
@@ -85,7 +92,8 @@ static void cgit_print_repo_page(struct cacheitem *item)
 	if (!cgit_query_page) {
 		cgit_print_summary();
 	} else if (!strcmp(cgit_query_page, "log")) {
-		cgit_print_log(cgit_query_head, cgit_query_ofs, 100, cgit_query_search);
+		cgit_print_log(cgit_query_head, cgit_query_ofs, 100, 
+			       cgit_query_search);
 	} else if (!strcmp(cgit_query_page, "tree")) {
 		cgit_print_tree(cgit_query_sha1, cgit_query_path);
 	} else if (!strcmp(cgit_query_page, "commit")) {
@@ -94,21 +102,39 @@ static void cgit_print_repo_page(struct cacheitem *item)
 		cgit_print_view(cgit_query_sha1);
 	} else if (!strcmp(cgit_query_page, "diff")) {
 		cgit_print_diff(cgit_query_sha1, cgit_query_sha2);
+	} else {
+		cgit_print_error("Invalid request");
 	}
 	cgit_print_docend();
 }
 
-static void cgit_fill_cache(struct cacheitem *item)
+static void cgit_fill_cache(struct cacheitem *item, int use_cache)
 {
 	static char buf[PATH_MAX];
+	int stdout2;
 
 	getcwd(buf, sizeof(buf));
-	htmlfd = item->fd;
 	item->st.st_mtime = time(NULL);
+
+	if (use_cache) {
+		stdout2 = chk_positive(dup(STDOUT_FILENO), 
+				       "Preserving STDOUT");
+		chk_zero(close(STDOUT_FILENO), "Closing STDOUT");
+		chk_positive(dup2(item->fd, STDOUT_FILENO), "Dup2(cachefile)");
+	}
+
 	if (cgit_query_repo)
 		cgit_print_repo_page(item);
 	else
 		cgit_print_repolist(item);
+
+	if (use_cache) {
+		chk_zero(close(STDOUT_FILENO), "Close redirected STDOUT");
+		chk_positive(dup2(stdout2, STDOUT_FILENO), 
+			     "Restoring original STDOUT");
+		chk_zero(close(stdout2), "Closing temporary STDOUT");
+	}
+
 	chdir(buf);
 }
 
@@ -127,14 +153,14 @@ static void cgit_check_cache(struct cacheitem *item)
 			goto top;
 		}
 		if (!cache_exist(item)) {
-			cgit_fill_cache(item);
+			cgit_fill_cache(item, 1);
 			cache_unlock(item);
 		} else {
 			cache_cancel_lock(item);
 		}
 	} else if (cache_expired(item) && cache_lock(item)) {
 		if (cache_expired(item)) {
-			cgit_fill_cache(item);
+			cgit_fill_cache(item, 1);
 			cache_unlock(item);
 		} else {
 			cache_cancel_lock(item);
@@ -209,8 +235,7 @@ int main(int argc, const char **argv)
 	if (!cgit_prepare_cache(&item))
 		return 0;
 	if (cgit_nocache) {
-		item.fd = STDOUT_FILENO;
-		cgit_fill_cache(&item);
+		cgit_fill_cache(&item, 0);
 	} else {
 		cgit_check_cache(&item);
 		cgit_print_cache(&item);

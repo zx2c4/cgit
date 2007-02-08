@@ -669,4 +669,31 @@ int log_tree_commit(struct rev_info *, struct commit *);
 
 
 
+/* from git:archive.h */
+
+struct archiver_args {
+	const char *base;
+	struct tree *tree;
+	const unsigned char *commit_sha1;
+	time_t time;
+	const char **pathspec;
+	unsigned int verbose : 1;
+	void *extra;
+};
+
+typedef int (*write_archive_fn_t)(struct archiver_args *);
+
+typedef void *(*parse_extra_args_fn_t)(int argc, const char **argv);
+
+struct archiver {
+	const char *name;
+	struct archiver_args args;
+	write_archive_fn_t write_archive;
+	parse_extra_args_fn_t parse_extra;
+};
+
+extern int write_tar_archive(struct archiver_args *);
+extern int write_zip_archive(struct archiver_args *);
+extern void *parse_extra_zip_args(int argc, const char **argv);
+
 #endif /* GIT_H */

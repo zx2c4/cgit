@@ -144,3 +144,14 @@ void cgit_print_pageheader(char *title, int show_search)
 		html("</a>");
 	html("</td></tr><tr><td id='content'>");
 }
+
+void cgit_print_snapshot_start(const char *mimetype, const char *filename, 
+			       struct cacheitem *item)
+{
+	htmlf("Content-Type: %s\n", mimetype);
+	htmlf("Content-Disposition: inline; filename=\"%s\"\n", filename);
+	htmlf("Last-Modified: %s\n", http_date(item->st.st_mtime));
+	htmlf("Expires: %s\n", http_date(item->st.st_mtime +
+					 ttl_seconds(item->ttl)));
+	html("\n");
+}

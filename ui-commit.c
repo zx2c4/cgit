@@ -128,6 +128,7 @@ void cgit_print_commit(const char *hex)
 	struct commit_list *p;
 	unsigned char sha1[20];
 	char *query;
+	char *filename;
 
 	if (get_sha1(hex, sha1)) {
 		cgit_print_error(fmt("Bad object id: %s", hex));
@@ -168,6 +169,12 @@ void cgit_print_commit(const char *hex)
 		htmlf("'>%s</a></td></tr>\n", 
 		      sha1_to_hex(p->item->object.sha1));
 	}
+	htmlf("<tr><th>download</th><td colspan='2' class='sha1'><a href='");
+	filename = fmt("%s-%s.zip", cgit_query_repo, hex);
+	html_attr(cgit_pageurl(cgit_query_repo, "snapshot", 
+			       fmt("id=%s&name=%s", hex, filename)));
+	htmlf("'>%s</a></td></tr>", filename);
+	
 	html("</table>\n");
 	html("<div class='commit-subject'>");
 	html_txt(info->subject);
