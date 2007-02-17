@@ -124,7 +124,6 @@ void cgit_print_diff(const char *old_hex, const char *new_hex)
 	get_sha1(old_hex, sha1);
 	get_sha1(new_hex, sha2);
 
-	html("<h2>diff</h2>\n");
 	html("<table class='diff'><tr><td>");
 	run_diff(sha1, sha2);
 	html("</td></tr></table>");

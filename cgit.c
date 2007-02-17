@@ -88,11 +88,20 @@ static void cgit_print_repo_page(struct cacheitem *item)
 
 	if (cgit_query_page && !strcmp(cgit_query_page, "log"))
 		show_search = 1;
+
 	cgit_print_docstart(title, item);
-	cgit_print_pageheader(title, show_search);
+
+
 	if (!cgit_query_page) {
+		cgit_print_pageheader("summary", show_search);
 		cgit_print_summary();
-	} else if (!strcmp(cgit_query_page, "log")) {
+		cgit_print_docend();
+		return;
+	}
+
+	cgit_print_pageheader(cgit_query_page, show_search);
+
+	if (!strcmp(cgit_query_page, "log")) {
 		cgit_print_log(cgit_query_head, cgit_query_ofs, 100, 
 			       cgit_query_search);
 	} else if (!strcmp(cgit_query_page, "tree")) {

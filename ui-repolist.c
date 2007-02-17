@@ -16,7 +16,6 @@ void cgit_print_repolist(struct cacheitem *item)
 	cgit_print_docstart(cgit_root_title, item);
 	cgit_print_pageheader(cgit_root_title, 0);
 
-	html("<h2>Repositories</h2>\n");
 	html("<table class='list nowrap'>");
 	html("<tr class='nohover'>"
 	     "<th class='left'>Name</th>"

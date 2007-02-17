@@ -54,7 +54,6 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep)
 	}
 	prepare_revision_walk(&rev);
 
-	html("<h2>Log</h2>");
 	html("<table class='list nowrap'>");
 	html("<tr class='nohover'><th class='left'>Date</th>"
 	     "<th class='left'>Message</th>"

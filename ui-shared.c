@@ -40,6 +40,14 @@ void cgit_print_error(char *msg)
 	html("</div>\n");
 }
 
+char *cgit_rooturl()
+{
+	if (cgit_virtual_root)
+		return fmt("%s/", cgit_virtual_root);
+	else
+		return "./cgit.cgi";
+}
+
 char *cgit_repourl(const char *reponame)
 {
 	if (cgit_virtual_root) {
@@ -113,10 +121,23 @@ void cgit_print_docend()
 
 void cgit_print_pageheader(char *title, int show_search)
 {
-	html("<table id='layout'><tr><td id='header'>");
-	htmlf("<a href='%s'>", cgit_logo_link);
-	htmlf("<img id='logo' src='%s'/>\n", cgit_logo);
-	htmlf("</a>");
+	html("<table id='layout'>");
+	html("<tr><td id='header'>");
+	html(cgit_root_title);
+	html("</td><td id='logo'>");
+	html("<a href='");
+	html_attr(cgit_logo_link);
+	htmlf("'><img src='%s'/></a>", cgit_logo);
+	html("</td></tr>");
+	html("<tr><td id='crumb'>");
+	htmlf("<a href='%s'>root</a>", cgit_rooturl());
+	if (cgit_query_repo) {
+		htmlf(" : <a href='%s'>", cgit_repourl(cgit_repo->url));
+		html_txt(cgit_repo->name);
+		htmlf("</a> : %s", title);
+	}
+	html("</td>");
+	html("<td id='search'>");
 	if (show_search) {
 		html("<form method='get' href='");
 		html_attr(cgit_currurl());
@@ -137,12 +158,8 @@ void cgit_print_pageheader(char *title, int show_search)
 		html_attr(cgit_query_search);
 		html("'/></form>");
 	}
-	if (cgit_query_repo)
-		htmlf("<a href='%s'>", cgit_repourl(cgit_query_repo));
-	html_txt(title);
-	if (cgit_query_repo)
-		html("</a>");
-	html("</td></tr><tr><td id='content'>");
+	html("</td></tr>");
+	html("<tr><td id='content' colspan='2'>");
 }
 
 void cgit_print_snapshot_start(const char *mimetype, const char *filename, 

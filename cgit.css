@@ -10,7 +10,13 @@ body {
 h2 {
 	font-size: 120%;
 	font-weight: bold;
-	margin-bottom: 0.5em;
+	margin-bottom: 0.25em;
+}
+
+h3 {
+	margin-top: 0em;
+	font-size: 100%;
+	font-weight: normal;
 }
 
 a {
@@ -26,51 +32,99 @@ table.list {
 	border: none;
 	border-collapse: collapse;
 }
+
 table.list tr {
 	background: white;
 }
+
 table.list tr:hover {
 	background: #eee;
 }
+
 table.list tr.nohover:hover {
 	background: white;
 }
+
 table.list th {
 	font-weight: normal;
 	border-bottom: solid 1px #777;
 	padding: 0.1em 0.5em 0.1em 0.5em;
 	vertical-align: baseline;
 }
+
 table.list td {
 	border: none;
 	padding: 0.1em 0.5em 0.1em 0.5em;
 }
+
 img {
 	border: none;
 }
+
 table#layout {
 	width: 100%;
-	border-collapse: collapse;
+	border-collapse: separate;
+	border-spacing: 0px;
 	margin: 0px;
 }
-td#header {
+
+td#header, td#logo {
+	color: #666;
 	background-color: #ddd;
-	padding: 0.25em 0.25em 0.25em 0.5em;
-	font-size: 150%;
-	font-weight: bold;
-	border-bottom: solid 1px #aaa;
-	vertical-align: middle;
-}
-td#header img#logo {
-	float: right;
+	border-bottom: solid 1px #000;
 }
 
-td#header input {
-	float: right;
-	margin: 0.25em 1em;
+td#header {
+	font-size: 150%;
+	font-weight: bold;
+	padding: 0.2em 0.5em;
+	vertical-align: text-bottom;
 }
-td#header a {
-	color: black;
+
+td#logo {
+	text-align: right;
+	vertical-align: middle;
+	padding-right: 0.5em;
+}
+
+td#crumb, td#search {
+	color: #ccc;
+	border-top: solid 3px #555;
+	background-color: #666;
+	border-bottom: solid 1px #333;
+	padding: 2px 1em;
+}
+
+td#crumb {
+	font-weight: bold;
+}
+
+td#crumb a {
+	color: #ccc;
+}
+
+td#crumb a:hover {
+	color: #eee;
+}
+
+td#search {
+	text-align: right;
+	vertical-align: center;
+	padding-right: 0.5em;
+}
+
+td#search form {
+	margin: 0px;
+	padding: 0px;
+}
+
+td#search input {
+	font-size: 9pt;
+	padding: 0px;
+	width: 10em;
+	border: solid 1px #333;
+	color: #333;
+	background-color: #fff;
 }
 
 td#content {
@@ -86,18 +140,23 @@ div.error {
 	font-weight: bold;
 	margin: 1em 2em;
 }
+
 div.ls-blob, div.ls-dir {
 	font-family: monospace;
 }
+
 div.ls-dir a {
 	font-weight: bold;
 }
+
 th.filesize, td.filesize {
 	text-align: right;
 }
+
 td.filesize {
 	font-family: monospace;
 }
+
 td.filemode {
 	font-family: monospace;
 }
@@ -116,29 +175,35 @@ table.commit-info {
 	border-collapse: collapse;
 	margin-top: 1.5em;
 }
+
 table.commit-info th {
 	text-align: left;
 	font-weight: normal;
 	padding: 0.1em 1em 0.1em 0.1em;
 }
+
 table.commit-info td {
 	font-weight: normal;
 	padding: 0.1em 1em 0.1em 0.1em;
 }
+
 div.commit-subject {
 	font-weight: bold;
 	font-size: 125%;
 	margin: 1.5em 0em 0.5em 0em;
 	padding: 0em;
 }
+
 div.commit-msg {
 	white-space: pre;
 	font-family: monospace;
 }
+
 table.diffstat {
 	border-collapse: collapse;
 	margin-top: 1.5em;
 }
+
 table.diffstat th {
 	font-weight: normal;
 	text-align: left;
@@ -146,25 +211,30 @@ table.diffstat th {
 	padding: 0.1em 1em 0.1em 0.1em;
 	font-size: 100%;
 }
+
 table.diffstat td {
 	padding: 0.1em 1em 0.1em 0.1em;
 	font-size: 100%;
 }
+
 table.diffstat td span.modechange {
 	padding-left: 1em;
 	color: red;
 }
+
 table.diffstat td.add a {
 	color: green;
 }
+
 table.diffstat td.del a {
 	color: red;
 }
+
 table.diffstat td.upd a {
 	color: blue;
 }
+
 table.diffstat td.summary {
-	/* border-top: solid 1px black; */
 	color: #888;
 	padding-top: 0.5em;
 }
@@ -191,9 +261,11 @@ table.diff td div.del {
 	font-family: courier;
 	font-size: 90%;
 }
+
 .left {
 	text-align: left;
 }
+
 .right {
 	text-align: right;
 }

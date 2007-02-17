@@ -129,8 +129,10 @@ static void cgit_print_tags()
 void cgit_print_summary()
 {
 	html("<h2>");
-	html_txt("Repo summary page");
-	html("</h2>");
+	html(cgit_repo->name);
+	html("</h2><h3>");
+	html(cgit_repo->desc);
+	html("</h3>");
 	html("<table class='list nowrap'>");
 	cgit_print_branches();
 	html("<tr class='nohover'><td colspan='4'>&nbsp;</td></tr>");
