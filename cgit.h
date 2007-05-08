@@ -156,6 +156,7 @@ extern void cgit_print_repolist(struct cacheitem *item);
 extern void cgit_print_summary();
 extern void cgit_print_log(const char *tip, int ofs, int cnt, char *grep);
 extern void cgit_print_view(const char *hex, char *path);
+extern void cgit_print_blob(struct cacheitem *item, const char *hex, char *path);
 extern void cgit_print_tree(const char *hex, char *path);
 extern void cgit_print_commit(const char *hex);
 extern void cgit_print_diff(const char *old_hex, const char *new_hex);

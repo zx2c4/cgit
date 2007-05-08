@@ -40,6 +40,13 @@ void cgit_print_view(const char *hex, char *path)
 	htmlf("%s %s, %li bytes", typename(type), hex, size);
 	if (path)
 		html(")");
+
+	html(" <a href='");
+	html_attr(cgit_pageurl(cgit_query_repo, "blob", 
+			       fmt("id=%s&path=%s", 
+				   hex,
+				   path)));
+	html("'>download</a>");
 	html("</th></tr>\n");
 	html("<tr><td class='blob'>\n");
 	html_txt(buf);

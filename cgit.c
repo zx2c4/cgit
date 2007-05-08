@@ -79,11 +79,16 @@ static void cgit_print_repo_page(struct cacheitem *item)
 	show_search = 0;
 	setenv("GIT_DIR", cgit_repo->path, 1);
 
-	if (cgit_repo->snapshots && cgit_query_page && 
-	    !strcmp(cgit_query_page, "snapshot")) {
+	if (cgit_query_page) {
+	    if (cgit_repo->snapshots && !strcmp(cgit_query_page, "snapshot")) {
 		cgit_print_snapshot(item, cgit_query_sha1, "zip", 
 				    cgit_repo->url, cgit_query_name);
 		return;
+	    }
+	    if (!strcmp(cgit_query_page, "blob")) {
+		    cgit_print_blob(item, cgit_query_sha1, cgit_query_path);
+		    return;
+	    }
 	}
 
 	if (cgit_query_page && !strcmp(cgit_query_page, "log"))
