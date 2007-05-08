@@ -1,10 +1,22 @@
 #ifndef CGIT_H
 #define CGIT_H
 
-#include "git.h"
-#include <openssl/sha.h>
-#include <ctype.h>
-#include <sched.h>
+
+#include <git-compat-util.h>
+#include <cache.h>
+#include <grep.h>
+#include <object.h>
+#include <tree.h>
+#include <commit.h>
+#include <tag.h>
+#include <diff.h>
+#include <diffcore.h>
+#include <refs.h>
+#include <revision.h>
+#include <log-tree.h>
+#include <archive.h>
+#include <xdiff/xdiff.h>
+
 
 typedef void (*configfn)(const char *name, const char *value);
 

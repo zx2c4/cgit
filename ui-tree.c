@@ -14,37 +14,39 @@ static int print_entry(const unsigned char *sha1, const char *base,
 		       int stage)
 {
 	char *name;
-	char type[20];
+	enum object_type type;
 	unsigned long size;
 
-	if (sha1_object_info(sha1, type, &size)) {
-		cgit_print_error(fmt("Bad object name: %s", 
-				     sha1_to_hex(sha1)));
+	name = xstrdup(pathname);
+	type = sha1_object_info(sha1, &size);
+	if (type == OBJ_BAD) {
+		htmlf("<tr><td colspan='3'>Bad object: %s %s</td></tr>",
+		      name,
+		      sha1_to_hex(sha1));
 		return 0;
 	}
-	name = xstrdup(pathname);
 	html("<tr><td class='filemode'>");
 	html_filemode(mode);
 	html("</td><td>");
-	if (S_ISDIR(mode)) {
+	if (S_ISDIRLNK(mode)) {
+		htmlf("<div class='ls-dirlnk'>%s => submodule</div>", name);
+	} else if (S_ISDIR(mode)) {
 		html("<div class='ls-dir'><a href='");
 		html_attr(cgit_pageurl(cgit_query_repo, "tree", 
 				       fmt("id=%s&path=%s%s/", 
 					   sha1_to_hex(sha1),
 					   cgit_query_path ? cgit_query_path : "",
 					   pathname)));
+		htmlf("'>%s</a></div>", name);
 	} else {
 		html("<div class='ls-blob'><a href='");
 		html_attr(cgit_pageurl(cgit_query_repo, "view",
 				      fmt("id=%s&path=%s%s", sha1_to_hex(sha1),
 					  cgit_query_path ? cgit_query_path : "",
 					  pathname)));
+		htmlf("'>%s</a></div>", name);
 	}
-	html("'>");
-	html_txt(name);
-	if (S_ISDIR(mode))
-		html("/");
-	html("</a></div></td>");
+	html("</div></td>");
 	htmlf("<td class='filesize'>%li</td>", size);
 	html("</tr>\n");
 	free(name);

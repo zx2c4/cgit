@@ -11,7 +11,7 @@
 void cgit_print_view(const char *hex)
 {
 	unsigned char sha1[20];
-	char type[20];
+	enum object_type type;
 	unsigned char *buf;
 	unsigned long size;
 
@@ -20,20 +20,22 @@ void cgit_print_view(const char *hex)
 	        return;
 	}
 
-	if (sha1_object_info(sha1, type, &size)){
-		cgit_print_error("Bad object name");
+	type = sha1_object_info(sha1, &size);
+	if (type == OBJ_BAD) {
+		cgit_print_error(fmt("Bad object name: %s", hex));
 		return;
 	}
 
-	buf = read_sha1_file(sha1, type, &size);
+	buf = read_sha1_file(sha1, &type, &size);
 	if (!buf) {
-		cgit_print_error("Error reading object");
+		cgit_print_error(fmt("Error reading object %s", hex));
 		return;
 	}
 
 	buf[size] = '\0';
 	html("<table class='list'>\n");
-	htmlf("<tr class='nohover'><th class='left'>%s %s, %li bytes</th></tr>\n", type, hex, size);
+	htmlf("<tr class='nohover'><th class='left'>%s %s, %li bytes</th></tr>\n",
+	      typename(type), hex, size);
 	html("<tr><td class='blob'>\n");
 	html_txt(buf);
 	html("\n</td></tr>\n");

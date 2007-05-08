@@ -201,13 +201,13 @@ struct commitinfo *cgit_parse_commit(struct commit *commit)
 struct taginfo *cgit_parse_tag(struct tag *tag)
 {
 	void *data;
-	char type[20];
+	enum object_type type;
 	unsigned long size;
 	char *p, *t;
 	struct taginfo *ret;
 
-	data = read_sha1_file(tag->object.sha1, type, &size);
-	if (!data || strcmp(type, tag_type)) {
+	data = read_sha1_file(tag->object.sha1, &type, &size);
+	if (!data || type != OBJ_TAG) {
 		free(data);
 		return 0;
 	}

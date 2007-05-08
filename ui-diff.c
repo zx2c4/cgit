@@ -7,7 +7,6 @@
  */
 
 #include "cgit.h"
-#include "xdiff.h"
 
 char *diff_buffer;
 int diff_buffer_size;
@@ -82,13 +81,13 @@ int diff_cb(void *priv_, mmbuffer_t *mb, int nbuf)
 
 static int load_mmfile(mmfile_t *file, const unsigned char *sha1)
 {
-	char type[20];
+	enum object_type type;
 
 	if (is_null_sha1(sha1)) {
 		file->ptr = (char *)"";
 		file->size = 0;
 	} else {
-		file->ptr = read_sha1_file(sha1, type, &file->size);
+		file->ptr = read_sha1_file(sha1, &type, &file->size);
 	}
 	return 1;
 }

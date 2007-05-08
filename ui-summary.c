@@ -62,7 +62,7 @@ static void cgit_print_object_ref(struct object *obj)
 	url = cgit_pageurl(cgit_query_repo, page, 
 			   fmt("id=%s", sha1_to_hex(obj->sha1)));
 	html_link_open(url, NULL, NULL);
-	htmlf("%s %s", type_names[obj->type], 
+	htmlf("%s %s", typename(obj->type), 
 	      sha1_to_hex(obj->sha1));
 	html_link_close();
 }
