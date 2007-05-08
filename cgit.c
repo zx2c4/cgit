@@ -109,7 +109,7 @@ static void cgit_print_repo_page(struct cacheitem *item)
 	} else if (!strcmp(cgit_query_page, "commit")) {
 		cgit_print_commit(cgit_query_sha1);
 	} else if (!strcmp(cgit_query_page, "view")) {
-		cgit_print_view(cgit_query_sha1);
+		cgit_print_view(cgit_query_sha1, cgit_query_path);
 	} else if (!strcmp(cgit_query_page, "diff")) {
 		cgit_print_diff(cgit_query_sha1, cgit_query_sha2);
 	} else {

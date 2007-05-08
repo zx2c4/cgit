@@ -8,7 +8,7 @@
 
 #include "cgit.h"
 
-void cgit_print_view(const char *hex)
+void cgit_print_view(const char *hex, char *path)
 {
 	unsigned char sha1[20];
 	enum object_type type;
@@ -34,8 +34,13 @@ void cgit_print_view(const char *hex)
 
 	buf[size] = '\0';
 	html("<table class='list'>\n");
-	htmlf("<tr class='nohover'><th class='left'>%s %s, %li bytes</th></tr>\n",
-	      typename(type), hex, size);
+	html("<tr class='nohover'><th class='left'>");
+	if (path)
+		htmlf("%s (", path);
+	htmlf("%s %s, %li bytes", typename(type), hex, size);
+	if (path)
+		html(")");
+	html("</th></tr>\n");
 	html("<tr><td class='blob'>\n");
 	html_txt(buf);
 	html("\n</td></tr>\n");
