@@ -1,7 +1,7 @@
 CGIT_VERSION = 0.2
 
 prefix = /var/www/htdocs/cgit
-gitsrc = ../git
+gitsrc = git
 
 SHA1_HEADER = <openssl/sha.h>
 
