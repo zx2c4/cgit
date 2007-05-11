@@ -10,6 +10,7 @@ body {
 h2 {
 	font-size: 120%;
 	font-weight: bold;
+	margin-top: 0em;
 	margin-bottom: 0.25em;
 }
 
@@ -125,6 +126,25 @@ td#search input {
 	border: solid 1px #333;
 	color: #333;
 	background-color: #fff;
+}
+
+td#summary {
+	vertical-align: top;
+	padding-bottom: 1em;
+}
+
+td#archivelist {
+	padding-bottom: 1em;
+}
+
+td#archivelist table {
+	float: right;
+	border-collapse: collapse;
+	border: solid 1px #777;
+}
+
+td#archivelist table th {
+	background-color: #ccc;
 }
 
 td#content {

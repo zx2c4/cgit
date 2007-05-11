@@ -8,6 +8,8 @@
 
 #include "cgit.h"
 
+int items = 0;
+
 static int cgit_print_branch_cb(const char *refname, const unsigned char *sha1,
 				int flags, void *cb_data)
 {
@@ -83,6 +85,13 @@ static int cgit_print_tag_cb(const char *refname, const unsigned char *sha1,
 		tag = lookup_tag(sha1);
 		if (!tag || parse_tag(tag) || !(info = cgit_parse_tag(tag)))
 			return 2;
+		if (!items) {
+			html("<tr class='nohover'><th class='left'>Tag</th>"
+			     "<th class='left'>Created</th>"
+			     "<th class='left'>Author</th>"
+			     "<th class='left'>Reference</th></tr>\n");
+		}
+		items++;
 		html("<tr><td>");
 		url = cgit_pageurl(cgit_query_repo, "view", 
 				   fmt("id=%s", sha1_to_hex(sha1)));
@@ -108,6 +117,44 @@ static int cgit_print_tag_cb(const char *refname, const unsigned char *sha1,
 	return 0;
 }
 
+static int cgit_print_archive_cb(const char *refname, const unsigned char *sha1,
+				 int flags, void *cb_data)
+{
+	struct tag *tag;
+	struct taginfo *info;
+	struct object *obj;
+	char buf[256], *url;
+
+	if (prefixcmp(refname, "refs/archives"))
+		return 0;
+	strncpy(buf, refname+14, sizeof(buf));
+	obj = parse_object(sha1);
+	if (!obj)
+		return 1;
+	if (obj->type == OBJ_TAG) {
+		tag = lookup_tag(sha1);
+		if (!tag || parse_tag(tag) || !(info = cgit_parse_tag(tag)))
+			return 0;
+		hashcpy(sha1, tag->tagged->sha1);
+	} else if (obj->type != OBJ_BLOB) {
+		return 0;
+	}
+	if (!items) {
+		html("<table>");
+		html("<tr><th>Downloads</th></tr>");
+	}
+	items++;
+	html("<tr><td>");
+	url = cgit_pageurl(cgit_query_repo, "blob",
+			   fmt("id=%s&path=%s", sha1_to_hex(sha1),
+			       buf));
+	html_link_open(url, NULL, NULL);
+	html_txt(buf);
+	html_link_close();
+	html("</td><tr>");
+	return 0;
+}
+
 static void cgit_print_branches()
 {
 	html("<tr class='nohover'><th class='left'>Branch</th>"
@@ -119,21 +166,30 @@ static void cgit_print_branches()
 
 static void cgit_print_tags()
 {
-	html("<tr class='nohover'><th class='left'>Tag</th>"
-	     "<th class='left'>Created</th>"
-	     "<th class='left'>Author</th>"
-	     "<th class='left'>Reference</th></tr>\n");
+	items = 0;
 	for_each_tag_ref(cgit_print_tag_cb, NULL);
+}
+
+static void cgit_print_archives()
+{
+	items = 0;
+	for_each_ref(cgit_print_archive_cb, NULL);
+	if (items)
+		html("</table>");
 }
 
 void cgit_print_summary()
 {
-	html("<h2>");
-	html(cgit_repo->name);
-	html("</h2><h3>");
-	html(cgit_repo->desc);
-	html("</h3>");
 	html("<table class='list nowrap'>");
+	html("<tr class='nohover'><td id='summary' colspan='3'>");
+	html("<h2>");
+	html_txt(cgit_repo->name);
+	html(" - ");
+	html_txt(cgit_repo->desc);
+	html("</h2>");
+	html("</td><td id='archivelist'>");
+	cgit_print_archives();
+	html("</td></tr>");
 	cgit_print_branches();
 	html("<tr class='nohover'><td colspan='4'>&nbsp;</td></tr>");
 	cgit_print_tags();
