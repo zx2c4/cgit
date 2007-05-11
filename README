@@ -8,19 +8,35 @@ builtin cache to decrease server io-pressure.
 
 Installation
 
-  $ make gitsrc=<path>
+  $ make
   $ su
-  $ make prefix=<path> install
+  $ make install
+
+This will install cgit.cgi and cgit.css into "/var/www/htdocs/cgit".
+
+Note: The initial "make" will create a submodule 'git' and clone the git
+repository at git://git.kernel.org/pub/scm/git/git.git in it. If you
+already have a local git git repository that you want to use as origin
+for the submodule, run
+
+  $ git clone -s <path-to-git-repo> git
+  $ ./submodules.sh -u
+
+before running "make".
 
 
-Default value for gitsrc is "../git", and this directory should contain the
-git sources.
+Dependencies
 
-Default value for prefix is "/var/www/htdocs/cgit". This directory will 
-contain "cgit.cgi" and "cgit.css" after 'make install'.
+  -git (1.5.2-rc0 or newer, due to git submodule) installed
+  -zip lib
+  -crypto lib
+  -openssl lib
 
-After installation, httpd.conf probably must be updated with a Directory-
-section for cgit, possibly something like this:
+
+Apache configuration
+
+A new Directory-section must probably be added for cgit, possibly something
+like this:
 
   <Directory "/var/www/htdocs/cgit/">
       AllowOverride None
@@ -33,23 +49,33 @@ section for cgit, possibly something like this:
 Runtime configuration
 
 The file /etc/cgitrc is read by cgit before handling a request. In addition
-to runtime parameters, this file also contains a list of the repositories 
+to runtime parameters, this file also contains a list of the repositories
 displayed by cgit.
 
 A template cgitrc is shipped with the sources, and all parameters and default
-values are documented in this file. 
+values are documented in this file.
 
 
 The cache
 
-When cgit is invoked it looks for a cachefile matching the request and 
-returns it to the client. If no such cachefile exist (or if it has expired), 
+When cgit is invoked it looks for a cachefile matching the request and
+returns it to the client. If no such cachefile exist (or if it has expired),
 the content for the request is written into the proper cachefile before the
 file is returned.
 
-If the cachefile has expired but cgit is unable to obtain a lock for it, the 
+If the cachefile has expired but cgit is unable to obtain a lock for it, the
 stale cachefile is returned to the client. This is done to favour page
 throughput over page freshness.
 
 The generated content contains the complete response to the client, including
 the http-headers "Modified" and "Expires".
+
+
+The mis(sing) features
+
+Submodule links in the directory listing page have a fixed format per
+repository. This should probably be extended to a generic map between
+submodule path and url.
+
+
+The end.
