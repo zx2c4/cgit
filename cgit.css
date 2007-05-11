@@ -2,10 +2,16 @@ body {
 	font-family: arial;
 	font-size: 11pt;
 	background: white;
+}
+
+body, table {
 	padding: 0em;
 	margin: 0em;
 }
 
+table {
+      border-collapse: collapse;
+}
 
 h2 {
 	font-size: 120%;
@@ -64,8 +70,7 @@ img {
 
 table#layout {
 	width: 100%;
-	border-collapse: separate;
-	border-spacing: 0px;
+	border-collapse: collapse;
 	margin: 0px;
 }
 
