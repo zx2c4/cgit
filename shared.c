@@ -15,6 +15,7 @@ char *cgit_root_title   = "Git repository browser";
 char *cgit_css          = "/cgit.css";
 char *cgit_logo         = "/git-logo.png";
 char *cgit_logo_link    = "http://www.kernel.org/pub/software/scm/git/docs/";
+char *cgit_module_link  = "./?repo=%s&page=commit&id=%s";
 char *cgit_virtual_root = NULL;
 
 char *cgit_cache_root   = "/var/cache/cgit";
@@ -85,6 +86,7 @@ struct repoinfo *add_repo(const char *url)
 	ret->desc = NULL;
 	ret->owner = NULL;
 	ret->snapshots = cgit_snapshots;
+	ret->module_link = cgit_module_link;
 	return ret;
 }
 
@@ -98,6 +100,8 @@ void cgit_global_config_cb(const char *name, const char *value)
 		cgit_logo = xstrdup(value);
 	else if (!strcmp(name, "logo-link"))
 		cgit_logo_link = xstrdup(value);
+	else if (!strcmp(name, "module-link"))
+		cgit_module_link = xstrdup(value);
 	else if (!strcmp(name, "virtual-root"))
 		cgit_virtual_root = xstrdup(value);
 	else if (!strcmp(name, "nocache"))
@@ -128,6 +132,8 @@ void cgit_global_config_cb(const char *name, const char *value)
 		cgit_repo->owner = xstrdup(value);
 	else if (cgit_repo && !strcmp(name, "repo.snapshots"))
 		cgit_repo->snapshots = atoi(value);
+	else if (cgit_repo && !strcmp(name, "repo.module-link"))
+		cgit_repo->module_link= xstrdup(value);
 }
 
 void cgit_repo_config_cb(const char *name, const char *value)

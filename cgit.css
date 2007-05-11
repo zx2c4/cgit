@@ -141,7 +141,7 @@ div.error {
 	margin: 1em 2em;
 }
 
-div.ls-blob, div.ls-dir {
+td.ls-blob, td.ls-dir, td.ls-mod {
 	font-family: monospace;
 }
 

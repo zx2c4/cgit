@@ -33,6 +33,7 @@ struct repoinfo {
 	char *path;
 	char *desc;
 	char *owner;
+	char *module_link;
 	int snapshots;
 };
 
@@ -70,6 +71,7 @@ extern char *cgit_root_title;
 extern char *cgit_css;
 extern char *cgit_logo;
 extern char *cgit_logo_link;
+extern char *cgit_module_link;
 extern char *cgit_virtual_root;
 extern char *cgit_cache_root;
 

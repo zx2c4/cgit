@@ -47,6 +47,10 @@
 #logo-link=http://www.kernel.org/pub/software/scm/git/docs/
 
 
+## Url loaded when clicking a submodule link
+#module-link=./?repo=%s&page=commit&id=%s
+
+
 ## Number of chars shown of commit subject message (in log view)
 #max-message-length=60
 
@@ -81,4 +85,5 @@
 #repo.desc=the caching cgi for git
 #repo.path=/pub/git/cgit
 #repo.owner=Lars Hjemli
-#repo.snapshots=1    # override a sitewide snapshot-setting
+#repo.snapshots=1				# override a sitewide snapshot-setting
+#repo.module-link=/git/%s/commit/?id=%s		# override the standard module-link

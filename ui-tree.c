@@ -15,11 +15,11 @@ static int print_entry(const unsigned char *sha1, const char *base,
 {
 	char *name;
 	enum object_type type;
-	unsigned long size;
+	unsigned long size = 0;
 
 	name = xstrdup(pathname);
 	type = sha1_object_info(sha1, &size);
-	if (type == OBJ_BAD) {
+	if (type == OBJ_BAD && !S_ISDIRLNK(mode)) {
 		htmlf("<tr><td colspan='3'>Bad object: %s %s</td></tr>",
 		      name,
 		      sha1_to_hex(sha1));
@@ -27,26 +27,27 @@ static int print_entry(const unsigned char *sha1, const char *base,
 	}
 	html("<tr><td class='filemode'>");
 	html_filemode(mode);
-	html("</td><td>");
+	html("</td><td ");
 	if (S_ISDIRLNK(mode)) {
-		htmlf("<div class='ls-dirlnk'>%s => submodule</div>", name);
+		htmlf("class='ls-mod'><a href='");
+		html_attr(fmt(cgit_repo->module_link,
+			      name,
+			      sha1_to_hex(sha1)));
 	} else if (S_ISDIR(mode)) {
-		html("<div class='ls-dir'><a href='");
+		html("class='ls-dir'><a href='");
 		html_attr(cgit_pageurl(cgit_query_repo, "tree", 
 				       fmt("id=%s&path=%s%s/", 
 					   sha1_to_hex(sha1),
 					   cgit_query_path ? cgit_query_path : "",
 					   pathname)));
-		htmlf("'>%s</a></div>", name);
 	} else {
-		html("<div class='ls-blob'><a href='");
+		html("class='ls-blob'><a href='");
 		html_attr(cgit_pageurl(cgit_query_repo, "view",
 				      fmt("id=%s&path=%s%s", sha1_to_hex(sha1),
 					  cgit_query_path ? cgit_query_path : "",
 					  pathname)));
-		htmlf("'>%s</a></div>", name);
 	}
-	html("</div></td>");
+	htmlf("'>%s</a></div></td>", name);
 	htmlf("<td class='filesize'>%li</td>", size);
 	html("</tr>\n");
 	free(name);
