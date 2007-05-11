@@ -19,6 +19,18 @@ endif
 CFLAGS += -Igit -DSHA1_HEADER='$(SHA1_HEADER)'
 
 
+#
+# If make is run on a nongit platform, we need to get the git sources as a tarball.
+# But there is currently no recent enough tarball available on kernel.org, so download
+# a zipfile from hjemli.net instead
+#
+GITVER = $(shell git version 2>/dev/null || echo nogit)
+ifeq ($(GITVER),nogit)
+GITURL = http://hjemli.net/git/git/snapshot/?id=v1.5.2-rc2
+INITGIT = test -e git/git.c || (curl "$(GITURL)" > tmp.zip && unzip tmp.zip)
+else
+INITGIT = ./submodules.sh -i
+endif
 
 
 #
@@ -33,7 +45,7 @@ cgit: cgit.c cgit.h $(OBJECTS)
 $(OBJECTS): cgit.h git/libgit.a
 
 git/libgit.a:
-	./submodules.sh -i
+	$(INITGIT)
 	$(MAKE) -C git
 
 #
