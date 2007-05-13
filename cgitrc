@@ -55,6 +55,10 @@
 #max-message-length=60
 
 
+## Number of commits per page in log view
+#max-commit-count=50
+
+
 ## Root of cached output
 #cache-root=/var/cache/cgit
 

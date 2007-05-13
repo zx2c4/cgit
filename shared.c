@@ -30,6 +30,7 @@ int cgit_cache_static_ttl      = -1;
 int cgit_cache_max_create_time =  5;
 
 int cgit_max_msg_len = 60;
+int cgit_max_commit_count = 50;
 
 char *cgit_repo_name    = NULL;
 char *cgit_repo_desc    = NULL;
@@ -120,6 +121,8 @@ void cgit_global_config_cb(const char *name, const char *value)
 		cgit_cache_dynamic_ttl = atoi(value);
 	else if (!strcmp(name, "max-message-length"))
 		cgit_max_msg_len = atoi(value);
+	else if (!strcmp(name, "max-commit-count"))
+		cgit_max_commit_count = atoi(value);
 	else if (!strcmp(name, "repo.url"))
 		cgit_repo = add_repo(value);
 	else if (!strcmp(name, "repo.name"))
