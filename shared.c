@@ -74,8 +74,8 @@ struct repoinfo *add_repo(const char *url)
 			cgit_repolist.length = 8;
 		else
 			cgit_repolist.length *= 2;
-		cgit_repolist.repos = xrealloc(cgit_repolist.repos, 
-					       cgit_repolist.length * 
+		cgit_repolist.repos = xrealloc(cgit_repolist.repos,
+					       cgit_repolist.length *
 					       sizeof(struct repoinfo));
 	}
 
@@ -195,3 +195,46 @@ int hextoint(char c)
 		return -1;
 }
 
+void cgit_diff_tree_cb(struct diff_queue_struct *q,
+		       struct diff_options *options, void *data)
+{
+	int i;
+
+	for (i = 0; i < q->nr; i++) {
+		if (q->queue[i]->status == 'U')
+			continue;
+		((filepair_fn)data)(q->queue[i]);
+	}
+}
+
+void cgit_diff_tree(const unsigned char *old_sha1,
+		    const unsigned char *new_sha1,
+		    filepair_fn fn)
+{
+	struct diff_options opt;
+	int ret;
+
+	diff_setup(&opt);
+	opt.output_format = DIFF_FORMAT_CALLBACK;
+	opt.detect_rename = 1;
+	opt.recursive = 1;
+	opt.format_callback = cgit_diff_tree_cb;
+	opt.format_callback_data = fn;
+	diff_setup_done(&opt);
+
+	if (old_sha1)
+		ret = diff_tree_sha1(old_sha1, new_sha1, "", &opt);
+	else
+		ret = diff_root_tree_sha1(new_sha1, "", &opt);
+	diffcore_std(&opt);
+	diff_flush(&opt);
+}
+
+void cgit_diff_commit(struct commit *commit, filepair_fn fn)
+{
+	unsigned char *old_sha1 = NULL;
+
+	if (commit->parents)
+		old_sha1 = commit->parents->item->object.sha1;
+	cgit_diff_tree(old_sha1, commit->object.sha1, fn);
+}
