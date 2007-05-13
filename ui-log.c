@@ -10,9 +10,16 @@
 
 int files, lines;
 
+void count_lines(char *line, int size)
+{
+	if (size>0 && (line[0] == '+' || line[0] == '-'))
+		lines++;
+}
+
 void inspect_files(struct diff_filepair *pair)
 {
 	files++;
+	cgit_diff_files(pair->one->sha1, pair->two->sha1, count_lines);
 }
 
 void print_commit(struct commit *commit)
@@ -32,11 +39,13 @@ void print_commit(struct commit *commit)
 	html_link_open(url, NULL, NULL);
 	html_ntxt(cgit_max_msg_len, info->subject);
 	html_link_close();
-	html("</td><td class='right'>");
 	files = 0;
 	lines = 0;
 	cgit_diff_commit(commit, inspect_files);
+	html("</td><td class='right'>");
 	htmlf("%d", files);
+	html("</td><td class='right'>");
+	htmlf("%d", lines);
 	html("</td><td>");
 	html_txt(info->author);
 	html("</td></tr>\n");
@@ -70,6 +79,7 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep)
 	html("<tr class='nohover'><th class='left'>Date</th>"
 	     "<th class='left'>Message</th>"
 	     "<th class='left'>Files</th>"
+	     "<th class='left'>Lines</th>"
 	     "<th class='left'>Author</th></tr>\n");
 
 	if (ofs<0)
