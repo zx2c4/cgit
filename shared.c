@@ -207,6 +207,85 @@ void cgit_diff_tree_cb(struct diff_queue_struct *q,
 	}
 }
 
+static int load_mmfile(mmfile_t *file, const unsigned char *sha1)
+{
+	enum object_type type;
+
+	if (is_null_sha1(sha1)) {
+		file->ptr = (char *)"";
+		file->size = 0;
+	} else {
+		file->ptr = read_sha1_file(sha1, &type, &file->size);
+	}
+	return 1;
+}
+
+/*
+ * Receive diff-buffers from xdiff and concatenate them as
+ * needed across multiple callbacks.
+ *
+ * This is basically a copy of xdiff-interface.c/xdiff_outf(),
+ * ripped from git and modified to use globals instead of
+ * a special callback-struct.
+ */
+char *diffbuf = NULL;
+int buflen = 0;
+
+int filediff_cb(void *priv, mmbuffer_t *mb, int nbuf)
+{
+	int i;
+
+	for (i = 0; i < nbuf; i++) {
+		if (mb[i].ptr[mb[i].size-1] != '\n') {
+			/* Incomplete line */
+			diffbuf = xrealloc(diffbuf, buflen + mb[i].size);
+			memcpy(diffbuf + buflen, mb[i].ptr, mb[i].size);
+			buflen += mb[i].size;
+			continue;
+		}
+
+		/* we have a complete line */
+		if (!diffbuf) {
+			((linediff_fn)priv)(mb[i].ptr, mb[i].size);
+			continue;
+		}
+		diffbuf = xrealloc(diffbuf, buflen + mb[i].size);
+		memcpy(diffbuf + buflen, mb[i].ptr, mb[i].size);
+		((linediff_fn)priv)(diffbuf, buflen + mb[i].size);
+		free(diffbuf);
+		diffbuf = NULL;
+		buflen = 0;
+	}
+	if (diffbuf) {
+		((linediff_fn)priv)(diffbuf, buflen);
+		free(diffbuf);
+		diffbuf = NULL;
+		buflen = 0;
+	}
+	return 0;
+}
+
+int cgit_diff_files(const unsigned char *old_sha1,
+		     const unsigned char *new_sha1,
+		     linediff_fn fn)
+{
+	mmfile_t file1, file2;
+	xpparam_t diff_params;
+	xdemitconf_t emit_params;
+	xdemitcb_t emit_cb;
+
+	if (!load_mmfile(&file1, old_sha1) || !load_mmfile(&file2, new_sha1))
+		return 1;
+
+	diff_params.flags = XDF_NEED_MINIMAL;
+	emit_params.ctxlen = 3;
+	emit_params.flags = XDL_EMIT_FUNCNAMES;
+	emit_cb.outf = filediff_cb;
+	emit_cb.priv = fn;
+	xdl_diff(&file1, &file2, &diff_params, &emit_params, &emit_cb);
+	return 0;
+}
+
 void cgit_diff_tree(const unsigned char *old_sha1,
 		    const unsigned char *new_sha1,
 		    filepair_fn fn)
