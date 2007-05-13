@@ -26,6 +26,13 @@ h3 {
 	font-weight: normal;
 }
 
+h4 {
+	margin-top: 1.5em;
+	margin-bottom: 0.1em;
+	font-size: 100%;
+	font-weight: bold;
+}
+
 a {
 	color: blue;
 	text-decoration: none;
@@ -227,6 +234,12 @@ div.commit-msg {
 table.diffstat {
 	border-collapse: collapse;
 	margin-top: 1.5em;
+	width: 100%;
+	border: solid 1px #aaa;
+}
+
+table.diffstat tr:hover {
+	background-color: #eee;
 }
 
 table.diffstat th {
@@ -238,8 +251,11 @@ table.diffstat th {
 }
 
 table.diffstat td {
-	padding: 0.1em 1em 0.1em 0.1em;
+	padding: 0.2em 0.2em 0.1em 0.1em;
 	font-size: 100%;
+	border: none;
+	border-top: solid 1px #aaa;
+	border-bottom: solid 1px #aaa;
 }
 
 table.diffstat td span.modechange {
@@ -259,7 +275,17 @@ table.diffstat td.upd a {
 	color: blue;
 }
 
-table.diffstat td.summary {
+table.diffstat td.graph {
+	width: 75%;
+	vertical-align: center;
+}
+
+table.diffstat td.graph img {
+	border: none;
+	height: 11pt;
+}
+
+div.diffstat-summary {
 	color: #888;
 	padding-top: 0.5em;
 }

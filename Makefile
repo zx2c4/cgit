@@ -55,6 +55,7 @@ install: all clean-cache
 	mkdir -p $(prefix)
 	install cgit $(prefix)/cgit.cgi
 	install cgit.css $(prefix)/cgit.css
+	install add.png del.png $(prefix)/
 
 clean-cgit:
 	rm -f cgit *.o

@@ -8,14 +8,30 @@
 
 #include "cgit.h"
 
-int files = 0;
+int files = 0, slots = 0;
+int total_adds = 0, total_rems = 0, max_changes = 0;
+int lines_added, lines_removed;
 
-void print_filepair(struct diff_filepair *pair)
+struct fileinfo {
+	char status;
+	unsigned char old_sha1[20];
+	unsigned char new_sha1[20];
+	unsigned short old_mode;
+	unsigned short new_mode;
+	char *old_path;
+	char *new_path;
+	unsigned int added;
+	unsigned int removed;
+} *items;
+
+
+void print_fileinfo(struct fileinfo *info)
 {
-	char *query;
+	char *query, *query2;
 	char *class;
+	double width;
 
-	switch (pair->status) {
+	switch (info->status) {
 	case DIFF_STATUS_ADDED:
 		class = "add";
 		break;
@@ -41,50 +57,97 @@ void print_filepair(struct diff_filepair *pair)
 		class = "stg";
 		break;
 	default:
-		die("bug: unhandled diff status %c", pair->status);
+		die("bug: unhandled diff status %c", info->status);
 	}
 
 	html("<tr>");
 	htmlf("<td class='mode'>");
-	if (is_null_sha1(pair->two->sha1)) {
-		html_filemode(pair->one->mode);
+	if (is_null_sha1(info->new_sha1)) {
+		html_filemode(info->old_mode);
 	} else {
-		html_filemode(pair->two->mode);
+		html_filemode(info->new_mode);
 	}
 
-	if (pair->one->mode != pair->two->mode &&
-	    !is_null_sha1(pair->one->sha1) &&
-	    !is_null_sha1(pair->two->sha1)) {
+	if (info->old_mode != info->new_mode &&
+	    !is_null_sha1(info->old_sha1) &&
+	    !is_null_sha1(info->new_sha1)) {
 		html("<span class='modechange'>[");
-		html_filemode(pair->one->mode);
+		html_filemode(info->old_mode);
 		html("]</span>");
 	}
 	htmlf("</td><td class='%s'>", class);
-	query = fmt("id=%s&id2=%s", sha1_to_hex(pair->one->sha1),
-		    sha1_to_hex(pair->two->sha1));
+	query = fmt("id=%s&id2=%s", sha1_to_hex(info->old_sha1),
+		    sha1_to_hex(info->new_sha1));
 	html_link_open(cgit_pageurl(cgit_query_repo, "diff", query),
 		       NULL, NULL);
-	if (pair->status == DIFF_STATUS_COPIED ||
-	    pair->status == DIFF_STATUS_RENAMED) {
-		html_txt(pair->two->path);
-		htmlf("</a> (%s from ", pair->status == DIFF_STATUS_COPIED ?
+	if (info->status == DIFF_STATUS_COPIED ||
+	    info->status == DIFF_STATUS_RENAMED) {
+		html_txt(info->new_path);
+		htmlf("</a> (%s from ", info->status == DIFF_STATUS_COPIED ?
 		      "copied" : "renamed");
-		query = fmt("id=%s", sha1_to_hex(pair->one->sha1));
-		html_link_open(cgit_pageurl(cgit_query_repo, "view", query),
+		query2 = fmt("id=%s", sha1_to_hex(info->old_sha1));
+		html_link_open(cgit_pageurl(cgit_query_repo, "view", query2),
 			       NULL, NULL);
-		html_txt(pair->one->path);
+		html_txt(info->old_path);
 		html("</a>)");
 	} else {
-		html_txt(pair->two->path);
+		html_txt(info->new_path);
 		html("</a>");
 	}
-	html("<td>");
+	html("</td><td class='right'>");
+	htmlf("%d", info->added + info->removed);
 
-	//TODO: diffstat graph
-
-	html("</td></tr>\n");
-	files++;
+	html("</td><td class='graph'>");
+	width = (info->added + info->removed) * 100.0 / max_changes;
+	if (width < 0.1)
+		width = 0.1;
+	html_link_open(cgit_pageurl(cgit_query_repo, "diff", query),
+		       NULL, NULL);
+	htmlf("<img src='/cgit/add.png' style='width: %.1f%%;'/>",
+	      info->added * width / (info->added + info->removed));
+	htmlf("<img src='/cgit/del.png' style='width: %.1f%%;'/>",
+	      info->removed * width / (info->added + info->removed));
+	html("</a></td></tr>\n");
 }
+
+void cgit_count_diff_lines(char *line, int len)
+{
+	if (line && (len > 0)) {
+		if (line[0] == '+')
+			lines_added++;
+		else if (line[0] == '-')
+			lines_removed++;
+	}
+}
+
+void inspect_filepair(struct diff_filepair *pair)
+{
+	files++;
+	lines_added = 0;
+	lines_removed = 0;
+	cgit_diff_files(pair->one->sha1, pair->two->sha1, cgit_count_diff_lines);
+	if (files >= slots) {
+		if (slots == 0)
+			slots = 4;
+		else
+			slots = slots * 2;
+		items = xrealloc(items, slots * sizeof(struct fileinfo));
+	}
+	items[files-1].status = pair->status;
+	hashcpy(items[files-1].old_sha1, pair->one->sha1);
+	hashcpy(items[files-1].new_sha1, pair->two->sha1);
+	items[files-1].old_mode = pair->one->mode;
+	items[files-1].new_mode = pair->two->mode;
+	items[files-1].old_path = xstrdup(pair->one->path);
+	items[files-1].new_path = xstrdup(pair->two->path);
+	items[files-1].added = lines_added;
+	items[files-1].removed = lines_removed;
+	if (lines_added + lines_removed > max_changes)
+		max_changes = lines_added + lines_removed;
+	total_adds += lines_added;
+	total_rems += lines_removed;
+}
+
 
 void cgit_print_commit(const char *hex)
 {
@@ -94,6 +157,7 @@ void cgit_print_commit(const char *hex)
 	unsigned char sha1[20];
 	char *query;
 	char *filename;
+	int i;
 
 	if (get_sha1(hex, sha1)) {
 		cgit_print_error(fmt("Bad object id: %s", hex));
@@ -148,11 +212,17 @@ void cgit_print_commit(const char *hex)
 	html("<div class='commit-msg'>");
 	html_txt(info->msg);
 	html("</div>");
-	html("<table class='diffstat'>");
-	html("<tr><th colspan='3'>Affected files</tr>\n");
-	cgit_diff_commit(commit, print_filepair);
-	htmlf("<tr><td colspan='3' class='summary'>"
-	      "%d file%s changed</td></tr>\n", files, files > 1 ? "s" : "");
-	html("</table>");
+	if (!(commit->parents && commit->parents->next && commit->parents->next->next)) {
+		html("<table class='diffstat'>");
+		max_changes = 0;
+		cgit_diff_commit(commit, inspect_filepair);
+		for(i = 0; i<files; i++)
+			print_fileinfo(&items[i]);
+		html("</table>");
+		html("<div class='diffstat-summary'>");
+		htmlf("%d files changed, %d insertions, %d deletions\n",
+		      files, total_adds, total_rems);
+		html("</div>");
+	}
 	cgit_free_commitinfo(info);
 }
