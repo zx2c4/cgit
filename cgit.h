@@ -174,7 +174,7 @@ extern void cgit_print_view(const char *hex, char *path);
 extern void cgit_print_blob(struct cacheitem *item, const char *hex, char *path);
 extern void cgit_print_tree(const char *hex, char *path);
 extern void cgit_print_commit(const char *hex);
-extern void cgit_print_diff(const char *old_hex, const char *new_hex);
+extern void cgit_print_diff(const char *old_hex, const char *new_hex, char *path);
 extern void cgit_print_snapshot(struct cacheitem *item, const char *hex, 
 				const char *format, const char *prefix,
 				const char *filename);

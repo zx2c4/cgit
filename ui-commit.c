@@ -76,8 +76,8 @@ void print_fileinfo(struct fileinfo *info)
 		html("]</span>");
 	}
 	htmlf("</td><td class='%s'>", class);
-	query = fmt("id=%s&id2=%s", sha1_to_hex(info->old_sha1),
-		    sha1_to_hex(info->new_sha1));
+	query = fmt("id=%s&id2=%s&path=%s", sha1_to_hex(info->old_sha1),
+		    sha1_to_hex(info->new_sha1), info->new_path);
 	html_link_open(cgit_pageurl(cgit_query_repo, "diff", query),
 		       NULL, NULL);
 	if (info->status == DIFF_STATUS_COPIED ||
@@ -151,7 +151,7 @@ void inspect_filepair(struct diff_filepair *pair)
 
 void cgit_print_commit(const char *hex)
 {
-	struct commit *commit;
+	struct commit *commit, *parent;
 	struct commitinfo *info;
 	struct commit_list *p;
 	unsigned char sha1[20];
@@ -190,13 +190,24 @@ void cgit_print_commit(const char *hex)
 	html_attr(cgit_pageurl(cgit_query_repo, "tree", query));
 	htmlf("'>%s</a></td></tr>\n", sha1_to_hex(commit->tree->object.sha1));
       	for (p = commit->parents; p ; p = p->next) {
+		parent = lookup_commit_reference(p->item->object.sha1);
+		if (!parent) {
+			html("<tr><td colspan='3'>");
+			cgit_print_error("Error reading parent commit");
+			html("</td></tr>");
+			continue;
+		}
 		html("<tr><th>parent</th>"
 		     "<td colspan='2' class='sha1'>"
 		     "<a href='");
 		query = fmt("id=%s", sha1_to_hex(p->item->object.sha1));
 		html_attr(cgit_pageurl(cgit_query_repo, "commit", query));
-		htmlf("'>%s</a></td></tr>\n",
+		htmlf("'>%s</a> (<a href='",
 		      sha1_to_hex(p->item->object.sha1));
+		query = fmt("id=%s&id2=%s", sha1_to_hex(parent->tree->object.sha1),
+			    sha1_to_hex(commit->tree->object.sha1));
+		html_attr(cgit_pageurl(cgit_query_repo, "diff", query));
+		html("'>diff</a>)</td></tr>");
 	}
 	if (cgit_repo->snapshots) {
 		htmlf("<tr><th>download</th><td colspan='2' class='sha1'><a href='");

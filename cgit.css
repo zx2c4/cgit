@@ -290,6 +290,11 @@ div.diffstat-summary {
 	padding-top: 0.5em;
 }
 
+table.diff th {
+	padding: 1em 0em 0.1em 0.1em;
+	text-align: left;
+}
+
 table.diff td {
 	border: solid 1px black;
 	font-family: monospace;
