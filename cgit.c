@@ -243,7 +243,7 @@ int main(int argc, const char **argv)
 	cgit_repolist.count = 0;
 	cgit_repolist.repos = NULL;
 
-	cgit_read_config("/etc/cgitrc", cgit_global_config_cb);
+	cgit_read_config(CGIT_CONFIG, cgit_global_config_cb);
 	if (getenv("QUERY_STRING"))
 		cgit_querystring = xstrdup(getenv("QUERY_STRING"));
 	cgit_parse_args(argc, argv);

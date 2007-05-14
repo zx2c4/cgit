@@ -3,8 +3,9 @@ CGIT_VERSION = 0.4
 prefix = /var/www/htdocs/cgit
 
 SHA1_HEADER = <openssl/sha.h>
-
 CACHE_ROOT = /var/cache/cgit
+CGIT_CONFIG = /etc/cgitrc
+
 EXTLIBS = git/libgit.a git/xdiff/lib.a -lz -lcrypto
 OBJECTS = shared.o cache.o parsing.o html.o ui-shared.o ui-repolist.o \
 	ui-summary.o ui-log.o ui-view.o ui-tree.o ui-commit.o ui-diff.o \
@@ -16,7 +17,10 @@ ifdef DEBUG
 	CFLAGS += -g
 endif
 
-CFLAGS += -Igit -DSHA1_HEADER='$(SHA1_HEADER)'
+CFLAGS += -Igit
+CFLAGS += -DSHA1_HEADER='$(SHA1_HEADER)'
+CFLAGS += -DCGIT_VERSION='"$(CGIT_VERSION)"'
+CFLAGS += -DCGIT_CONFIG='"$(CGIT_CONFIG)"'
 
 
 #
@@ -39,8 +43,7 @@ endif
 all: cgit
 
 cgit: cgit.c cgit.h $(OBJECTS)
-	$(CC) $(CFLAGS) -DCGIT_VERSION='"$(CGIT_VERSION)"' cgit.c -o cgit \
-		$(OBJECTS) $(EXTLIBS)
+	$(CC) $(CFLAGS) cgit.c -o cgit $(OBJECTS) $(EXTLIBS)
 
 $(OBJECTS): cgit.h git/libgit.a
 
