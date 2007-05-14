@@ -14,9 +14,9 @@ const char cgit_doctype[] =
 
 static char *http_date(time_t t)
 {
-	static char day[][4] = 
+	static char day[][4] =
 		{"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
-	static char month[][4] = 
+	static char month[][4] =
 		{"Jan", "Feb", "Mar", "Apr", "May", "Jun",
 		 "Jul", "Aug", "Sep", "Oct", "Now", "Dec"};
 	struct tm *tm = gmtime(&t);
@@ -57,11 +57,11 @@ char *cgit_repourl(const char *reponame)
 	}
 }
 
-char *cgit_pageurl(const char *reponame, const char *pagename, 
+char *cgit_pageurl(const char *reponame, const char *pagename,
 		   const char *query)
 {
 	if (cgit_virtual_root) {
-		return fmt("%s/%s/%s/?%s", cgit_virtual_root, reponame, 
+		return fmt("%s/%s/%s/?%s", cgit_virtual_root, reponame,
 			   pagename, query);
 	} else {
 		return fmt("?r=%s&p=%s&%s", reponame, pagename, query);
@@ -89,7 +89,6 @@ void cgit_print_date(unsigned long secs)
 	time = gmtime(&secs);
 	strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", time);
 	html_txt(buf);
-	
 }
 
 void cgit_print_docstart(char *title, struct cacheitem *item)
@@ -162,7 +161,7 @@ void cgit_print_pageheader(char *title, int show_search)
 	html("<tr><td id='content' colspan='2'>");
 }
 
-void cgit_print_snapshot_start(const char *mimetype, const char *filename, 
+void cgit_print_snapshot_start(const char *mimetype, const char *filename,
 			       struct cacheitem *item)
 {
 	htmlf("Content-Type: %s\n", mimetype);
