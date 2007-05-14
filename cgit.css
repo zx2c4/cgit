@@ -294,19 +294,18 @@ div.diffstat-summary {
 	padding-top: 0.5em;
 }
 
-table.diff th {
-	padding: 1em 0em 0.1em 0.1em;
-	text-align: left;
-}
-
 table.diff td {
-	border: solid 1px black;
 	font-family: monospace;
 	white-space: pre;
 }
 
+table.diff td div.head {
+	font-weight: bold;
+	padding-top: 1em;
+}
+
 table.diff td div.hunk {
-	background: #ccc;
+	color: #009;
 }
 
 table.diff td div.add {

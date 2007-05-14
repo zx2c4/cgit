@@ -31,12 +31,33 @@ static void print_line(char *line, int len)
 	line[len-1] = c;
 }
 
+static void header(unsigned char *sha1, char *path1,
+		   unsigned char *sha2, char *path2)
+{
+	char *abbrev1, *abbrev2;
+
+	html("<tr><td>");
+	html("<div class='head'>");
+	html("diff --git a/");
+	html_txt(path1);
+	html(" b/");
+	html_txt(path2);
+	abbrev1 = xstrdup(find_unique_abbrev(sha1, DEFAULT_ABBREV));
+	abbrev2 = xstrdup(find_unique_abbrev(sha2, DEFAULT_ABBREV));
+	htmlf("\nindex %s..%s", abbrev1, abbrev2);
+	free(abbrev1);
+	free(abbrev2);
+	html("\n--- a/");
+	html_txt(path1);
+	html("\n+++ b/");
+	html_txt(path2);
+	html("</div>");
+}
+
 static void filepair_cb(struct diff_filepair *pair)
 {
-	html("<tr><th>");
-	html_txt(pair->two->path);
-	html("</th></tr>");
-	html("<tr><td>");
+	header(pair->one->sha1, pair->one->path,
+	       pair->two->sha1, pair->two->path);
 	if (cgit_diff_files(pair->one->sha1, pair->two->sha1, print_line))
 		cgit_print_error("Error running diff");
 	html("</tr></td>");
@@ -63,9 +84,8 @@ void cgit_print_diff(const char *old_hex, const char *new_hex, char *path)
 	html("<table class='diff'>");
 	switch(type) {
 	case OBJ_BLOB:
-		if (path)
-			htmlf("<tr><th>%s</th></tr>", path);
 		html("<tr><td>");
+		header(sha1, path, sha2, path);
 		if (cgit_diff_files(sha1, sha2, print_line))
 			cgit_print_error("Error running diff");
 		html("</tr></td>");
