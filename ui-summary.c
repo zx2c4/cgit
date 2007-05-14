@@ -130,6 +130,7 @@ static int cgit_print_archive_cb(const char *refname, const unsigned char *sha1,
 	struct taginfo *info;
 	struct object *obj;
 	char buf[256], *url;
+	unsigned char fileid[20];
 
 	if (prefixcmp(refname, "refs/archives"))
 		return 0;
@@ -141,9 +142,11 @@ static int cgit_print_archive_cb(const char *refname, const unsigned char *sha1,
 		tag = lookup_tag(sha1);
 		if (!tag || parse_tag(tag) || !(info = cgit_parse_tag(tag)))
 			return 0;
-		hashcpy(sha1, tag->tagged->sha1);
+		hashcpy(fileid, tag->tagged->sha1);
 	} else if (obj->type != OBJ_BLOB) {
 		return 0;
+	} else {
+		hashcpy(fileid, sha1);
 	}
 	if (!header) {
 		html("<table>");
@@ -152,7 +155,7 @@ static int cgit_print_archive_cb(const char *refname, const unsigned char *sha1,
 	}
 	html("<tr><td>");
 	url = cgit_pageurl(cgit_query_repo, "blob",
-			   fmt("id=%s&path=%s", sha1_to_hex(sha1),
+			   fmt("id=%s&path=%s", sha1_to_hex(fileid),
 			       buf));
 	html_link_open(url, NULL, NULL);
 	html_txt(buf);
