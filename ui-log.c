@@ -53,16 +53,20 @@ void print_commit(struct commit *commit)
 }
 
 
-void cgit_print_log(const char *tip, int ofs, int cnt, char *grep)
+void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *path)
 {
 	struct rev_info rev;
 	struct commit *commit;
-	const char *argv[3] = {NULL, tip, NULL};
+	const char *argv[] = {NULL, tip, NULL, NULL, NULL};
 	int argc = 2;
 	int i;
 
 	if (grep)
 		argv[argc++] = fmt("--grep=%s", grep);
+	if (path) {
+		argv[argc++] = "--";
+		argv[argc++] = path;
+	}
 	init_revisions(&rev, NULL);
 	rev.abbrev = DEFAULT_ABBREV;
 	rev.commit_format = CMIT_FMT_DEFAULT;

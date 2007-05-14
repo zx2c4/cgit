@@ -108,9 +108,10 @@ static void cgit_print_repo_page(struct cacheitem *item)
 
 	if (!strcmp(cgit_query_page, "log")) {
 		cgit_print_log(cgit_query_head, cgit_query_ofs,
-			       cgit_max_commit_count, cgit_query_search);
+			       cgit_max_commit_count, cgit_query_search,
+			       cgit_query_path);
 	} else if (!strcmp(cgit_query_page, "tree")) {
-		cgit_print_tree(cgit_query_sha1, cgit_query_path);
+		cgit_print_tree(cgit_query_head, cgit_query_sha1, cgit_query_path);
 	} else if (!strcmp(cgit_query_page, "commit")) {
 		cgit_print_commit(cgit_query_sha1);
 	} else if (!strcmp(cgit_query_page, "view")) {

@@ -8,9 +8,10 @@
 
 #include "cgit.h"
 
+char *curr_rev;
 
-static int print_entry(const unsigned char *sha1, const char *base, 
-		       int baselen, const char *pathname, unsigned int mode, 
+static int print_entry(const unsigned char *sha1, const char *base,
+		       int baselen, const char *pathname, unsigned int mode,
 		       int stage)
 {
 	char *name;
@@ -35,30 +36,41 @@ static int print_entry(const unsigned char *sha1, const char *base,
 			      sha1_to_hex(sha1)));
 	} else if (S_ISDIR(mode)) {
 		html("class='ls-dir'><a href='");
-		html_attr(cgit_pageurl(cgit_query_repo, "tree", 
-				       fmt("id=%s&path=%s%s/", 
+		html_attr(cgit_pageurl(cgit_query_repo, "tree",
+				       fmt("h=%s&id=%s&path=%s%s/",
+					   curr_rev,
 					   sha1_to_hex(sha1),
 					   cgit_query_path ? cgit_query_path : "",
 					   pathname)));
 	} else {
 		html("class='ls-blob'><a href='");
 		html_attr(cgit_pageurl(cgit_query_repo, "view",
-				      fmt("id=%s&path=%s%s", sha1_to_hex(sha1),
+				      fmt("h=%s&id=%s&path=%s%s", curr_rev,
+					  sha1_to_hex(sha1),
 					  cgit_query_path ? cgit_query_path : "",
 					  pathname)));
 	}
 	htmlf("'>%s</a></div></td>", name);
 	htmlf("<td class='filesize'>%li</td>", size);
+
+	html("<td class='links'><a href='");
+	html_attr(cgit_pageurl(cgit_query_repo, "log",
+			       fmt("h=%s&path=%s%s",
+				   curr_rev,
+				   cgit_query_path ? cgit_query_path : "",
+				   pathname)));
+	html("'>history</a></td>");
 	html("</tr>\n");
 	free(name);
 	return 0;
 }
 
-void cgit_print_tree(const char *hex, char *path)
+void cgit_print_tree(const char *rev, const char *hex, char *path)
 {
 	struct tree *tree;
 	unsigned char sha1[20];
 
+	curr_rev = xstrdup(rev);
 	if (get_sha1_hex(hex, sha1)) {
 		cgit_print_error(fmt("Invalid object id: %s", hex));
 		return;
@@ -75,6 +87,7 @@ void cgit_print_tree(const char *hex, char *path)
 	html("<th class='left'>Mode</th>");
 	html("<th class='left'>Name</th>");
 	html("<th class='right'>Size</th>");
+	html("<th/>");
 	html("</tr>\n");
 	read_tree_recursive(tree, "", 0, 1, NULL, print_entry);
 	html("</table>\n");

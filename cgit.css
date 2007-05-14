@@ -189,6 +189,11 @@ td.filesize {
 	font-family: monospace;
 }
 
+td.links {
+	font-size: 80%;
+	padding-left: 2em;
+}
+
 td.filemode {
 	font-family: monospace;
 }
