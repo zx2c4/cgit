@@ -64,19 +64,21 @@ int read_config_line(FILE *f, char *line, const char **value, int bufsize)
 
 int cgit_read_config(const char *filename, configfn fn)
 {
-	int ret = 0, len;
+	static int nesting;
+	int len;
 	char line[256];
 	const char *value;
-	FILE *f = fopen(filename, "r");
+	FILE *f;
 
-	if (!f)
+	/* cancel the reading of yet another configfile after 16 invocations */
+	if (nesting++ > 16)
 		return -1;
-
+	if (!(f = fopen(filename, "r")))
+		return -1;
 	while((len = read_config_line(f, line, &value, sizeof(line))) > 0)
 		(*fn)(line, value);
-
 	fclose(f);
-	return ret;
+	return 0;
 }
 
 char *convert_query_hexchar(char *txt)

@@ -63,8 +63,11 @@
 #cache-root=/var/cache/cgit
 
 
+## Include another config-file
+#include=/var/cgit/repolist
+
 ##
-## Time-To-Live settings: specifies how long (in minutes) different pages 
+## Time-To-Live settings: specifies how long (in minutes) different pages
 ## should be cached (0 for instant expiration, -1 for immortal pages)
 ##
 
@@ -74,7 +77,7 @@
 ## ttl for repo summary page
 #cache-repo-ttl=5
 
-## ttl for other dynamic pages 
+## ttl for other dynamic pages
 #cache-dynamic-ttl=5
 
 ## ttl for static pages (addressed by SHA-1)

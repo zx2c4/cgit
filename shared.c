@@ -137,6 +137,8 @@ void cgit_global_config_cb(const char *name, const char *value)
 		cgit_repo->snapshots = atoi(value);
 	else if (cgit_repo && !strcmp(name, "repo.module-link"))
 		cgit_repo->module_link= xstrdup(value);
+	else if (!strcmp(name, "include"))
+		cgit_read_config(value, cgit_global_config_cb);
 }
 
 void cgit_repo_config_cb(const char *name, const char *value)
