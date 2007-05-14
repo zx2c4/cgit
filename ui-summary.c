@@ -8,7 +8,7 @@
 
 #include "cgit.h"
 
-static int items;
+static int header;
 
 static int cgit_print_branch_cb(const char *refname, const unsigned char *sha1,
 				int flags, void *cb_data)
@@ -69,6 +69,15 @@ static void cgit_print_object_ref(struct object *obj)
 	html_link_close();
 }
 
+static void print_tag_header()
+{
+	html("<tr class='nohover'><th class='left'>Tag</th>"
+	     "<th class='left'>Created</th>"
+	     "<th class='left'>Author</th>"
+	     "<th class='left'>Reference</th></tr>\n");
+	header = 1;
+}
+
 static int cgit_print_tag_cb(const char *refname, const unsigned char *sha1,
 				int flags, void *cb_data)
 {
@@ -85,13 +94,8 @@ static int cgit_print_tag_cb(const char *refname, const unsigned char *sha1,
 		tag = lookup_tag(sha1);
 		if (!tag || parse_tag(tag) || !(info = cgit_parse_tag(tag)))
 			return 2;
-		if (!items) {
-			html("<tr class='nohover'><th class='left'>Tag</th>"
-			     "<th class='left'>Created</th>"
-			     "<th class='left'>Author</th>"
-			     "<th class='left'>Reference</th></tr>\n");
-		}
-		items++;
+		if (!header)
+			print_tag_header();
 		html("<tr><td>");
 		url = cgit_pageurl(cgit_query_repo, "view",
 				   fmt("id=%s", sha1_to_hex(sha1)));
@@ -108,6 +112,8 @@ static int cgit_print_tag_cb(const char *refname, const unsigned char *sha1,
 		cgit_print_object_ref(tag->tagged);
 		html("</td></tr>\n");
 	} else {
+		if (!header)
+			print_tag_header();
 		html("<tr><td>");
 		html_txt(buf);
 		html("</td><td colspan='2'/><td>");
@@ -139,11 +145,11 @@ static int cgit_print_archive_cb(const char *refname, const unsigned char *sha1,
 	} else if (obj->type != OBJ_BLOB) {
 		return 0;
 	}
-	if (!items) {
+	if (!header) {
 		html("<table>");
 		html("<tr><th>Downloads</th></tr>");
+		header = 1;
 	}
-	items++;
 	html("<tr><td>");
 	url = cgit_pageurl(cgit_query_repo, "blob",
 			   fmt("id=%s&path=%s", sha1_to_hex(sha1),
@@ -166,15 +172,15 @@ static void cgit_print_branches()
 
 static void cgit_print_tags()
 {
-	items = 0;
+	header = 0;
 	for_each_tag_ref(cgit_print_tag_cb, NULL);
 }
 
 static void cgit_print_archives()
 {
-	items = 0;
+	header = 0;
 	for_each_ref(cgit_print_archive_cb, NULL);
-	if (items)
+	if (header)
 		html("</table>");
 }
 
