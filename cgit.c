@@ -15,7 +15,7 @@ static struct repoinfo *cgit_get_repoinfo(char *url)
 {
 	int i;
 	struct repoinfo *repo;
-	
+
 	for (i=0; i<cgit_repolist.count; i++) {
 		repo = &cgit_repolist.repos[i];
 		if (!strcmp(repo->url, url))
@@ -43,12 +43,12 @@ static int cgit_prepare_cache(struct cacheitem *item)
 	}
 
 	if (!cgit_query_page) {
-		item->name = xstrdup(fmt("%s/%s/index.html", cgit_cache_root, 
+		item->name = xstrdup(fmt("%s/%s/index.html", cgit_cache_root,
 			   cgit_repo->url));
 		item->ttl = cgit_cache_repo_ttl;
 	} else {
-		item->name = xstrdup(fmt("%s/%s/%s/%s.html", cgit_cache_root, 
-			   cgit_repo->url, cgit_query_page, 
+		item->name = xstrdup(fmt("%s/%s/%s/%s.html", cgit_cache_root,
+			   cgit_repo->url, cgit_query_page,
 			   cache_safe_filename(cgit_querystring)));
 		if (cgit_query_has_symref)
 			item->ttl = cgit_cache_dynamic_ttl;
@@ -81,7 +81,7 @@ static void cgit_print_repo_page(struct cacheitem *item)
 
 	if (cgit_query_page) {
 	    if (cgit_repo->snapshots && !strcmp(cgit_query_page, "snapshot")) {
-		cgit_print_snapshot(item, cgit_query_sha1, "zip", 
+		cgit_print_snapshot(item, cgit_query_sha1, "zip",
 				    cgit_repo->url, cgit_query_name);
 		return;
 	    }
@@ -133,7 +133,7 @@ static void cgit_fill_cache(struct cacheitem *item, int use_cache)
 	item->st.st_mtime = time(NULL);
 
 	if (use_cache) {
-		stdout2 = chk_positive(dup(STDOUT_FILENO), 
+		stdout2 = chk_positive(dup(STDOUT_FILENO),
 				       "Preserving STDOUT");
 		chk_zero(close(STDOUT_FILENO), "Closing STDOUT");
 		chk_positive(dup2(item->fd, STDOUT_FILENO), "Dup2(cachefile)");
@@ -146,7 +146,7 @@ static void cgit_fill_cache(struct cacheitem *item, int use_cache)
 
 	if (use_cache) {
 		chk_zero(close(STDOUT_FILENO), "Close redirected STDOUT");
-		chk_positive(dup2(stdout2, STDOUT_FILENO), 
+		chk_positive(dup2(stdout2, STDOUT_FILENO),
 			     "Restoring original STDOUT");
 		chk_zero(close(stdout2), "Closing temporary STDOUT");
 	}
