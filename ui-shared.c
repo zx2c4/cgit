@@ -45,7 +45,7 @@ char *cgit_rooturl()
 	if (cgit_virtual_root)
 		return fmt("%s/", cgit_virtual_root);
 	else
-		return "./cgit.cgi";
+		return cgit_script_name;
 }
 
 char *cgit_repourl(const char *reponame)
@@ -71,7 +71,7 @@ char *cgit_pageurl(const char *reponame, const char *pagename,
 char *cgit_currurl()
 {
 	if (!cgit_virtual_root)
-		return "./cgit.cgi";
+		return cgit_script_name;
 	else if (cgit_query_page)
 		return fmt("%s/%s/%s/", cgit_virtual_root, cgit_query_repo, cgit_query_page);
 	else if (cgit_query_repo)

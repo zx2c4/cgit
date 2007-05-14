@@ -17,7 +17,7 @@ char *cgit_logo         = "/git-logo.png";
 char *cgit_logo_link    = "http://www.kernel.org/pub/software/scm/git/docs/";
 char *cgit_module_link  = "./?repo=%s&page=commit&id=%s";
 char *cgit_virtual_root = NULL;
-
+char *cgit_script_name  = CGIT_SCRIPT_NAME;
 char *cgit_cache_root   = "/var/cache/cgit";
 
 int cgit_nocache               =  0;

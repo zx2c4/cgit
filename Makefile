@@ -5,6 +5,7 @@ prefix = /var/www/htdocs/cgit
 SHA1_HEADER = <openssl/sha.h>
 CACHE_ROOT = /var/cache/cgit
 CGIT_CONFIG = /etc/cgitrc
+CGIT_SCRIPT_NAME = cgit.cgi
 
 EXTLIBS = git/libgit.a git/xdiff/lib.a -lz -lcrypto
 OBJECTS = shared.o cache.o parsing.o html.o ui-shared.o ui-repolist.o \
@@ -21,6 +22,7 @@ CFLAGS += -Igit
 CFLAGS += -DSHA1_HEADER='$(SHA1_HEADER)'
 CFLAGS += -DCGIT_VERSION='"$(CGIT_VERSION)"'
 CFLAGS += -DCGIT_CONFIG='"$(CGIT_CONFIG)"'
+CFLAGS += -DCGIT_SCRIPT_NAME='"$(CGIT_SCRIPT_NAME)"'
 
 
 #
@@ -56,7 +58,7 @@ git/libgit.a:
 #
 install: all clean-cache
 	mkdir -p $(prefix)
-	install cgit $(prefix)/cgit.cgi
+	install cgit $(prefix)/$(CGIT_SCRIPT_NAME)
 	install cgit.css $(prefix)/cgit.css
 	install add.png del.png $(prefix)/
 
