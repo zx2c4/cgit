@@ -241,10 +241,11 @@ table.diffstat {
 	margin-top: 1.5em;
 	width: 100%;
 	border: solid 1px #aaa;
+	background-color: #eee;
 }
 
 table.diffstat tr:hover {
-	background-color: #eee;
+	background-color: #ccc;
 }
 
 table.diffstat th {
@@ -259,8 +260,6 @@ table.diffstat td {
 	padding: 0.2em 0.2em 0.1em 0.1em;
 	font-size: 100%;
 	border: none;
-	border-top: solid 1px #aaa;
-	border-bottom: solid 1px #aaa;
 }
 
 table.diffstat td span.modechange {
@@ -287,7 +286,7 @@ table.diffstat td.graph {
 
 table.diffstat td.graph img {
 	border: none;
-	height: 11pt;
+	height: 8pt;
 }
 
 div.diffstat-summary {
