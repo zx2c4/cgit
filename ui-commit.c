@@ -8,11 +8,11 @@
 
 #include "cgit.h"
 
-int files = 0, slots = 0;
-int total_adds = 0, total_rems = 0, max_changes = 0;
-int lines_added, lines_removed;
+static int files, slots;
+static int total_adds, total_rems, max_changes;
+static int lines_added, lines_removed;
 
-struct fileinfo {
+static struct fileinfo {
 	char status;
 	unsigned char old_sha1[20];
 	unsigned char new_sha1[20];

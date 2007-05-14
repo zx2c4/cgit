@@ -8,7 +8,7 @@
 
 #include "cgit.h"
 
-int items = 0;
+static int items;
 
 static int cgit_print_branch_cb(const char *refname, const unsigned char *sha1,
 				int flags, void *cb_data)
@@ -22,7 +22,7 @@ static int cgit_print_branch_cb(const char *refname, const unsigned char *sha1,
 	if (commit && !parse_commit(commit)){
 		info = cgit_parse_commit(commit);
 		html("<tr><td>");
-		url = cgit_pageurl(cgit_query_repo, "log", 
+		url = cgit_pageurl(cgit_query_repo, "log",
 				   fmt("h=%s", refname));
 		html_link_open(url, NULL, NULL);
 		html_txt(buf);
@@ -32,7 +32,7 @@ static int cgit_print_branch_cb(const char *refname, const unsigned char *sha1,
 		html("</td><td>");
 		html_txt(info->author);
 		html("</td><td>");
-		url = cgit_pageurl(cgit_query_repo, "commit", 
+		url = cgit_pageurl(cgit_query_repo, "commit",
 				   fmt("id=%s", sha1_to_hex(sha1)));
 		html_link_open(url, NULL, NULL);
 		html_ntxt(cgit_max_msg_len, info->subject);
@@ -61,10 +61,10 @@ static void cgit_print_object_ref(struct object *obj)
 	else
 		page = "view";
 
-	url = cgit_pageurl(cgit_query_repo, page, 
+	url = cgit_pageurl(cgit_query_repo, page,
 			   fmt("id=%s", sha1_to_hex(obj->sha1)));
 	html_link_open(url, NULL, NULL);
-	htmlf("%s %s", typename(obj->type), 
+	htmlf("%s %s", typename(obj->type),
 	      sha1_to_hex(obj->sha1));
 	html_link_close();
 }
@@ -76,7 +76,7 @@ static int cgit_print_tag_cb(const char *refname, const unsigned char *sha1,
 	struct taginfo *info;
 	struct object *obj;
 	char buf[256], *url;
- 
+
 	strncpy(buf, refname, sizeof(buf));
 	obj = parse_object(sha1);
 	if (!obj)
@@ -93,7 +93,7 @@ static int cgit_print_tag_cb(const char *refname, const unsigned char *sha1,
 		}
 		items++;
 		html("<tr><td>");
-		url = cgit_pageurl(cgit_query_repo, "view", 
+		url = cgit_pageurl(cgit_query_repo, "view",
 				   fmt("id=%s", sha1_to_hex(sha1)));
 		html_link_open(url, NULL, NULL);
 		html_txt(buf);
