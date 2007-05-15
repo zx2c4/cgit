@@ -35,7 +35,10 @@ static void header(unsigned char *sha1, char *path1,
 		   unsigned char *sha2, char *path2)
 {
 	char *abbrev1, *abbrev2;
-
+	if (is_null_sha1(sha1))
+		path1 = "dev/null";
+	if (is_null_sha1(sha2))
+		path2 = "dev/null";
 	html("<tr><td>");
 	html("<div class='head'>");
 	html("diff --git a/");
