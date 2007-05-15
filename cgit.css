@@ -236,9 +236,13 @@ div.commit-msg {
 	font-family: monospace;
 }
 
+div.diffstat-header {
+	font-weight: bold;
+	padding-top: 1.5em;
+}
+
 table.diffstat {
 	border-collapse: collapse;
-	margin-top: 1.5em;
 	width: 100%;
 	border: solid 1px #aaa;
 	background-color: #eee;

@@ -221,6 +221,7 @@ void cgit_print_commit(const char *hex)
 	html_txt(info->msg);
 	html("</div>");
 	if (!(commit->parents && commit->parents->next && commit->parents->next->next)) {
+		html("<div class='diffstat-header'>Diffstat</div>");
 		html("<table class='diffstat'>");
 		max_changes = 0;
 		cgit_diff_commit(commit, inspect_filepair);
@@ -228,8 +229,11 @@ void cgit_print_commit(const char *hex)
 			print_fileinfo(&items[i]);
 		html("</table>");
 		html("<div class='diffstat-summary'>");
-		htmlf("%d files changed, %d insertions, %d deletions\n",
+		htmlf("%d files changed, %d insertions, %d deletions (",
 		      files, total_adds, total_rems);
+		query = fmt("h=%s", hex);
+		html_link_open(cgit_pageurl(cgit_query_repo, "diff", query), NULL, NULL);
+		html("show diff</a>)");
 		html("</div>");
 	}
 	cgit_free_commitinfo(info);
