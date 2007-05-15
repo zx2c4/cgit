@@ -157,7 +157,7 @@ extern int cache_exist(struct cacheitem *item);
 extern int cache_expired(struct cacheitem *item);
 
 extern char *cgit_repourl(const char *reponame);
-extern char *cgit_pageurl(const char *reponame, const char *pagename, 
+extern char *cgit_pageurl(const char *reponame, const char *pagename,
 			  const char *query);
 
 extern void cgit_print_error(char *msg);
@@ -165,8 +165,8 @@ extern void cgit_print_date(unsigned long secs);
 extern void cgit_print_docstart(char *title, struct cacheitem *item);
 extern void cgit_print_docend();
 extern void cgit_print_pageheader(char *title, int show_search);
-extern void cgit_print_snapshot_start(const char *mimetype, 
-				      const char *filename, 
+extern void cgit_print_snapshot_start(const char *mimetype,
+				      const char *filename,
 				      struct cacheitem *item);
 
 extern void cgit_print_repolist(struct cacheitem *item);
@@ -176,8 +176,9 @@ extern void cgit_print_view(const char *hex, char *path);
 extern void cgit_print_blob(struct cacheitem *item, const char *hex, char *path);
 extern void cgit_print_tree(const char *rev, const char *hex, char *path);
 extern void cgit_print_commit(const char *hex);
-extern void cgit_print_diff(const char *old_hex, const char *new_hex, char *path);
-extern void cgit_print_snapshot(struct cacheitem *item, const char *hex, 
+extern void cgit_print_diff(const char *head, const char *old_hex, const char *new_hex,
+			    char *path);
+extern void cgit_print_snapshot(struct cacheitem *item, const char *hex,
 				const char *format, const char *prefix,
 				const char *filename);
 

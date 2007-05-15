@@ -66,11 +66,23 @@ static void filepair_cb(struct diff_filepair *pair)
 	html("</tr></td>");
 }
 
-void cgit_print_diff(const char *old_hex, const char *new_hex, char *path)
+void cgit_print_diff(const char *head, const char *old_hex, const char *new_hex, char *path)
 {
 	unsigned char sha1[20], sha2[20];
 	enum object_type type;
 	unsigned long size;
+	struct commit *commit;
+
+	if (head && !old_hex && !new_hex) {
+		get_sha1(head, sha1);
+		commit = lookup_commit_reference(sha1);
+		if (commit && !parse_commit(commit)) {
+			html("<table class='diff'>");
+			cgit_diff_commit(commit, filepair_cb);
+			html("</td></tr></table>");
+		}
+		return;
+	}
 
 	get_sha1(old_hex, sha1);
 	get_sha1(new_hex, sha2);
