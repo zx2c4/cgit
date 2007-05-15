@@ -69,8 +69,18 @@ void cgit_print_tree(const char *rev, const char *hex, char *path)
 {
 	struct tree *tree;
 	unsigned char sha1[20];
+	struct commit *commit;
 
 	curr_rev = xstrdup(rev);
+	get_sha1(rev, sha1);
+	commit = lookup_commit_reference(sha1);
+	if (!commit || parse_commit(commit)) {
+		cgit_print_error(fmt("Invalid head: %s", rev));
+		return;
+	}
+	if (!hex)
+		hex = sha1_to_hex(commit->tree->object.sha1);
+
 	if (get_sha1_hex(hex, sha1)) {
 		cgit_print_error(fmt("Invalid object id: %s", hex));
 		return;
