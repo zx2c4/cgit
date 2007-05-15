@@ -34,7 +34,7 @@ void print_commit(struct commit *commit)
 	strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M", time);
 	html_txt(buf);
 	html("</td><td>");
-	char *qry = fmt("id=%s", sha1_to_hex(commit->object.sha1));
+	char *qry = fmt("h=%s", sha1_to_hex(commit->object.sha1));
 	char *url = cgit_pageurl(cgit_query_repo, "commit", qry);
 	html_link_open(url, NULL, NULL);
 	html_ntxt(cgit_max_msg_len, info->subject);
@@ -121,4 +121,3 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *path)
 	}
 	html("</div>");
 }
-

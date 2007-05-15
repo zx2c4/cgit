@@ -33,7 +33,7 @@ static int cgit_print_branch_cb(const char *refname, const unsigned char *sha1,
 		html_txt(info->author);
 		html("</td><td>");
 		url = cgit_pageurl(cgit_query_repo, "commit",
-				   fmt("id=%s", sha1_to_hex(sha1)));
+				   fmt("h=%s", sha1_to_hex(sha1)));
 		html_link_open(url, NULL, NULL);
 		html_ntxt(cgit_max_msg_len, info->subject);
 		html_link_close();
@@ -52,17 +52,21 @@ static int cgit_print_branch_cb(const char *refname, const unsigned char *sha1,
 
 static void cgit_print_object_ref(struct object *obj)
 {
-	char *page, *url;
+	char *page, *arg, *url;
 
-	if (obj->type == OBJ_COMMIT)
+	if (obj->type == OBJ_COMMIT) {
 		page = "commit";
-	else if (obj->type == OBJ_TREE)
+		arg = "h";
+	} else if (obj->type == OBJ_TREE) {
 		page = "tree";
-	else
+		arg = "id";
+	} else {
 		page = "view";
+		arg = "id";
+	}
 
 	url = cgit_pageurl(cgit_query_repo, page,
-			   fmt("id=%s", sha1_to_hex(obj->sha1)));
+			   fmt("%s=%s", arg, sha1_to_hex(obj->sha1)));
 	html_link_open(url, NULL, NULL);
 	htmlf("%s %s", typename(obj->type),
 	      sha1_to_hex(obj->sha1));

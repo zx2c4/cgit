@@ -197,7 +197,7 @@ void cgit_print_commit(const char *hex)
 		html("<tr><th>parent</th>"
 		     "<td colspan='2' class='sha1'>"
 		     "<a href='");
-		query = fmt("id=%s", sha1_to_hex(p->item->object.sha1));
+		query = fmt("h=%s", sha1_to_hex(p->item->object.sha1));
 		html_attr(cgit_pageurl(cgit_query_repo, "commit", query));
 		htmlf("'>%s</a> (<a href='",
 		      sha1_to_hex(p->item->object.sha1));
