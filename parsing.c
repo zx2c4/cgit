@@ -70,13 +70,15 @@ int cgit_read_config(const char *filename, configfn fn)
 	const char *value;
 	FILE *f;
 
-	/* cancel the reading of yet another configfile after 16 invocations */
-	if (nesting++ > 16)
+	/* cancel deeply nested include-commands */
+	if (nesting > 8)
 		return -1;
 	if (!(f = fopen(filename, "r")))
 		return -1;
+	nesting++;
 	while((len = read_config_line(f, line, &value, sizeof(line))) > 0)
 		(*fn)(line, value);
+	nesting--;
 	fclose(f);
 	return 0;
 }
@@ -108,7 +110,7 @@ int cgit_parse_query(char *txt, configfn fn)
 		return 0;
 
 	t = txt = xstrdup(txt);
- 
+
 	while((c=*t) != '\0') {
 		if (c=='=') {
 			*t = '\0';
@@ -213,7 +215,7 @@ struct taginfo *cgit_parse_tag(struct tag *tag)
 		free(data);
 		return 0;
 	}
-	
+
 	ret = xmalloc(sizeof(*ret));
 	ret->tagger = NULL;
 	ret->tagger_email = NULL;
