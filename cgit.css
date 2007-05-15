@@ -284,9 +284,26 @@ table.diffstat td.graph {
 	vertical-align: center;
 }
 
-table.diffstat td.graph img {
+table.diffstat td.graph table {
 	border: none;
-	height: 8pt;
+}
+
+table.diffstat td.graph td {
+	padding: 0px;
+	border: 0px;
+	height: 7pt;
+}
+
+table.diffstat td.graph td.add {
+	background-color: #5c5;
+}
+
+table.diffstat td.graph td.rem {
+	background-color: #c55;
+}
+
+table.diffstat td.graph td.none {
+	background-color: none;
 }
 
 div.diffstat-summary {

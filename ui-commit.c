@@ -29,7 +29,6 @@ void print_fileinfo(struct fileinfo *info)
 {
 	char *query, *query2;
 	char *class;
-	double width;
 
 	switch (info->status) {
 	case DIFF_STATUS_ADDED:
@@ -96,18 +95,15 @@ void print_fileinfo(struct fileinfo *info)
 	}
 	html("</td><td class='right'>");
 	htmlf("%d", info->added + info->removed);
-
 	html("</td><td class='graph'>");
-	width = (info->added + info->removed) * 100.0 / max_changes;
-	if (width < 0.1)
-		width = 0.1;
-	html_link_open(cgit_pageurl(cgit_query_repo, "diff", query),
-		       NULL, NULL);
-	htmlf("<img src='/cgit/add.png' style='width: %.1f%%;'/>",
-	      info->added * width / (info->added + info->removed));
-	htmlf("<img src='/cgit/del.png' style='width: %.1f%%;'/>",
-	      info->removed * width / (info->added + info->removed));
-	html("</a></td></tr>\n");
+	htmlf("<table width='%d%%'><tr>", (max_changes > 100 ? 100 : max_changes));
+	htmlf("<td class='add' style='width: %.1f%%;'/>",
+	      info->added * 100.0 / max_changes);
+	htmlf("<td class='rem' style='width: %.1f%%;'/>",
+	      info->removed * 100.0 / max_changes);
+	htmlf("<td class='none' style='width: %.1f%%;'/>",
+	      (max_changes - info->removed - info->added) * 100.0 / max_changes);
+	html("</tr></table></a></td></tr>\n");
 }
 
 void cgit_count_diff_lines(char *line, int len)
