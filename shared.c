@@ -32,10 +32,6 @@ int cgit_cache_max_create_time =  5;
 int cgit_max_msg_len = 60;
 int cgit_max_commit_count = 50;
 
-char *cgit_repo_name    = NULL;
-char *cgit_repo_desc    = NULL;
-char *cgit_repo_owner   = NULL;
-
 int cgit_query_has_symref = 0;
 int cgit_query_has_sha1   = 0;
 
@@ -86,6 +82,7 @@ struct repoinfo *add_repo(const char *url)
 	ret->path = NULL;
 	ret->desc = NULL;
 	ret->owner = NULL;
+	ret->defbranch = "master";
 	ret->snapshots = cgit_snapshots;
 	ret->module_link = cgit_module_link;
 	return ret;
@@ -133,22 +130,14 @@ void cgit_global_config_cb(const char *name, const char *value)
 		cgit_repo->desc = xstrdup(value);
 	else if (cgit_repo && !strcmp(name, "repo.owner"))
 		cgit_repo->owner = xstrdup(value);
+	else if (cgit_repo && !strcmp(name, "repo.defbranch"))
+		cgit_repo->defbranch = xstrdup(value);
 	else if (cgit_repo && !strcmp(name, "repo.snapshots"))
 		cgit_repo->snapshots = atoi(value);
 	else if (cgit_repo && !strcmp(name, "repo.module-link"))
 		cgit_repo->module_link= xstrdup(value);
 	else if (!strcmp(name, "include"))
 		cgit_read_config(value, cgit_global_config_cb);
-}
-
-void cgit_repo_config_cb(const char *name, const char *value)
-{
-	if (!strcmp(name, "name"))
-		cgit_repo_name = xstrdup(value);
-	else if (!strcmp(name, "desc"))
-		cgit_repo_desc = xstrdup(value);
-	else if (!strcmp(name, "owner"))
-		cgit_repo_owner = xstrdup(value);
 }
 
 void cgit_querystring_cb(const char *name, const char *value)

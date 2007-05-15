@@ -35,6 +35,7 @@ struct repoinfo {
 	char *path;
 	char *desc;
 	char *owner;
+	char *defbranch;
 	char *module_link;
 	int snapshots;
 };

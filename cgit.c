@@ -65,6 +65,9 @@ static void cgit_print_repo_page(struct cacheitem *item)
 	char *title;
 	int show_search;
 
+	if (!cgit_query_head)
+		cgit_query_head = cgit_repo->defbranch;
+
 	if (chdir(cgit_repo->path)) {
 		title = fmt("%s - %s", cgit_root_title, "Bad request");
 		cgit_print_docstart(title, item);
