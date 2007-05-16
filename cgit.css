@@ -266,6 +266,10 @@ table.diffstat td {
 	border: none;
 }
 
+table.diffstat td.mode {
+	white-space: nowrap;
+}
+
 table.diffstat td span.modechange {
 	padding-left: 1em;
 	color: red;
