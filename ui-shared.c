@@ -61,8 +61,12 @@ char *cgit_pageurl(const char *reponame, const char *pagename,
 		   const char *query)
 {
 	if (cgit_virtual_root) {
-		return fmt("%s/%s/%s/?%s", cgit_virtual_root, reponame,
-			   pagename, query);
+		if (query)
+			return fmt("%s/%s/%s/?%s", cgit_virtual_root, reponame,
+				   pagename, query);
+		else
+			return fmt("%s/%s/%s/", cgit_virtual_root, reponame,
+				   pagename);
 	} else {
 		return fmt("?r=%s&p=%s&%s", reponame, pagename, query);
 	}
