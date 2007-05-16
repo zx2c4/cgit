@@ -51,6 +51,10 @@
 #module-link=./?repo=%s&page=commit&id=%s
 
 
+## Number of chars shown of repo description (in repolist view)
+#max-repodesc-length=60
+
+
 ## Number of chars shown of commit subject message (in log view)
 #max-message-length=60
 

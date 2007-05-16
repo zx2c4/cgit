@@ -30,7 +30,7 @@ void cgit_print_repolist(struct cacheitem *item)
 		html_txt(repo->name);
 		html_link_close();
 		html("</td><td>");
-		html_txt(repo->desc);
+		html_ntxt(cgit_max_repodesc_len, repo->desc);
 		html("</td><td>");
 		html_txt(repo->owner);
 		html("</td><td>");
