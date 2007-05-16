@@ -20,7 +20,8 @@ void cgit_print_repolist(struct cacheitem *item)
 	html("<tr class='nohover'>"
 	     "<th class='left'>Name</th>"
 	     "<th class='left'>Description</th>"
-	     "<th class='left'>Owner</th></tr>\n");
+	     "<th class='left'>Owner</th>"
+	     "<th class='left'>Links</th></tr>\n");
 
 	for (i=0; i<cgit_repolist.count; i++) {
 		repo = &cgit_repolist.repos[i];
@@ -32,6 +33,19 @@ void cgit_print_repolist(struct cacheitem *item)
 		html_txt(repo->desc);
 		html("</td><td>");
 		html_txt(repo->owner);
+		html("</td><td>");
+		html_link_open(cgit_pageurl(repo->name, "commit", NULL),
+			       "Commit: display last commit", NULL);
+		html("C</a> ");
+		html_link_open(cgit_pageurl(repo->name, "diff", NULL),
+			       "Diff: see changes introduced by last commit", NULL);
+		html("D</a> ");
+		html_link_open(cgit_pageurl(repo->name, "log", NULL),
+			       "Log: show history of the main branch", NULL);
+		html("L</a> ");
+		html_link_open(cgit_pageurl(repo->name, "tree", NULL),
+			       "Tree: browse the files in the main branch", NULL);
+		html("T</a>");
 		html("</td></tr>\n");
 	}
 	html("</table>");
