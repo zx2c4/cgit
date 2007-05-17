@@ -11,20 +11,6 @@
 const char cgit_version[] = CGIT_VERSION;
 
 
-static struct repoinfo *cgit_get_repoinfo(char *url)
-{
-	int i;
-	struct repoinfo *repo;
-
-	for (i=0; i<cgit_repolist.count; i++) {
-		repo = &cgit_repolist.repos[i];
-		if (!strcmp(repo->url, url))
-			return repo;
-	}
-	return NULL;
-}
-
-
 static int cgit_prepare_cache(struct cacheitem *item)
 {
 	if (!cgit_query_repo) {

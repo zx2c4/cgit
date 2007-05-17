@@ -112,6 +112,7 @@ extern int   cgit_query_ofs;
 
 extern int htmlfd;
 
+extern struct repoinfo *cgit_get_repoinfo(const char *url);
 extern void cgit_global_config_cb(const char *name, const char *value);
 extern void cgit_repo_config_cb(const char *name, const char *value);
 extern void cgit_querystring_cb(const char *name, const char *value);

@@ -93,6 +93,19 @@ struct repoinfo *add_repo(const char *url)
 	return ret;
 }
 
+struct repoinfo *cgit_get_repoinfo(const char *url)
+{
+	int i;
+	struct repoinfo *repo;
+
+	for (i=0; i<cgit_repolist.count; i++) {
+		repo = &cgit_repolist.repos[i];
+		if (!strcmp(repo->url, url))
+			return repo;
+	}
+	return NULL;
+}
+
 void cgit_global_config_cb(const char *name, const char *value)
 {
 	if (!strcmp(name, "root-title"))
