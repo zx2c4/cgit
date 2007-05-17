@@ -18,6 +18,17 @@
 #include <xdiff/xdiff.h>
 
 
+/*
+ * The valid cgit repo-commands
+ */
+#define CMD_LOG      = 1;
+#define CMD_COMMIT   = 1;
+#define CMD_DIFF     = 1;
+#define CMD_TREE     = 1;
+#define CMD_VIEW     = 1;
+#define CMD_BLOB     = 1;
+#define CMD_SNAPSHOT = 1;
+
 typedef void (*configfn)(const char *name, const char *value);
 typedef void (*filepair_fn)(struct diff_filepair *pair);
 typedef void (*linediff_fn)(char *line, int len);
@@ -112,6 +123,7 @@ extern int   cgit_query_ofs;
 
 extern int htmlfd;
 
+extern int cgit_get_cmd_index(const char *cmd);
 extern struct repoinfo *cgit_get_repoinfo(const char *url);
 extern void cgit_global_config_cb(const char *name, const char *value);
 extern void cgit_repo_config_cb(const char *name, const char *value);

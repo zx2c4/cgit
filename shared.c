@@ -51,6 +51,18 @@ int   cgit_query_ofs    = 0;
 
 int htmlfd = 0;
 
+
+int cgit_get_cmd_index(const char *cmd)
+{
+	static char *cmds[] = {"log", "commit", "diff", "tree", "view", "blob", "snapshot", NULL};
+	int i;
+
+	for(i = 0; cmds[i]; i++)
+		if (!strcmp(cmd, cmds[i]))
+			return i + 1;
+	return 0;
+}
+
 int chk_zero(int result, char *msg)
 {
 	if (result != 0)
