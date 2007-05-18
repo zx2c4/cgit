@@ -12,6 +12,14 @@
 #snapshots=0
 
 
+## Enable/disable display of 'number of files changed' in log view
+#enable-log-filecount=0
+
+
+## Enable/disable display of 'number of lines changed' in log view
+#enable-log-linecount=0
+
+
 ## Specify a root for virtual urls. This makes cgit generate urls like
 ##
 ##    http://localhost/git/repo/log/?id=master
@@ -97,4 +105,6 @@
 #repo.path=/pub/git/cgit
 #repo.owner=Lars Hjemli
 #repo.snapshots=1				# override a sitewide snapshot-setting
+#repo.enable-log-filecount=0			# override the default filecount setting
+#repo.enable-log-linecount=0			# override the default linecount setting
 #repo.module-link=/git/%s/commit/?id=%s		# override the standard module-link

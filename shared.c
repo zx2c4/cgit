@@ -22,6 +22,8 @@ char *cgit_cache_root   = "/var/cache/cgit";
 
 int cgit_nocache               =  0;
 int cgit_snapshots             =  0;
+int cgit_enable_log_filecount  =  0;
+int cgit_enable_log_linecount  =  0;
 int cgit_max_lock_attempts     =  5;
 int cgit_cache_root_ttl        =  5;
 int cgit_cache_repo_ttl        =  5;
@@ -85,6 +87,8 @@ struct repoinfo *add_repo(const char *url)
 	ret->owner = NULL;
 	ret->defbranch = "master";
 	ret->snapshots = cgit_snapshots;
+	ret->enable_log_filecount = cgit_enable_log_filecount;
+	ret->enable_log_linecount = cgit_enable_log_linecount;
 	ret->module_link = cgit_module_link;
 	return ret;
 }
@@ -107,6 +111,10 @@ void cgit_global_config_cb(const char *name, const char *value)
 		cgit_nocache = atoi(value);
 	else if (!strcmp(name, "snapshots"))
 		cgit_snapshots = atoi(value);
+	else if (!strcmp(name, "enable-log-filecount"))
+		cgit_enable_log_filecount = atoi(value);
+	else if (!strcmp(name, "enable-log-linecount"))
+		cgit_enable_log_linecount = atoi(value);
 	else if (!strcmp(name, "cache-root"))
 		cgit_cache_root = xstrdup(value);
 	else if (!strcmp(name, "cache-root-ttl"))
@@ -136,7 +144,11 @@ void cgit_global_config_cb(const char *name, const char *value)
 	else if (cgit_repo && !strcmp(name, "repo.defbranch"))
 		cgit_repo->defbranch = xstrdup(value);
 	else if (cgit_repo && !strcmp(name, "repo.snapshots"))
-		cgit_repo->snapshots = atoi(value);
+		cgit_repo->snapshots = cgit_snapshots * atoi(value);
+	else if (cgit_repo && !strcmp(name, "repo.enable-log-filecount"))
+		cgit_repo->enable_log_filecount = cgit_enable_log_filecount * atoi(value);
+	else if (cgit_repo && !strcmp(name, "repo.enable-log-linecount"))
+		cgit_repo->enable_log_linecount = cgit_enable_log_linecount * atoi(value);
 	else if (cgit_repo && !strcmp(name, "repo.module-link"))
 		cgit_repo->module_link= xstrdup(value);
 	else if (!strcmp(name, "include"))

@@ -38,6 +38,8 @@ struct repoinfo {
 	char *defbranch;
 	char *module_link;
 	int snapshots;
+	int enable_log_filecount;
+	int enable_log_linecount;
 };
 
 struct repolist {
@@ -81,6 +83,8 @@ extern char *cgit_cache_root;
 
 extern int cgit_nocache;
 extern int cgit_snapshots;
+extern int cgit_enable_log_filecount;
+extern int cgit_enable_log_linecount;
 extern int cgit_max_lock_attempts;
 extern int cgit_cache_root_ttl;
 extern int cgit_cache_repo_ttl;
