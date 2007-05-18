@@ -30,7 +30,7 @@ void cgit_print_repolist(struct cacheitem *item)
 		    (last_group != NULL && repo->group == NULL) ||
 		    (last_group != NULL && repo->group!= NULL &&
 		     strcmp(repo->group, last_group))) {
-			html("<tr><td colspan='4' class='repogroup'>");
+			html("<tr class='nohover'><td colspan='4' class='repogroup'>");
 			html_txt(repo->group);
 			html("</td></tr>");
 			last_group = repo->group;
