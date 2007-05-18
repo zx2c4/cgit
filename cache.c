@@ -12,18 +12,23 @@ const int NOLOCK = -1;
 
 char *cache_safe_filename(const char *unsafe)
 {
-	static char buf[PATH_MAX];
-	char *s = buf;
+	static char buf[4][PATH_MAX];
+	static int bufidx;
+	char *s;
 	char c;
 
+	bufidx++;
+	bufidx &= 3;
+	s = buf[bufidx];
+
 	while(unsafe && (c = *unsafe++) != 0) {
-		if (c == '/' || c == ' ' || c == '&' || c == '|' || 
+		if (c == '/' || c == ' ' || c == '&' || c == '|' ||
 		    c == '>' || c == '<' || c == '.')
 			c = '_';
 		*s++ = c;
 	}
 	*s = '\0';
-	return buf;
+	return buf[bufidx];
 }
 
 int cache_exist(struct cacheitem *item)
