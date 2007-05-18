@@ -96,10 +96,6 @@ extern int cgit_max_msg_len;
 extern int cgit_max_repodesc_len;
 extern int cgit_max_commit_count;
 
-extern char *cgit_repo_name;
-extern char *cgit_repo_desc;
-extern char *cgit_repo_owner;
-
 extern int cgit_query_has_symref;
 extern int cgit_query_has_sha1;
 
