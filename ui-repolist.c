@@ -12,6 +12,7 @@ void cgit_print_repolist(struct cacheitem *item)
 {
 	struct repoinfo *repo;
 	int i;
+	char *last_group = NULL;
 
 	cgit_print_docstart(cgit_root_title, item);
 	cgit_print_pageheader(cgit_root_title, 0);
@@ -25,6 +26,15 @@ void cgit_print_repolist(struct cacheitem *item)
 
 	for (i=0; i<cgit_repolist.count; i++) {
 		repo = &cgit_repolist.repos[i];
+		if ((last_group == NULL && repo->group != NULL) ||
+		    (last_group != NULL && repo->group == NULL) ||
+		    (last_group != NULL && repo->group!= NULL &&
+		     strcmp(repo->group, last_group))) {
+			html("<tr><td colspan='4' class='repogroup'>");
+			html_txt(repo->group);
+			html("</td></tr>");
+			last_group = repo->group;
+		}
 		html("<tr><td>");
 		html_link_open(cgit_repourl(repo->url), NULL, NULL);
 		html_txt(repo->name);
