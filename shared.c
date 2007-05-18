@@ -10,6 +10,7 @@
 
 struct repolist cgit_repolist;
 struct repoinfo *cgit_repo;
+int cgit_cmd;
 
 char *cgit_root_title   = "Git repository browser";
 char *cgit_css          = "/cgit.css";
@@ -184,8 +185,12 @@ void cgit_querystring_cb(const char *name, const char *value)
 {
 	if (!strcmp(name,"r")) {
 		cgit_query_repo = xstrdup(value);
+		cgit_repo = cgit_get_repoinfo(value);
 	} else if (!strcmp(name, "p")) {
 		cgit_query_page = xstrdup(value);
+		cgit_cmd = cgit_get_cmd_index(value);
+	} else if (!strcmp(name, "url")) {
+		cgit_parse_url(value);
 	} else if (!strcmp(name, "q")) {
 		cgit_query_search = xstrdup(value);
 	} else if (!strcmp(name, "h")) {

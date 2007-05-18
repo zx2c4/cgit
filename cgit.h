@@ -21,13 +21,13 @@
 /*
  * The valid cgit repo-commands
  */
-#define CMD_LOG      = 1;
-#define CMD_COMMIT   = 1;
-#define CMD_DIFF     = 1;
-#define CMD_TREE     = 1;
-#define CMD_VIEW     = 1;
-#define CMD_BLOB     = 1;
-#define CMD_SNAPSHOT = 1;
+#define CMD_LOG      1
+#define CMD_COMMIT   2
+#define CMD_DIFF     3
+#define CMD_TREE     4
+#define CMD_VIEW     5
+#define CMD_BLOB     6
+#define CMD_SNAPSHOT 7
 
 typedef void (*configfn)(const char *name, const char *value);
 typedef void (*filepair_fn)(struct diff_filepair *pair);
@@ -82,6 +82,7 @@ extern const char cgit_version[];
 
 extern struct repolist cgit_repolist;
 extern struct repoinfo *cgit_repo;
+extern int cgit_cmd;
 
 extern char *cgit_root_title;
 extern char *cgit_css;
@@ -162,6 +163,7 @@ extern int cgit_read_config(const char *filename, configfn fn);
 extern int cgit_parse_query(char *txt, configfn fn);
 extern struct commitinfo *cgit_parse_commit(struct commit *commit);
 extern struct taginfo *cgit_parse_tag(struct tag *tag);
+extern void cgit_parse_url(const char *url);
 
 extern char *cache_safe_filename(const char *unsafe);
 extern int cache_lock(struct cacheitem *item);
