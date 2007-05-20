@@ -12,18 +12,23 @@ const int NOLOCK = -1;
 
 char *cache_safe_filename(const char *unsafe)
 {
-	static char buf[PATH_MAX];
-	char *s = buf;
+	static char buf[4][PATH_MAX];
+	static int bufidx;
+	char *s;
 	char c;
 
+	bufidx++;
+	bufidx &= 3;
+	s = buf[bufidx];
+
 	while(unsafe && (c = *unsafe++) != 0) {
-		if (c == '/' || c == ' ' || c == '&' || c == '|' || 
+		if (c == '/' || c == ' ' || c == '&' || c == '|' ||
 		    c == '>' || c == '<' || c == '.')
 			c = '_';
 		*s++ = c;
 	}
 	*s = '\0';
-	return buf;
+	return buf[bufidx];
 }
 
 int cache_exist(struct cacheitem *item)
@@ -43,15 +48,18 @@ int cache_create_dirs()
 	if (mkdir(path, S_IRWXU) && errno!=EEXIST)
 		return 0;
 
-	if (!cgit_query_repo)
+	if (!cgit_repo)
 		return 0;
 
-	path = fmt("%s/%s", cgit_cache_root, cgit_query_repo);
+	path = fmt("%s/%s", cgit_cache_root,
+		   cache_safe_filename(cgit_repo->url));
+
 	if (mkdir(path, S_IRWXU) && errno!=EEXIST)
 		return 0;
 
 	if (cgit_query_page) {
-		path = fmt("%s/%s/%s", cgit_cache_root, cgit_query_repo, 
+		path = fmt("%s/%s/%s", cgit_cache_root,
+			   cache_safe_filename(cgit_repo->url),
 			   cgit_query_page);
 		if (mkdir(path, S_IRWXU) && errno!=EEXIST)
 			return 0;

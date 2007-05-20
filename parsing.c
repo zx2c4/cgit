@@ -132,6 +132,50 @@ int cgit_parse_query(char *txt, configfn fn)
 	return 0;
 }
 
+/*
+ * url syntax: [repo ['/' cmd [ '/' path]]]
+ *   repo: any valid repo url, may contain '/'
+ *   cmd:  log | commit | diff | tree | view | blob | snapshot
+ *   path: any valid path, may contain '/'
+ *
+ */
+void cgit_parse_url(const char *url)
+{
+	char *cmd, *p;
+
+	cgit_repo = NULL;
+	if (!url || url[0] == '\0')
+		return;
+
+	cgit_repo = cgit_get_repoinfo(url);
+	if (cgit_repo) {
+		cgit_query_repo = cgit_repo->url;
+		return;
+	}
+
+	cmd = strchr(url, '/');
+	while (!cgit_repo && cmd) {
+		cmd[0] = '\0';
+		cgit_repo = cgit_get_repoinfo(url);
+		if (cgit_repo == NULL) {
+			cmd[0] = '/';
+			cmd = strchr(cmd + 1, '/');
+			continue;
+		}
+
+		cgit_query_repo = cgit_repo->url;
+		p = strchr(cmd + 1, '/');
+		if (p) {
+			p[0] = '\0';
+			if (p[1])
+				cgit_query_path = xstrdup(p + 1);
+		}
+		cgit_cmd = cgit_get_cmd_index(cmd + 1);
+		cgit_query_page = xstrdup(cmd + 1);
+		return;
+	}
+}
+
 char *substr(const char *head, const char *tail)
 {
 	char *buf;

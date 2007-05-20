@@ -18,6 +18,17 @@
 #include <xdiff/xdiff.h>
 
 
+/*
+ * The valid cgit repo-commands
+ */
+#define CMD_LOG      1
+#define CMD_COMMIT   2
+#define CMD_DIFF     3
+#define CMD_TREE     4
+#define CMD_VIEW     5
+#define CMD_BLOB     6
+#define CMD_SNAPSHOT 7
+
 typedef void (*configfn)(const char *name, const char *value);
 typedef void (*filepair_fn)(struct diff_filepair *pair);
 typedef void (*linediff_fn)(char *line, int len);
@@ -71,6 +82,7 @@ extern const char cgit_version[];
 
 extern struct repolist cgit_repolist;
 extern struct repoinfo *cgit_repo;
+extern int cgit_cmd;
 
 extern char *cgit_root_title;
 extern char *cgit_css;
@@ -113,6 +125,8 @@ extern int   cgit_query_ofs;
 
 extern int htmlfd;
 
+extern int cgit_get_cmd_index(const char *cmd);
+extern struct repoinfo *cgit_get_repoinfo(const char *url);
 extern void cgit_global_config_cb(const char *name, const char *value);
 extern void cgit_repo_config_cb(const char *name, const char *value);
 extern void cgit_querystring_cb(const char *name, const char *value);
@@ -151,6 +165,7 @@ extern int cgit_read_config(const char *filename, configfn fn);
 extern int cgit_parse_query(char *txt, configfn fn);
 extern struct commitinfo *cgit_parse_commit(struct commit *commit);
 extern struct taginfo *cgit_parse_tag(struct tag *tag);
+extern void cgit_parse_url(const char *url);
 
 extern char *cache_safe_filename(const char *unsafe);
 extern int cache_lock(struct cacheitem *item);

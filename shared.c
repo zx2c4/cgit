@@ -10,6 +10,7 @@
 
 struct repolist cgit_repolist;
 struct repoinfo *cgit_repo;
+int cgit_cmd;
 
 char *cgit_root_title   = "Git repository browser";
 char *cgit_css          = "/cgit.css";
@@ -52,6 +53,18 @@ int   cgit_query_ofs    = 0;
 
 int htmlfd = 0;
 
+
+int cgit_get_cmd_index(const char *cmd)
+{
+	static char *cmds[] = {"log", "commit", "diff", "tree", "view", "blob", "snapshot", NULL};
+	int i;
+
+	for(i = 0; cmds[i]; i++)
+		if (!strcmp(cmd, cmds[i]))
+			return i + 1;
+	return 0;
+}
+
 int chk_zero(int result, char *msg)
 {
 	if (result != 0)
@@ -92,6 +105,19 @@ struct repoinfo *add_repo(const char *url)
 	ret->enable_log_linecount = cgit_enable_log_linecount;
 	ret->module_link = cgit_module_link;
 	return ret;
+}
+
+struct repoinfo *cgit_get_repoinfo(const char *url)
+{
+	int i;
+	struct repoinfo *repo;
+
+	for (i=0; i<cgit_repolist.count; i++) {
+		repo = &cgit_repolist.repos[i];
+		if (!strcmp(repo->url, url))
+			return repo;
+	}
+	return NULL;
 }
 
 void cgit_global_config_cb(const char *name, const char *value)
@@ -162,8 +188,12 @@ void cgit_querystring_cb(const char *name, const char *value)
 {
 	if (!strcmp(name,"r")) {
 		cgit_query_repo = xstrdup(value);
+		cgit_repo = cgit_get_repoinfo(value);
 	} else if (!strcmp(name, "p")) {
 		cgit_query_page = xstrdup(value);
+		cgit_cmd = cgit_get_cmd_index(value);
+	} else if (!strcmp(name, "url")) {
+		cgit_parse_url(value);
 	} else if (!strcmp(name, "q")) {
 		cgit_query_search = xstrdup(value);
 	} else if (!strcmp(name, "h")) {
