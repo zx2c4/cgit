@@ -355,6 +355,36 @@ table.diff td div.del {
 }
 
 table.list td.repogroup {
-	padding-top: 1em;
-	border-bottom: solid 1px #777;
+	font-style: italic;
+	color: #888;
+}
+
+a.button {
+	font-size: 80%;
+	color: #333;
+	background-color: #ccc;
+	border: solid 1px #999;
+	padding: 0em 0.5em;
+	margin: 0.1em 0.25em;
+}
+
+a.button:hover {
+	text-decoration: none;
+	background-color: #eee;
+}
+
+a.primary {
+	font-size: 100%;
+}
+
+a.secondary {
+	font-size: 90%;
+}
+
+td.toplevel-repo {
+
+}
+
+table.list td.sublevel-repo {
+	padding-left: 1.5em;
 }

@@ -27,7 +27,7 @@ void cgit_print_repolist(struct cacheitem *item)
 	     "<th class='left'>Name</th>"
 	     "<th class='left'>Description</th>"
 	     "<th class='left'>Owner</th>"
-	     "<th class='left'>Links</th></tr>\n");
+	     "<th>Links</th></tr>\n");
 
 	for (i=0; i<cgit_repolist.count; i++) {
 		repo = &cgit_repolist.repos[i];
@@ -40,8 +40,9 @@ void cgit_print_repolist(struct cacheitem *item)
 			html("</td></tr>");
 			last_group = repo->group;
 		}
-		html("<tr><td>");
-		html_link_open(cgit_repourl(repo->url), NULL, NULL);
+		htmlf("<tr><td class='%s'>",
+		      repo->group ? "sublevel-repo" : "toplevel-repo");
+		html_link_open(cgit_repourl(repo->url), repo->desc, NULL);
 		html_txt(repo->name);
 		html_link_close();
 		html("</td><td>");
@@ -49,18 +50,15 @@ void cgit_print_repolist(struct cacheitem *item)
 		html("</td><td>");
 		html_txt(repo->owner);
 		html("</td><td>");
-		html_link_open(cgit_pageurl(repo->name, "commit", NULL),
-			       "Commit: display last commit", NULL);
-		html("C</a> ");
-		html_link_open(cgit_pageurl(repo->name, "diff", NULL),
-			       "Diff: see changes introduced by last commit", NULL);
-		html("D</a> ");
+		html_link_open(cgit_repourl(repo->url),
+			       "Summary", "button");
+		html("S</a>");
 		html_link_open(cgit_pageurl(repo->name, "log", NULL),
-			       "Log: show history of the main branch", NULL);
-		html("L</a> ");
+			       "Log", "button");
+		html("L</a>");
 		html_link_open(cgit_pageurl(repo->name, "tree", NULL),
-			       "Tree: browse the files in the main branch", NULL);
-		html("T</a>");
+			       "Files", "button");
+		html("F</a>");
 		html("</td></tr>\n");
 	}
 	html("</table>");
