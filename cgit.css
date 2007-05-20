@@ -353,3 +353,8 @@ table.diff td div.del {
 .right {
 	text-align: right;
 }
+
+table.list td.repogroup {
+	padding-top: 1em;
+	border-bottom: solid 1px #777;
+}

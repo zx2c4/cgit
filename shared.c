@@ -21,6 +21,7 @@ char *cgit_module_link  = "./?repo=%s&page=commit&id=%s";
 char *cgit_virtual_root = NULL;
 char *cgit_script_name  = CGIT_SCRIPT_NAME;
 char *cgit_cache_root   = "/var/cache/cgit";
+char *cgit_repo_group   = NULL;
 
 int cgit_nocache               =  0;
 int cgit_snapshots             =  0;
@@ -99,6 +100,7 @@ struct repoinfo *add_repo(const char *url)
 	ret->path = NULL;
 	ret->desc = NULL;
 	ret->owner = NULL;
+	ret->group = cgit_repo_group;
 	ret->defbranch = "master";
 	ret->snapshots = cgit_snapshots;
 	ret->enable_log_filecount = cgit_enable_log_filecount;
@@ -160,6 +162,8 @@ void cgit_global_config_cb(const char *name, const char *value)
 		cgit_max_repodesc_len = atoi(value);
 	else if (!strcmp(name, "max-commit-count"))
 		cgit_max_commit_count = atoi(value);
+	else if (!strcmp(name, "repo.group"))
+		cgit_repo_group = xstrdup(value);
 	else if (!strcmp(name, "repo.url"))
 		cgit_repo = add_repo(value);
 	else if (!strcmp(name, "repo.name"))

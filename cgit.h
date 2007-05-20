@@ -47,6 +47,7 @@ struct repoinfo {
 	char *desc;
 	char *owner;
 	char *defbranch;
+	char *group;
 	char *module_link;
 	int snapshots;
 	int enable_log_filecount;
@@ -93,6 +94,7 @@ extern char *cgit_module_link;
 extern char *cgit_virtual_root;
 extern char *cgit_script_name;
 extern char *cgit_cache_root;
+extern char *cgit_repo_group;
 
 extern int cgit_nocache;
 extern int cgit_snapshots;
