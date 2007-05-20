@@ -356,5 +356,5 @@ table.diff td div.del {
 
 table.list td.repogroup {
 	padding-top: 1em;
-	font-weight: bold;
+	border-bottom: solid 1px #777;
 }
