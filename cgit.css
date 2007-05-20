@@ -60,7 +60,7 @@ table.list tr.nohover:hover {
 }
 
 table.list th {
-	font-weight: normal;
+	font-weight: bold;
 	border-bottom: solid 1px #777;
 	padding: 0.1em 0.5em 0.1em 0.5em;
 	vertical-align: baseline;
