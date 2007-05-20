@@ -75,6 +75,7 @@ extern struct repoinfo *cgit_repo;
 extern char *cgit_root_title;
 extern char *cgit_css;
 extern char *cgit_logo;
+extern char *cgit_index_header;
 extern char *cgit_logo_link;
 extern char *cgit_module_link;
 extern char *cgit_virtual_root;
@@ -144,6 +145,7 @@ extern void html_hidden(char *name, char *value);
 extern void html_link_open(char *url, char *title, char *class);
 extern void html_link_close(void);
 extern void html_filemode(unsigned short mode);
+extern int html_include(const char *filename);
 
 extern int cgit_read_config(const char *filename, configfn fn);
 extern int cgit_parse_query(char *txt, configfn fn);

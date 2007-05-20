@@ -17,6 +17,11 @@ void cgit_print_repolist(struct cacheitem *item)
 	cgit_print_pageheader(cgit_root_title, 0);
 
 	html("<table class='list nowrap'>");
+	if (cgit_index_header) {
+		html("<tr class='nohover'><td colspan='4' class='include-block'>");
+		html_include(cgit_index_header);
+		html("</td></tr>");
+	}
 	html("<tr class='nohover'>"
 	     "<th class='left'>Name</th>"
 	     "<th class='left'>Description</th>"

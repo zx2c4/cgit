@@ -14,6 +14,7 @@ struct repoinfo *cgit_repo;
 char *cgit_root_title   = "Git repository browser";
 char *cgit_css          = "/cgit.css";
 char *cgit_logo         = "/git-logo.png";
+char *cgit_index_header = NULL;
 char *cgit_logo_link    = "http://www.kernel.org/pub/software/scm/git/docs/";
 char *cgit_module_link  = "./?repo=%s&page=commit&id=%s";
 char *cgit_virtual_root = NULL;
@@ -101,6 +102,8 @@ void cgit_global_config_cb(const char *name, const char *value)
 		cgit_css = xstrdup(value);
 	else if (!strcmp(name, "logo"))
 		cgit_logo = xstrdup(value);
+	else if (!strcmp(name, "index-header"))
+		cgit_index_header = xstrdup(value);
 	else if (!strcmp(name, "logo-link"))
 		cgit_logo_link = xstrdup(value);
 	else if (!strcmp(name, "module-link"))
