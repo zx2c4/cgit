@@ -31,14 +31,12 @@ CFLAGS += -DCGIT_SCRIPT_NAME='"$(CGIT_SCRIPT_NAME)"'
 
 
 #
-# If make is run on a nongit platform, we need to get the git sources as a tarball.
-# But there is currently no recent enough tarball available on kernel.org, so download
-# a zipfile from hjemli.net instead
+# If make is run on a nongit platform, get the git sources as a tarball.
 #
 GITVER = $(shell git version 2>/dev/null || echo nogit)
 ifeq ($(GITVER),nogit)
-GITURL = http://hjemli.net/git/git/snapshot/?id=v1.5.2-rc2
-INITGIT = test -e git/git.c || (curl "$(GITURL)" > tmp.zip && unzip tmp.zip)
+GITURL = http://www.kernel.org/pub/software/scm/git/git-1.5.2.tar.bz2
+INITGIT = test -e git/git.c || ((curl "$(GITURL)" | tar -xj) && mv git-1.5.2 git)
 else
 INITGIT = ./submodules.sh -i
 endif
