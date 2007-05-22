@@ -18,6 +18,7 @@ char *cgit_logo         = "/git-logo.png";
 char *cgit_index_header = NULL;
 char *cgit_logo_link    = "http://www.kernel.org/pub/software/scm/git/docs/";
 char *cgit_module_link  = "./?repo=%s&page=commit&id=%s";
+char *cgit_agefile      = "info/web/last-modified";
 char *cgit_virtual_root = NULL;
 char *cgit_script_name  = CGIT_SCRIPT_NAME;
 char *cgit_cache_root   = "/var/cache/cgit";
@@ -162,6 +163,8 @@ void cgit_global_config_cb(const char *name, const char *value)
 		cgit_max_repodesc_len = atoi(value);
 	else if (!strcmp(name, "max-commit-count"))
 		cgit_max_commit_count = atoi(value);
+	else if (!strcmp(name, "agefile"))
+		cgit_agefile = xstrdup(value);
 	else if (!strcmp(name, "repo.group"))
 		cgit_repo_group = xstrdup(value);
 	else if (!strcmp(name, "repo.url"))

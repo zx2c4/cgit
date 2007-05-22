@@ -110,6 +110,7 @@ extern char *cgit_logo;
 extern char *cgit_index_header;
 extern char *cgit_logo_link;
 extern char *cgit_module_link;
+extern char *cgit_agefile;
 extern char *cgit_virtual_root;
 extern char *cgit_script_name;
 extern char *cgit_cache_root;
