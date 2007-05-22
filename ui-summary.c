@@ -28,7 +28,7 @@ static int cgit_print_branch_cb(const char *refname, const unsigned char *sha1,
 		html_txt(buf);
 		html_link_close();
 		html("</td><td>");
-		cgit_print_date(commit->date, FMT_LONGDATE);
+		cgit_print_age(commit->date, -1, NULL);
 		html("</td><td>");
 		html_txt(info->author);
 		html("</td><td>");
@@ -76,7 +76,7 @@ static void cgit_print_object_ref(struct object *obj)
 static void print_tag_header()
 {
 	html("<tr class='nohover'><th class='left'>Tag</th>"
-	     "<th class='left'>Created</th>"
+	     "<th class='left'>Age</th>"
 	     "<th class='left'>Author</th>"
 	     "<th class='left'>Reference</th></tr>\n");
 	header = 1;
@@ -108,7 +108,7 @@ static int cgit_print_tag_cb(const char *refname, const unsigned char *sha1,
 		html_link_close();
 		html("</td><td>");
 		if (info->tagger_date > 0)
-			cgit_print_date(info->tagger_date, FMT_LONGDATE);
+			cgit_print_age(info->tagger_date, -1, NULL);
 		html("</td><td>");
 		if (info->tagger)
 			html(info->tagger);
@@ -171,7 +171,7 @@ static int cgit_print_archive_cb(const char *refname, const unsigned char *sha1,
 static void cgit_print_branches()
 {
 	html("<tr class='nohover'><th class='left'>Branch</th>"
-	     "<th class='left'>Updated</th>"
+	     "<th class='left'>Idle</th>"
 	     "<th class='left'>Author</th>"
 	     "<th class='left'>Head commit</th></tr>\n");
 	for_each_branch_ref(cgit_print_branch_cb, NULL);

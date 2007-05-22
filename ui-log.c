@@ -25,15 +25,11 @@ void inspect_files(struct diff_filepair *pair)
 
 void print_commit(struct commit *commit)
 {
-	char buf[32];
 	struct commitinfo *info;
-	struct tm *time;
 
 	info = cgit_parse_commit(commit);
-	time = gmtime(&commit->date);
 	html("<tr><td>");
-	strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M", time);
-	html_txt(buf);
+	cgit_print_age(commit->date, TM_WEEK * 2, FMT_SHORTDATE);
 	html("</td><td>");
 	char *qry = fmt("h=%s", sha1_to_hex(commit->object.sha1));
 	char *url = cgit_pageurl(cgit_query_repo, "commit", qry);
@@ -85,7 +81,7 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *path)
 	prepare_revision_walk(&rev);
 
 	html("<table class='list nowrap'>");
-	html("<tr class='nohover'><th class='left'>Date</th>"
+	html("<tr class='nohover'><th class='left'>Age</th>"
 	     "<th class='left'>Message</th>");
 
 	if (cgit_repo->enable_log_filecount) {
