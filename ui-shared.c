@@ -88,14 +88,55 @@ char *cgit_currurl()
 }
 
 
-void cgit_print_date(unsigned long secs)
+void cgit_print_date(time_t secs, char *format)
 {
-	char buf[32];
+	char buf[64];
 	struct tm *time;
 
 	time = gmtime(&secs);
-	strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", time);
+	strftime(buf, sizeof(buf)-1, format, time);
 	html_txt(buf);
+}
+
+void cgit_print_age(time_t t, time_t max_relative, char *format)
+{
+	time_t now, secs;
+
+	time(&now);
+	secs = now - t;
+
+	if (secs > max_relative && max_relative >= 0) {
+		cgit_print_date(t, format);
+		return;
+	}
+
+	if (secs < TM_HOUR * 2) {
+		htmlf("<span class='age-mins'>%.0f min.</span>",
+		      secs * 1.0 / TM_MIN);
+		return;
+	}
+	if (secs < TM_DAY * 2) {
+		htmlf("<span class='age-hours'>%.0f hours</span>",
+		      secs * 1.0 / TM_HOUR);
+		return;
+	}
+	if (secs < TM_WEEK * 2) {
+		htmlf("<span class='age-days'>%.0f days</span>",
+		      secs * 1.0 / TM_DAY);
+		return;
+	}
+	if (secs < TM_MONTH * 2) {
+		htmlf("<span class='age-weeks'>%.0f weeks</span>",
+		      secs * 1.0 / TM_WEEK);
+		return;
+	}
+	if (secs < TM_YEAR * 2) {
+		htmlf("<span class='age-months'>%.0f months</span>",
+		      secs * 1.0 / TM_MONTH);
+		return;
+	}
+	htmlf("<span class='age-years'>%.0f years</span>",
+	      secs * 1.0 / TM_YEAR);
 }
 
 void cgit_print_docstart(char *title, struct cacheitem *item)

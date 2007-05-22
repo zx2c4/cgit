@@ -172,14 +172,14 @@ void cgit_print_commit(const char *hex)
 	html(" ");
 	html_txt(info->author_email);
 	html("</td><td class='right'>");
-	cgit_print_date(info->author_date);
+	cgit_print_date(info->author_date, FMT_LONGDATE);
 	html("</td></tr>\n");
 	html("<tr><th>committer</th><td>");
 	html_txt(info->committer);
 	html(" ");
 	html_txt(info->committer_email);
 	html("</td><td class='right'>");
-	cgit_print_date(info->committer_date);
+	cgit_print_date(info->committer_date, FMT_LONGDATE);
 	html("</td></tr>\n");
 	html("<tr><th>tree</th><td colspan='2' class='sha1'><a href='");
 	query = fmt("h=%s&id=%s", sha1_to_hex(commit->object.sha1),

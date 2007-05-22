@@ -388,3 +388,28 @@ td.toplevel-repo {
 table.list td.sublevel-repo {
 	padding-left: 1.5em;
 }
+
+span.age-mins {
+	font-weight: bold;
+	color: #080;
+}
+
+span.age-hours {
+	color: #080;
+}
+
+span.age-days {
+	color: #040;
+}
+
+span.age-weeks {
+	color: #444;
+}
+
+span.age-months {
+	color: #888;
+}
+
+span.age-years {
+	color: #bbb;
+}

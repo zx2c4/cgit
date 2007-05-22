@@ -29,6 +29,25 @@
 #define CMD_BLOB     6
 #define CMD_SNAPSHOT 7
 
+
+/*
+ * Dateformats used on misc. pages
+ */
+#define FMT_LONGDATE "%Y-%m-%d %H:%M:%S"
+#define FMT_SHORTDATE "%Y-%m-%d"
+
+
+/*
+ * Limits used for relative dates
+ */
+#define TM_MIN    60
+#define TM_HOUR  (TM_MIN * 60)
+#define TM_DAY   (TM_HOUR * 24)
+#define TM_WEEK  (TM_DAY * 7)
+#define TM_YEAR  (TM_DAY * 365)
+#define TM_MONTH (TM_YEAR / 12.0)
+
+
 typedef void (*configfn)(const char *name, const char *value);
 typedef void (*filepair_fn)(struct diff_filepair *pair);
 typedef void (*linediff_fn)(char *line, int len);
@@ -181,7 +200,8 @@ extern char *cgit_pageurl(const char *reponame, const char *pagename,
 			  const char *query);
 
 extern void cgit_print_error(char *msg);
-extern void cgit_print_date(unsigned long secs);
+extern void cgit_print_date(time_t secs, char *format);
+extern void cgit_print_age(time_t t, time_t max_relative, char *format);
 extern void cgit_print_docstart(char *title, struct cacheitem *item);
 extern void cgit_print_docend();
 extern void cgit_print_pageheader(char *title, int show_search);

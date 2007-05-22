@@ -28,7 +28,7 @@ static int cgit_print_branch_cb(const char *refname, const unsigned char *sha1,
 		html_txt(buf);
 		html_link_close();
 		html("</td><td>");
-		cgit_print_date(commit->date);
+		cgit_print_date(commit->date, FMT_LONGDATE);
 		html("</td><td>");
 		html_txt(info->author);
 		html("</td><td>");
@@ -108,7 +108,7 @@ static int cgit_print_tag_cb(const char *refname, const unsigned char *sha1,
 		html_link_close();
 		html("</td><td>");
 		if (info->tagger_date > 0)
-			cgit_print_date(info->tagger_date);
+			cgit_print_date(info->tagger_date, FMT_LONGDATE);
 		html("</td><td>");
 		if (info->tagger)
 			html(info->tagger);
