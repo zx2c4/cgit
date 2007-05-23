@@ -186,7 +186,7 @@ void cgit_print_pageheader(char *title, int show_search)
 	html("</td>");
 	html("<td id='search'>");
 	if (show_search) {
-		html("<form method='get' href='");
+		html("<form method='get' action='");
 		html_attr(cgit_currurl());
 		html("'>");
 		if (!cgit_virtual_root) {
