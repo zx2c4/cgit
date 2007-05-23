@@ -174,7 +174,7 @@ void cgit_print_pageheader(char *title, int show_search)
 	html("</td><td id='logo'>");
 	html("<a href='");
 	html_attr(cgit_logo_link);
-	htmlf("'><img src='%s'/></a>", cgit_logo);
+	htmlf("'><img src='%s' alt='logo'/></a>", cgit_logo);
 	html("</td></tr>");
 	html("<tr><td id='crumb'>");
 	htmlf("<a href='%s'>root</a>", cgit_rooturl());
