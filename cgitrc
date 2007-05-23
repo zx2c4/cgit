@@ -108,3 +108,4 @@
 #repo.enable-log-filecount=0			# override the default filecount setting
 #repo.enable-log-linecount=0			# override the default linecount setting
 #repo.module-link=/git/%s/commit/?id=%s		# override the standard module-link
+#repo.readme=info/web/readme			# specify a file to include on summary page

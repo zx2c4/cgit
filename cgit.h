@@ -68,6 +68,7 @@ struct repoinfo {
 	char *defbranch;
 	char *group;
 	char *module_link;
+	char *readme;
 	int snapshots;
 	int enable_log_filecount;
 	int enable_log_linecount;

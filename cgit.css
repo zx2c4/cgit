@@ -140,22 +140,20 @@ td#search input {
 	background-color: #fff;
 }
 
-td#summary {
+div#summary {
 	vertical-align: top;
-	padding-bottom: 1em;
+	margin-bottom: 1em;
 }
 
-td#archivelist {
-	padding-bottom: 1em;
-}
-
-td#archivelist table {
+table#downloads {
 	float: right;
 	border-collapse: collapse;
 	border: solid 1px #777;
+	margin-left: 0.5em;
+	margin-bottom: 0.5em;
 }
 
-td#archivelist table th {
+table#downloads th {
 	background-color: #ccc;
 }
 

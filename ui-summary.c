@@ -153,7 +153,7 @@ static int cgit_print_archive_cb(const char *refname, const unsigned char *sha1,
 		hashcpy(fileid, sha1);
 	}
 	if (!header) {
-		html("<table>");
+		html("<table id='downloads'>");
 		html("<tr><th>Downloads</th></tr>");
 		header = 1;
 	}
@@ -193,16 +193,18 @@ static void cgit_print_archives()
 
 void cgit_print_summary()
 {
-	html("<table class='list nowrap'>");
-	html("<tr class='nohover'><td id='summary' colspan='3'>");
+	html("<div id='summary'>");
+	cgit_print_archives();
 	html("<h2>");
 	html_txt(cgit_repo->name);
 	html(" - ");
 	html_txt(cgit_repo->desc);
 	html("</h2>");
-	html("</td><td id='archivelist'>");
-	cgit_print_archives();
-	html("</td></tr>");
+	if (cgit_repo->readme)
+		html_include(cgit_repo->readme);
+	html("</div>");
+
+	html("<table class='list nowrap'>");
 	cgit_print_branches();
 	html("<tr class='nohover'><td colspan='4'>&nbsp;</td></tr>");
 	cgit_print_tags();

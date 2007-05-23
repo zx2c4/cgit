@@ -107,6 +107,7 @@ struct repoinfo *add_repo(const char *url)
 	ret->enable_log_filecount = cgit_enable_log_filecount;
 	ret->enable_log_linecount = cgit_enable_log_linecount;
 	ret->module_link = cgit_module_link;
+	ret->readme = NULL;
 	return ret;
 }
 
@@ -187,7 +188,12 @@ void cgit_global_config_cb(const char *name, const char *value)
 		cgit_repo->enable_log_linecount = cgit_enable_log_linecount * atoi(value);
 	else if (cgit_repo && !strcmp(name, "repo.module-link"))
 		cgit_repo->module_link= xstrdup(value);
-	else if (!strcmp(name, "include"))
+	else if (cgit_repo && !strcmp(name, "repo.readme") && value != NULL) {
+		if (*value == '/')
+			cgit_repo->readme = xstrdup(value);
+		else
+			cgit_repo->readme = xstrdup(fmt("%s/%s", cgit_repo->path, value));
+	} else if (!strcmp(name, "include"))
 		cgit_read_config(value, cgit_global_config_cb);
 }
 
