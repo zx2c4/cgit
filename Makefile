@@ -1,4 +1,4 @@
-CGIT_VERSION = 0.4
+CGIT_VERSION = 0.5
 
 prefix = /var/www/htdocs/cgit
 
