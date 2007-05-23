@@ -164,7 +164,7 @@ static int cgit_print_archive_cb(const char *refname, const unsigned char *sha1,
 	html_link_open(url, NULL, NULL);
 	html_txt(buf);
 	html_link_close();
-	html("</td><tr>");
+	html("</td></tr>");
 	return 0;
 }
 
