@@ -14,7 +14,6 @@ time_t read_agefile(char *path)
 {
 	FILE *f;
 	static char buf[64], buf2[64];
-	struct tm tm;
 
 	if (!(f = fopen(path, "r")))
 		return -1;
