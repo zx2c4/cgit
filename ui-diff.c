@@ -38,7 +38,6 @@ static void header(unsigned char *sha1, char *path1, int mode1,
 	int subproject;
 
 	subproject = (S_ISDIRLNK(mode1) || S_ISDIRLNK(mode2));
-	html("<tr><td>");
 	html("<div class='head'>");
 	html("diff --git a/");
 	html_txt(path1);
@@ -102,8 +101,10 @@ void cgit_print_diff(const char *head, const char *old_hex, const char *new_hex,
 		commit = lookup_commit_reference(sha1);
 		if (commit && !parse_commit(commit)) {
 			html("<table class='diff'>");
+			html("<tr><td>");
 			cgit_diff_commit(commit, filepair_cb);
-			html("</td></tr></table>");
+			html("</td></tr>");
+			html("</table>");
 		}
 		return;
 	}
@@ -127,7 +128,7 @@ void cgit_print_diff(const char *head, const char *old_hex, const char *new_hex,
 		header(sha1, path, 0644, sha2, path, 0644);
 		if (cgit_diff_files(sha1, sha2, print_line))
 			cgit_print_error("Error running diff");
-		html("</tr></td>");
+		html("</td></tr>");
 		break;
 	case OBJ_TREE:
 		cgit_diff_tree(sha1, sha2, filepair_cb);
@@ -137,5 +138,5 @@ void cgit_print_diff(const char *head, const char *old_hex, const char *new_hex,
 				     typename(type)));
 		break;
 	}
-	html("</td></tr></table>");
+	html("</table>");
 }

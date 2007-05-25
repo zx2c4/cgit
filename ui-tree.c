@@ -50,7 +50,7 @@ static int print_entry(const unsigned char *sha1, const char *base,
 					  cgit_query_path ? cgit_query_path : "",
 					  pathname)));
 	}
-	htmlf("'>%s</a></div></td>", name);
+	htmlf("'>%s</a></td>", name);
 	htmlf("<td class='filesize'>%li</td>", size);
 
 	html("<td class='links'><a href='");

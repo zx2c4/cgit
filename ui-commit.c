@@ -103,7 +103,7 @@ void print_fileinfo(struct fileinfo *info)
 	      info->removed * 100.0 / max_changes);
 	htmlf("<td class='none' style='width: %.1f%%;'/>",
 	      (max_changes - info->removed - info->added) * 100.0 / max_changes);
-	html("</tr></table></a></td></tr>\n");
+	html("</tr></table></td></tr>\n");
 }
 
 void cgit_count_diff_lines(char *line, int len)
