@@ -75,7 +75,7 @@ void print_fileinfo(struct fileinfo *info)
 		html("]</span>");
 	}
 	htmlf("</td><td class='%s'>", class);
-	query = fmt("id=%s&id2=%s&path=%s", sha1_to_hex(info->old_sha1),
+	query = fmt("id=%s&amp;id2=%s&amp;path=%s", sha1_to_hex(info->old_sha1),
 		    sha1_to_hex(info->new_sha1), info->new_path);
 	html_link_open(cgit_pageurl(cgit_query_repo, "diff", query),
 		       NULL, NULL);
@@ -182,7 +182,7 @@ void cgit_print_commit(const char *hex)
 	cgit_print_date(info->committer_date, FMT_LONGDATE);
 	html("</td></tr>\n");
 	html("<tr><th>tree</th><td colspan='2' class='sha1'><a href='");
-	query = fmt("h=%s&id=%s", sha1_to_hex(commit->object.sha1),
+	query = fmt("h=%s&amp;id=%s", sha1_to_hex(commit->object.sha1),
 		    sha1_to_hex(commit->tree->object.sha1));
 	html_attr(cgit_pageurl(cgit_query_repo, "tree", query));
 	htmlf("'>%s</a></td></tr>\n", sha1_to_hex(commit->tree->object.sha1));
@@ -201,7 +201,7 @@ void cgit_print_commit(const char *hex)
 		html_attr(cgit_pageurl(cgit_query_repo, "commit", query));
 		htmlf("'>%s</a> (<a href='",
 		      sha1_to_hex(p->item->object.sha1));
-		query = fmt("id=%s&id2=%s", sha1_to_hex(parent->tree->object.sha1),
+		query = fmt("id=%s&amp;id2=%s", sha1_to_hex(parent->tree->object.sha1),
 			    sha1_to_hex(commit->tree->object.sha1));
 		html_attr(cgit_pageurl(cgit_query_repo, "diff", query));
 		html("'>diff</a>)</td></tr>");
@@ -210,7 +210,7 @@ void cgit_print_commit(const char *hex)
 		htmlf("<tr><th>download</th><td colspan='2' class='sha1'><a href='");
 		filename = fmt("%s-%s.zip", cgit_query_repo, hex);
 		html_attr(cgit_pageurl(cgit_query_repo, "snapshot",
-				       fmt("id=%s&name=%s", hex, filename)));
+				       fmt("id=%s&amp;name=%s", hex, filename)));
 		htmlf("'>%s</a></td></tr>", filename);
 	}
 	html("</table>\n");

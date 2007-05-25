@@ -37,7 +37,7 @@ static int print_entry(const unsigned char *sha1, const char *base,
 	} else if (S_ISDIR(mode)) {
 		html("class='ls-dir'><a href='");
 		html_attr(cgit_pageurl(cgit_query_repo, "tree",
-				       fmt("h=%s&id=%s&path=%s%s/",
+				       fmt("h=%s&amp;id=%s&amp;path=%s%s/",
 					   curr_rev,
 					   sha1_to_hex(sha1),
 					   cgit_query_path ? cgit_query_path : "",
@@ -45,7 +45,7 @@ static int print_entry(const unsigned char *sha1, const char *base,
 	} else {
 		html("class='ls-blob'><a href='");
 		html_attr(cgit_pageurl(cgit_query_repo, "view",
-				      fmt("h=%s&id=%s&path=%s%s", curr_rev,
+				      fmt("h=%s&amp;id=%s&amp;path=%s%s", curr_rev,
 					  sha1_to_hex(sha1),
 					  cgit_query_path ? cgit_query_path : "",
 					  pathname)));
@@ -55,7 +55,7 @@ static int print_entry(const unsigned char *sha1, const char *base,
 
 	html("<td class='links'><a href='");
 	html_attr(cgit_pageurl(cgit_query_repo, "log",
-			       fmt("h=%s&path=%s%s",
+			       fmt("h=%s&amp;path=%s%s",
 				   curr_rev,
 				   cgit_query_path ? cgit_query_path : "",
 				   pathname)));

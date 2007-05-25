@@ -69,9 +69,9 @@ char *cgit_pageurl(const char *reponame, const char *pagename,
 				   pagename);
 	} else {
 		if (query)
-			return fmt("?r=%s&p=%s&%s", reponame, pagename, query);
+			return fmt("?r=%s&amp;p=%s&amp;%s", reponame, pagename, query);
 		else
-			return fmt("?r=%s&p=%s", reponame, pagename);
+			return fmt("?r=%s&amp;p=%s", reponame, pagename);
 	}
 }
 

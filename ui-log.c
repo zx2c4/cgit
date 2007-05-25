@@ -114,14 +114,14 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *path)
 	if (ofs > 0) {
 		html("&nbsp;<a href='");
 		html(cgit_pageurl(cgit_query_repo, cgit_query_page,
-				  fmt("h=%s&ofs=%d", tip, ofs-cnt)));
+				  fmt("h=%s&amp;ofs=%d", tip, ofs-cnt)));
 		html("'>[prev]</a>&nbsp;");
        	}
 
 	if ((commit = get_revision(&rev)) != NULL) {
 		html("&nbsp;<a href='");
 		html(cgit_pageurl(cgit_query_repo, "log",
-				  fmt("h=%s&ofs=%d", tip, ofs+cnt)));
+				  fmt("h=%s&amp;ofs=%d", tip, ofs+cnt)));
 		html("'>[next]</a>&nbsp;");
 	}
 	html("</div>");

@@ -43,7 +43,7 @@ void cgit_print_view(const char *hex, char *path)
 
 	html(" <a href='");
 	html_attr(cgit_pageurl(cgit_query_repo, "blob", 
-			       fmt("id=%s&path=%s", 
+			       fmt("id=%s&amp;path=%s", 
 				   hex,
 				   path)));
 	html("'>download</a>");

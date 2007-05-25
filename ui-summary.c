@@ -159,7 +159,7 @@ static int cgit_print_archive_cb(const char *refname, const unsigned char *sha1,
 	}
 	html("<tr><td>");
 	url = cgit_pageurl(cgit_query_repo, "blob",
-			   fmt("id=%s&path=%s", sha1_to_hex(fileid),
+			   fmt("id=%s&amp;path=%s", sha1_to_hex(fileid),
 			       buf));
 	html_link_open(url, NULL, NULL);
 	html_txt(buf);
