@@ -20,6 +20,11 @@
 #enable-log-linecount=0
 
 
+## Enable/disable display of HEAD shortlog in summary view. Set it to maximum
+## number of commits that should be displayed
+#summary-log=0
+
+
 ## Specify a root for virtual urls. This makes cgit generate urls like
 ##
 ##    http://localhost/git/repo/log/?id=master

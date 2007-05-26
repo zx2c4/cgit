@@ -19,6 +19,9 @@ static int cgit_print_branch_cb(const char *refname, const unsigned char *sha1,
 
 	strncpy(buf, refname, sizeof(buf));
 	commit = lookup_commit(sha1);
+	// object is not really parsed at this point, because of some fallout
+	// from previous calls to git functions in cgit_print_log()
+	commit->object.parsed = 0;
 	if (commit && !parse_commit(commit)){
 		info = cgit_parse_commit(commit);
 		html("<tr><td>");
@@ -203,8 +206,11 @@ void cgit_print_summary()
 	if (cgit_repo->readme)
 		html_include(cgit_repo->readme);
 	html("</div>");
-
+	if (cgit_summary_log > 0)
+		cgit_print_log(cgit_query_head, 0, cgit_summary_log, NULL, NULL, 0);
 	html("<table class='list nowrap'>");
+	if (cgit_summary_log > 0)
+		html("<tr class='nohover'><td colspan='4'>&nbsp;</td></tr>");
 	cgit_print_branches();
 	html("<tr class='nohover'><td colspan='4'>&nbsp;</td></tr>");
 	cgit_print_tags();
