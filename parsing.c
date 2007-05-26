@@ -200,6 +200,9 @@ struct commitinfo *cgit_parse_commit(struct commit *commit)
 	ret->subject = NULL;
 	ret->msg = NULL;
 
+	if (p == NULL)
+		return ret;
+
 	if (strncmp(p, "tree ", 5))
 		die("Bad commit: %s", sha1_to_hex(commit->object.sha1));
 	else
