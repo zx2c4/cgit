@@ -54,7 +54,7 @@ void print_commit(struct commit *commit)
 }
 
 
-void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *path)
+void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *path, int pager)
 {
 	struct rev_info rev;
 	struct commit *commit;
@@ -110,19 +110,21 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *path)
 	}
 	html("</table>\n");
 
-	html("<div class='pager'>");
-	if (ofs > 0) {
-		html("&nbsp;<a href='");
-		html(cgit_pageurl(cgit_query_repo, cgit_query_page,
-				  fmt("h=%s&amp;ofs=%d", tip, ofs-cnt)));
-		html("'>[prev]</a>&nbsp;");
-       	}
+	if (pager) {
+		html("<div class='pager'>");
+		if (ofs > 0) {
+			html("&nbsp;<a href='");
+			html(cgit_pageurl(cgit_query_repo, cgit_query_page,
+					  fmt("h=%s&amp;ofs=%d", tip, ofs-cnt)));
+			html("'>[prev]</a>&nbsp;");
+		}
 
-	if ((commit = get_revision(&rev)) != NULL) {
-		html("&nbsp;<a href='");
-		html(cgit_pageurl(cgit_query_repo, "log",
-				  fmt("h=%s&amp;ofs=%d", tip, ofs+cnt)));
-		html("'>[next]</a>&nbsp;");
+		if ((commit = get_revision(&rev)) != NULL) {
+			html("&nbsp;<a href='");
+			html(cgit_pageurl(cgit_query_repo, "log",
+					  fmt("h=%s&amp;ofs=%d", tip, ofs+cnt)));
+			html("'>[next]</a>&nbsp;");
+		}
+		html("</div>");
 	}
-	html("</div>");
 }

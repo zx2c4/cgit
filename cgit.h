@@ -213,7 +213,7 @@ extern void cgit_print_snapshot_start(const char *mimetype,
 
 extern void cgit_print_repolist(struct cacheitem *item);
 extern void cgit_print_summary();
-extern void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *path);
+extern void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *path, int pager);
 extern void cgit_print_view(const char *hex, char *path);
 extern void cgit_print_blob(struct cacheitem *item, const char *hex, char *path);
 extern void cgit_print_tree(const char *rev, const char *hex, char *path);
