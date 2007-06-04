@@ -20,7 +20,7 @@ static int print_entry(const unsigned char *sha1, const char *base,
 
 	name = xstrdup(pathname);
 	type = sha1_object_info(sha1, &size);
-	if (type == OBJ_BAD && !S_ISDIRLNK(mode)) {
+	if (type == OBJ_BAD && !S_ISGITLINK(mode)) {
 		htmlf("<tr><td colspan='3'>Bad object: %s %s</td></tr>",
 		      name,
 		      sha1_to_hex(sha1));
@@ -29,7 +29,7 @@ static int print_entry(const unsigned char *sha1, const char *base,
 	html("<tr><td class='filemode'>");
 	html_filemode(mode);
 	html("</td><td ");
-	if (S_ISDIRLNK(mode)) {
+	if (S_ISGITLINK(mode)) {
 		htmlf("class='ls-mod'><a href='");
 		html_attr(fmt(cgit_repo->module_link,
 			      name,
