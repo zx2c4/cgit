@@ -96,16 +96,16 @@ void cgit_print_diff(const char *head, const char *old_hex, const char *new_hex,
 	unsigned long size;
 	struct commit *commit;
 
+	html("<table class='diff'>");
+	html("<tr><td>");
+
 	if (head && !old_hex && !new_hex) {
 		get_sha1(head, sha1);
 		commit = lookup_commit_reference(sha1);
-		if (commit && !parse_commit(commit)) {
-			html("<table class='diff'>");
-			html("<tr><td>");
+		if (commit && !parse_commit(commit))
 			cgit_diff_commit(commit, filepair_cb);
-			html("</td></tr>");
-			html("</table>");
-		}
+		else
+			cgit_print_error(fmt("Bad commit: %s", head));
 		return;
 	}
 
@@ -121,14 +121,11 @@ void cgit_print_diff(const char *head, const char *old_hex, const char *new_hex,
 		}
 	}
 
-	html("<table class='diff'>");
 	switch(type) {
 	case OBJ_BLOB:
-		html("<tr><td>");
 		header(sha1, path, 0644, sha2, path, 0644);
 		if (cgit_diff_files(sha1, sha2, print_line))
 			cgit_print_error("Error running diff");
-		html("</td></tr>");
 		break;
 	case OBJ_TREE:
 		cgit_diff_tree(sha1, sha2, filepair_cb);
@@ -138,5 +135,6 @@ void cgit_print_diff(const char *head, const char *old_hex, const char *new_hex,
 				     typename(type)));
 		break;
 	}
+	html("</td></tr>");
 	html("</table>");
 }
