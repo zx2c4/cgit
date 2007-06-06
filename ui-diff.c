@@ -106,6 +106,8 @@ void cgit_print_diff(const char *head, const char *old_hex, const char *new_hex,
 			cgit_diff_commit(commit, filepair_cb);
 		else
 			cgit_print_error(fmt("Bad commit: %s", head));
+		html("</td></tr>");
+		html("</table>");
 		return;
 	}
 
