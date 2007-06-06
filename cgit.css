@@ -1,6 +1,7 @@
 body {
-	font-family: arial;
+	font-family: arial, sans-serif;
 	font-size: 11pt;
+	color: black;
 	background: white;
 }
 
@@ -114,15 +115,17 @@ td#crumb {
 
 td#crumb a {
 	color: #ccc;
+	background-color: #666;
 }
 
 td#crumb a:hover {
 	color: #eee;
+	background-color: #666;
 }
 
 td#search {
 	text-align: right;
-	vertical-align: center;
+	vertical-align: middle;
 	padding-right: 0.5em;
 }
 
@@ -287,7 +290,7 @@ table.diffstat td.upd a {
 
 table.diffstat td.graph {
 	width: 75%;
-	vertical-align: center;
+	vertical-align: middle;
 }
 
 table.diffstat td.graph table {
@@ -306,10 +309,6 @@ table.diffstat td.graph td.add {
 
 table.diffstat td.graph td.rem {
 	background-color: #c55;
-}
-
-table.diffstat td.graph td.none {
-	background-color: none;
 }
 
 div.diffstat-summary {
@@ -340,7 +339,7 @@ table.diff td div.del {
 }
 
 .sha1 {
-	font-family: courier;
+	font-family: monospace;
 	font-size: 90%;
 }
 
