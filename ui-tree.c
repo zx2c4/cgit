@@ -47,7 +47,6 @@ static void print_object(const unsigned char *sha1, char *path)
 		}
 		idx++;
 	}
-	html("\n</td></tr>\n");
 	html("</table>\n");
 }
 
