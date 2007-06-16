@@ -14,7 +14,7 @@ CGIT_SCRIPT_NAME = cgit.cgi
 
 EXTLIBS = git/libgit.a git/xdiff/lib.a -lz -lcrypto
 OBJECTS = shared.o cache.o parsing.o html.o ui-shared.o ui-repolist.o \
-	ui-summary.o ui-log.o ui-view.o ui-tree.o ui-commit.o ui-diff.o \
+	ui-summary.o ui-log.o ui-tree.o ui-commit.o ui-diff.o \
 	ui-snapshot.o ui-blob.o
 
 CFLAGS += -Wall

@@ -199,10 +199,22 @@ td.filemode {
 	font-family: monospace;
 }
 
-td.blob {
+table.blob {
+	margin-top: 0.5em;
+	border-top: solid 1px black;
+}
+
+table.blob td.no {
+	border-right: solid 1px black;
+	color: black;
+	background-color: #eee;
+	text-align: right;
+}
+
+table.blob td.txt {
 	white-space: pre;
 	font-family: monospace;
-	background-color: white;
+	padding-left: 0.5em;
 }
 
 table.nowrap td {

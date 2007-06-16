@@ -9,14 +9,56 @@
 #include "cgit.h"
 
 char *curr_rev;
+char *match_path;
+int header = 0;
 
-static int print_entry(const unsigned char *sha1, const char *base,
-		       int baselen, const char *pathname, unsigned int mode,
-		       int stage)
+static void print_object(const unsigned char *sha1, char *path)
+{
+	enum object_type type;
+	unsigned char *buf;
+	unsigned long size, lineno, start, idx;
+
+	type = sha1_object_info(sha1, &size);
+	if (type == OBJ_BAD) {
+		cgit_print_error(fmt("Bad object name: %s",
+				     sha1_to_hex(sha1)));
+		return;
+	}
+
+	buf = read_sha1_file(sha1, &type, &size);
+	if (!buf) {
+		cgit_print_error(fmt("Error reading object %s",
+				     sha1_to_hex(sha1)));
+		return;
+	}
+
+	html("<table class='blob'>\n");
+	idx = 0;
+	start = 0;
+	lineno = 0;
+	while(idx < size) {
+		if (buf[idx] == '\n') {
+			buf[idx] = '\0';
+			htmlf("<tr><td class='no'>%d</td><td class='txt'>",
+			      ++lineno);
+			html_txt(buf + start);
+			html("</td></tr>\n");
+			start = idx + 1;
+		}
+		idx++;
+	}
+	html("\n</td></tr>\n");
+	html("</table>\n");
+}
+
+
+static int ls_item(const unsigned char *sha1, const char *base, int baselen,
+		   const char *pathname, unsigned int mode, int stage)
 {
 	char *name;
 	enum object_type type;
 	unsigned long size = 0;
+	char *url, *qry;
 
 	name = xstrdup(pathname);
 	type = sha1_object_info(sha1, &size);
@@ -26,6 +68,10 @@ static int print_entry(const unsigned char *sha1, const char *base,
 		      sha1_to_hex(sha1));
 		return 0;
 	}
+	qry = fmt("h=%s&amp;path=%s%s%s", curr_rev,
+		  cgit_query_path ? cgit_query_path : "",
+		  cgit_query_path ? "/" : "", pathname);
+	url = cgit_pageurl(cgit_query_repo, "tree", qry);
 	html("<tr><td class='filemode'>");
 	html_filemode(mode);
 	html("</td><td ");
@@ -36,62 +82,28 @@ static int print_entry(const unsigned char *sha1, const char *base,
 			      sha1_to_hex(sha1)));
 	} else if (S_ISDIR(mode)) {
 		html("class='ls-dir'><a href='");
-		html_attr(cgit_pageurl(cgit_query_repo, "tree",
-				       fmt("h=%s&amp;id=%s&amp;path=%s%s/",
-					   curr_rev,
-					   sha1_to_hex(sha1),
-					   cgit_query_path ? cgit_query_path : "",
-					   pathname)));
+		html_attr(url);
 	} else {
 		html("class='ls-blob'><a href='");
-		html_attr(cgit_pageurl(cgit_query_repo, "view",
-				      fmt("h=%s&amp;id=%s&amp;path=%s%s", curr_rev,
-					  sha1_to_hex(sha1),
-					  cgit_query_path ? cgit_query_path : "",
-					  pathname)));
+		html_attr(url);
 	}
 	htmlf("'>%s</a></td>", name);
 	htmlf("<td class='filesize'>%li</td>", size);
 
 	html("<td class='links'><a href='");
-	html_attr(cgit_pageurl(cgit_query_repo, "log",
-			       fmt("h=%s&amp;path=%s%s",
-				   curr_rev,
-				   cgit_query_path ? cgit_query_path : "",
-				   pathname)));
-	html("'>history</a></td>");
+	qry = fmt("h=%s&amp;path=%s%s%s", curr_rev,
+		  cgit_query_path ? cgit_query_path : "",
+		  cgit_query_path ? "/" : "", pathname);
+	url = cgit_pageurl(cgit_query_repo, "log", qry);
+	html_attr(url);
+	html("' class='button'>H</a></td>");
 	html("</tr>\n");
 	free(name);
 	return 0;
 }
 
-void cgit_print_tree(const char *rev, const char *hex, char *path)
+static void ls_head()
 {
-	struct tree *tree;
-	unsigned char sha1[20];
-	struct commit *commit;
-
-	curr_rev = xstrdup(rev);
-	get_sha1(rev, sha1);
-	commit = lookup_commit_reference(sha1);
-	if (!commit || parse_commit(commit)) {
-		cgit_print_error(fmt("Invalid head: %s", rev));
-		return;
-	}
-	if (!hex)
-		hex = sha1_to_hex(commit->tree->object.sha1);
-
-	if (get_sha1_hex(hex, sha1)) {
-		cgit_print_error(fmt("Invalid object id: %s", hex));
-		return;
-	}
-	tree = parse_tree_indirect(sha1);
-	if (!tree) {
-		cgit_print_error(fmt("Not a tree object: %s", hex));
-		return;
-	}
-
-	html_txt(path);
 	html("<table class='list'>\n");
 	html("<tr class='nohover'>");
 	html("<th class='left'>Mode</th>");
@@ -99,6 +111,104 @@ void cgit_print_tree(const char *rev, const char *hex, char *path)
 	html("<th class='right'>Size</th>");
 	html("<th/>");
 	html("</tr>\n");
-	read_tree_recursive(tree, "", 0, 1, NULL, print_entry);
+	header = 1;
+}
+
+static void ls_tail()
+{
+	if (!header)
+		return;
 	html("</table>\n");
+	header = 0;
+}
+
+static void ls_tree(const unsigned char *sha1, char *path)
+{
+	struct tree *tree;
+
+	tree = parse_tree_indirect(sha1);
+	if (!tree) {
+		cgit_print_error(fmt("Not a tree object: %s",
+				     sha1_to_hex(sha1)));
+		return;
+	}
+
+	ls_head();
+	read_tree_recursive(tree, "", 0, 1, NULL, ls_item);
+	ls_tail();
+}
+
+
+static int walk_tree(const unsigned char *sha1, const char *base, int baselen,
+		     const char *pathname, unsigned mode, int stage)
+{
+	static int state;
+	static char buffer[PATH_MAX];
+	char *url;
+
+	if (state == 0) {
+		memcpy(buffer, base, baselen);
+		strcpy(buffer+baselen, pathname);
+		url = cgit_pageurl(cgit_query_repo, "tree",
+				   fmt("h=%s&amp;path=%s", curr_rev, buffer));
+		htmlf(" / <a href='");
+		html_attr(url);
+		html("'>");
+		html_txt(xstrdup(pathname));
+		html("</a>");
+
+		if (strcmp(match_path, buffer))
+			return READ_TREE_RECURSIVE;
+
+		if (S_ISDIR(mode)) {
+			state = 1;
+			ls_head();
+			return READ_TREE_RECURSIVE;
+		} else {
+			print_object(sha1, buffer);
+			return 0;
+		}
+	}
+	ls_item(sha1, base, baselen, pathname, mode, stage);
+	return 0;
+}
+
+
+/*
+ * Show a tree or a blob
+ *   rev:  the commit pointing at the root tree object
+ *   path: path to tree or blob
+ */
+void cgit_print_tree(const char *rev, char *path)
+{
+	unsigned char sha1[20];
+	struct commit *commit;
+	const char *paths[] = {path, NULL};
+
+	if (!rev)
+		rev = cgit_query_head;
+
+	curr_rev = xstrdup(rev);
+	if (get_sha1(rev, sha1)) {
+		cgit_print_error(fmt("Invalid revision name: %s", rev));
+		return;
+	}
+	commit = lookup_commit_reference(sha1);
+	if (!commit || parse_commit(commit)) {
+		cgit_print_error(fmt("Invalid commit reference: %s", rev));
+		return;
+	}
+
+	html("path: <a href='");
+	html_attr(cgit_pageurl(cgit_query_repo, "tree", fmt("h=%s", rev)));
+	html("'>root</a>");
+
+	if (path == NULL) {
+		ls_tree(commit->tree->object.sha1, NULL);
+		return;
+	}
+
+	match_path = path;
+	read_tree_recursive(commit->tree, NULL, 0, 0, paths, walk_tree);
+	ls_tail();
 }

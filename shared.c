@@ -59,7 +59,8 @@ int htmlfd = 0;
 
 int cgit_get_cmd_index(const char *cmd)
 {
-	static char *cmds[] = {"log", "commit", "diff", "tree", "view", "blob", "snapshot", NULL};
+	static char *cmds[] = {"log", "commit", "diff", "tree", "blob",
+			       "snapshot", NULL};
 	int i;
 
 	for(i = 0; cmds[i]; i++)

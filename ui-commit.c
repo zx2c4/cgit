@@ -182,8 +182,7 @@ void cgit_print_commit(const char *hex)
 	cgit_print_date(info->committer_date, FMT_LONGDATE);
 	html("</td></tr>\n");
 	html("<tr><th>tree</th><td colspan='2' class='sha1'><a href='");
-	query = fmt("h=%s&amp;id=%s", sha1_to_hex(commit->object.sha1),
-		    sha1_to_hex(commit->tree->object.sha1));
+	query = fmt("h=%s", sha1_to_hex(commit->object.sha1));
 	html_attr(cgit_pageurl(cgit_query_repo, "tree", query));
 	htmlf("'>%s</a></td></tr>\n", sha1_to_hex(commit->tree->object.sha1));
       	for (p = commit->parents; p ; p = p->next) {
