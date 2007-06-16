@@ -44,7 +44,6 @@ static void print_modtime(struct repoinfo *repo)
 
 void cgit_print_repolist(struct cacheitem *item)
 {
-	struct repoinfo *repo;
 	int i;
 	char *last_group = NULL;
 
@@ -65,37 +64,35 @@ void cgit_print_repolist(struct cacheitem *item)
 	     "<th>Links</th></tr>\n");
 
 	for (i=0; i<cgit_repolist.count; i++) {
-		repo = &cgit_repolist.repos[i];
-		if ((last_group == NULL && repo->group != NULL) ||
-		    (last_group != NULL && repo->group == NULL) ||
-		    (last_group != NULL && repo->group!= NULL &&
-		     strcmp(repo->group, last_group))) {
+		cgit_repo = &cgit_repolist.repos[i];
+		if ((last_group == NULL && cgit_repo->group != NULL) ||
+		    (last_group != NULL && cgit_repo->group == NULL) ||
+		    (last_group != NULL && cgit_repo->group != NULL &&
+		     strcmp(cgit_repo->group, last_group))) {
 			html("<tr class='nohover'><td colspan='4' class='repogroup'>");
-			html_txt(repo->group);
+			html_txt(cgit_repo->group);
 			html("</td></tr>");
-			last_group = repo->group;
+			last_group = cgit_repo->group;
 		}
 		htmlf("<tr><td class='%s'>",
-		      repo->group ? "sublevel-repo" : "toplevel-repo");
-		html_link_open(cgit_repourl(repo->url), repo->desc, NULL);
-		html_txt(repo->name);
+		      cgit_repo->group ? "sublevel-repo" : "toplevel-repo");
+		html_link_open(cgit_repourl(cgit_repo->url), NULL, NULL);
+		html_txt(cgit_repo->name);
 		html_link_close();
 		html("</td><td>");
-		html_ntxt(cgit_max_repodesc_len, repo->desc);
+		html_ntxt(cgit_max_repodesc_len, cgit_repo->desc);
 		html("</td><td>");
-		html_txt(repo->owner);
+		html_txt(cgit_repo->owner);
 		html("</td><td>");
-		print_modtime(repo);
+		print_modtime(cgit_repo);
 		html("</td><td>");
-		html_link_open(cgit_repourl(repo->url),
+		html_link_open(cgit_repourl(cgit_repo->url),
 			       "Summary", "button");
 		html("S</a>");
-		html_link_open(cgit_pageurl(repo->name, "log", NULL),
+		html_link_open(cgit_pageurl(cgit_repo->name, "log", NULL),
 			       "Log", "button");
 		html("L</a>");
-		html_link_open(cgit_pageurl(repo->name, "tree", NULL),
-			       "Files", "button");
-		html("F</a>");
+		cgit_tree_link("F", "Files", "button", NULL, NULL, NULL);
 		html("</td></tr>\n");
 	}
 	html("</table>");

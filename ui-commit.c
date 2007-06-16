@@ -153,6 +153,7 @@ void cgit_print_commit(const char *hex)
 	unsigned char sha1[20];
 	char *query;
 	char *filename;
+	char *tmp;
 	int i;
 
 	if (get_sha1(hex, sha1)) {
@@ -181,10 +182,11 @@ void cgit_print_commit(const char *hex)
 	html("</td><td class='right'>");
 	cgit_print_date(info->committer_date, FMT_LONGDATE);
 	html("</td></tr>\n");
-	html("<tr><th>tree</th><td colspan='2' class='sha1'><a href='");
-	query = fmt("h=%s", sha1_to_hex(commit->object.sha1));
-	html_attr(cgit_pageurl(cgit_query_repo, "tree", query));
-	htmlf("'>%s</a></td></tr>\n", sha1_to_hex(commit->tree->object.sha1));
+	html("<tr><th>tree</th><td colspan='2' class='sha1'>");
+	tmp = xstrdup(hex);
+	cgit_tree_link(sha1_to_hex(commit->tree->object.sha1), NULL, NULL,
+		       cgit_query_head, tmp, NULL);
+	html("</td></tr>\n");
       	for (p = commit->parents; p ; p = p->next) {
 		parent = lookup_commit_reference(p->item->object.sha1);
 		if (!parent) {

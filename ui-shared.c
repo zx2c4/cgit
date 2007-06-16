@@ -87,6 +87,70 @@ char *cgit_currurl()
 		return fmt("%s/", cgit_virtual_root);
 }
 
+static char *repolink(char *title, char *class, char *page, char *head,
+		      char *path)
+{
+	char *delim = "?";
+
+	html("<a");
+	if (title) {
+		html(" title='");
+		html_attr(title);
+		html("'");
+	}
+	if (class) {
+		html(" class='");
+		html_attr(class);
+		html("'");
+	}
+	html(" href='");
+	if (cgit_virtual_root) {
+		html_attr(cgit_virtual_root);
+		if (cgit_virtual_root[strlen(cgit_virtual_root) - 1] != '/')
+			html("/");
+		html_attr(cgit_repo->url);
+		if (cgit_repo->url[strlen(cgit_repo->url) - 1] != '/')
+			html("/");
+		html(page);
+		html("/");
+		if (path)
+			html_attr(path);
+	} else {
+		html(cgit_script_name);
+		html("?url=");
+		html_attr(cgit_repo->url);
+		if (cgit_repo->url[strlen(cgit_repo->url) - 1] != '/')
+			html("/");
+		html(page);
+		html("/");
+		if (path)
+			html_attr(path);
+		delim = "&amp;";
+	}
+	if (head && head != cgit_query_head) {
+		html(delim);
+		html("h=");
+		html_attr(head);
+		delim = "&amp;";
+	}
+	return fmt("%s", delim);
+}
+
+void cgit_tree_link(char *name, char *title, char *class, char *head,
+		    char *rev, char *path)
+{
+	char *delim;
+
+	delim = repolink(title, class, "tree", head, path);
+	if (rev && rev != cgit_query_head) {
+		html(delim);
+		html("id=");
+		html_attr(rev);
+	}
+	html("'>");
+	html_txt(name);
+	html("</a>");
+}
 
 void cgit_print_date(time_t secs, char *format)
 {

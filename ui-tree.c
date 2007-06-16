@@ -55,11 +55,15 @@ static int ls_item(const unsigned char *sha1, const char *base, int baselen,
 		   const char *pathname, unsigned int mode, int stage)
 {
 	char *name;
+	char *fullpath;
 	enum object_type type;
 	unsigned long size = 0;
 	char *url, *qry;
 
 	name = xstrdup(pathname);
+	fullpath = fmt("%s%s%s", cgit_query_path ? cgit_query_path : "",
+		       cgit_query_path ? "/" : "", name);
+
 	type = sha1_object_info(sha1, &size);
 	if (type == OBJ_BAD && !S_ISDIRLNK(mode)) {
 		htmlf("<tr><td colspan='3'>Bad object: %s %s</td></tr>",
@@ -67,10 +71,7 @@ static int ls_item(const unsigned char *sha1, const char *base, int baselen,
 		      sha1_to_hex(sha1));
 		return 0;
 	}
-	qry = fmt("h=%s&amp;path=%s%s%s", curr_rev,
-		  cgit_query_path ? cgit_query_path : "",
-		  cgit_query_path ? "/" : "", pathname);
-	url = cgit_pageurl(cgit_query_repo, "tree", qry);
+
 	html("<tr><td class='filemode'>");
 	html_filemode(mode);
 	html("</td><td ");
@@ -79,15 +80,19 @@ static int ls_item(const unsigned char *sha1, const char *base, int baselen,
 		html_attr(fmt(cgit_repo->module_link,
 			      name,
 			      sha1_to_hex(sha1)));
+		html("'>");
+		html_txt(name);
+		html("</a>");
 	} else if (S_ISDIR(mode)) {
-		html("class='ls-dir'><a href='");
-		html_attr(url);
+		html("class='ls-dir'>");
+		cgit_tree_link(name, NULL, NULL, cgit_query_head,
+			       curr_rev, fullpath);
 	} else {
-		html("class='ls-blob'><a href='");
-		html_attr(url);
+		html("class='ls-blob'>");
+		cgit_tree_link(name, NULL, NULL, cgit_query_head,
+			       curr_rev, fullpath);
 	}
-	htmlf("'>%s</a></td>", name);
-	htmlf("<td class='filesize'>%li</td>", size);
+	htmlf("</td><td class='filesize'>%li</td>", size);
 
 	html("<td class='links'><a href='");
 	qry = fmt("h=%s&amp;path=%s%s%s", curr_rev,
@@ -150,11 +155,9 @@ static int walk_tree(const unsigned char *sha1, const char *base, int baselen,
 		strcpy(buffer+baselen, pathname);
 		url = cgit_pageurl(cgit_query_repo, "tree",
 				   fmt("h=%s&amp;path=%s", curr_rev, buffer));
-		htmlf(" / <a href='");
-		html_attr(url);
-		html("'>");
-		html_txt(xstrdup(pathname));
-		html("</a>");
+		html("/");
+		cgit_tree_link(xstrdup(pathname), NULL, NULL, cgit_query_head,
+			       curr_rev, buffer);
 
 		if (strcmp(match_path, buffer))
 			return READ_TREE_RECURSIVE;

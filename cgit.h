@@ -201,6 +201,9 @@ extern char *cgit_repourl(const char *reponame);
 extern char *cgit_pageurl(const char *reponame, const char *pagename,
 			  const char *query);
 
+extern void cgit_tree_link(char *name, char *title, char *class, char *head,
+			   char *rev, char *path);
+
 extern void cgit_print_error(char *msg);
 extern void cgit_print_date(time_t secs, char *format);
 extern void cgit_print_age(time_t t, time_t max_relative, char *format);
