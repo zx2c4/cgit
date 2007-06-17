@@ -72,11 +72,11 @@ static int ls_item(const unsigned char *sha1, const char *base, int baselen,
 		return 0;
 	}
 
-	html("<tr><td class='filemode'>");
+	html("<tr><td class='ls-mode'>");
 	html_filemode(mode);
-	html("</td><td ");
+	html("</td><td>");
 	if (S_ISDIRLNK(mode)) {
-		htmlf("class='ls-mod'><a href='");
+		htmlf("<a class='ls-mod' href='");
 		html_attr(fmt(cgit_repo->module_link,
 			      name,
 			      sha1_to_hex(sha1)));
@@ -84,23 +84,21 @@ static int ls_item(const unsigned char *sha1, const char *base, int baselen,
 		html_txt(name);
 		html("</a>");
 	} else if (S_ISDIR(mode)) {
-		html("class='ls-dir'>");
-		cgit_tree_link(name, NULL, NULL, cgit_query_head,
+		cgit_tree_link(name, NULL, "ls-dir", cgit_query_head,
 			       curr_rev, fullpath);
 	} else {
-		html("class='ls-blob'>");
-		cgit_tree_link(name, NULL, NULL, cgit_query_head,
+		cgit_tree_link(name, NULL, "ls-blob", cgit_query_head,
 			       curr_rev, fullpath);
 	}
-	htmlf("</td><td class='filesize'>%li</td>", size);
+	htmlf("</td><td class='ls-size'>%li</td>", size);
 
-	html("<td class='links'><a href='");
+	html("<td><a href='");
 	qry = fmt("h=%s&amp;path=%s%s%s", curr_rev,
 		  cgit_query_path ? cgit_query_path : "",
 		  cgit_query_path ? "/" : "", pathname);
 	url = cgit_pageurl(cgit_query_repo, "log", qry);
 	html_attr(url);
-	html("' class='button'>H</a></td>");
+	html("' title='Log' class='button'>L</a></td>");
 	html("</tr>\n");
 	free(name);
 	return 0;

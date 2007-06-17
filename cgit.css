@@ -174,28 +174,19 @@ div.error {
 	margin: 1em 2em;
 }
 
-td.ls-blob, td.ls-dir, td.ls-mod {
+a.ls-blob, a.ls-dir, a.ls-mod {
 	font-family: monospace;
 }
 
-div.ls-dir a {
-	font-weight: bold;
-}
-
-th.filesize, td.filesize {
+td.ls-size {
 	text-align: right;
 }
 
-td.filesize {
+td.ls-size {
 	font-family: monospace;
 }
 
-td.links {
-	font-size: 80%;
-	padding-left: 2em;
-}
-
-td.filemode {
+td.ls-mode {
 	font-family: monospace;
 }
 
