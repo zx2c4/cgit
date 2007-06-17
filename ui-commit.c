@@ -199,12 +199,10 @@ void cgit_print_commit(const char *hex)
 			continue;
 		}
 		html("<tr><th>parent</th>"
-		     "<td colspan='2' class='sha1'>"
-		     "<a href='");
-		query = fmt("h=%s", sha1_to_hex(p->item->object.sha1));
-		html_attr(cgit_pageurl(cgit_query_repo, "commit", query));
-		htmlf("'>%s</a> (<a href='",
-		      sha1_to_hex(p->item->object.sha1));
+		     "<td colspan='2' class='sha1'>");
+		cgit_commit_link(sha1_to_hex(p->item->object.sha1), NULL, NULL,
+				 cgit_query_head, sha1_to_hex(p->item->object.sha1));
+		html(" (<a href='");
 		query = fmt("id=%s&amp;id2=%s", sha1_to_hex(parent->tree->object.sha1),
 			    sha1_to_hex(commit->tree->object.sha1));
 		html_attr(cgit_pageurl(cgit_query_repo, "diff", query));
