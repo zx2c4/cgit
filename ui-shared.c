@@ -127,7 +127,7 @@ static char *repolink(char *title, char *class, char *page, char *head,
 			html_attr(path);
 		delim = "&amp;";
 	}
-	if (head && head != cgit_query_head) {
+	if (head && strcmp(head, cgit_query_head)) {
 		html(delim);
 		html("h=");
 		html_attr(head);
@@ -142,7 +142,7 @@ void cgit_tree_link(char *name, char *title, char *class, char *head,
 	char *delim;
 
 	delim = repolink(title, class, "tree", head, path);
-	if (rev && rev != cgit_query_head) {
+	if (rev && strcmp(rev, cgit_query_head)) {
 		html(delim);
 		html("id=");
 		html_attr(rev);
