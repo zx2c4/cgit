@@ -95,6 +95,14 @@ td#header {
 	vertical-align: text-bottom;
 }
 
+td#header a {
+	color: #666;
+}
+
+td#header a:hoved {
+	text-decoration: underline;
+}
+
 td#logo {
 	text-align: right;
 	vertical-align: middle;
@@ -116,11 +124,13 @@ td#crumb {
 td#crumb a {
 	color: #ccc;
 	background-color: #666;
+	padding: 0em 0.5em 0em 0.5em;
 }
 
 td#crumb a:hover {
-	color: #eee;
-	background-color: #666;
+	color: #666;
+	background-color: #ccc;
+	text-decoration: none;
 }
 
 td#search {

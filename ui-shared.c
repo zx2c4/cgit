@@ -111,20 +111,24 @@ static char *repolink(char *title, char *class, char *page, char *head,
 		html_attr(cgit_repo->url);
 		if (cgit_repo->url[strlen(cgit_repo->url) - 1] != '/')
 			html("/");
-		html(page);
-		html("/");
-		if (path)
-			html_attr(path);
+		if (page) {
+			html(page);
+			html("/");
+			if (path)
+				html_attr(path);
+		}
 	} else {
 		html(cgit_script_name);
 		html("?url=");
 		html_attr(cgit_repo->url);
 		if (cgit_repo->url[strlen(cgit_repo->url) - 1] != '/')
 			html("/");
-		html(page);
-		html("/");
-		if (path)
-			html_attr(path);
+		if (page) {
+			html(page);
+			html("/");
+			if (path)
+				html_attr(path);
+		}
 		delim = "&amp;";
 	}
 	if (head && strcmp(head, cgit_repo->defbranch)) {
@@ -279,19 +283,38 @@ void cgit_print_docend()
 void cgit_print_pageheader(char *title, int show_search)
 {
 	html("<table id='layout'>");
-	html("<tr><td id='header'>");
-	html(cgit_root_title);
-	html("</td><td id='logo'>");
+	html("<tr><td id='header'><a href='");
+	html_attr(cgit_rooturl());
+	html("'>");
+	html_txt(cgit_root_title);
+	html("</a></td><td id='logo'>");
 	html("<a href='");
 	html_attr(cgit_logo_link);
 	htmlf("'><img src='%s' alt='logo'/></a>", cgit_logo);
 	html("</td></tr>");
 	html("<tr><td id='crumb'>");
-	htmlf("<a href='%s'>root</a>", cgit_rooturl());
 	if (cgit_query_repo) {
-		htmlf(" : <a href='%s'>", cgit_repourl(cgit_repo->url));
 		html_txt(cgit_repo->name);
-		htmlf("</a> : %s", title);
+		html(" (");
+		html_txt(cgit_query_head);
+		html(") : &nbsp;");
+		reporevlink(NULL, "summary", NULL, NULL, cgit_query_head,
+			    NULL, NULL);
+		html(" ");
+		cgit_log_link("log", NULL, NULL, cgit_query_head,
+			      cgit_query_sha1, cgit_query_path);
+		html(" ");
+		cgit_tree_link("files", NULL, NULL, cgit_query_head,
+			       cgit_query_sha1, cgit_query_path);
+		html(" ");
+		cgit_commit_link("commit", NULL, NULL, cgit_query_head,
+			      cgit_query_sha1);
+		html(" ");
+		cgit_diff_link("diff", NULL, NULL, cgit_query_head,
+			       cgit_query_sha1, cgit_query_sha2,
+			       cgit_query_path);
+	} else {
+		html_txt("Index of repositories");
 	}
 	html("</td>");
 	html("<td id='search'>");
