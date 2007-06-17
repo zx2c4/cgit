@@ -92,14 +92,10 @@ static int ls_item(const unsigned char *sha1, const char *base, int baselen,
 	}
 	htmlf("</td><td class='ls-size'>%li</td>", size);
 
-	html("<td><a href='");
-	qry = fmt("h=%s&amp;path=%s%s%s", curr_rev,
-		  cgit_query_path ? cgit_query_path : "",
-		  cgit_query_path ? "/" : "", pathname);
-	url = cgit_pageurl(cgit_query_repo, "log", qry);
-	html_attr(url);
-	html("' title='Log' class='button'>L</a></td>");
-	html("</tr>\n");
+	html("<td>");
+	cgit_log_link("L", "Log", "button", cgit_query_head, curr_rev,
+		      fullpath);
+	html("</td></tr>\n");
 	free(name);
 	return 0;
 }

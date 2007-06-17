@@ -89,9 +89,7 @@ void cgit_print_repolist(struct cacheitem *item)
 		html_link_open(cgit_repourl(cgit_repo->url),
 			       "Summary", "button");
 		html("S</a>");
-		html_link_open(cgit_pageurl(cgit_repo->name, "log", NULL),
-			       "Log", "button");
-		html("L</a>");
+		cgit_log_link("L", "Log", "button", NULL, NULL, NULL);
 		cgit_tree_link("F", "Files", "button", NULL, NULL, NULL);
 		html("</td></tr>\n");
 	}

@@ -203,6 +203,8 @@ extern char *cgit_pageurl(const char *reponame, const char *pagename,
 
 extern void cgit_tree_link(char *name, char *title, char *class, char *head,
 			   char *rev, char *path);
+extern void cgit_log_link(char *name, char *title, char *class, char *head,
+			  char *rev, char *path);
 
 extern void cgit_print_error(char *msg);
 extern void cgit_print_date(time_t secs, char *format);

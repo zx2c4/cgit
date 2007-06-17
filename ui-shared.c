@@ -127,7 +127,7 @@ static char *repolink(char *title, char *class, char *page, char *head,
 			html_attr(path);
 		delim = "&amp;";
 	}
-	if (head && strcmp(head, cgit_query_head)) {
+	if (head && strcmp(head, cgit_repo->defbranch)) {
 		html(delim);
 		html("h=");
 		html_attr(head);
@@ -136,12 +136,12 @@ static char *repolink(char *title, char *class, char *page, char *head,
 	return fmt("%s", delim);
 }
 
-void cgit_tree_link(char *name, char *title, char *class, char *head,
-		    char *rev, char *path)
+static char *reporevlink(char *page, char *name, char *title, char *class,
+			 char *head, char *rev, char *path)
 {
 	char *delim;
 
-	delim = repolink(title, class, "tree", head, path);
+	delim = repolink(title, class, page, head, path);
 	if (rev && strcmp(rev, cgit_query_head)) {
 		html(delim);
 		html("id=");
@@ -150,6 +150,18 @@ void cgit_tree_link(char *name, char *title, char *class, char *head,
 	html("'>");
 	html_txt(name);
 	html("</a>");
+}
+
+void cgit_tree_link(char *name, char *title, char *class, char *head,
+		    char *rev, char *path)
+{
+	reporevlink("tree", name, title, class, head, rev, path);
+}
+
+void cgit_log_link(char *name, char *title, char *class, char *head,
+		   char *rev, char *path)
+{
+	reporevlink("log", name, title, class, head, rev, path);
 }
 
 void cgit_print_date(time_t secs, char *format)
