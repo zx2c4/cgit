@@ -59,6 +59,9 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *path, i
 	int argc = 2;
 	int i;
 
+	if (!tip)
+		argv[1] = cgit_query_head;
+
 	if (grep)
 		argv[argc++] = fmt("--grep=%s", grep);
 	if (path) {
