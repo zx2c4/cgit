@@ -360,7 +360,7 @@ void cgit_diff_tree(const unsigned char *old_sha1,
 	opt.format_callback_data = fn;
 	diff_setup_done(&opt);
 
-	if (old_sha1)
+	if (old_sha1 && !is_null_sha1(old_sha1))
 		ret = diff_tree_sha1(old_sha1, new_sha1, "", &opt);
 	else
 		ret = diff_root_tree_sha1(new_sha1, "", &opt);

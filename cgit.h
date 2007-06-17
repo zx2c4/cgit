@@ -207,6 +207,8 @@ extern void cgit_log_link(char *name, char *title, char *class, char *head,
 			  char *rev, char *path);
 extern void cgit_commit_link(char *name, char *title, char *class, char *head,
 			     char *rev);
+extern void cgit_diff_link(char *name, char *title, char *class, char *head,
+			   char *new_rev, char *old_rev, char *path);
 
 extern void cgit_print_error(char *msg);
 extern void cgit_print_date(time_t secs, char *format);
@@ -223,9 +225,8 @@ extern void cgit_print_summary();
 extern void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *path, int pager);
 extern void cgit_print_blob(struct cacheitem *item, const char *hex, char *path);
 extern void cgit_print_tree(const char *rev, char *path);
-extern void cgit_print_commit(const char *hex);
-extern void cgit_print_diff(const char *head, const char *old_hex, const char *new_hex,
-			    char *path);
+extern void cgit_print_commit(char *hex);
+extern void cgit_print_diff(const char *new_hex, const char *old_hex);
 extern void cgit_print_snapshot(struct cacheitem *item, const char *hex,
 				const char *format, const char *prefix,
 				const char *filename);

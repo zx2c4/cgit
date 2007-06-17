@@ -103,8 +103,7 @@ static void cgit_print_repo_page(struct cacheitem *item)
 		cgit_print_commit(cgit_query_sha1);
 		break;
 	case CMD_DIFF:
-		cgit_print_diff(cgit_query_head, cgit_query_sha1, cgit_query_sha2,
-				cgit_query_path);
+		cgit_print_diff(cgit_query_sha1, cgit_query_sha2);
 		break;
 	default:
 		cgit_print_error("Invalid request");

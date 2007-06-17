@@ -176,6 +176,28 @@ void cgit_commit_link(char *name, char *title, char *class, char *head,
 	reporevlink("commit", name, title, class, head, rev, NULL);
 }
 
+void cgit_diff_link(char *name, char *title, char *class, char *head,
+		    char *new_rev, char *old_rev, char *path)
+{
+	char *delim;
+
+	delim = repolink(title, class, "diff", head, path);
+	if (new_rev && strcmp(new_rev, cgit_query_head)) {
+		html(delim);
+		html("id=");
+		html_attr(new_rev);
+		delim = "&amp;";
+	}
+	if (old_rev) {
+		html(delim);
+		html("id2=");
+		html_attr(old_rev);
+	}
+	html("'>");
+	html_txt(name);
+	html("</a>");
+}
+
 void cgit_print_date(time_t secs, char *format)
 {
 	char buf[64];

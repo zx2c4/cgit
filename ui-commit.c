@@ -11,6 +11,7 @@
 static int files, slots;
 static int total_adds, total_rems, max_changes;
 static int lines_added, lines_removed;
+static char *curr_rev;
 
 static struct fileinfo {
 	char status;
@@ -27,7 +28,6 @@ static struct fileinfo {
 
 void print_fileinfo(struct fileinfo *info)
 {
-	char *query, *query2;
 	char *class;
 
 	switch (info->status) {
@@ -75,24 +75,12 @@ void print_fileinfo(struct fileinfo *info)
 		html("]</span>");
 	}
 	htmlf("</td><td class='%s'>", class);
-	query = fmt("id=%s&amp;id2=%s&amp;path=%s", sha1_to_hex(info->old_sha1),
-		    sha1_to_hex(info->new_sha1), info->new_path);
-	html_link_open(cgit_pageurl(cgit_query_repo, "diff", query),
-		       NULL, NULL);
-	if (info->status == DIFF_STATUS_COPIED ||
-	    info->status == DIFF_STATUS_RENAMED) {
-		html_txt(info->new_path);
-		htmlf("</a> (%s from ", info->status == DIFF_STATUS_COPIED ?
-		      "copied" : "renamed");
-		query2 = fmt("id=%s", sha1_to_hex(info->old_sha1));
-		html_link_open(cgit_pageurl(cgit_query_repo, "view", query2),
-			       NULL, NULL);
-		html_txt(info->old_path);
-		html("</a>)");
-	} else {
-		html_txt(info->new_path);
-		html("</a>");
-	}
+	cgit_tree_link(info->new_path, NULL, NULL, cgit_query_head, curr_rev,
+		       info->new_path);
+	if (info->status == DIFF_STATUS_COPIED || info->status == DIFF_STATUS_RENAMED)
+		htmlf(" (%s from %s)",
+		      info->status == DIFF_STATUS_COPIED ? "copied" : "renamed",
+		      info->old_path);
 	html("</td><td class='right'>");
 	htmlf("%d", info->added + info->removed);
 	html("</td><td class='graph'>");
@@ -145,19 +133,19 @@ void inspect_filepair(struct diff_filepair *pair)
 }
 
 
-void cgit_print_commit(const char *hex)
+void cgit_print_commit(char *hex)
 {
 	struct commit *commit, *parent;
 	struct commitinfo *info;
 	struct commit_list *p;
 	unsigned char sha1[20];
-	char *query;
 	char *filename;
 	char *tmp;
 	int i;
 
 	if (!hex)
 		hex = cgit_query_head;
+	curr_rev = hex;
 
 	if (get_sha1(hex, sha1)) {
 		cgit_print_error(fmt("Bad object id: %s", hex));
@@ -202,11 +190,10 @@ void cgit_print_commit(const char *hex)
 		     "<td colspan='2' class='sha1'>");
 		cgit_commit_link(sha1_to_hex(p->item->object.sha1), NULL, NULL,
 				 cgit_query_head, sha1_to_hex(p->item->object.sha1));
-		html(" (<a href='");
-		query = fmt("id=%s&amp;id2=%s", sha1_to_hex(parent->tree->object.sha1),
-			    sha1_to_hex(commit->tree->object.sha1));
-		html_attr(cgit_pageurl(cgit_query_repo, "diff", query));
-		html("'>diff</a>)</td></tr>");
+		html(" (");
+		cgit_diff_link("diff", NULL, NULL, cgit_query_head, hex,
+			       sha1_to_hex(p->item->object.sha1), NULL);
+		html(")</td></tr>");
 	}
 	if (cgit_repo->snapshots) {
 		htmlf("<tr><th>download</th><td colspan='2' class='sha1'><a href='");
@@ -233,10 +220,9 @@ void cgit_print_commit(const char *hex)
 		html("<div class='diffstat-summary'>");
 		htmlf("%d files changed, %d insertions, %d deletions (",
 		      files, total_adds, total_rems);
-		query = fmt("h=%s", hex);
-		html_link_open(cgit_pageurl(cgit_query_repo, "diff", query), NULL, NULL);
-		html("show diff</a>)");
-		html("</div>");
+		cgit_diff_link("show diff", NULL, NULL, cgit_query_head, hex,
+			       NULL, NULL);
+		html(")</div>");
 	}
 	cgit_free_commitinfo(info);
 }

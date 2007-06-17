@@ -89,54 +89,52 @@ static void filepair_cb(struct diff_filepair *pair)
 		cgit_print_error("Error running diff");
 }
 
-void cgit_print_diff(const char *head, const char *old_hex, const char *new_hex, char *path)
+void cgit_print_diff(const char *new_rev, const char *old_rev)
 {
 	unsigned char sha1[20], sha2[20];
 	enum object_type type;
 	unsigned long size;
-	struct commit *commit;
+	struct commit *commit, *commit2;
 
-	html("<table class='diff'>");
-	html("<tr><td>");
-
-	if (head && !old_hex && !new_hex) {
-		get_sha1(head, sha1);
-		commit = lookup_commit_reference(sha1);
-		if (commit && !parse_commit(commit))
-			cgit_diff_commit(commit, filepair_cb);
-		else
-			cgit_print_error(fmt("Bad commit: %s", head));
-		html("</td></tr>");
-		html("</table>");
+	if (!new_rev)
+		new_rev = cgit_query_head;
+	get_sha1(new_rev, sha1);
+	type = sha1_object_info(sha1, &size);
+	if (type == OBJ_BAD) {
+		cgit_print_error(fmt("Bad object name: %s", new_rev));
+		return;
+	}
+	if (type != OBJ_COMMIT) {
+		cgit_print_error(fmt("Unhandled object type: %s",
+				     typename(type)));
 		return;
 	}
 
-	get_sha1(old_hex, sha1);
-	get_sha1(new_hex, sha2);
+	commit = lookup_commit_reference(sha1);
+	if (!commit || parse_commit(commit))
+		cgit_print_error(fmt("Bad commit: %s", sha1_to_hex(sha1)));
 
-	type = sha1_object_info(sha1, &size);
-	if (type == OBJ_BAD) {
+	if (old_rev)
+		get_sha1(old_rev, sha2);
+	else if (commit->parents && commit->parents->item)
+		hashcpy(sha2, commit->parents->item->object.sha1);
+	else
+		hashclr(sha2);
+
+	if (!is_null_sha1(sha2)) {
 		type = sha1_object_info(sha2, &size);
 		if (type == OBJ_BAD) {
-			cgit_print_error(fmt("Bad object names: %s, %s", old_hex, new_hex));
+			cgit_print_error(fmt("Bad object name: %s", sha1_to_hex(sha2)));
 			return;
 		}
+		commit2 = lookup_commit_reference(sha2);
+		if (!commit2 || parse_commit(commit2))
+			cgit_print_error(fmt("Bad commit: %s", sha1_to_hex(sha2)));
 	}
 
-	switch(type) {
-	case OBJ_BLOB:
-		header(sha1, path, 0644, sha2, path, 0644);
-		if (cgit_diff_files(sha1, sha2, print_line))
-			cgit_print_error("Error running diff");
-		break;
-	case OBJ_TREE:
-		cgit_diff_tree(sha1, sha2, filepair_cb);
-		break;
-	default:
-		cgit_print_error(fmt("Unhandled object type: %s",
-				     typename(type)));
-		break;
-	}
+	html("<table class='diff'>");
+	html("<tr><td>");
+	cgit_diff_tree(sha2, sha1, filepair_cb);
 	html("</td></tr>");
 	html("</table>");
 }
