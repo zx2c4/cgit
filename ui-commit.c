@@ -156,6 +156,9 @@ void cgit_print_commit(const char *hex)
 	char *tmp;
 	int i;
 
+	if (!hex)
+		hex = cgit_query_head;
+
 	if (get_sha1(hex, sha1)) {
 		cgit_print_error(fmt("Bad object id: %s", hex));
 		return;

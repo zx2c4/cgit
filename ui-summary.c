@@ -15,8 +15,10 @@ static int cgit_print_branch_cb(const char *refname, const unsigned char *sha1,
 {
 	struct commit *commit;
 	struct commitinfo *info;
-	char buf[256], *url;
+	char buf[256];
+	char *ref;
 
+	ref = xstrdup(refname);
 	strncpy(buf, refname, sizeof(buf));
 	commit = lookup_commit(sha1);
 	// object is not really parsed at this point, because of some fallout
@@ -25,17 +27,13 @@ static int cgit_print_branch_cb(const char *refname, const unsigned char *sha1,
 	if (commit && !parse_commit(commit)){
 		info = cgit_parse_commit(commit);
 		html("<tr><td>");
-		cgit_log_link(refname, NULL, NULL, refname, NULL, NULL);
+		cgit_log_link(ref, NULL, NULL, ref, NULL, NULL);
 		html("</td><td>");
 		cgit_print_age(commit->date, -1, NULL);
 		html("</td><td>");
 		html_txt(info->author);
 		html("</td><td>");
-		url = cgit_pageurl(cgit_query_repo, "commit",
-				   fmt("h=%s", sha1_to_hex(sha1)));
-		html_link_open(url, NULL, NULL);
-		html_ntxt(cgit_max_msg_len, info->subject);
-		html_link_close();
+		cgit_commit_link(info->subject, NULL, NULL, ref, NULL);
 		html("</td></tr>\n");
 		cgit_free_commitinfo(info);
 	} else {
@@ -45,6 +43,7 @@ static int cgit_print_branch_cb(const char *refname, const unsigned char *sha1,
 		htmlf("*** bad ref %s ***", sha1_to_hex(sha1));
 		html("</td></tr>\n");
 	}
+	free(ref);
 	return 0;
 }
 
@@ -54,8 +53,9 @@ static void cgit_print_object_ref(struct object *obj)
 	char *page, *arg, *url;
 
 	if (obj->type == OBJ_COMMIT) {
-		page = "commit";
-		arg = "h";
+                cgit_commit_link(fmt("commit %s", sha1_to_hex(obj->sha1)), NULL, NULL,
+				 cgit_query_head, sha1_to_hex(obj->sha1));
+		return;
 	} else if (obj->type == OBJ_TREE) {
 		page = "tree";
 		arg = "id";

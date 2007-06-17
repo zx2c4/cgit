@@ -100,7 +100,7 @@ static void cgit_print_repo_page(struct cacheitem *item)
 		cgit_print_tree(cgit_query_sha1, cgit_query_path);
 		break;
 	case CMD_COMMIT:
-		cgit_print_commit(cgit_query_head);
+		cgit_print_commit(cgit_query_sha1);
 		break;
 	case CMD_DIFF:
 		cgit_print_diff(cgit_query_head, cgit_query_sha1, cgit_query_sha2,

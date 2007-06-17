@@ -58,7 +58,6 @@ static int ls_item(const unsigned char *sha1, const char *base, int baselen,
 	char *fullpath;
 	enum object_type type;
 	unsigned long size = 0;
-	char *url, *qry;
 
 	name = xstrdup(pathname);
 	fullpath = fmt("%s%s%s", cgit_query_path ? cgit_query_path : "",

@@ -31,11 +31,8 @@ void print_commit(struct commit *commit)
 	html("<tr><td>");
 	cgit_print_age(commit->date, TM_WEEK * 2, FMT_SHORTDATE);
 	html("</td><td>");
-	char *qry = fmt("h=%s", sha1_to_hex(commit->object.sha1));
-	char *url = cgit_pageurl(cgit_query_repo, "commit", qry);
-	html_link_open(url, NULL, NULL);
-	html_ntxt(cgit_max_msg_len, info->subject);
-	html_link_close();
+	cgit_commit_link(info->subject, NULL, NULL, cgit_query_head,
+			 sha1_to_hex(commit->object.sha1));
 	if (cgit_repo->enable_log_filecount) {
 		files = 0;
 		lines = 0;

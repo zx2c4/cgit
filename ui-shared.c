@@ -136,8 +136,8 @@ static char *repolink(char *title, char *class, char *page, char *head,
 	return fmt("%s", delim);
 }
 
-static char *reporevlink(char *page, char *name, char *title, char *class,
-			 char *head, char *rev, char *path)
+static void reporevlink(char *page, char *name, char *title, char *class,
+			char *head, char *rev, char *path)
 {
 	char *delim;
 
@@ -162,6 +162,18 @@ void cgit_log_link(char *name, char *title, char *class, char *head,
 		   char *rev, char *path)
 {
 	reporevlink("log", name, title, class, head, rev, path);
+}
+
+void cgit_commit_link(char *name, char *title, char *class, char *head,
+		      char *rev)
+{
+	if (strlen(name) > cgit_max_msg_len && cgit_max_msg_len >= 15) {
+		name[cgit_max_msg_len] = '\0';
+		name[cgit_max_msg_len - 1] = '.';
+		name[cgit_max_msg_len - 2] = '.';
+		name[cgit_max_msg_len - 3] = '.';
+	}
+	reporevlink("commit", name, title, class, head, rev, NULL);
 }
 
 void cgit_print_date(time_t secs, char *format)
