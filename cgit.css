@@ -371,16 +371,17 @@ table.list td.repogroup {
 
 a.button {
 	font-size: 80%;
-	color: #333;
-	background-color: #ccc;
-	border: solid 1px #999;
+	color: #aaa;
+	background-color: #eee;
+	border: solid 1px #aaa;
 	padding: 0em 0.5em;
 	margin: 0.1em 0.25em;
 }
 
 a.button:hover {
 	text-decoration: none;
-	background-color: #eee;
+	color: #333;
+	background-color: #ccc;
 }
 
 a.primary {

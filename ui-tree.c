@@ -92,7 +92,7 @@ static int ls_item(const unsigned char *sha1, const char *base, int baselen,
 	htmlf("</td><td class='ls-size'>%li</td>", size);
 
 	html("<td>");
-	cgit_log_link("L", "Log", "button", cgit_query_head, curr_rev,
+	cgit_log_link("log", NULL, "button", cgit_query_head, curr_rev,
 		      fullpath);
 	html("</td></tr>\n");
 	free(name);

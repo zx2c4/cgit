@@ -87,10 +87,10 @@ void cgit_print_repolist(struct cacheitem *item)
 		print_modtime(cgit_repo);
 		html("</td><td>");
 		html_link_open(cgit_repourl(cgit_repo->url),
-			       "Summary", "button");
-		html("S</a>");
-		cgit_log_link("L", "Log", "button", NULL, NULL, NULL);
-		cgit_tree_link("T", "Tree", "button", NULL, NULL, NULL);
+			       NULL, "button");
+		html("summary</a>");
+		cgit_log_link("log", NULL, "button", NULL, NULL, NULL);
+		cgit_tree_link("tree", NULL, "button", NULL, NULL, NULL);
 		html("</td></tr>\n");
 	}
 	html("</table>");
