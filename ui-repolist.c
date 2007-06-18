@@ -90,7 +90,7 @@ void cgit_print_repolist(struct cacheitem *item)
 			       "Summary", "button");
 		html("S</a>");
 		cgit_log_link("L", "Log", "button", NULL, NULL, NULL);
-		cgit_tree_link("F", "Files", "button", NULL, NULL, NULL);
+		cgit_tree_link("T", "Tree", "button", NULL, NULL, NULL);
 		html("</td></tr>\n");
 	}
 	html("</table>");

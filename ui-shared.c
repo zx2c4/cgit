@@ -304,7 +304,7 @@ void cgit_print_pageheader(char *title, int show_search)
 		cgit_log_link("log", NULL, NULL, cgit_query_head,
 			      cgit_query_sha1, cgit_query_path);
 		html(" ");
-		cgit_tree_link("files", NULL, NULL, cgit_query_head,
+		cgit_tree_link("tree", NULL, NULL, cgit_query_head,
 			       cgit_query_sha1, cgit_query_path);
 		html(" ");
 		cgit_commit_link("commit", NULL, NULL, cgit_query_head,
