@@ -262,7 +262,7 @@ void cgit_print_docstart(char *title, struct cacheitem *item)
 	html("<title>");
 	html_txt(title);
 	html("</title>\n");
-	htmlf("<meta name='generator' content='cgit v%s'/>\n", cgit_version);
+	htmlf("<meta name='generator' content='cgit %s'/>\n", cgit_version);
 	html("<link rel='stylesheet' type='text/css' href='");
 	html_attr(cgit_css);
 	html("'/>\n");

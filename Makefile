@@ -1,7 +1,4 @@
-CGIT_VERSION = 0.5
-
 prefix = /var/www/htdocs/cgit
-
 SHA1_HEADER = <openssl/sha.h>
 CACHE_ROOT = /var/cache/cgit
 CGIT_CONFIG = /etc/cgitrc
@@ -11,6 +8,17 @@ CGIT_SCRIPT_NAME = cgit.cgi
 # Let the user override the above settings.
 #
 -include cgit.conf
+
+
+CGIT_VERSION = 0.5
+
+all: cgit
+
+VERSION:
+	gen-version.sh
+
+-include VERSION
+
 
 EXTLIBS = git/libgit.a git/xdiff/lib.a -lz -lcrypto
 OBJECTS = shared.o cache.o parsing.o html.o ui-shared.o ui-repolist.o \
@@ -42,12 +50,7 @@ INITGIT = ./submodules.sh -i
 endif
 
 
-#
-# basic build rules
-#
-all: cgit
-
-cgit: cgit.c cgit.h $(OBJECTS)
+cgit: cgit.c cgit.h VERSION $(OBJECTS)
 	$(CC) $(CFLAGS) cgit.c -o cgit $(OBJECTS) $(EXTLIBS)
 
 $(OBJECTS): cgit.h git/libgit.a
@@ -65,7 +68,7 @@ install: all clean-cache
 	install cgit.css $(prefix)/cgit.css
 
 clean-cgit:
-	rm -f cgit *.o
+	rm -f cgit VERSION *.o
 
 distclean-cgit: clean-cgit
 	git clean -d -x
@@ -83,5 +86,9 @@ clean: clean-cgit clean-sub
 
 distclean: distclean-cgit distclean-sub
 
+version: clean-cgit
+	./gen-version.sh
+	make
+
 .PHONY: all install clean clean-cgit clean-sub clean-cache \
-	distclean distclean-cgit distclean-sub
+	distclean distclean-cgit distclean-sub release version

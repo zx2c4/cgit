@@ -12,6 +12,8 @@ struct repolist cgit_repolist;
 struct repoinfo *cgit_repo;
 int cgit_cmd;
 
+const char *cgit_version = CGIT_VERSION;
+
 char *cgit_root_title   = "Git repository browser";
 char *cgit_css          = "/cgit.css";
 char *cgit_logo         = "/git-logo.png";

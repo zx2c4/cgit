@@ -98,7 +98,7 @@ struct taginfo {
 	char *msg;
 };
 
-extern const char cgit_version[];
+extern const char *cgit_version;
 
 extern struct repolist cgit_repolist;
 extern struct repoinfo *cgit_repo;

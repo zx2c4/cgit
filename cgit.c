@@ -8,9 +8,6 @@
 
 #include "cgit.h"
 
-const char cgit_version[] = CGIT_VERSION;
-
-
 static int cgit_prepare_cache(struct cacheitem *item)
 {
 	if (!cgit_repo && cgit_query_repo) {
