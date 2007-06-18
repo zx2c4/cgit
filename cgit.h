@@ -118,6 +118,7 @@ extern char *cgit_repo_group;
 
 extern int cgit_nocache;
 extern int cgit_snapshots;
+extern int cgit_enable_index_links;
 extern int cgit_enable_log_filecount;
 extern int cgit_enable_log_linecount;
 extern int cgit_max_lock_attempts;

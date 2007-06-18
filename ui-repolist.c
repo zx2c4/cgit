@@ -44,15 +44,19 @@ static void print_modtime(struct repoinfo *repo)
 
 void cgit_print_repolist(struct cacheitem *item)
 {
-	int i;
+	int i, columns = 4;
 	char *last_group = NULL;
+
+	if (cgit_enable_index_links)
+		columns++;
 
 	cgit_print_docstart(cgit_root_title, item);
 	cgit_print_pageheader(cgit_root_title, 0);
 
 	html("<table class='list nowrap'>");
 	if (cgit_index_header) {
-		html("<tr class='nohover'><td colspan='5' class='include-block'>");
+		htmlf("<tr class='nohover'><td colspan='%d' class='include-block'>",
+		      columns);
 		html_include(cgit_index_header);
 		html("</td></tr>");
 	}
@@ -60,8 +64,10 @@ void cgit_print_repolist(struct cacheitem *item)
 	     "<th class='left'>Name</th>"
 	     "<th class='left'>Description</th>"
 	     "<th class='left'>Owner</th>"
-	     "<th class='left'>Idle</th>"
-	     "<th>Links</th></tr>\n");
+	     "<th class='left'>Idle</th>");
+	if (cgit_enable_index_links)
+		html("<th>Links</th>");
+	html("</tr>\n");
 
 	for (i=0; i<cgit_repolist.count; i++) {
 		cgit_repo = &cgit_repolist.repos[i];
@@ -69,7 +75,8 @@ void cgit_print_repolist(struct cacheitem *item)
 		    (last_group != NULL && cgit_repo->group == NULL) ||
 		    (last_group != NULL && cgit_repo->group != NULL &&
 		     strcmp(cgit_repo->group, last_group))) {
-			html("<tr class='nohover'><td colspan='4' class='repogroup'>");
+			htmlf("<tr class='nohover'><td colspan='%d' class='repogroup'>",
+			      columns);
 			html_txt(cgit_repo->group);
 			html("</td></tr>");
 			last_group = cgit_repo->group;
@@ -85,13 +92,17 @@ void cgit_print_repolist(struct cacheitem *item)
 		html_txt(cgit_repo->owner);
 		html("</td><td>");
 		print_modtime(cgit_repo);
-		html("</td><td>");
-		html_link_open(cgit_repourl(cgit_repo->url),
-			       NULL, "button");
-		html("summary</a>");
-		cgit_log_link("log", NULL, "button", NULL, NULL, NULL);
-		cgit_tree_link("tree", NULL, "button", NULL, NULL, NULL);
-		html("</td></tr>\n");
+		html("</td>");
+		if (cgit_enable_index_links) {
+			html("<td>");
+			html_link_open(cgit_repourl(cgit_repo->url),
+				       NULL, "button");
+			html("summary</a>");
+			cgit_log_link("log", NULL, "button", NULL, NULL, NULL);
+			cgit_tree_link("tree", NULL, "button", NULL, NULL, NULL);
+			html("</td>");
+		}
+		html("</tr>\n");
 	}
 	html("</table>");
 	cgit_print_docend();

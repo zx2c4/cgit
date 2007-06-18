@@ -26,6 +26,7 @@ char *cgit_repo_group   = NULL;
 
 int cgit_nocache               =  0;
 int cgit_snapshots             =  0;
+int cgit_enable_index_links    =  0;
 int cgit_enable_log_filecount  =  0;
 int cgit_enable_log_linecount  =  0;
 int cgit_max_lock_attempts     =  5;
@@ -146,6 +147,8 @@ void cgit_global_config_cb(const char *name, const char *value)
 		cgit_nocache = atoi(value);
 	else if (!strcmp(name, "snapshots"))
 		cgit_snapshots = atoi(value);
+	else if (!strcmp(name, "enable-index-links"))
+		cgit_enable_index_links = atoi(value);
 	else if (!strcmp(name, "enable-log-filecount"))
 		cgit_enable_log_filecount = atoi(value);
 	else if (!strcmp(name, "enable-log-linecount"))

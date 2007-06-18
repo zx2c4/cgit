@@ -12,6 +12,10 @@
 #snapshots=0
 
 
+## Enable/disable extra links to summary/log/tree per repo on index page
+#enable-index-links=0
+
+
 ## Enable/disable display of 'number of files changed' in log view
 #enable-log-filecount=0
 
