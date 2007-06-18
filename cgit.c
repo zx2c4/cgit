@@ -29,13 +29,15 @@ static int cgit_prepare_cache(struct cacheitem *item)
 	}
 
 	if (!cgit_cmd) {
-		item->name = xstrdup(fmt("%s/%s/index.html", cgit_cache_root,
-			   cache_safe_filename(cgit_repo->url)));
+		item->name = xstrdup(fmt("%s/%s/index.%s.html", cgit_cache_root,
+					 cache_safe_filename(cgit_repo->url),
+					 cache_safe_filename(cgit_querystring)));
 		item->ttl = cgit_cache_repo_ttl;
 	} else {
 		item->name = xstrdup(fmt("%s/%s/%s/%s.html", cgit_cache_root,
-			   cache_safe_filename(cgit_repo->url), cgit_query_page,
-			   cache_safe_filename(cgit_querystring)));
+					 cache_safe_filename(cgit_repo->url),
+					 cgit_query_page,
+					 cache_safe_filename(cgit_querystring)));
 		if (cgit_query_has_symref)
 			item->ttl = cgit_cache_dynamic_ttl;
 		else if (cgit_query_has_sha1)
