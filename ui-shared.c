@@ -305,7 +305,7 @@ void cgit_print_pageheader(char *title, int show_search)
 			      cgit_query_sha1, cgit_query_path);
 		html(" ");
 		cgit_tree_link("tree", NULL, NULL, cgit_query_head,
-			       cgit_query_sha1, cgit_query_path);
+			       cgit_query_sha1, NULL);
 		html(" ");
 		cgit_commit_link("commit", NULL, NULL, cgit_query_head,
 			      cgit_query_sha1);
