@@ -168,7 +168,7 @@ void cgit_parse_url(const char *url)
 		if (p) {
 			p[0] = '\0';
 			if (p[1])
-				cgit_query_path = xstrdup(p + 1);
+				cgit_query_path = trim_end(p + 1, '/');
 		}
 		cgit_cmd = cgit_get_cmd_index(cmd + 1);
 		cgit_query_page = xstrdup(cmd + 1);

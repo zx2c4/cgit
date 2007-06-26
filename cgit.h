@@ -159,6 +159,7 @@ extern int chk_zero(int result, char *msg);
 extern int chk_positive(int result, char *msg);
 
 extern int hextoint(char c);
+extern char *trim_end(const char *str, char c);
 
 extern void *cgit_free_commitinfo(struct commitinfo *info);
 
