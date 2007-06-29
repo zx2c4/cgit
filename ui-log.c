@@ -113,17 +113,15 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *path, i
 	if (pager) {
 		html("<div class='pager'>");
 		if (ofs > 0) {
-			html("&nbsp;<a href='");
-			html(cgit_pageurl(cgit_query_repo, cgit_query_page,
-					  fmt("h=%s&amp;ofs=%d", tip, ofs-cnt)));
-			html("'>[prev]</a>&nbsp;");
+			cgit_log_link("[prev]", NULL, NULL, cgit_query_head,
+				      cgit_query_sha1, cgit_query_path,
+				      ofs - cnt);
+			html("&nbsp;");
 		}
-
 		if ((commit = get_revision(&rev)) != NULL) {
-			html("&nbsp;<a href='");
-			html(cgit_pageurl(cgit_query_repo, "log",
-					  fmt("h=%s&amp;ofs=%d", tip, ofs+cnt)));
-			html("'>[next]</a>&nbsp;");
+			cgit_log_link("[next]", NULL, NULL, cgit_query_head,
+				      cgit_query_sha1, cgit_query_path,
+				      ofs + cnt);
 		}
 		html("</div>");
 	}

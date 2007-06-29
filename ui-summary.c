@@ -27,7 +27,7 @@ static int cgit_print_branch_cb(const char *refname, const unsigned char *sha1,
 	if (commit && !parse_commit(commit)){
 		info = cgit_parse_commit(commit);
 		html("<tr><td>");
-		cgit_log_link(ref, NULL, NULL, ref, NULL, NULL);
+		cgit_log_link(ref, NULL, NULL, ref, NULL, NULL, 0);
 		html("</td><td>");
 		cgit_print_age(commit->date, -1, NULL);
 		html("</td><td>");

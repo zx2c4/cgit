@@ -28,6 +28,7 @@ char *cgit_repo_group   = NULL;
 
 int cgit_nocache               =  0;
 int cgit_snapshots             =  0;
+int cgit_enable_index_links    =  0;
 int cgit_enable_log_filecount  =  0;
 int cgit_enable_log_linecount  =  0;
 int cgit_max_lock_attempts     =  5;
@@ -148,6 +149,8 @@ void cgit_global_config_cb(const char *name, const char *value)
 		cgit_nocache = atoi(value);
 	else if (!strcmp(name, "snapshots"))
 		cgit_snapshots = atoi(value);
+	else if (!strcmp(name, "enable-index-links"))
+		cgit_enable_index_links = atoi(value);
 	else if (!strcmp(name, "enable-log-filecount"))
 		cgit_enable_log_filecount = atoi(value);
 	else if (!strcmp(name, "enable-log-linecount"))
@@ -227,7 +230,7 @@ void cgit_querystring_cb(const char *name, const char *value)
 	} else if (!strcmp(name, "ofs")) {
 		cgit_query_ofs = atoi(value);
 	} else if (!strcmp(name, "path")) {
-		cgit_query_path = xstrdup(value);
+		cgit_query_path = trim_end(value, '/');
 	} else if (!strcmp(name, "name")) {
 		cgit_query_name = xstrdup(value);
 	}
@@ -254,6 +257,28 @@ int hextoint(char c)
 		return c - '0';
 	else
 		return -1;
+}
+
+char *trim_end(const char *str, char c)
+{
+	int len;
+	char *s, *t;
+
+	if (str == NULL)
+		return NULL;
+	t = (char *)str;
+	len = strlen(t);
+	while(len > 0 && t[len - 1] == c)
+		len--;
+
+	if (len == 0)
+		return NULL;
+
+	c = t[len];
+	t[len] = '\0';
+	s = xstrdup(t);
+	t[len] = c;
+	return s;
 }
 
 void cgit_diff_tree_cb(struct diff_queue_struct *q,
