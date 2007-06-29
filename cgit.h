@@ -206,7 +206,7 @@ extern char *cgit_pageurl(const char *reponame, const char *pagename,
 extern void cgit_tree_link(char *name, char *title, char *class, char *head,
 			   char *rev, char *path);
 extern void cgit_log_link(char *name, char *title, char *class, char *head,
-			  char *rev, char *path);
+			  char *rev, char *path, int ofs);
 extern void cgit_commit_link(char *name, char *title, char *class, char *head,
 			     char *rev);
 extern void cgit_diff_link(char *name, char *title, char *class, char *head,
