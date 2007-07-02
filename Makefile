@@ -15,7 +15,7 @@ CGIT_VERSION = 0.5
 all: cgit
 
 VERSION:
-	gen-version.sh
+	sh gen-version.sh
 
 -include VERSION
 
