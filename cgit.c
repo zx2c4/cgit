@@ -222,6 +222,7 @@ static void cgit_parse_args(int argc, const char **argv)
 int main(int argc, const char **argv)
 {
 	struct cacheitem item;
+	const char *cgit_config_env = getenv("CGIT_CONFIG");
 
 	htmlfd = STDOUT_FILENO;
 	item.st.st_mtime = time(NULL);
@@ -229,7 +230,8 @@ int main(int argc, const char **argv)
 	cgit_repolist.count = 0;
 	cgit_repolist.repos = NULL;
 
-	cgit_read_config(CGIT_CONFIG, cgit_global_config_cb);
+	cgit_read_config(cgit_config_env ? cgit_config_env : CGIT_CONFIG,
+			 cgit_global_config_cb);
 	cgit_repo = NULL;
 	if (getenv("SCRIPT_NAME"))
 		cgit_script_name = xstrdup(getenv("SCRIPT_NAME"));
