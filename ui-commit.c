@@ -139,7 +139,6 @@ void cgit_print_commit(char *hex)
 	struct commitinfo *info;
 	struct commit_list *p;
 	unsigned char sha1[20];
-	char *filename;
 	char *tmp;
 	int i;
 
@@ -196,11 +195,9 @@ void cgit_print_commit(char *hex)
 		html(")</td></tr>");
 	}
 	if (cgit_repo->snapshots) {
-		htmlf("<tr><th>download</th><td colspan='2' class='sha1'><a href='");
-		filename = fmt("%s-%s.zip", cgit_query_repo, hex);
-		html_attr(cgit_pageurl(cgit_query_repo, "snapshot",
-				       fmt("id=%s&amp;name=%s", hex, filename)));
-		htmlf("'>%s</a></td></tr>", filename);
+		html("<tr><th>download</th><td colspan='2' class='sha1'>");
+		cgit_print_snapshot_links(cgit_query_repo,hex);
+		html("</td></tr>");
 	}
 	html("</table>\n");
 	html("<div class='commit-subject'>");

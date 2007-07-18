@@ -230,7 +230,7 @@ extern void cgit_print_tree(const char *rev, char *path);
 extern void cgit_print_commit(char *hex);
 extern void cgit_print_diff(const char *new_hex, const char *old_hex);
 extern void cgit_print_snapshot(struct cacheitem *item, const char *hex,
-				const char *format, const char *prefix,
-				const char *filename);
+				const char *prefix, const char *filename);
+extern void cgit_print_snapshot_links(const char *repo, const char *hex);
 
 #endif /* CGIT_H */
