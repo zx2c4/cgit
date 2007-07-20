@@ -86,6 +86,13 @@ int chk_positive(int result, char *msg)
 	return result;
 }
 
+int chk_non_negative(int result, char *msg)
+{
+    	if (result < 0)
+	    	die("%s: %s",msg, strerror(errno));
+	return result;
+}
+
 struct repoinfo *add_repo(const char *url)
 {
 	struct repoinfo *ret;

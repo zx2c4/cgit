@@ -157,6 +157,7 @@ extern void cgit_querystring_cb(const char *name, const char *value);
 
 extern int chk_zero(int result, char *msg);
 extern int chk_positive(int result, char *msg);
+extern int chk_non_negative(int result, char *msg);
 
 extern int hextoint(char c);
 extern char *trim_end(const char *str, char c);
