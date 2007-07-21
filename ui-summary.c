@@ -60,7 +60,7 @@ static void cgit_print_object_ref(struct object *obj)
 		page = "tree";
 		arg = "id";
 	} else {
-		page = "view";
+		page = "blob";
 		arg = "id";
 	}
 
