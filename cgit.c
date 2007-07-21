@@ -69,7 +69,8 @@ static void cgit_print_repo_page(struct cacheitem *item)
 
 	if ((cgit_cmd == CMD_SNAPSHOT) && cgit_repo->snapshots) {
 		cgit_print_snapshot(item, cgit_query_sha1,
-				    cgit_repo->url, cgit_query_name);
+				    cgit_repobasename(cgit_repo->url),
+				    cgit_query_name);
 		return;
 	}
 

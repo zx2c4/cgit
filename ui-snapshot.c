@@ -107,7 +107,7 @@ void cgit_print_snapshot_links(const char *repo,const char *hex)
 	int f;
     	for(f=0;f<(sizeof(snapshot_archives)/sizeof(*snapshot_archives));++f) {
 		const struct snapshot_archive_t* sat = &snapshot_archives[f];
-		filename = fmt("%s-%s%s",repo,hex,sat->suffix);
+		filename = fmt("%s-%s%s",cgit_repobasename(repo),hex,sat->suffix);
 		htmlf("<a href='%s'>%s</a><br/>",
 			cgit_fileurl(repo,"snapshot",filename,
 			    fmt("id=%s&amp;name=%s",hex,filename)), filename);
