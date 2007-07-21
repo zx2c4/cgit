@@ -57,13 +57,13 @@ char *cgit_repourl(const char *reponame)
 	}
 }
 
-char *cgit_pageurl(const char *reponame, const char *pagename,
-		   const char *query)
+char *cgit_fileurl(const char *reponame, const char *pagename,
+		   const char *filename, const char *query)
 {
 	if (cgit_virtual_root) {
 		if (query)
-			return fmt("%s/%s/%s/?%s", cgit_virtual_root, reponame,
-				   pagename, query);
+			return fmt("%s/%s/%s/%s?%s", cgit_virtual_root, reponame,
+				   pagename, filename?filename:"", query);
 		else
 			return fmt("%s/%s/%s/", cgit_virtual_root, reponame,
 				   pagename);
@@ -74,6 +74,13 @@ char *cgit_pageurl(const char *reponame, const char *pagename,
 			return fmt("?r=%s&amp;p=%s", reponame, pagename);
 	}
 }
+
+char *cgit_pageurl(const char *reponame, const char *pagename,
+		   const char *query)
+{
+	return cgit_fileurl(reponame,pagename,0,query);
+}
+
 
 char *cgit_currurl()
 {
@@ -368,3 +375,5 @@ void cgit_print_snapshot_start(const char *mimetype, const char *filename,
 					 ttl_seconds(item->ttl)));
 	html("\n");
 }
+
+/* vim:set sw=8: */

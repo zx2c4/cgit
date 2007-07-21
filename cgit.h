@@ -201,6 +201,8 @@ extern int cache_exist(struct cacheitem *item);
 extern int cache_expired(struct cacheitem *item);
 
 extern char *cgit_repourl(const char *reponame);
+extern char *cgit_fileurl(const char *reponame, const char *pagename,
+			  const char *filename, const char *query);
 extern char *cgit_pageurl(const char *reponame, const char *pagename,
 			  const char *query);
 
