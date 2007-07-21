@@ -155,7 +155,7 @@ void cgit_global_config_cb(const char *name, const char *value)
 	else if (!strcmp(name, "nocache"))
 		cgit_nocache = atoi(value);
 	else if (!strcmp(name, "snapshots"))
-		cgit_snapshots = atoi(value);
+		cgit_snapshots = cgit_parse_snapshots_mask(value);
 	else if (!strcmp(name, "enable-index-links"))
 		cgit_enable_index_links = atoi(value);
 	else if (!strcmp(name, "enable-log-filecount"))
@@ -197,7 +197,7 @@ void cgit_global_config_cb(const char *name, const char *value)
 	else if (cgit_repo && !strcmp(name, "repo.defbranch"))
 		cgit_repo->defbranch = xstrdup(value);
 	else if (cgit_repo && !strcmp(name, "repo.snapshots"))
-		cgit_repo->snapshots = cgit_snapshots * atoi(value);
+		cgit_repo->snapshots = cgit_snapshots & cgit_parse_snapshots_mask(value); /* XXX: &? */
 	else if (cgit_repo && !strcmp(name, "repo.enable-log-filecount"))
 		cgit_repo->enable_log_filecount = cgit_enable_log_filecount * atoi(value);
 	else if (cgit_repo && !strcmp(name, "repo.enable-log-linecount"))

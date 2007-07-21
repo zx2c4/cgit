@@ -235,7 +235,9 @@ extern void cgit_print_tree(const char *rev, char *path);
 extern void cgit_print_commit(char *hex);
 extern void cgit_print_diff(const char *new_hex, const char *old_hex);
 extern void cgit_print_snapshot(struct cacheitem *item, const char *hex,
-				const char *prefix, const char *filename);
-extern void cgit_print_snapshot_links(const char *repo, const char *hex);
+				const char *prefix, const char *filename,
+				int snapshot);
+extern void cgit_print_snapshot_links(const char *repo, const char *hex,int snapshots);
+extern int cgit_parse_snapshots_mask(const char *str);
 
 #endif /* CGIT_H */

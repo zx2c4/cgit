@@ -57,21 +57,25 @@ static const struct snapshot_archive_t {
     	const char *suffix;
 	const char *mimetype;
 	write_archive_fn_t write_func;
+	int bit;
 }	snapshot_archives[] = {
-	{ ".zip", "application/x-zip", write_zip_archive },
-	{ ".tar.gz", "application/x-tar", write_tar_gzip_archive },
-	{ ".tar.bz2", "application/x-tar", write_tar_bzip2_archive },
-	{ ".tar", "application/x-tar", write_tar_archive }
+	{ ".zip", "application/x-zip", write_zip_archive, 0x1 },
+	{ ".tar.gz", "application/x-tar", write_tar_gzip_archive, 0x2 },
+	{ ".tar.bz2", "application/x-tar", write_tar_bzip2_archive, 0x4 },
+	{ ".tar", "application/x-tar", write_tar_archive, 0x8 }
 };
 
 void cgit_print_snapshot(struct cacheitem *item, const char *hex, 
-			 const char *prefix, const char *filename)
+			 const char *prefix, const char *filename,
+			 int snapshots)
 {
 	int fnl = strlen(filename);
 	int f;
     	for(f=0;f<(sizeof(snapshot_archives)/sizeof(*snapshot_archives));++f) {
 		const struct snapshot_archive_t* sat = &snapshot_archives[f];
-		int sl = strlen(sat->suffix);
+		int sl;
+		if(!(snapshots&sat->bit)) continue;
+		sl = strlen(sat->suffix);
 		if(fnl<sl || strcmp(&filename[fnl-sl],sat->suffix))
 			continue;
 
@@ -101,16 +105,41 @@ void cgit_print_snapshot(struct cacheitem *item, const char *hex,
 	cgit_print_error(fmt("Unsupported snapshot format: %s", filename));
 }
 
-void cgit_print_snapshot_links(const char *repo,const char *hex)
+void cgit_print_snapshot_links(const char *repo,const char *hex,int snapshots)
 {
     	char *filename;
 	int f;
     	for(f=0;f<(sizeof(snapshot_archives)/sizeof(*snapshot_archives));++f) {
 		const struct snapshot_archive_t* sat = &snapshot_archives[f];
+		if(!(snapshots&sat->bit)) continue;
 		filename = fmt("%s-%s%s",cgit_repobasename(repo),hex,sat->suffix);
 		htmlf("<a href='%s'>%s</a><br/>",
 			cgit_fileurl(repo,"snapshot",filename,
 			    fmt("id=%s&amp;name=%s",hex,filename)), filename);
 	}
 }
+
+int cgit_parse_snapshots_mask(const char *str)
+{
+	static const char *delim = " \t,:/|;";
+	int f, tl, rv = 0;
+	/* favor legacy setting */
+	if(atoi(str)) return 1;
+	for(;;) {
+		str += strspn(str,delim);
+		tl = strcspn(str,delim);
+		if(!tl)
+			break;
+		for(f=0;f<(sizeof(snapshot_archives)/sizeof(*snapshot_archives));++f) {
+			const struct snapshot_archive_t* sat = &snapshot_archives[f];
+			if(! ( strncmp(sat->suffix,str,tl) && strncmp(sat->suffix+1,str,tl-1) ) ) {
+				rv |= sat->bit;
+				break;
+			}
+		}
+		str += tl;
+	}
+	return rv;
+}
+
 /* vim:set sw=8: */
