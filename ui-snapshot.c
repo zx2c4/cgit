@@ -60,7 +60,8 @@ static const struct snapshot_archive_t {
 }	snapshot_archives[] = {
 	{ ".zip", "application/x-zip", write_zip_archive },
 	{ ".tar.gz", "application/x-tar", write_tar_gzip_archive },
-	{ ".tar.bz2", "application/x-tar", write_tar_bzip2_archive }
+	{ ".tar.bz2", "application/x-tar", write_tar_bzip2_archive },
+	{ ".tar", "application/x-tar", write_tar_archive }
 };
 
 void cgit_print_snapshot(struct cacheitem *item, const char *hex, 
