@@ -231,6 +231,7 @@ table.commit-info th {
 	text-align: left;
 	font-weight: normal;
 	padding: 0.1em 1em 0.1em 0.1em;
+	vertical-align: top;
 }
 
 table.commit-info td {

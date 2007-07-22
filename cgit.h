@@ -157,6 +157,7 @@ extern void cgit_querystring_cb(const char *name, const char *value);
 
 extern int chk_zero(int result, char *msg);
 extern int chk_positive(int result, char *msg);
+extern int chk_non_negative(int result, char *msg);
 
 extern int hextoint(char c);
 extern char *trim_end(const char *str, char c);
@@ -200,8 +201,12 @@ extern int cache_exist(struct cacheitem *item);
 extern int cache_expired(struct cacheitem *item);
 
 extern char *cgit_repourl(const char *reponame);
+extern char *cgit_fileurl(const char *reponame, const char *pagename,
+			  const char *filename, const char *query);
 extern char *cgit_pageurl(const char *reponame, const char *pagename,
 			  const char *query);
+
+extern const char *cgit_repobasename(const char *reponame);
 
 extern void cgit_tree_link(char *name, char *title, char *class, char *head,
 			   char *rev, char *path);
@@ -233,7 +238,9 @@ extern void cgit_print_commit(char *hex);
 extern void cgit_print_tag(char *revname);
 extern void cgit_print_diff(const char *new_hex, const char *old_hex);
 extern void cgit_print_snapshot(struct cacheitem *item, const char *hex,
-				const char *format, const char *prefix,
-				const char *filename);
+				const char *prefix, const char *filename,
+				int snapshot);
+extern void cgit_print_snapshot_links(const char *repo, const char *hex,int snapshots);
+extern int cgit_parse_snapshots_mask(const char *str);
 
 #endif /* CGIT_H */

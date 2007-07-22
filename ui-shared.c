@@ -57,13 +57,13 @@ char *cgit_repourl(const char *reponame)
 	}
 }
 
-char *cgit_pageurl(const char *reponame, const char *pagename,
-		   const char *query)
+char *cgit_fileurl(const char *reponame, const char *pagename,
+		   const char *filename, const char *query)
 {
 	if (cgit_virtual_root) {
 		if (query)
-			return fmt("%s/%s/%s/?%s", cgit_virtual_root, reponame,
-				   pagename, query);
+			return fmt("%s/%s/%s/%s?%s", cgit_virtual_root, reponame,
+				   pagename, filename?filename:"", query);
 		else
 			return fmt("%s/%s/%s/", cgit_virtual_root, reponame,
 				   pagename);
@@ -73,6 +73,37 @@ char *cgit_pageurl(const char *reponame, const char *pagename,
 		else
 			return fmt("?r=%s&amp;p=%s", reponame, pagename);
 	}
+}
+
+char *cgit_pageurl(const char *reponame, const char *pagename,
+		   const char *query)
+{
+	return cgit_fileurl(reponame,pagename,0,query);
+}
+
+const char *cgit_repobasename(const char *reponame)
+{
+	/* I assume we don't need to store more than one repo basename */
+	static char rvbuf[1024];
+	int p;
+	const char *rv;
+	strncpy(rvbuf,reponame,sizeof(rvbuf));
+	if(rvbuf[sizeof(rvbuf)-1])
+		die("cgit_repobasename: truncated repository name '%s'", reponame);
+	p = strlen(rvbuf)-1;
+	/* strip trailing slashes */
+	while(p && rvbuf[p]=='/') rvbuf[p--]=0;
+	/* strip trailing .git */
+	if(p>=3 && !strncmp(&rvbuf[p-3],".git",4)) {
+		p -= 3; rvbuf[p--] = 0;
+	}
+	/* strip more trailing slashes if any */
+	while( p && rvbuf[p]=='/') rvbuf[p--]=0;
+	/* find last slash in the remaining string */
+	rv = strrchr(rvbuf,'/');
+	if(rv)
+		return ++rv;
+	return rvbuf;
 }
 
 char *cgit_currurl()
@@ -392,3 +423,5 @@ void cgit_print_snapshot_start(const char *mimetype, const char *filename,
 					 ttl_seconds(item->ttl)));
 	html("\n");
 }
+
+/* vim:set sw=8: */

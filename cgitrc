@@ -8,7 +8,8 @@
 #nocache=0
 
 
-## Enable/disable snapshots by default. This can be overridden per repo
+## Set allowed snapshot types by default. Can be overridden per repo
+# can be any combination of zip/tar.gz/tar.bz2/tar
 #snapshots=0
 
 
@@ -113,7 +114,7 @@
 #repo.desc=the caching cgi for git
 #repo.path=/pub/git/cgit
 #repo.owner=Lars Hjemli
-#repo.snapshots=1				# override a sitewide snapshot-setting
+#repo.snapshots=tar.bz2				# override a sitewide snapshot-setting
 #repo.enable-log-filecount=0			# override the default filecount setting
 #repo.enable-log-linecount=0			# override the default linecount setting
 #repo.module-link=/git/%s/commit/?id=%s		# override the standard module-link

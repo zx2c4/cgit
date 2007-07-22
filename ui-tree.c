@@ -32,6 +32,10 @@ static void print_object(const unsigned char *sha1, char *path)
 		return;
 	}
 
+	html(" blob: <a href='");
+	html_attr(cgit_pageurl(cgit_query_repo, "blob", fmt("id=%s", sha1_to_hex(sha1))));
+	htmlf("'>%s</a>",sha1_to_hex(sha1));
+
 	html("<table class='blob'>\n");
 	idx = 0;
 	start = 0;
