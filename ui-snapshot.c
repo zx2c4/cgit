@@ -65,16 +65,19 @@ static const struct snapshot_archive_t {
 	{ ".tar", "application/x-tar", write_tar_archive, 0x8 }
 };
 
-void cgit_print_snapshot(struct cacheitem *item, const char *hex, 
-			 const char *prefix, const char *filename,
-			 int snapshots)
+void cgit_print_snapshot(struct cacheitem *item, const char *head,
+			 const char *hex, const char *prefix,
+			 const char *filename, int snapshots)
 {
 	int fnl = strlen(filename);
-	int f;
-    	for(f=0;f<(sizeof(snapshot_archives)/sizeof(*snapshot_archives));++f) {
+	int f, n;
+
+	n = sizeof(snapshot_archives) / sizeof(*snapshot_archives);
+    	for(f=0; f<n; f++) {
 		const struct snapshot_archive_t* sat = &snapshot_archives[f];
 		int sl;
-		if(!(snapshots&sat->bit)) continue;
+		if(!(snapshots & sat->bit))
+			continue;
 		sl = strlen(sat->suffix);
 		if(fnl<sl || strcmp(&filename[fnl-sl],sat->suffix))
 			continue;
@@ -83,6 +86,8 @@ void cgit_print_snapshot(struct cacheitem *item, const char *hex,
 		struct commit *commit;
 		unsigned char sha1[20];
 
+		if (!hex)
+			hex = head;
 		if(get_sha1(hex, sha1)) {
 			cgit_print_error(fmt("Bad object id: %s", hex));
 			return;
@@ -105,17 +110,22 @@ void cgit_print_snapshot(struct cacheitem *item, const char *hex,
 	cgit_print_error(fmt("Unsupported snapshot format: %s", filename));
 }
 
-void cgit_print_snapshot_links(const char *repo,const char *hex,int snapshots)
+void cgit_print_snapshot_links(const char *repo, const char *head,
+			       const char *hex, int snapshots)
 {
     	char *filename;
-	int f;
-    	for(f=0;f<(sizeof(snapshot_archives)/sizeof(*snapshot_archives));++f) {
+	int f, n;
+
+	n = sizeof(snapshot_archives) / sizeof(*snapshot_archives);
+    	for(f=0; f<n ;f++) {
 		const struct snapshot_archive_t* sat = &snapshot_archives[f];
-		if(!(snapshots&sat->bit)) continue;
-		filename = fmt("%s-%s%s",cgit_repobasename(repo),hex,sat->suffix);
-		htmlf("<a href='%s'>%s</a><br/>",
-			cgit_fileurl(repo,"snapshot",filename,
-			    fmt("id=%s&amp;name=%s",hex,filename)), filename);
+		if(!(snapshots & sat->bit))
+			continue;
+		filename = fmt("%s-%s%s", cgit_repobasename(repo), hex,
+			       sat->suffix);
+		cgit_snapshot_link(filename, NULL, NULL, (char *)head,
+				   (char *)hex, filename);
+		html("<br/>");
 	}
 }
 

@@ -214,6 +214,8 @@ extern void cgit_log_link(char *name, char *title, char *class, char *head,
 			  char *rev, char *path, int ofs);
 extern void cgit_commit_link(char *name, char *title, char *class, char *head,
 			     char *rev);
+extern void cgit_snapshot_link(char *name, char *title, char *class,
+			       char *head, char *rev, char *archivename);
 extern void cgit_diff_link(char *name, char *title, char *class, char *head,
 			   char *new_rev, char *old_rev, char *path);
 
@@ -237,10 +239,11 @@ extern void cgit_print_tree(const char *rev, char *path);
 extern void cgit_print_commit(char *hex);
 extern void cgit_print_tag(char *revname);
 extern void cgit_print_diff(const char *new_hex, const char *old_hex);
-extern void cgit_print_snapshot(struct cacheitem *item, const char *hex,
-				const char *prefix, const char *filename,
-				int snapshot);
-extern void cgit_print_snapshot_links(const char *repo, const char *hex,int snapshots);
+extern void cgit_print_snapshot(struct cacheitem *item, const char *head,
+				const char *hex, const char *prefix,
+				const char *filename, int snapshot);
+extern void cgit_print_snapshot_links(const char *repo, const char *head,
+				      const char *hex, int snapshots);
 extern int cgit_parse_snapshots_mask(const char *str);
 
 #endif /* CGIT_H */

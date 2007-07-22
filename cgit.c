@@ -68,9 +68,9 @@ static void cgit_print_repo_page(struct cacheitem *item)
 	setenv("GIT_DIR", cgit_repo->path, 1);
 
 	if ((cgit_cmd == CMD_SNAPSHOT) && cgit_repo->snapshots) {
-		cgit_print_snapshot(item, cgit_query_sha1,
+		cgit_print_snapshot(item, cgit_query_head, cgit_query_sha1,
 				    cgit_repobasename(cgit_repo->url),
-				    cgit_query_name,
+				    cgit_query_path,
 				    cgit_repo->snapshots );
 		return;
 	}

@@ -227,6 +227,12 @@ void cgit_commit_link(char *name, char *title, char *class, char *head,
 	reporevlink("commit", name, title, class, head, rev, NULL);
 }
 
+void cgit_snapshot_link(char *name, char *title, char *class, char *head,
+			char *rev, char *archivename)
+{
+	reporevlink("snapshot", name, title, class, head, rev, archivename);
+}
+
 void cgit_diff_link(char *name, char *title, char *class, char *head,
 		    char *new_rev, char *old_rev, char *path)
 {
