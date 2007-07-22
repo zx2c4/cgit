@@ -47,31 +47,6 @@ static int cgit_print_branch_cb(const char *refname, const unsigned char *sha1,
 	return 0;
 }
 
-
-static void cgit_print_object_ref(struct object *obj)
-{
-	char *page, *arg, *url;
-
-	if (obj->type == OBJ_COMMIT) {
-                cgit_commit_link(fmt("commit %s", sha1_to_hex(obj->sha1)), NULL, NULL,
-				 cgit_query_head, sha1_to_hex(obj->sha1));
-		return;
-	} else if (obj->type == OBJ_TREE) {
-		page = "tree";
-		arg = "id";
-	} else {
-		page = "view";
-		arg = "id";
-	}
-
-	url = cgit_pageurl(cgit_query_repo, page,
-			   fmt("%s=%s", arg, sha1_to_hex(obj->sha1)));
-	html_link_open(url, NULL, NULL);
-	htmlf("%s %s", typename(obj->type),
-	      sha1_to_hex(obj->sha1));
-	html_link_close();
-}
-
 static void print_tag_header()
 {
 	html("<tr class='nohover'><th class='left'>Tag</th>"
@@ -100,8 +75,8 @@ static int cgit_print_tag_cb(const char *refname, const unsigned char *sha1,
 		if (!header)
 			print_tag_header();
 		html("<tr><td>");
-		url = cgit_pageurl(cgit_query_repo, "view",
-				   fmt("id=%s", sha1_to_hex(sha1)));
+		url = cgit_pageurl(cgit_query_repo, "tag",
+				   fmt("id=%s", refname));
 		html_link_open(url, NULL, NULL);
 		html_txt(buf);
 		html_link_close();
@@ -112,7 +87,7 @@ static int cgit_print_tag_cb(const char *refname, const unsigned char *sha1,
 		if (info->tagger)
 			html(info->tagger);
 		html("</td><td>");
-		cgit_print_object_ref(tag->tagged);
+		cgit_object_link(tag->tagged);
 		html("</td></tr>\n");
 	} else {
 		if (!header)
@@ -120,7 +95,7 @@ static int cgit_print_tag_cb(const char *refname, const unsigned char *sha1,
 		html("<tr><td>");
 		html_txt(buf);
 		html("</td><td colspan='2'/><td>");
-		cgit_print_object_ref(obj);
+		cgit_object_link(obj);
 		html("</td></tr>\n");
 	}
 	return 0;

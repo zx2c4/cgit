@@ -218,6 +218,30 @@ void cgit_diff_link(char *name, char *title, char *class, char *head,
 	html("</a>");
 }
 
+void cgit_object_link(struct object *obj)
+{
+	char *page, *arg, *url;
+
+	if (obj->type == OBJ_COMMIT) {
+                cgit_commit_link(fmt("commit %s", sha1_to_hex(obj->sha1)), NULL, NULL,
+				 cgit_query_head, sha1_to_hex(obj->sha1));
+		return;
+	} else if (obj->type == OBJ_TREE) {
+		page = "tree";
+		arg = "id";
+	} else {
+		page = "blob";
+		arg = "id";
+	}
+
+	url = cgit_pageurl(cgit_query_repo, page,
+			   fmt("%s=%s", arg, sha1_to_hex(obj->sha1)));
+	html_link_open(url, NULL, NULL);
+	htmlf("%s %s", typename(obj->type),
+	      sha1_to_hex(obj->sha1));
+	html_link_close();
+}
+
 void cgit_print_date(time_t secs, char *format)
 {
 	char buf[64];
