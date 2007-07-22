@@ -57,7 +57,7 @@ void cgit_print_tag(char *revname)
 		if (info->tagger_date > 0) {
 			html("<tr><td>Tag date</td><td>");
 			cgit_print_date(info->tagger_date, FMT_LONGDATE);
-			html("</td><tr>\n");
+			html("</td></tr>\n");
 		}
 		if (info->tagger) {
 			html("<tr><td>Tagged by</td><td>");
