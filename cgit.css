@@ -212,6 +212,15 @@ table.blob td.no {
 	text-align: right;
 }
 
+table.blob td.no a {
+	color: black;
+}
+
+table.blob td.no a:hover {
+	color: black;
+	text-decoration: none;
+}
+
 table.blob td.txt {
 	white-space: pre;
 	font-family: monospace;
