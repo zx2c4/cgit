@@ -30,7 +30,7 @@ static int write_compressed_tar_archive(struct archiver_args *args,const char *f
 	/* parent */
 	chk_zero(close(rw[0]), "Closing read end of pipe");
 	chk_non_negative(dup2(rw[1],STDOUT_FILENO), "Redirecting output to compressor");
-	
+
 	rv = write_tar_archive(args);
 
 	chk_zero(close(STDOUT_FILENO), "Closing STDOUT redirected to compressor");
@@ -48,6 +48,7 @@ static int write_tar_gzip_archive(struct archiver_args *args)
 {
 	return write_compressed_tar_archive(args,"gzip");
 }
+
 static int write_tar_bzip2_archive(struct archiver_args *args)
 {
 	return write_compressed_tar_archive(args,"bzip2");
@@ -65,27 +66,25 @@ static const struct snapshot_archive_t {
 	{ ".tar", "application/x-tar", write_tar_archive, 0x8 }
 };
 
+#define snapshot_archives_len (sizeof(snapshot_archives) / sizeof(*snapshot_archives))
+
 void cgit_print_snapshot(struct cacheitem *item, const char *head,
 			 const char *hex, const char *prefix,
 			 const char *filename, int snapshots)
 {
-	int fnl = strlen(filename);
-	int f, n;
+	const struct snapshot_archive_t* sat;
+	struct archiver_args args;
+	struct commit *commit;
+	unsigned char sha1[20];
+	int f, sl, fnl = strlen(filename);
 
-	n = sizeof(snapshot_archives) / sizeof(*snapshot_archives);
-    	for(f=0; f<n; f++) {
-		const struct snapshot_archive_t* sat = &snapshot_archives[f];
-		int sl;
+	for(f=0; f<snapshot_archives_len; f++) {
+		sat = &snapshot_archives[f];
 		if(!(snapshots & sat->bit))
 			continue;
 		sl = strlen(sat->suffix);
 		if(fnl<sl || strcmp(&filename[fnl-sl],sat->suffix))
 			continue;
-
-		struct archiver_args args;
-		struct commit *commit;
-		unsigned char sha1[20];
-
 		if (!hex)
 			hex = head;
 		if(get_sha1(hex, sha1)) {
@@ -93,16 +92,13 @@ void cgit_print_snapshot(struct cacheitem *item, const char *head,
 			return;
 		}
 		commit = lookup_commit_reference(sha1);
-
 		if(!commit) {
 			cgit_print_error(fmt("Not a commit reference: %s", hex));
 			return;;
 		}
-
 		memset(&args,0,sizeof(args));
 		args.base = fmt("%s/", prefix);
 		args.tree = commit->tree;
-
 		cgit_print_snapshot_start(sat->mimetype, filename, item);
 		(*sat->write_func)(&args);
 		return;
@@ -113,12 +109,12 @@ void cgit_print_snapshot(struct cacheitem *item, const char *head,
 void cgit_print_snapshot_links(const char *repo, const char *head,
 			       const char *hex, int snapshots)
 {
+	const struct snapshot_archive_t* sat;
     	char *filename;
-	int f, n;
+	int f;
 
-	n = sizeof(snapshot_archives) / sizeof(*snapshot_archives);
-    	for(f=0; f<n ;f++) {
-		const struct snapshot_archive_t* sat = &snapshot_archives[f];
+	for(f=0; f<snapshot_archives_len; f++) {
+		sat = &snapshot_archives[f];
 		if(!(snapshots & sat->bit))
 			continue;
 		filename = fmt("%s-%s%s", cgit_repobasename(repo), hex,
@@ -131,18 +127,22 @@ void cgit_print_snapshot_links(const char *repo, const char *head,
 
 int cgit_parse_snapshots_mask(const char *str)
 {
+	const struct snapshot_archive_t* sat;
 	static const char *delim = " \t,:/|;";
 	int f, tl, rv = 0;
+
 	/* favor legacy setting */
-	if(atoi(str)) return 1;
+	if(atoi(str))
+		return 1;
 	for(;;) {
 		str += strspn(str,delim);
 		tl = strcspn(str,delim);
 		if(!tl)
 			break;
-		for(f=0;f<(sizeof(snapshot_archives)/sizeof(*snapshot_archives));++f) {
-			const struct snapshot_archive_t* sat = &snapshot_archives[f];
-			if(! ( strncmp(sat->suffix,str,tl) && strncmp(sat->suffix+1,str,tl-1) ) ) {
+		for(f=0; f<snapshot_archives_len; f++) {
+			sat = &snapshot_archives[f];
+			if(!(strncmp(sat->suffix, str, tl) &&
+			     strncmp(sat->suffix+1, str, tl-1))) {
 				rv |= sat->bit;
 				break;
 			}
