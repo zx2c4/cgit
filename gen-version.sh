@@ -1,4 +1,20 @@
-v=$(git-describe --abbrev=4 HEAD | sed -e 's/-/./g')
-test -z "$v" && exit 1
-echo "CGIT_VERSION = $v"
-echo "CGIT_VERSION = $v" > VERSION
+#!/bin/sh
+
+# Get version-info specified in Makefile
+V=$1
+
+# Use `git describe` to get current version if we're inside a git repo
+if test -d .git
+then
+	V=$(git describe --abbrev=4 HEAD 2>/dev/null | sed -e 's/-/./g')
+fi
+
+new="CGIT_VERSION = $V"
+old=$(cat VERSION 2>/dev/null)
+
+# Exit if VERSION is uptodate
+test "$old" = "$new" && exit 0
+
+# Update VERSION with new version-info
+echo "$new" > VERSION
+cat VERSION
