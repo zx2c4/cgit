@@ -158,7 +158,7 @@ void html_filemode(unsigned short mode)
 		html("d");
 	else if (S_ISLNK(mode))
 		html("l");
-	else if (S_ISDIRLNK(mode))
+	else if (S_ISGITLINK(mode))
 		html("m");
 	else
 		html("-");

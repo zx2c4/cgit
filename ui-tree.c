@@ -68,7 +68,7 @@ static int ls_item(const unsigned char *sha1, const char *base, int baselen,
 		       cgit_query_path ? "/" : "", name);
 
 	type = sha1_object_info(sha1, &size);
-	if (type == OBJ_BAD && !S_ISDIRLNK(mode)) {
+	if (type == OBJ_BAD && !S_ISGITLINK(mode)) {
 		htmlf("<tr><td colspan='3'>Bad object: %s %s</td></tr>",
 		      name,
 		      sha1_to_hex(sha1));
@@ -78,7 +78,7 @@ static int ls_item(const unsigned char *sha1, const char *base, int baselen,
 	html("<tr><td class='ls-mode'>");
 	html_filemode(mode);
 	html("</td><td>");
-	if (S_ISDIRLNK(mode)) {
+	if (S_ISGITLINK(mode)) {
 		htmlf("<a class='ls-mod' href='");
 		html_attr(fmt(cgit_repo->module_link,
 			      name,

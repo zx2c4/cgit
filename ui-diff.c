@@ -37,7 +37,7 @@ static void header(unsigned char *sha1, char *path1, int mode1,
 	char *abbrev1, *abbrev2;
 	int subproject;
 
-	subproject = (S_ISDIRLNK(mode1) || S_ISDIRLNK(mode2));
+	subproject = (S_ISGITLINK(mode1) || S_ISGITLINK(mode2));
 	html("<div class='head'>");
 	html("diff --git a/");
 	html_txt(path1);
@@ -78,10 +78,10 @@ static void filepair_cb(struct diff_filepair *pair)
 {
 	header(pair->one->sha1, pair->one->path, pair->one->mode,
 	       pair->two->sha1, pair->two->path, pair->two->mode);
-	if (S_ISDIRLNK(pair->one->mode) || S_ISDIRLNK(pair->two->mode)) {
-		if (S_ISDIRLNK(pair->one->mode))
+	if (S_ISGITLINK(pair->one->mode) || S_ISGITLINK(pair->two->mode)) {
+		if (S_ISGITLINK(pair->one->mode))
 			print_line(fmt("-Subproject %s", sha1_to_hex(pair->one->sha1)), 52);
-		if (S_ISDIRLNK(pair->two->mode))
+		if (S_ISGITLINK(pair->two->mode))
 			print_line(fmt("+Subproject %s", sha1_to_hex(pair->two->sha1)), 52);
 		return;
 	}
