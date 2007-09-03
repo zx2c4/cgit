@@ -4,6 +4,8 @@ CGIT_SCRIPT_PATH = /var/www/htdocs/cgit
 CGIT_CONFIG = /etc/cgitrc
 CACHE_ROOT = /var/cache/cgit
 SHA1_HEADER = <openssl/sha.h>
+GIT_VER = 1.5.2
+GIT_URL = http://www.kernel.org/pub/software/scm/git/git-$(GIT_VER).tar.bz2
 
 #
 # Let the user override the above settings.
@@ -17,7 +19,7 @@ OBJECTS = shared.o cache.o parsing.o html.o ui-shared.o ui-repolist.o \
 	ui-snapshot.o ui-blob.o ui-tag.o
 
 
-.PHONY: all git install clean distclean force-version
+.PHONY: all git install clean distclean force-version get-git
 
 all: cgit git
 
@@ -64,3 +66,6 @@ clean:
 distclean: clean
 	git clean -d -x
 	cd git && git clean -d -x
+
+get-git:
+	curl $(GIT_URL) | tar -xj && rm -rf git && mv git-$(GIT_VER) git
