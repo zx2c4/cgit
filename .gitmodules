@@ -1,5 +1,3 @@
-# This file maps a submodule path to an url from where the submodule
-# can be obtained. The script "submodules.sh" finds the url in this file
-# when invoked with -i to clone the submodules.
-
-git		git://git.kernel.org/pub/scm/git/git.git
+[submodule "git"]
+	url = git://git.kernel.org/pub/scm/git/git.git
+	path = git
