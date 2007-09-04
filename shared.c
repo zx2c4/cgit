@@ -373,6 +373,7 @@ int cgit_diff_files(const unsigned char *old_sha1,
 	diff_params.flags = XDF_NEED_MINIMAL;
 	emit_params.ctxlen = 3;
 	emit_params.flags = XDL_EMIT_FUNCNAMES;
+	emit_params.find_func = NULL;
 	emit_cb.outf = filediff_cb;
 	emit_cb.priv = fn;
 	xdl_diff(&file1, &file2, &diff_params, &emit_params, &emit_cb);
