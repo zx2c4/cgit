@@ -8,26 +8,35 @@ builtin cache to decrease server io-pressure.
 
 Installation
 
+Building cgit involves building a proper version of git. How to do this
+depends on how you obtained the cgit sources:
+
+a) If you're working in a cloned cgit repository, you first need to
+initialize and update the git submodule:
+
+  $ git submodule init     # register the git submodule in .git/config
+  $ $EDITOR .git/config    # if you want to specify a different url for git
+  $ git submodule update   # clone/fetch and checkout correct git version
+
+b) If you're building from a cgit tarball, you can download a proper git
+version like this:
+
+  $ make get-git
+
+
+When either a) or b) has been performed, you can build and install cgit like
+this:
+
   $ make
-  $ su
-  $ make install
+  $ sudo make install
 
-This will install cgit.cgi and cgit.css into "/var/www/htdocs/cgit".
-
-Note: The initial "make" will create a submodule 'git' and clone the git
-repository at git://git.kernel.org/pub/scm/git/git.git in it. If you
-already have a local git git repository that you want to use as origin
-for the submodule, run
-
-  $ git clone -s <path-to-git-repo> git
-  $ ./submodules.sh -u
-
-before running "make".
+This will install cgit.cgi and cgit.css into "/var/www/htdocs/cgit". You can
+configure this location (and a few other things) by providing a "cgit.conf"
+file (see the Makefile for details).
 
 
-Dependencies
-
-  -git (1.5.2-rc0 or newer, due to git submodule) installed
+Dependencies:
+  -git 1.5.3
   -zip lib
   -crypto lib
   -openssl lib
@@ -71,11 +80,23 @@ The generated content contains the complete response to the client, including
 the http-headers "Modified" and "Expires".
 
 
-The mis(sing) features
+The missing features
 
-Submodule links in the directory listing page have a fixed format per
-repository. This should probably be extended to a generic map between
-submodule path and url.
+* Submodule links in the directory listing page have a fixed format per
+  repository. This should probably be extended to a generic map between
+  submodule path and url.
 
+* Branch- and tag-lists in the summary page can get very long, they should
+  probably only show something like the ten "latest modified" branches and
+  a similar number of "most recent" tags.
 
-The end.
+* There should be a new page for browsing refs/heads and refs/tags, with links
+  from the summary page whenever the branch/tag lists overflow.
+
+* The log-page should have more/better search options (author, committer,
+  pickaxe, paths) and possibly support arbitrary revision specifiers.
+
+* A set of test-scripts is required before cgit-1.0 can be released.
+
+Patches/bugreports/suggestions/comments are always welcome, please feel free
+to contact the author: hjemli@gmail.com
