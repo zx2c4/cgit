@@ -30,20 +30,35 @@
 #summary-log=0
 
 
+## The "Idle" column on the repository index page can read a timestamp
+## from the specified agefile (if this file cannot be found, the mtime
+## of HEAD is used).
+## The cgit repo on hjemli.net uses the the following command in it's
+## post-receive hook to update the age-file:
+##   git-for-each-ref --format="%(committerdate)" --sort=-committerdate \
+##     --count=1 > $GIT_DIR/info/web/last-modifie
+##
+#agefile=info/web/last-modified
+
+
 ## Specify a root for virtual urls. This makes cgit generate urls like
 ##
-##    http://localhost/git/repo/log/?id=master
+##    http://localhost/git/repo/log/?h=branch
 ##
 ## instead of
 ##
-##    http://localhost/cgit/cgit.cgi?r=repo&p=log&id=master
+##    http://localhost/cgit/cgit.cgi?url=repo/log&h=branch
 ##
-## For this to work with apache, rewrite rules must be added to httpd.conf,
+## For this to work with apache, a rewrite rule must be added to httpd.conf,
 ## possibly looking something like this:
 ##
-##   RewriteRule ^/git/$ /cgit/cgit.cgi                            [L,QSA]
-##   RewriteRule ^/git/([^/]+)/$ /cgit/cgit.cgi?r=$1               [L,QSA]
-##   RewriteRule ^/git/([^/]+)/([^/]+)/$ /cgit/cgit.cgi?r=$1&p=$2  [L,QSA]
+##    RewriteRule ^/git/(.*)$ /cgit/cgit.cgi?url=$1   [L,QSA]
+##
+## For this to work with lighttpd, the rewrite rule should look more like this:
+##
+##    url.rewrite = (
+##        "^/git/([^?/]+/[^?]*)?(?:\?(.*))?$" => "/cgit.cgi?url=$1&$2"
+##    )
 ##
 ## This setting is disabled by default.
 #virtual-root=/git
@@ -51,6 +66,11 @@
 
 ## Set the title printed on the root page
 #root-title=Git repository browser
+
+
+## If specified, the file at this path will be included as HTML in the index
+## of repositories
+#index-header=
 
 
 ## Link to css file
@@ -112,10 +132,29 @@
 #repo.url=cgit
 #repo.name=cgit
 #repo.desc=the caching cgi for git
-#repo.path=/pub/git/cgit
+#repo.path=/pub/git/cgit			## this is the path to $GIR_DIR
 #repo.owner=Lars Hjemli
-#repo.snapshots=tar.bz2				# override a sitewide snapshot-setting
-#repo.enable-log-filecount=0			# override the default filecount setting
-#repo.enable-log-linecount=0			# override the default linecount setting
-#repo.module-link=/git/%s/commit/?id=%s		# override the standard module-link
-#repo.readme=info/web/readme			# specify a file to include on summary page
+#repo.defbranch=master				## define a default branch
+#repo.snapshots=tar.bz2				## override a sitewide snapshot-setting
+#repo.enable-log-filecount=0			## override the default filecount setting
+#repo.enable-log-linecount=0			## override the default linecount setting
+#repo.module-link=/git/%s/commit/?id=%s		## override the standard module-link
+#repo.readme=info/web/readme			## specify a file to include on summary page
+
+## Additional repositories grouped under "mirrors"
+#repo.group=mirrors
+
+#repo.url=git
+#repo.path=/pub/git/git
+#
+#repo.url=linux
+#repo.path=/pub/git/linux
+
+## A group of private repositories (with a working directory)
+#repo.group=private
+
+#repo.url=larsh/cgit
+#repo.path=/home/larsh/src/cgit/.git
+
+#repo.url=larsh/git
+#repo.path=/home/larsh/src/git/.git
