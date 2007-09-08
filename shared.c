@@ -23,7 +23,7 @@ char *cgit_module_link  = "./?repo=%s&page=commit&id=%s";
 char *cgit_agefile      = "info/web/last-modified";
 char *cgit_virtual_root = NULL;
 char *cgit_script_name  = CGIT_SCRIPT_NAME;
-char *cgit_cache_root   = "/var/cache/cgit";
+char *cgit_cache_root   = CGIT_CACHE_ROOT;
 char *cgit_repo_group   = NULL;
 
 int cgit_nocache               =  0;
