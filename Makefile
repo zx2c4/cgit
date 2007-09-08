@@ -56,9 +56,9 @@ install: all
 	rm -rf $(DESTDIR)$(CACHE_ROOT)/*
 
 uninstall:
-	rm -f $(DESTDIR)$(CGIT_SCRIPT_PATH)/$(CGIT_SCRIPT_NAME)
-	rm -f $(DESTDIR)$(CGIT_SCRIPT_PATH)/cgit.css
-	rm -rf $(DESTDIR)$(CACHE_ROOT)
+	rm -f $(CGIT_SCRIPT_PATH)/$(CGIT_SCRIPT_NAME)
+	rm -f $(CGIT_SCRIPT_PATH)/cgit.css
+	rm -rf $(CACHE_ROOT)
 
 clean:
 	rm -f cgit VERSION *.o
