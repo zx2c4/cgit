@@ -49,15 +49,15 @@ git:
 	cd git && $(MAKE) libgit.a
 
 install: all
-	mkdir -p $(CGIT_SCRIPT_PATH)
-	install cgit $(CGIT_SCRIPT_PATH)/$(CGIT_SCRIPT_NAME)
-	install cgit.css $(CGIT_SCRIPT_PATH)/cgit.css
-	rm -rf $(CACHE_ROOT)/*
+	mkdir -p $(DESTDIR)$(CGIT_SCRIPT_PATH)
+	install cgit $(DESTDIR)$(CGIT_SCRIPT_PATH)/$(CGIT_SCRIPT_NAME)
+	install cgit.css $(DESTDIR)$(CGIT_SCRIPT_PATH)/cgit.css
+	rm -rf $(DESTDIR)$(CACHE_ROOT)/*
 
 uninstall:
-	rm -f $(CGIT_SCRIPT_PATH)/$(CGIT_SCRIPT_NAME)
-	rm -f $(CGIT_SCRIPT_PATH)/cgit.css
-	rm -rf $(CACHE_ROOT)
+	rm -f $(DESTDIR)$(CGIT_SCRIPT_PATH)/$(CGIT_SCRIPT_NAME)
+	rm -f $(DESTDIR)$(CGIT_SCRIPT_PATH)/cgit.css
+	rm -rf $(DESTDIR)$(CACHE_ROOT)
 
 clean:
 	rm -f cgit VERSION *.o
