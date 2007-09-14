@@ -132,7 +132,7 @@
 #repo.url=cgit
 #repo.name=cgit
 #repo.desc=the caching cgi for git
-#repo.path=/pub/git/cgit			## this is the path to $GIR_DIR
+#repo.path=/pub/git/cgit			## this is the path to $GIT_DIR
 #repo.owner=Lars Hjemli
 #repo.defbranch=master				## define a default branch
 #repo.snapshots=tar.bz2				## override a sitewide snapshot-setting
