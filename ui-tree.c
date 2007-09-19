@@ -17,6 +17,7 @@ static void print_object(const unsigned char *sha1, char *path)
 	enum object_type type;
 	unsigned char *buf;
 	unsigned long size, lineno, start, idx;
+	const char *linefmt = "<tr><td class='no'><a name='%1$d'>%1$d</a></td><td class='txt'>";
 
 	type = sha1_object_info(sha1, &size);
 	if (type == OBJ_BAD) {
@@ -43,14 +44,16 @@ static void print_object(const unsigned char *sha1, char *path)
 	while(idx < size) {
 		if (buf[idx] == '\n') {
 			buf[idx] = '\0';
-			htmlf("<tr><td class='no'><a name='%1$d'>%1$d</a></td><td class='txt'>",
-			      ++lineno);
+			htmlf(linefmt, ++lineno);
 			html_txt(buf + start);
 			html("</td></tr>\n");
 			start = idx + 1;
 		}
 		idx++;
 	}
+	htmlf(linefmt, ++lineno);
+	html_txt(buf + start);
+	html("</td></tr>\n");
 	html("</table>\n");
 }
 
