@@ -43,7 +43,7 @@ static void print_object(const unsigned char *sha1, char *path)
 	while(idx < size) {
 		if (buf[idx] == '\n') {
 			buf[idx] = '\0';
-			htmlf("<tr><td class='no'><a name='%d'>%1$d</a></td><td class='txt'>",
+			htmlf("<tr><td class='no'><a name='%1$d'>%1$d</a></td><td class='txt'>",
 			      ++lineno);
 			html_txt(buf + start);
 			html("</td></tr>\n");
