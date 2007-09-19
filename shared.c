@@ -108,7 +108,7 @@ struct repoinfo *add_repo(const char *url)
 	}
 
 	ret = &cgit_repolist.repos[cgit_repolist.count-1];
-	ret->url = xstrdup(url);
+	ret->url = trim_end(url, '/');
 	ret->name = ret->url;
 	ret->path = NULL;
 	ret->desc = NULL;
@@ -151,7 +151,7 @@ void cgit_global_config_cb(const char *name, const char *value)
 	else if (!strcmp(name, "module-link"))
 		cgit_module_link = xstrdup(value);
 	else if (!strcmp(name, "virtual-root"))
-		cgit_virtual_root = xstrdup(value);
+		cgit_virtual_root = trim_end(value, '/');
 	else if (!strcmp(name, "nocache"))
 		cgit_nocache = atoi(value);
 	else if (!strcmp(name, "snapshots"))
@@ -189,7 +189,7 @@ void cgit_global_config_cb(const char *name, const char *value)
 	else if (!strcmp(name, "repo.name"))
 		cgit_repo->name = xstrdup(value);
 	else if (cgit_repo && !strcmp(name, "repo.path"))
-		cgit_repo->path = xstrdup(value);
+		cgit_repo->path = trim_end(value, '/');
 	else if (cgit_repo && !strcmp(name, "repo.desc"))
 		cgit_repo->desc = xstrdup(value);
 	else if (cgit_repo && !strcmp(name, "repo.owner"))
