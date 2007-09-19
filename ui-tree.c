@@ -15,7 +15,7 @@ int header = 0;
 static void print_object(const unsigned char *sha1, char *path)
 {
 	enum object_type type;
-	unsigned char *buf;
+	char *buf;
 	unsigned long size, lineno, start, idx;
 	const char *linefmt = "<tr><td class='no'><a name='%1$d'>%1$d</a></td><td class='txt'>";
 

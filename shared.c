@@ -308,7 +308,8 @@ static int load_mmfile(mmfile_t *file, const unsigned char *sha1)
 		file->ptr = (char *)"";
 		file->size = 0;
 	} else {
-		file->ptr = read_sha1_file(sha1, &type, &file->size);
+		file->ptr = read_sha1_file(sha1, &type, 
+		                           (unsigned long *)&file->size);
 	}
 	return 1;
 }
