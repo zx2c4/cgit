@@ -38,6 +38,7 @@ int cgit_cache_dynamic_ttl     =  5;
 int cgit_cache_static_ttl      = -1;
 int cgit_cache_max_create_time =  5;
 int cgit_summary_log           =  0;
+int cgit_renamelimit           = -1;
 
 int cgit_max_msg_len = 60;
 int cgit_max_repodesc_len = 60;
@@ -182,6 +183,8 @@ void cgit_global_config_cb(const char *name, const char *value)
 		cgit_summary_log = atoi(value);
 	else if (!strcmp(name, "agefile"))
 		cgit_agefile = xstrdup(value);
+	else if (!strcmp(name, "renamelimit"))
+		cgit_renamelimit = atoi(value);
 	else if (!strcmp(name, "repo.group"))
 		cgit_repo_group = xstrdup(value);
 	else if (!strcmp(name, "repo.url"))
@@ -391,6 +394,7 @@ void cgit_diff_tree(const unsigned char *old_sha1,
 	diff_setup(&opt);
 	opt.output_format = DIFF_FORMAT_CALLBACK;
 	opt.detect_rename = 1;
+	opt.rename_limit = cgit_renamelimit;
 	opt.recursive = 1;
 	opt.format_callback = cgit_diff_tree_cb;
 	opt.format_callback_data = fn;

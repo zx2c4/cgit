@@ -41,6 +41,13 @@
 #agefile=info/web/last-modified
 
 
+## Git detects renames, but with a limit on the number of files to
+## consider. This option can be used to specify another limit (or -1 to
+## use the default limit).
+##
+#renamelimit=-1
+
+
 ## Specify a root for virtual urls. This makes cgit generate urls like
 ##
 ##    http://localhost/git/repo/log/?h=branch
