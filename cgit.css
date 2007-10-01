@@ -335,6 +335,10 @@ div.diffstat-summary {
 	padding-top: 0.5em;
 }
 
+table.diff {
+	width: 100%;
+}
+
 table.diff td {
 	font-family: monospace;
 	white-space: pre;
@@ -342,7 +346,8 @@ table.diff td {
 
 table.diff td div.head {
 	font-weight: bold;
-	padding-top: 1em;
+	margin-top: 1em;
+	background-color: #eee;
 }
 
 table.diff td div.hunk {
