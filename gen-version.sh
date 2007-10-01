@@ -6,7 +6,7 @@ V=$1
 # Use `git describe` to get current version if we're inside a git repo
 if test -d .git
 then
-	V=$(git describe --abbrev=4 HEAD 2>/dev/null | sed -e 's/-/./g')
+	V=$(git describe --abbrev=4 HEAD 2>/dev/null)
 fi
 
 new="CGIT_VERSION = $V"
