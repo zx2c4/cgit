@@ -75,8 +75,8 @@ void print_fileinfo(struct fileinfo *info)
 		html("]</span>");
 	}
 	htmlf("</td><td class='%s'>", class);
-	cgit_tree_link(info->new_path, NULL, NULL, cgit_query_head, curr_rev,
-		       info->new_path);
+	cgit_diff_link(info->new_path, NULL, NULL, cgit_query_head, curr_rev,
+		       NULL, info->new_path);
 	if (info->status == DIFF_STATUS_COPIED || info->status == DIFF_STATUS_RENAMED)
 		htmlf(" (%s from %s)",
 		      info->status == DIFF_STATUS_COPIED ? "copied" : "renamed",
