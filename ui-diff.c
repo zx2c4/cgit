@@ -131,10 +131,9 @@ void cgit_print_diff(const char *new_rev, const char *old_rev)
 		if (!commit2 || parse_commit(commit2))
 			cgit_print_error(fmt("Bad commit: %s", sha1_to_hex(sha2)));
 	}
-
 	html("<table class='diff'>");
 	html("<tr><td>");
-	cgit_diff_tree(sha2, sha1, filepair_cb);
+	cgit_diff_tree(sha2, sha1, filepair_cb, NULL);
 	html("</td></tr>");
 	html("</table>");
 }
