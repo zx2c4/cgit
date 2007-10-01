@@ -9,6 +9,9 @@
 #include "cgit.h"
 
 
+unsigned char old_rev_sha1[20];
+unsigned char new_rev_sha1[20];
+
 /*
  * print a single line returned from xdiff
  */
@@ -67,9 +70,17 @@ static void header(unsigned char *sha1, char *path1, int mode1,
 				htmlf("..%.6o", mode2);
 		}
 		html("<br/>--- a/");
-		html_txt(path1);
+		if (mode1 != 0)
+			cgit_tree_link(path1, NULL, NULL, cgit_query_head,
+				       sha1_to_hex(old_rev_sha1), path1);
+		else
+			html_txt(path1);
 		html("<br/>+++ b/");
-		html_txt(path2);
+		if (mode2 != 0)
+			cgit_tree_link(path2, NULL, NULL, cgit_query_head,
+				       sha1_to_hex(new_rev_sha1), path2);
+		else
+			html_txt(path2);
 	}
 	html("</div>");
 }
@@ -91,15 +102,14 @@ static void filepair_cb(struct diff_filepair *pair)
 
 void cgit_print_diff(const char *new_rev, const char *old_rev, const char *prefix)
 {
-	unsigned char sha1[20], sha2[20];
 	enum object_type type;
 	unsigned long size;
 	struct commit *commit, *commit2;
 
 	if (!new_rev)
 		new_rev = cgit_query_head;
-	get_sha1(new_rev, sha1);
-	type = sha1_object_info(sha1, &size);
+	get_sha1(new_rev, new_rev_sha1);
+	type = sha1_object_info(new_rev_sha1, &size);
 	if (type == OBJ_BAD) {
 		cgit_print_error(fmt("Bad object name: %s", new_rev));
 		return;
@@ -110,30 +120,30 @@ void cgit_print_diff(const char *new_rev, const char *old_rev, const char *prefi
 		return;
 	}
 
-	commit = lookup_commit_reference(sha1);
+	commit = lookup_commit_reference(new_rev_sha1);
 	if (!commit || parse_commit(commit))
-		cgit_print_error(fmt("Bad commit: %s", sha1_to_hex(sha1)));
+		cgit_print_error(fmt("Bad commit: %s", sha1_to_hex(new_rev_sha1)));
 
 	if (old_rev)
-		get_sha1(old_rev, sha2);
+		get_sha1(old_rev, old_rev_sha1);
 	else if (commit->parents && commit->parents->item)
-		hashcpy(sha2, commit->parents->item->object.sha1);
+		hashcpy(old_rev_sha1, commit->parents->item->object.sha1);
 	else
-		hashclr(sha2);
+		hashclr(old_rev_sha1);
 
-	if (!is_null_sha1(sha2)) {
-		type = sha1_object_info(sha2, &size);
+	if (!is_null_sha1(old_rev_sha1)) {
+		type = sha1_object_info(old_rev_sha1, &size);
 		if (type == OBJ_BAD) {
-			cgit_print_error(fmt("Bad object name: %s", sha1_to_hex(sha2)));
+			cgit_print_error(fmt("Bad object name: %s", sha1_to_hex(old_rev_sha1)));
 			return;
 		}
-		commit2 = lookup_commit_reference(sha2);
+		commit2 = lookup_commit_reference(old_rev_sha1);
 		if (!commit2 || parse_commit(commit2))
-			cgit_print_error(fmt("Bad commit: %s", sha1_to_hex(sha2)));
+			cgit_print_error(fmt("Bad commit: %s", sha1_to_hex(old_rev_sha1)));
 	}
 	html("<table class='diff'>");
 	html("<tr><td>");
-	cgit_diff_tree(sha2, sha1, filepair_cb, prefix);
+	cgit_diff_tree(old_rev_sha1, new_rev_sha1, filepair_cb, prefix);
 	html("</td></tr>");
 	html("</table>");
 }
