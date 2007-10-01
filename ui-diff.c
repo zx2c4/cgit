@@ -89,7 +89,7 @@ static void filepair_cb(struct diff_filepair *pair)
 		cgit_print_error("Error running diff");
 }
 
-void cgit_print_diff(const char *new_rev, const char *old_rev)
+void cgit_print_diff(const char *new_rev, const char *old_rev, const char *prefix)
 {
 	unsigned char sha1[20], sha2[20];
 	enum object_type type;
@@ -133,7 +133,7 @@ void cgit_print_diff(const char *new_rev, const char *old_rev)
 	}
 	html("<table class='diff'>");
 	html("<tr><td>");
-	cgit_diff_tree(sha2, sha1, filepair_cb, NULL);
+	cgit_diff_tree(sha2, sha1, filepair_cb, prefix);
 	html("</td></tr>");
 	html("</table>");
 }

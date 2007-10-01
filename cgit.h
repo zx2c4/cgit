@@ -238,7 +238,7 @@ extern void cgit_print_blob(struct cacheitem *item, const char *hex, char *path)
 extern void cgit_print_tree(const char *rev, char *path);
 extern void cgit_print_commit(char *hex);
 extern void cgit_print_tag(char *revname);
-extern void cgit_print_diff(const char *new_hex, const char *old_hex);
+extern void cgit_print_diff(const char *new_hex, const char *old_hex, const char *prefix);
 extern void cgit_print_snapshot(struct cacheitem *item, const char *head,
 				const char *hex, const char *prefix,
 				const char *filename, int snapshot);
