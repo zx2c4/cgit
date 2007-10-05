@@ -99,7 +99,7 @@ td#header a {
 	color: #666;
 }
 
-td#header a:hoved {
+td#header a:hover {
 	text-decoration: underline;
 }
 
