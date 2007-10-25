@@ -162,7 +162,7 @@ static void cgit_print_branches()
 		cgit_print_branch(list.refs[i]);
 }
 
-static void cgit_print_tags()
+static void cgit_print_tags(int maxcount)
 {
 	struct reflist list;
 	int i;
@@ -174,8 +174,12 @@ static void cgit_print_tags()
 	if (list.count == 0)
 		return;
 	qsort(list.refs, list.count, sizeof(*list.refs), cmp_tag_age);
+	if (!maxcount)
+		maxcount = list.count;
+	else if (maxcount > list.count)
+		maxcount = list.count;
 	print_tag_header();
-	for(i=0; i<list.count; i++)
+	for(i=0; i<maxcount; i++)
 		print_tag(list.refs[i]);
 }
 
@@ -206,6 +210,6 @@ void cgit_print_summary()
 		html("<tr class='nohover'><td colspan='4'>&nbsp;</td></tr>");
 	cgit_print_branches();
 	html("<tr class='nohover'><td colspan='4'>&nbsp;</td></tr>");
-	cgit_print_tags();
+	cgit_print_tags(cgit_summary_tags);
 	html("</table>");
 }
