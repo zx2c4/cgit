@@ -98,6 +98,21 @@ struct taginfo {
 	char *msg;
 };
 
+struct refinfo {
+	const char *refname;
+	struct object *object;
+	union {
+		struct taginfo *tag;
+		struct commitinfo *commit;
+	};
+};
+
+struct reflist {
+	struct refinfo **refs;
+	int alloc;
+	int count;
+};
+
 extern const char *cgit_version;
 
 extern struct repolist cgit_repolist;
@@ -161,6 +176,10 @@ extern int chk_non_negative(int result, char *msg);
 
 extern int hextoint(char c);
 extern char *trim_end(const char *str, char c);
+
+extern void cgit_add_ref(struct reflist *list, struct refinfo *ref);
+extern int cgit_refs_cb(const char *refname, const unsigned char *sha1,
+			int flags, void *cb_data);
 
 extern void *cgit_free_commitinfo(struct commitinfo *info);
 

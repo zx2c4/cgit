@@ -291,6 +291,47 @@ char *trim_end(const char *str, char c)
 	return s;
 }
 
+void cgit_add_ref(struct reflist *list, struct refinfo *ref)
+{
+	size_t size;
+
+	if (list->count >= list->alloc) {
+		list->alloc += (list->alloc ? list->alloc : 4);
+		size = list->alloc * sizeof(struct refinfo *);
+		list->refs = xrealloc(list->refs, size);
+	}
+	list->refs[list->count++] = ref;
+}
+
+struct refinfo *cgit_mk_refinfo(const char *refname, const unsigned char *sha1)
+{
+	struct refinfo *ref;
+
+	ref = xmalloc(sizeof (struct refinfo));
+	ref->refname = xstrdup(refname);
+	ref->object = parse_object(sha1);
+	switch (ref->object->type) {
+	case OBJ_TAG:
+		ref->tag = cgit_parse_tag((struct tag *)ref->object);
+		break;
+	case OBJ_COMMIT:
+		ref->commit = cgit_parse_commit((struct commit *)ref->object);
+		break;
+	}
+	return ref;
+}
+
+int cgit_refs_cb(const char *refname, const unsigned char *sha1, int flags,
+		  void *cb_data)
+{
+	struct reflist *list = (struct reflist *)cb_data;
+	struct refinfo *info = cgit_mk_refinfo(refname, sha1);
+
+	if (info)
+		cgit_add_ref(list, info);
+	return 0;
+}
+
 void cgit_diff_tree_cb(struct diff_queue_struct *q,
 		       struct diff_options *options, void *data)
 {
