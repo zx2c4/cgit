@@ -10,41 +10,35 @@
 
 static int header;
 
-static int cgit_print_branch_cb(const char *refname, const unsigned char *sha1,
-				int flags, void *cb_data)
+static void cgit_print_branch(struct refinfo *ref)
 {
 	struct commit *commit;
 	struct commitinfo *info;
-	char buf[256];
-	char *ref;
+	char *name = (char *)ref->refname;
 
-	ref = xstrdup(refname);
-	strncpy(buf, refname, sizeof(buf));
-	commit = lookup_commit(sha1);
+	commit = lookup_commit(ref->object->sha1);
 	// object is not really parsed at this point, because of some fallout
 	// from previous calls to git functions in cgit_print_log()
 	commit->object.parsed = 0;
 	if (commit && !parse_commit(commit)){
 		info = cgit_parse_commit(commit);
 		html("<tr><td>");
-		cgit_log_link(ref, NULL, NULL, ref, NULL, NULL, 0);
+		cgit_log_link(name, NULL, NULL, name, NULL, NULL, 0);
 		html("</td><td>");
 		cgit_print_age(commit->date, -1, NULL);
 		html("</td><td>");
 		html_txt(info->author);
 		html("</td><td>");
-		cgit_commit_link(info->subject, NULL, NULL, ref, NULL);
+		cgit_commit_link(info->subject, NULL, NULL, name, NULL);
 		html("</td></tr>\n");
 		cgit_free_commitinfo(info);
 	} else {
 		html("<tr><td>");
-		html_txt(buf);
+		html_txt(name);
 		html("</td><td colspan='3'>");
-		htmlf("*** bad ref %s ***", sha1_to_hex(sha1));
+		htmlf("*** bad ref %s ***", sha1_to_hex(ref->object->sha1));
 		html("</td></tr>\n");
 	}
-	free(ref);
-	return 0;
 }
 
 static void print_tag_header()
@@ -144,11 +138,19 @@ static int cgit_print_archive_cb(const char *refname, const unsigned char *sha1,
 
 static void cgit_print_branches()
 {
+	struct reflist list;
+	int i;
+
 	html("<tr class='nohover'><th class='left'>Branch</th>"
 	     "<th class='left'>Idle</th>"
 	     "<th class='left'>Author</th>"
 	     "<th class='left'>Head commit</th></tr>\n");
-	for_each_branch_ref(cgit_print_branch_cb, NULL);
+
+	list.refs = NULL;
+	list.alloc = list.count = 0;
+	for_each_branch_ref(cgit_refs_cb, &list);
+	for(i=0; i<list.count; i++)
+		cgit_print_branch(list.refs[i]);
 }
 
 static void cgit_print_tags()
