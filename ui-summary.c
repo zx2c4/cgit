@@ -10,6 +10,23 @@
 
 static int header;
 
+static int cmp_tag_age(void *a, void *b)
+{
+	struct refinfo *r1 = *(struct refinfo **)a;
+	struct refinfo *r2 = *(struct refinfo **)b;
+
+	if (r1->tag->tagger_date != 0 && r2->tag->tagger_date != 0)
+		return r2->tag->tagger_date - r1->tag->tagger_date;
+
+	if (r1->tag->tagger_date == 0 && r2->tag->tagger_date == 0)
+		return 0;
+
+	if (r1 == 0)
+		return +1;
+
+	return -1;
+}
+
 static void cgit_print_branch(struct refinfo *ref)
 {
 	struct commit *commit;
@@ -156,6 +173,7 @@ static void cgit_print_tags()
 	for_each_tag_ref(cgit_refs_cb, &list);
 	if (list.count == 0)
 		return;
+	qsort(list.refs, list.count, sizeof(*list.refs), cmp_tag_age);
 	print_tag_header();
 	for(i=0; i<list.count; i++)
 		print_tag(list.refs[i]);
