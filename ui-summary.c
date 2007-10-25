@@ -50,29 +50,21 @@ static void print_tag_header()
 	header = 1;
 }
 
-static int cgit_print_tag_cb(const char *refname, const unsigned char *sha1,
-				int flags, void *cb_data)
+static int print_tag(struct refinfo *ref)
 {
 	struct tag *tag;
 	struct taginfo *info;
-	struct object *obj;
-	char buf[256], *url;
+	char *url, *name = (char *)ref->refname;
 
-	strncpy(buf, refname, sizeof(buf));
-	obj = parse_object(sha1);
-	if (!obj)
-		return 1;
-	if (obj->type == OBJ_TAG) {
-		tag = lookup_tag(sha1);
+	if (ref->object->type == OBJ_TAG) {
+		tag = lookup_tag(ref->object->sha1);
 		if (!tag || parse_tag(tag) || !(info = cgit_parse_tag(tag)))
 			return 2;
-		if (!header)
-			print_tag_header();
 		html("<tr><td>");
 		url = cgit_pageurl(cgit_query_repo, "tag",
-				   fmt("id=%s", refname));
+				   fmt("id=%s", name));
 		html_link_open(url, NULL, NULL);
-		html_txt(buf);
+		html_txt(name);
 		html_link_close();
 		html("</td><td>");
 		if (info->tagger_date > 0)
@@ -87,9 +79,9 @@ static int cgit_print_tag_cb(const char *refname, const unsigned char *sha1,
 		if (!header)
 			print_tag_header();
 		html("<tr><td>");
-		html_txt(buf);
+		html_txt(name);
 		html("</td><td colspan='2'/><td>");
-		cgit_object_link(obj);
+		cgit_object_link(ref->object);
 		html("</td></tr>\n");
 	}
 	return 0;
@@ -155,8 +147,18 @@ static void cgit_print_branches()
 
 static void cgit_print_tags()
 {
+	struct reflist list;
+	int i;
+
 	header = 0;
-	for_each_tag_ref(cgit_print_tag_cb, NULL);
+	list.refs = NULL;
+	list.alloc = list.count = 0;
+	for_each_tag_ref(cgit_refs_cb, &list);
+	if (list.count == 0)
+		return;
+	print_tag_header();
+	for(i=0; i<list.count; i++)
+		print_tag(list.refs[i]);
 }
 
 static void cgit_print_archives()
