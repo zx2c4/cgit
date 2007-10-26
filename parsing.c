@@ -199,6 +199,7 @@ struct commitinfo *cgit_parse_commit(struct commit *commit)
 	ret->committer_email = NULL;
 	ret->subject = NULL;
 	ret->msg = NULL;
+	ret->msg_encoding = NULL;
 
 	if (p == NULL)
 		return ret;

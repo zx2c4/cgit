@@ -48,6 +48,11 @@
 #define TM_MONTH (TM_YEAR / 12.0)
 
 
+/*
+ * Default encoding
+ */
+#define PAGE_ENCODING "UTF-8"
+
 typedef void (*configfn)(const char *name, const char *value);
 typedef void (*filepair_fn)(struct diff_filepair *pair);
 typedef void (*linediff_fn)(char *line, int len);
@@ -90,6 +95,7 @@ struct commitinfo {
 	unsigned long committer_date;
 	char *subject;
 	char *msg;
+	char *msg_encoding;
 };
 
 struct taginfo {

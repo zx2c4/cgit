@@ -265,6 +265,8 @@ void *cgit_free_commitinfo(struct commitinfo *info)
 	free(info->committer);
 	free(info->committer_email);
 	free(info->subject);
+	free(info->msg);
+	free(info->msg_encoding);
 	free(info);
 	return NULL;
 }
