@@ -6,6 +6,8 @@
  *   (see COPYING for full license text)
  */
 
+#include <iconv.h>
+
 #include "cgit.h"
 
 int next_char(FILE *f)
@@ -174,6 +176,62 @@ void cgit_parse_url(const char *url)
 		cgit_query_page = xstrdup(cmd + 1);
 		return;
 	}
+}
+
+static char *iconv_msg(char *msg, const char *encoding)
+{
+	iconv_t msg_conv = iconv_open(PAGE_ENCODING, encoding);
+	size_t inlen = strlen(msg);
+	char *in;
+	char *out;
+	size_t inleft;
+	size_t outleft;
+	char *buf;
+	char *ret;
+	size_t buf_sz;
+	int again, fail;
+
+	if(msg_conv == (iconv_t)-1)
+		return NULL;
+
+	buf_sz = inlen * 2;
+	buf = xmalloc(buf_sz+1);
+	do {
+		in = msg;
+		inleft = inlen;
+
+		out = buf;
+		outleft = buf_sz;
+		iconv(msg_conv, &in, &inleft, &out, &outleft);
+
+		if(inleft == 0) {
+			fail = 0;
+			again = 0;
+		} else if(inleft != 0 && errno == E2BIG) {
+			fail = 0;
+			again = 1;
+
+			buf_sz *= 2;
+			free(buf);
+			buf = xmalloc(buf_sz+1);
+		} else {
+			fail = 1;
+			again = 0;
+		}
+	} while(again && !fail);
+
+	if(fail) {
+		free(buf);
+		ret = NULL;
+	} else {
+		buf = xrealloc(buf, out - buf);
+		*out = 0;
+		ret = buf;
+	}
+
+	iconv_close(msg_conv);
+
+	return ret;
 }
 
 char *substr(const char *head, const char *tail)
