@@ -234,6 +234,14 @@ struct commitinfo *cgit_parse_commit(struct commit *commit)
 		p = strchr(t, '\n') + 1;
 	}
 
+	if (!strncmp(p, "encoding ", 9)) {
+		p += 9;
+		t = strchr(p, '\n') + 1;
+		ret->msg_encoding = substr(p, t);
+		p = t;
+	} else
+		ret->msg_encoding = xstrdup(PAGE_ENCODING);
+
 	while (*p && (*p != '\n'))
 		p = strchr(p, '\n') + 1; // skip unknown header fields
 
