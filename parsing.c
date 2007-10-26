@@ -320,6 +320,20 @@ struct commitinfo *cgit_parse_commit(struct commit *commit)
 	} else
 		ret->subject = substr(p, p+strlen(p));
 
+	if(strcmp(ret->msg_encoding, PAGE_ENCODING)) {
+		t = iconv_msg(ret->subject, ret->msg_encoding);
+		if(t) {
+			free(ret->subject);
+			ret->subject = t;
+		}
+
+		t = iconv_msg(ret->msg, ret->msg_encoding);
+		if(t) {
+			free(ret->msg);
+			ret->msg = t;
+		}
+	}
+
 	return ret;
 }
 
