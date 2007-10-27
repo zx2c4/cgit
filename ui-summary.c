@@ -166,6 +166,13 @@ static int cgit_print_archive_cb(const char *refname, const unsigned char *sha1,
 	return 0;
 }
 
+static void print_refs_link(char *path)
+{
+	html("<tr class='nohover'><td colspan='4'>");
+	cgit_refs_link("[...]", NULL, NULL, cgit_query_head, NULL, path);
+	html("</td></tr>");
+}
+
 void cgit_print_branches(int maxcount)
 {
 	struct reflist list;
@@ -190,6 +197,9 @@ void cgit_print_branches(int maxcount)
 
 	for(i=0; i<maxcount; i++)
 		cgit_print_branch(list.refs[i]);
+
+	if (maxcount < list.count)
+		print_refs_link("heads");
 }
 
 void cgit_print_tags(int maxcount)
@@ -211,6 +221,9 @@ void cgit_print_tags(int maxcount)
 	print_tag_header();
 	for(i=0; i<maxcount; i++)
 		print_tag(list.refs[i]);
+
+	if (maxcount < list.count)
+		print_refs_link("tags");
 }
 
 static void cgit_print_archives()
