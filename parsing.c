@@ -242,14 +242,14 @@ struct commitinfo *cgit_parse_commit(struct commit *commit)
 	t = strchr(p, '\n');
 	if (t) {
 		if (*t == '\0')
-			ret->subject = strdup("** empty **");
+			ret->subject = "** empty **";
 		else
 			ret->subject = substr(p, t);
 		p = t + 1;
 
 		while (*p == '\n')
 			p = strchr(p, '\n') + 1;
-		ret->msg = p;
+		ret->msg = xstrdup(p);
 	} else
 		ret->subject = substr(p, p+strlen(p));
 
