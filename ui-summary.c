@@ -10,21 +10,26 @@
 
 static int header;
 
-static int cmp_tag_age(void *a, void *b)
+static int cmp_age(int age1, int age2)
+{
+	if (age1 != 0 && age2 != 0)
+		return age2 - age1;
+
+	if (age1 == 0 && age2 == 0)
+		return 0;
+
+	if (age1 == 0)
+		return +1;
+
+	return -1;
+}
+
+static int cmp_tag_age(const void *a, const void *b)
 {
 	struct refinfo *r1 = *(struct refinfo **)a;
 	struct refinfo *r2 = *(struct refinfo **)b;
 
-	if (r1->tag->tagger_date != 0 && r2->tag->tagger_date != 0)
-		return r2->tag->tagger_date - r1->tag->tagger_date;
-
-	if (r1->tag->tagger_date == 0 && r2->tag->tagger_date == 0)
-		return 0;
-
-	if (r1 == 0)
-		return +1;
-
-	return -1;
+	return cmp_age(r1->tag->tagger_date, r2->tag->tagger_date);
 }
 
 static void cgit_print_branch(struct refinfo *ref)
