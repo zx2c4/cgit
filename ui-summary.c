@@ -24,6 +24,22 @@ static int cmp_age(int age1, int age2)
 	return -1;
 }
 
+static int cmp_ref_name(const void *a, const void *b)
+{
+	struct refinfo *r1 = *(struct refinfo **)a;
+	struct refinfo *r2 = *(struct refinfo **)b;
+
+	return strcmp(r1->refname, r2->refname);
+}
+
+static int cmp_branch_age(const void *a, const void *b)
+{
+	struct refinfo *r1 = *(struct refinfo **)a;
+	struct refinfo *r2 = *(struct refinfo **)b;
+
+	return cmp_age(r1->commit->committer_date, r2->commit->committer_date);
+}
+
 static int cmp_tag_age(const void *a, const void *b)
 {
 	struct refinfo *r1 = *(struct refinfo **)a;
@@ -150,7 +166,7 @@ static int cgit_print_archive_cb(const char *refname, const unsigned char *sha1,
 	return 0;
 }
 
-static void cgit_print_branches()
+static void cgit_print_branches(int maxcount)
 {
 	struct reflist list;
 	int i;
@@ -163,7 +179,16 @@ static void cgit_print_branches()
 	list.refs = NULL;
 	list.alloc = list.count = 0;
 	for_each_branch_ref(cgit_refs_cb, &list);
-	for(i=0; i<list.count; i++)
+
+	if (maxcount == 0 || maxcount > list.count)
+		maxcount = list.count;
+
+	if (maxcount < list.count) {
+		qsort(list.refs, list.count, sizeof(*list.refs), cmp_branch_age);
+		qsort(list.refs, maxcount, sizeof(*list.refs), cmp_ref_name);
+	}
+
+	for(i=0; i<maxcount; i++)
 		cgit_print_branch(list.refs[i]);
 }
 
@@ -213,7 +238,7 @@ void cgit_print_summary()
 	html("<table class='list nowrap'>");
 	if (cgit_summary_log > 0)
 		html("<tr class='nohover'><td colspan='4'>&nbsp;</td></tr>");
-	cgit_print_branches();
+	cgit_print_branches(cgit_summary_branches);
 	html("<tr class='nohover'><td colspan='4'>&nbsp;</td></tr>");
 	cgit_print_tags(cgit_summary_tags);
 	html("</table>");

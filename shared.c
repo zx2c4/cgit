@@ -39,6 +39,7 @@ int cgit_cache_static_ttl      = -1;
 int cgit_cache_max_create_time =  5;
 int cgit_summary_log           =  0;
 int cgit_summary_tags          =  0;
+int cgit_summary_branches      =  0;
 int cgit_renamelimit           = -1;
 
 int cgit_max_msg_len = 60;
@@ -182,6 +183,8 @@ void cgit_global_config_cb(const char *name, const char *value)
 		cgit_max_commit_count = atoi(value);
 	else if (!strcmp(name, "summary-log"))
 		cgit_summary_log = atoi(value);
+	else if (!strcmp(name, "summary-branches"))
+		cgit_summary_branches = atoi(value);
 	else if (!strcmp(name, "summary-tags"))
 		cgit_summary_tags = atoi(value);
 	else if (!strcmp(name, "agefile"))
