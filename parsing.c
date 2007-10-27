@@ -233,6 +233,9 @@ struct commitinfo *cgit_parse_commit(struct commit *commit)
 		p = strchr(t, '\n') + 1;
 	}
 
+	while (*p && (*p != '\n'))
+		p = strchr(p, '\n') + 1; // skip unknown header fields
+
 	while (*p == '\n')
 		p = strchr(p, '\n') + 1;
 
@@ -291,6 +294,9 @@ struct taginfo *cgit_parse_tag(struct tag *tag)
 		}
 		p = strchr(p, '\n') + 1;
 	}
+
+	while (p && *p && (*p != '\n'))
+		p = strchr(p, '\n') + 1; // skip unknown tag fields
 
 	while (p && (*p == '\n'))
 		p = strchr(p, '\n') + 1;
