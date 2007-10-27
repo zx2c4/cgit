@@ -30,6 +30,16 @@
 #summary-log=0
 
 
+## Restrict the number of branches printed in summary view. Set to 0 to
+## print all branches.
+#summary-branches=0
+
+
+## Restrict the number of tags printed in summary view. Set to 0 to
+## print all tags.
+#summary-tags=0
+
+
 ## The "Idle" column on the repository index page can read a timestamp
 ## from the specified agefile (if this file cannot be found, the mtime
 ## of HEAD is used).
