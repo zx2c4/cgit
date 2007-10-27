@@ -103,6 +103,9 @@ static void cgit_print_repo_page(struct cacheitem *item)
 	case CMD_COMMIT:
 		cgit_print_commit(cgit_query_sha1);
 		break;
+	case CMD_REFS:
+		cgit_print_refs();
+		break;
 	case CMD_TAG:
 		cgit_print_tag(cgit_query_sha1);
 		break;
