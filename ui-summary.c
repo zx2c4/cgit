@@ -10,41 +10,73 @@
 
 static int header;
 
-static int cgit_print_branch_cb(const char *refname, const unsigned char *sha1,
-				int flags, void *cb_data)
+static int cmp_age(int age1, int age2)
+{
+	if (age1 != 0 && age2 != 0)
+		return age2 - age1;
+
+	if (age1 == 0 && age2 == 0)
+		return 0;
+
+	if (age1 == 0)
+		return +1;
+
+	return -1;
+}
+
+static int cmp_ref_name(const void *a, const void *b)
+{
+	struct refinfo *r1 = *(struct refinfo **)a;
+	struct refinfo *r2 = *(struct refinfo **)b;
+
+	return strcmp(r1->refname, r2->refname);
+}
+
+static int cmp_branch_age(const void *a, const void *b)
+{
+	struct refinfo *r1 = *(struct refinfo **)a;
+	struct refinfo *r2 = *(struct refinfo **)b;
+
+	return cmp_age(r1->commit->committer_date, r2->commit->committer_date);
+}
+
+static int cmp_tag_age(const void *a, const void *b)
+{
+	struct refinfo *r1 = *(struct refinfo **)a;
+	struct refinfo *r2 = *(struct refinfo **)b;
+
+	return cmp_age(r1->tag->tagger_date, r2->tag->tagger_date);
+}
+
+static void cgit_print_branch(struct refinfo *ref)
 {
 	struct commit *commit;
 	struct commitinfo *info;
-	char buf[256];
-	char *ref;
+	char *name = (char *)ref->refname;
 
-	ref = xstrdup(refname);
-	strncpy(buf, refname, sizeof(buf));
-	commit = lookup_commit(sha1);
+	commit = lookup_commit(ref->object->sha1);
 	// object is not really parsed at this point, because of some fallout
 	// from previous calls to git functions in cgit_print_log()
 	commit->object.parsed = 0;
 	if (commit && !parse_commit(commit)){
 		info = cgit_parse_commit(commit);
 		html("<tr><td>");
-		cgit_log_link(ref, NULL, NULL, ref, NULL, NULL, 0);
+		cgit_log_link(name, NULL, NULL, name, NULL, NULL, 0);
 		html("</td><td>");
 		cgit_print_age(commit->date, -1, NULL);
 		html("</td><td>");
 		html_txt(info->author);
 		html("</td><td>");
-		cgit_commit_link(info->subject, NULL, NULL, ref, NULL);
+		cgit_commit_link(info->subject, NULL, NULL, name, NULL);
 		html("</td></tr>\n");
 		cgit_free_commitinfo(info);
 	} else {
 		html("<tr><td>");
-		html_txt(buf);
+		html_txt(name);
 		html("</td><td colspan='3'>");
-		htmlf("*** bad ref %s ***", sha1_to_hex(sha1));
+		htmlf("*** bad ref %s ***", sha1_to_hex(ref->object->sha1));
 		html("</td></tr>\n");
 	}
-	free(ref);
-	return 0;
 }
 
 static void print_tag_header()
@@ -56,29 +88,21 @@ static void print_tag_header()
 	header = 1;
 }
 
-static int cgit_print_tag_cb(const char *refname, const unsigned char *sha1,
-				int flags, void *cb_data)
+static int print_tag(struct refinfo *ref)
 {
 	struct tag *tag;
 	struct taginfo *info;
-	struct object *obj;
-	char buf[256], *url;
+	char *url, *name = (char *)ref->refname;
 
-	strncpy(buf, refname, sizeof(buf));
-	obj = parse_object(sha1);
-	if (!obj)
-		return 1;
-	if (obj->type == OBJ_TAG) {
-		tag = lookup_tag(sha1);
+	if (ref->object->type == OBJ_TAG) {
+		tag = lookup_tag(ref->object->sha1);
 		if (!tag || parse_tag(tag) || !(info = cgit_parse_tag(tag)))
 			return 2;
-		if (!header)
-			print_tag_header();
 		html("<tr><td>");
 		url = cgit_pageurl(cgit_query_repo, "tag",
-				   fmt("id=%s", refname));
+				   fmt("id=%s", name));
 		html_link_open(url, NULL, NULL);
-		html_txt(buf);
+		html_txt(name);
 		html_link_close();
 		html("</td><td>");
 		if (info->tagger_date > 0)
@@ -93,9 +117,9 @@ static int cgit_print_tag_cb(const char *refname, const unsigned char *sha1,
 		if (!header)
 			print_tag_header();
 		html("<tr><td>");
-		html_txt(buf);
+		html_txt(name);
 		html("</td><td colspan='2'/><td>");
-		cgit_object_link(obj);
+		cgit_object_link(ref->object);
 		html("</td></tr>\n");
 	}
 	return 0;
@@ -142,19 +166,64 @@ static int cgit_print_archive_cb(const char *refname, const unsigned char *sha1,
 	return 0;
 }
 
-static void cgit_print_branches()
+static void print_refs_link(char *path)
 {
+	html("<tr class='nohover'><td colspan='4'>");
+	cgit_refs_link("[...]", NULL, NULL, cgit_query_head, NULL, path);
+	html("</td></tr>");
+}
+
+void cgit_print_branches(int maxcount)
+{
+	struct reflist list;
+	int i;
+
 	html("<tr class='nohover'><th class='left'>Branch</th>"
 	     "<th class='left'>Idle</th>"
 	     "<th class='left'>Author</th>"
 	     "<th class='left'>Head commit</th></tr>\n");
-	for_each_branch_ref(cgit_print_branch_cb, NULL);
+
+	list.refs = NULL;
+	list.alloc = list.count = 0;
+	for_each_branch_ref(cgit_refs_cb, &list);
+
+	if (maxcount == 0 || maxcount > list.count)
+		maxcount = list.count;
+
+	if (maxcount < list.count) {
+		qsort(list.refs, list.count, sizeof(*list.refs), cmp_branch_age);
+		qsort(list.refs, maxcount, sizeof(*list.refs), cmp_ref_name);
+	}
+
+	for(i=0; i<maxcount; i++)
+		cgit_print_branch(list.refs[i]);
+
+	if (maxcount < list.count)
+		print_refs_link("heads");
 }
 
-static void cgit_print_tags()
+void cgit_print_tags(int maxcount)
 {
+	struct reflist list;
+	int i;
+
 	header = 0;
-	for_each_tag_ref(cgit_print_tag_cb, NULL);
+	list.refs = NULL;
+	list.alloc = list.count = 0;
+	for_each_tag_ref(cgit_refs_cb, &list);
+	if (list.count == 0)
+		return;
+	qsort(list.refs, list.count, sizeof(*list.refs), cmp_tag_age);
+	if (!maxcount)
+		maxcount = list.count;
+	else if (maxcount > list.count)
+		maxcount = list.count;
+	print_tag_header();
+	for(i=0; i<maxcount; i++)
+		print_tag(list.refs[i]);
+
+	if (maxcount < list.count)
+		print_refs_link("tags");
 }
 
 static void cgit_print_archives()
@@ -182,8 +251,8 @@ void cgit_print_summary()
 	html("<table class='list nowrap'>");
 	if (cgit_summary_log > 0)
 		html("<tr class='nohover'><td colspan='4'>&nbsp;</td></tr>");
-	cgit_print_branches();
+	cgit_print_branches(cgit_summary_branches);
 	html("<tr class='nohover'><td colspan='4'>&nbsp;</td></tr>");
-	cgit_print_tags();
+	cgit_print_tags(cgit_summary_tags);
 	html("</table>");
 }

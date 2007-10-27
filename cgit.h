@@ -28,6 +28,7 @@
 #define CMD_BLOB     5
 #define CMD_SNAPSHOT 6
 #define CMD_TAG      7
+#define CMD_REFS     8
 
 /*
  * Dateformats used on misc. pages
@@ -98,6 +99,21 @@ struct taginfo {
 	char *msg;
 };
 
+struct refinfo {
+	const char *refname;
+	struct object *object;
+	union {
+		struct taginfo *tag;
+		struct commitinfo *commit;
+	};
+};
+
+struct reflist {
+	struct refinfo **refs;
+	int alloc;
+	int count;
+};
+
 extern const char *cgit_version;
 
 extern struct repolist cgit_repolist;
@@ -128,6 +144,8 @@ extern int cgit_cache_dynamic_ttl;
 extern int cgit_cache_static_ttl;
 extern int cgit_cache_max_create_time;
 extern int cgit_summary_log;
+extern int cgit_summary_tags;
+extern int cgit_summary_branches;
 
 extern int cgit_max_msg_len;
 extern int cgit_max_repodesc_len;
@@ -161,6 +179,10 @@ extern int chk_non_negative(int result, char *msg);
 
 extern int hextoint(char c);
 extern char *trim_end(const char *str, char c);
+
+extern void cgit_add_ref(struct reflist *list, struct refinfo *ref);
+extern int cgit_refs_cb(const char *refname, const unsigned char *sha1,
+			int flags, void *cb_data);
 
 extern void *cgit_free_commitinfo(struct commitinfo *info);
 
@@ -214,6 +236,8 @@ extern void cgit_log_link(char *name, char *title, char *class, char *head,
 			  char *rev, char *path, int ofs);
 extern void cgit_commit_link(char *name, char *title, char *class, char *head,
 			     char *rev);
+extern void cgit_refs_link(char *name, char *title, char *class, char *head,
+			   char *rev, char *path);
 extern void cgit_snapshot_link(char *name, char *title, char *class,
 			       char *head, char *rev, char *archivename);
 extern void cgit_diff_link(char *name, char *title, char *class, char *head,
@@ -230,6 +254,8 @@ extern void cgit_print_pageheader(char *title, int show_search);
 extern void cgit_print_snapshot_start(const char *mimetype,
 				      const char *filename,
 				      struct cacheitem *item);
+extern void cgit_print_branches(int maxcount);
+extern void cgit_print_tags(int maxcount);
 
 extern void cgit_print_repolist(struct cacheitem *item);
 extern void cgit_print_summary();
@@ -237,6 +263,7 @@ extern void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *
 extern void cgit_print_blob(struct cacheitem *item, const char *hex, char *path);
 extern void cgit_print_tree(const char *rev, char *path);
 extern void cgit_print_commit(char *hex);
+extern void cgit_print_refs();
 extern void cgit_print_tag(char *revname);
 extern void cgit_print_diff(const char *new_hex, const char *old_hex, const char *prefix);
 extern void cgit_print_snapshot(struct cacheitem *item, const char *head,

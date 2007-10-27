@@ -38,6 +38,8 @@ int cgit_cache_dynamic_ttl     =  5;
 int cgit_cache_static_ttl      = -1;
 int cgit_cache_max_create_time =  5;
 int cgit_summary_log           =  0;
+int cgit_summary_tags          =  0;
+int cgit_summary_branches      =  0;
 int cgit_renamelimit           = -1;
 
 int cgit_max_msg_len = 60;
@@ -64,7 +66,7 @@ int htmlfd = 0;
 int cgit_get_cmd_index(const char *cmd)
 {
 	static char *cmds[] = {"log", "commit", "diff", "tree", "blob",
-			       "snapshot", "tag", NULL};
+			       "snapshot", "tag", "refs", NULL};
 	int i;
 
 	for(i = 0; cmds[i]; i++)
@@ -181,6 +183,10 @@ void cgit_global_config_cb(const char *name, const char *value)
 		cgit_max_commit_count = atoi(value);
 	else if (!strcmp(name, "summary-log"))
 		cgit_summary_log = atoi(value);
+	else if (!strcmp(name, "summary-branches"))
+		cgit_summary_branches = atoi(value);
+	else if (!strcmp(name, "summary-tags"))
+		cgit_summary_tags = atoi(value);
 	else if (!strcmp(name, "agefile"))
 		cgit_agefile = xstrdup(value);
 	else if (!strcmp(name, "renamelimit"))
@@ -289,6 +295,47 @@ char *trim_end(const char *str, char c)
 	s = xstrdup(t);
 	t[len] = c;
 	return s;
+}
+
+void cgit_add_ref(struct reflist *list, struct refinfo *ref)
+{
+	size_t size;
+
+	if (list->count >= list->alloc) {
+		list->alloc += (list->alloc ? list->alloc : 4);
+		size = list->alloc * sizeof(struct refinfo *);
+		list->refs = xrealloc(list->refs, size);
+	}
+	list->refs[list->count++] = ref;
+}
+
+struct refinfo *cgit_mk_refinfo(const char *refname, const unsigned char *sha1)
+{
+	struct refinfo *ref;
+
+	ref = xmalloc(sizeof (struct refinfo));
+	ref->refname = xstrdup(refname);
+	ref->object = parse_object(sha1);
+	switch (ref->object->type) {
+	case OBJ_TAG:
+		ref->tag = cgit_parse_tag((struct tag *)ref->object);
+		break;
+	case OBJ_COMMIT:
+		ref->commit = cgit_parse_commit((struct commit *)ref->object);
+		break;
+	}
+	return ref;
+}
+
+int cgit_refs_cb(const char *refname, const unsigned char *sha1, int flags,
+		  void *cb_data)
+{
+	struct reflist *list = (struct reflist *)cb_data;
+	struct refinfo *info = cgit_mk_refinfo(refname, sha1);
+
+	if (info)
+		cgit_add_ref(list, info);
+	return 0;
 }
 
 void cgit_diff_tree_cb(struct diff_queue_struct *q,
