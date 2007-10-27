@@ -166,7 +166,7 @@ static int cgit_print_archive_cb(const char *refname, const unsigned char *sha1,
 	return 0;
 }
 
-static void cgit_print_branches(int maxcount)
+void cgit_print_branches(int maxcount)
 {
 	struct reflist list;
 	int i;
@@ -192,7 +192,7 @@ static void cgit_print_branches(int maxcount)
 		cgit_print_branch(list.refs[i]);
 }
 
-static void cgit_print_tags(int maxcount)
+void cgit_print_tags(int maxcount)
 {
 	struct reflist list;
 	int i;

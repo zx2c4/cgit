@@ -251,6 +251,8 @@ extern void cgit_print_pageheader(char *title, int show_search);
 extern void cgit_print_snapshot_start(const char *mimetype,
 				      const char *filename,
 				      struct cacheitem *item);
+extern void cgit_print_branches(int maxcount);
+extern void cgit_print_tags(int maxcount);
 
 extern void cgit_print_repolist(struct cacheitem *item);
 extern void cgit_print_summary();
