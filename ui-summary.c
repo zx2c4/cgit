@@ -48,35 +48,23 @@ static int cmp_tag_age(const void *a, const void *b)
 	return cmp_age(r1->tag->tagger_date, r2->tag->tagger_date);
 }
 
-static void cgit_print_branch(struct refinfo *ref)
+static int print_branch(struct refinfo *ref)
 {
-	struct commit *commit;
-	struct commitinfo *info;
+	struct commitinfo *info = ref->commit;
 	char *name = (char *)ref->refname;
 
-	commit = lookup_commit(ref->object->sha1);
-	// object is not really parsed at this point, because of some fallout
-	// from previous calls to git functions in cgit_print_log()
-	commit->object.parsed = 0;
-	if (commit && !parse_commit(commit)){
-		info = cgit_parse_commit(commit);
-		html("<tr><td>");
-		cgit_log_link(name, NULL, NULL, name, NULL, NULL, 0);
-		html("</td><td>");
-		cgit_print_age(commit->date, -1, NULL);
-		html("</td><td>");
-		html_txt(info->author);
-		html("</td><td>");
-		cgit_commit_link(info->subject, NULL, NULL, name, NULL);
-		html("</td></tr>\n");
-		cgit_free_commitinfo(info);
-	} else {
-		html("<tr><td>");
-		html_txt(name);
-		html("</td><td colspan='3'>");
-		htmlf("*** bad ref %s ***", sha1_to_hex(ref->object->sha1));
-		html("</td></tr>\n");
-	}
+	if (!info)
+		return 1;
+	html("<tr><td>");
+	cgit_log_link(name, NULL, NULL, name, NULL, NULL, 0);
+	html("</td><td>");
+	cgit_print_age(info->commit->date, -1, NULL);
+	html("</td><td>");
+	html_txt(info->author);
+	html("</td><td>");
+	cgit_commit_link(info->subject, NULL, NULL, name, NULL);
+	html("</td></tr>\n");
+	return 0;
 }
 
 static void print_tag_header()
@@ -95,9 +83,10 @@ static int print_tag(struct refinfo *ref)
 	char *url, *name = (char *)ref->refname;
 
 	if (ref->object->type == OBJ_TAG) {
-		tag = lookup_tag(ref->object->sha1);
-		if (!tag || parse_tag(tag) || !(info = cgit_parse_tag(tag)))
-			return 2;
+		tag = (struct tag *)ref->object;
+		info = ref->tag;
+		if (!tag || !info)
+			return 1;
 		html("<tr><td>");
 		url = cgit_pageurl(cgit_query_repo, "tag",
 				   fmt("id=%s", name));
@@ -196,7 +185,7 @@ void cgit_print_branches(int maxcount)
 	}
 
 	for(i=0; i<maxcount; i++)
-		cgit_print_branch(list.refs[i]);
+		print_branch(list.refs[i]);
 
 	if (maxcount < list.count)
 		print_refs_link("heads");
