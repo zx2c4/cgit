@@ -272,6 +272,9 @@ void cgit_object_link(struct object *obj)
 	} else if (obj->type == OBJ_TREE) {
 		page = "tree";
 		arg = "id";
+	} else if (obj->type == OBJ_TAG) {
+		page = "tag";
+		arg = "id";
 	} else {
 		page = "blob";
 		arg = "id";
