@@ -204,6 +204,7 @@ extern void html_txt(char *txt);
 extern void html_ntxt(int len, char *txt);
 extern void html_attr(char *txt);
 extern void html_hidden(char *name, char *value);
+extern void html_option(char *value, char *text, char *selected_value);
 extern void html_link_open(char *url, char *title, char *class);
 extern void html_link_close(void);
 extern void html_filemode(unsigned short mode);

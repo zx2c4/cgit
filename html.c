@@ -126,6 +126,18 @@ void html_hidden(char *name, char *value)
 	html("'/>");
 }
 
+void html_option(char *value, char *text, char *selected_value)
+{
+	html("<option value='");
+	html_attr(value);
+	html("'");
+	if (selected_value && !strcmp(selected_value, value))
+		html(" selected");
+	html(">");
+	html_txt(text);
+	html("</option>\n");
+}
+
 void html_link_open(char *url, char *title, char *class)
 {
 	html("<a href='");
