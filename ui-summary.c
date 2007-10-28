@@ -58,11 +58,17 @@ static int print_branch(struct refinfo *ref)
 	html("<tr><td>");
 	cgit_log_link(name, NULL, NULL, name, NULL, NULL, 0);
 	html("</td><td>");
-	cgit_print_age(info->commit->date, -1, NULL);
-	html("</td><td>");
-	html_txt(info->author);
-	html("</td><td>");
-	cgit_commit_link(info->subject, NULL, NULL, name, NULL);
+
+	if (ref->object->type == OBJ_COMMIT) {
+		cgit_print_age(info->commit->date, -1, NULL);
+		html("</td><td>");
+		html_txt(info->author);
+		html("</td><td>");
+		cgit_commit_link(info->subject, NULL, NULL, name, NULL);
+	} else {
+		html("</td><td></td><td>");
+		cgit_object_link(ref->object);
+	}
 	html("</td></tr>\n");
 	return 0;
 }
