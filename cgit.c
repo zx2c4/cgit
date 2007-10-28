@@ -94,7 +94,7 @@ static void cgit_print_repo_page(struct cacheitem *item)
 	switch(cgit_cmd) {
 	case CMD_LOG:
 		cgit_print_log(cgit_query_sha1, cgit_query_ofs,
-			       cgit_max_commit_count, cgit_query_search,
+			       cgit_max_commit_count, cgit_query_grep, cgit_query_search,
 			       cgit_query_path, 1);
 		break;
 	case CMD_TREE:

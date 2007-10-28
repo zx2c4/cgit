@@ -144,13 +144,30 @@ td#search form {
 	padding: 0px;
 }
 
-td#search input {
+td#search select {
 	font-size: 9pt;
 	padding: 0px;
-	width: 10em;
 	border: solid 1px #333;
 	color: #333;
 	background-color: #fff;
+}
+
+td#search input {
+	font-size: 9pt;
+	padding: 0px;
+}
+
+td#search input.txt {
+	width: 8em;
+	border: solid 1px #333;
+	color: #333;
+	background-color: #fff;
+}
+
+td#search input.btn {
+	border: solid 1px #333;
+	color: #333;
+	background-color: #ccc;
 }
 
 div#summary {

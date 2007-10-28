@@ -417,9 +417,14 @@ void cgit_print_pageheader(char *title, int show_search)
 			html_hidden("id", cgit_query_sha1);
 		if (cgit_query_sha2)
 			html_hidden("id2", cgit_query_sha2);
-		html("<input type='text' name='q' value='");
+		html("<select name='qt'>");
+		html_option("grep", "log msg", cgit_query_grep);
+		html_option("author", "author", cgit_query_grep);
+		html_option("committer", "committer", cgit_query_grep);
+		html("</select>");
+		html("<input class='txt' type='text' name='q' value='");
 		html_attr(cgit_query_search);
-		html("'/></form>");
+		html("'/><input class='btn' type='submit' value='...'/></form>");
 	}
 	html("</td></tr>");
 	html("<tr><td id='content' colspan='2'>");

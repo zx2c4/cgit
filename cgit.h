@@ -158,6 +158,7 @@ extern char *cgit_querystring;
 extern char *cgit_query_repo;
 extern char *cgit_query_page;
 extern char *cgit_query_search;
+extern char *cgit_query_grep;
 extern char *cgit_query_head;
 extern char *cgit_query_sha1;
 extern char *cgit_query_sha2;
@@ -260,7 +261,8 @@ extern void cgit_print_tags(int maxcount);
 
 extern void cgit_print_repolist(struct cacheitem *item);
 extern void cgit_print_summary();
-extern void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *path, int pager);
+extern void cgit_print_log(const char *tip, int ofs, int cnt, char *grep,
+			   char *pattern, char *path, int pager);
 extern void cgit_print_blob(struct cacheitem *item, const char *hex, char *path);
 extern void cgit_print_tree(const char *rev, char *path);
 extern void cgit_print_commit(char *hex);

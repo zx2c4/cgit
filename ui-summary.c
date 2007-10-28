@@ -236,7 +236,7 @@ void cgit_print_summary()
 		html_include(cgit_repo->readme);
 	html("</div>");
 	if (cgit_summary_log > 0)
-		cgit_print_log(cgit_query_head, 0, cgit_summary_log, NULL, NULL, 0);
+		cgit_print_log(cgit_query_head, 0, cgit_summary_log, NULL, NULL, NULL, 0);
 	html("<table class='list nowrap'>");
 	if (cgit_summary_log > 0)
 		html("<tr class='nohover'><td colspan='4'>&nbsp;</td></tr>");

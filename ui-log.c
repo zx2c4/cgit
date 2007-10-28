@@ -51,7 +51,7 @@ void print_commit(struct commit *commit)
 }
 
 
-void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *path, int pager)
+void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern, char *path, int pager)
 {
 	struct rev_info rev;
 	struct commit *commit;
@@ -62,8 +62,11 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *path, i
 	if (!tip)
 		argv[1] = cgit_query_head;
 
-	if (grep)
-		argv[argc++] = fmt("--grep=%s", grep);
+	if (grep && pattern && (!strcmp(grep, "grep") ||
+				!strcmp(grep, "author") ||
+				!strcmp(grep, "committer")))
+		argv[argc++] = fmt("--%s=%s", grep, pattern);
+
 	if (path) {
 		argv[argc++] = "--";
 		argv[argc++] = path;

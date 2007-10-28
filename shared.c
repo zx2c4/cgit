@@ -54,6 +54,7 @@ char *cgit_query_repo   = NULL;
 char *cgit_query_page   = NULL;
 char *cgit_query_head   = NULL;
 char *cgit_query_search = NULL;
+char *cgit_query_grep   = NULL;
 char *cgit_query_sha1   = NULL;
 char *cgit_query_sha2   = NULL;
 char *cgit_query_path   = NULL;
@@ -232,6 +233,8 @@ void cgit_querystring_cb(const char *name, const char *value)
 		cgit_cmd = cgit_get_cmd_index(value);
 	} else if (!strcmp(name, "url")) {
 		cgit_parse_url(value);
+	} else if (!strcmp(name, "qt")) {
+		cgit_query_grep = xstrdup(value);
 	} else if (!strcmp(name, "q")) {
 		cgit_query_search = xstrdup(value);
 	} else if (!strcmp(name, "h")) {
