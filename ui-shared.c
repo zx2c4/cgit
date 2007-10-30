@@ -362,76 +362,148 @@ void cgit_print_docstart(char *title, struct cacheitem *item)
 
 void cgit_print_docend()
 {
-	html("</td></tr></table>");
-	html("</body>\n</html>\n");
+	html("</td>\n</tr>\n<table>\n</body>\n</html>\n");
+}
+
+int print_branch_option(const char *refname, const unsigned char *sha1,
+			int flags, void *cb_data)
+{
+	char *name = (char *)refname;
+	html_option(name, name, cgit_query_head);
+	return 0;
+}
+
+int print_archive_ref(const char *refname, const unsigned char *sha1,
+		       int flags, void *cb_data)
+{
+	struct tag *tag;
+	struct taginfo *info;
+	struct object *obj;
+	char buf[256], *url;
+	unsigned char fileid[20];
+	int *header = (int *)cb_data;
+
+	if (prefixcmp(refname, "refs/archives"))
+		return 0;
+	strncpy(buf, refname+14, sizeof(buf));
+	obj = parse_object(sha1);
+	if (!obj)
+		return 1;
+	if (obj->type == OBJ_TAG) {
+		tag = lookup_tag(sha1);
+		if (!tag || parse_tag(tag) || !(info = cgit_parse_tag(tag)))
+			return 0;
+		hashcpy(fileid, tag->tagged->sha1);
+	} else if (obj->type != OBJ_BLOB) {
+		return 0;
+	} else {
+		hashcpy(fileid, sha1);
+	}
+	if (!*header) {
+		html("<p><h1>download</h1>");
+		*header = 1;
+	}
+	url = cgit_pageurl(cgit_query_repo, "blob",
+			   fmt("id=%s&amp;path=%s", sha1_to_hex(fileid),
+			       buf));
+	html_link_open(url, NULL, "menu");
+	html_txt(strlpart(buf, 20));
+	html_link_close();
+	return 0;
+}
+
+void add_hidden_formfields(int incl_head, int incl_search)
+{
+	if (!cgit_virtual_root) {
+		if (cgit_query_repo)
+			html_hidden("r", cgit_query_repo);
+		if (cgit_query_page)
+			html_hidden("p", cgit_query_page);
+	}
+
+	if (incl_head && strcmp(cgit_query_head, cgit_repo->defbranch))
+		html_hidden("h", cgit_query_head);
+
+	if (cgit_query_sha1)
+		html_hidden("id", cgit_query_sha1);
+	if (cgit_query_sha2)
+		html_hidden("id2", cgit_query_sha2);
+
+	if (incl_search) {
+		if (cgit_query_grep)
+			html_hidden("qt", cgit_query_grep);
+		if (cgit_query_search)
+			html_hidden("q", cgit_query_search);
+	}
 }
 
 void cgit_print_pageheader(char *title, int show_search)
 {
-	html("<table id='layout'>");
-	html("<tr><td id='header'><a href='");
-	html_attr(cgit_rooturl());
-	html("'>");
-	html_txt(cgit_root_title);
-	html("</a></td><td id='logo'>");
+	static const char *default_info = "This is cgit, a fast webinterface for git repositories";
+	int header = 0;
+
+	html("<div id='sidebar'>\n");
 	html("<a href='");
-	html_attr(cgit_logo_link);
-	htmlf("'><img src='%s' alt='logo'/></a>", cgit_logo);
-	html("</td></tr>");
-	html("<tr><td id='crumb'>");
+	html_attr(cgit_rooturl());
+	htmlf("'><div id='logo'><img src='%s' alt='cgit'/></div></a>\n",
+	      cgit_logo);
+	html("<div class='infobox'>");
 	if (cgit_query_repo) {
-		html_txt(cgit_repo->name);
-		html(" (");
-		html_txt(cgit_query_head);
-		html(") : &nbsp;");
-		reporevlink(NULL, "summary", NULL, NULL, cgit_query_head,
+		html("<h1>");
+		html_txt(strrpart(cgit_repo->name, 20));
+		html("</h1>\n");
+		html_txt(cgit_repo->desc);
+		if (cgit_repo->owner) {
+			html("<p>\n<h1>owner</h1>\n");
+			html_txt(cgit_repo->owner);
+		}
+		html("<p>\n<h1>navigate</h1>\n");
+		reporevlink(NULL, "summary", NULL, "menu", cgit_query_head,
 			    NULL, NULL);
-		html(" ");
-		cgit_log_link("log", NULL, NULL, cgit_query_head,
+		cgit_log_link("log", NULL, "menu", cgit_query_head,
 			      cgit_query_sha1, cgit_query_path, 0);
-		html(" ");
-		cgit_tree_link("tree", NULL, NULL, cgit_query_head,
+		cgit_tree_link("tree", NULL, "menu", cgit_query_head,
 			       cgit_query_sha1, NULL);
-		html(" ");
-		cgit_commit_link("commit", NULL, NULL, cgit_query_head,
+		cgit_commit_link("commit", NULL, "menu", cgit_query_head,
 			      cgit_query_sha1);
-		html(" ");
-		cgit_diff_link("diff", NULL, NULL, cgit_query_head,
+		cgit_diff_link("diff", NULL, "menu", cgit_query_head,
 			       cgit_query_sha1, cgit_query_sha2,
 			       cgit_query_path);
-	} else {
-		html_txt("Index of repositories");
-	}
-	html("</td>");
-	html("<td id='search'>");
-	if (show_search) {
+
+		for_each_ref(print_archive_ref, &header);
+
+		html("<p>\n<h1>branch</h1>\n");
+		html("<form method='get' action=''>\n");
+		add_hidden_formfields(0, 1);
+		html("<select name='h' onchange='this.form.submit();'>\n");
+		for_each_branch_ref(print_branch_option, cgit_query_head);
+		html("</select>\n");
+		html("</form>\n");
+
+		html("<p>\n<h1>search</h1>\n");
 		html("<form method='get' action='");
-		html_attr(cgit_currurl());
-		html("'>");
-		if (!cgit_virtual_root) {
-			if (cgit_query_repo)
-				html_hidden("r", cgit_query_repo);
-			if (cgit_query_page)
-				html_hidden("p", cgit_query_page);
-		}
-		if (cgit_query_head)
-			html_hidden("h", cgit_query_head);
-		if (cgit_query_sha1)
-			html_hidden("id", cgit_query_sha1);
-		if (cgit_query_sha2)
-			html_hidden("id2", cgit_query_sha2);
-		html("<select name='qt'>");
+		html_attr(cgit_pageurl(cgit_query_repo, "log", NULL));
+		html("'>\n");
+		add_hidden_formfields(1, 0);
+		html("<select name='qt'>\n");
 		html_option("grep", "log msg", cgit_query_grep);
 		html_option("author", "author", cgit_query_grep);
 		html_option("committer", "committer", cgit_query_grep);
-		html("</select>");
+		html("</select>\n");
 		html("<input class='txt' type='text' name='q' value='");
 		html_attr(cgit_query_search);
-		html("'/><input class='btn' type='submit' value='...'/></form>");
+		html("'/>\n");
+		html("</form>\n");
+	} else {
+		if (!cgit_index_info || html_include(cgit_index_info))
+			html(default_info);
 	}
-	html("</td></tr>");
-	html("<tr><td id='content' colspan='2'>");
+
+	html("</div>\n");
+
+	html("</div>\n<table class='grid'><tr><td id='content'>\n");
 }
+
 
 void cgit_print_snapshot_start(const char *mimetype, const char *filename,
 			       struct cacheitem *item)

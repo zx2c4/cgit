@@ -1,13 +1,14 @@
-body {
-	font-family: arial, sans-serif;
-	font-size: 11pt;
-	color: black;
-	background: white;
-}
-
 body, table {
 	padding: 0em;
 	margin: 0em;
+}
+
+body {
+	font-family: sans;
+	font-size: 10pt;
+	color: #333;
+	background: white;
+	padding-left: 4px;
 }
 
 table {
@@ -35,12 +36,13 @@ h4 {
 }
 
 a {
-	color: blue;
+	color: #600;
 	text-decoration: none;
 }
 
 a:hover {
-	text-decoration: underline;
+	background-color: #ddd;
+	text-decoration: none;
 }
 
 table.list {
@@ -53,7 +55,7 @@ table.list tr {
 }
 
 table.list tr:hover {
-	background: #eee;
+	background: #f8f8f8;
 }
 
 table.list tr.nohover:hover {
@@ -76,98 +78,78 @@ img {
 	border: none;
 }
 
-table#layout {
-	width: 100%;
-	border-collapse: collapse;
+div#sidebar {
+	vertical-align: top;
+	width: 162px;
+	padding: 0px 0px 0px 0px;
+	margin: 4px;
+	float: left;
+}
+
+div#logo {
+	margin: 0px;
+	padding: 4px 0px 4px 0px;
+	text-align: center;
+	background-color: #ccc;
+	border-top: solid 1px #eee;
+	border-left: solid 1px #eee;
+	border-right: solid 1px #aaa;
+	border-bottom: solid 1px #aaa;
+}
+
+div#sidebar div.infobox {
+	margin: 0px 0px 0pax 0px;
+	padding: 0.5em;
+	text-align: left;
+	background-color: #ccc;
+	border-top: solid 1px #eee;
+	border-left: solid 1px #eee;
+	border-right: solid 1px #aaa;
+	border-bottom: solid 1px #aaa;
+}
+
+div#sidebar div.infobox h1 {
+	font-size: 11pt;
+	font-weight: bold;
 	margin: 0px;
 }
 
-td#header, td#logo {
-	color: #666;
-	background-color: #ddd;
-	border-bottom: solid 1px #000;
-}
-
-td#header {
-	font-size: 150%;
-	font-weight: bold;
-	padding: 0.2em 0.5em;
-	vertical-align: text-bottom;
-}
-
-td#header a {
-	color: #666;
-}
-
-td#header a:hover {
-	text-decoration: underline;
-}
-
-td#logo {
-	text-align: right;
-	vertical-align: middle;
-	padding-right: 0.5em;
-}
-
-td#crumb, td#search {
-	color: #ccc;
-	border-top: solid 3px #555;
-	background-color: #666;
-	border-bottom: solid 1px #333;
-	padding: 2px 1em;
-}
-
-td#crumb {
-	font-weight: bold;
-}
-
-td#crumb a {
-	color: #ccc;
-	background-color: #666;
-	padding: 0em 0.5em 0em 0.5em;
-}
-
-td#crumb a:hover {
-	color: #666;
+div#sidebar div.infobox a.menu {
+	display: block;
 	background-color: #ccc;
+	padding: 0.1em 0.5em;
 	text-decoration: none;
 }
 
-td#search {
-	text-align: right;
-	vertical-align: middle;
-	padding-right: 0.5em;
+div#sidebar div.infobox a.menu:hover {
+	background-color: #bbb;
+	text-decoration: none;
 }
 
-td#search form {
+div#sidebar div.infobox select {
+	width: 100%;
+	border: solid 1px #aaa;
+	background-color: #bbb;
+	margin: 2px 0px 0px 0px;
+	padding: 0px;
+}
+
+div#sidebar div.infobox input.txt {
+	width: 100%;
+	border: solid 1px #aaa;
+	background-color: #bbb;
+	margin: 2px 0px 0px 0px;
+	padding: 0;
+}
+
+table#grid {
 	margin: 0px;
-	padding: 0px;
 }
 
-td#search select {
-	font-size: 9pt;
-	padding: 0px;
-	border: solid 1px #333;
-	color: #333;
-	background-color: #fff;
-}
-
-td#search input {
-	font-size: 9pt;
-	padding: 0px;
-}
-
-td#search input.txt {
-	width: 8em;
-	border: solid 1px #333;
-	color: #333;
-	background-color: #fff;
-}
-
-td#search input.btn {
-	border: solid 1px #333;
-	color: #333;
-	background-color: #ccc;
+td#content {
+	vertical-align: top;
+	padding: 1em 2em 1em 1em;
+	border: none;
 }
 
 div#summary {
@@ -185,10 +167,6 @@ table#downloads {
 
 table#downloads th {
 	background-color: #ccc;
-}
-
-td#content {
-	padding: 1em 0.5em;
 }
 
 div#blob {
@@ -284,7 +262,6 @@ div.diffstat-header {
 
 table.diffstat {
 	border-collapse: collapse;
-	width: 100%;
 	border: solid 1px #aaa;
 	background-color: #eee;
 }
@@ -325,7 +302,7 @@ table.diffstat td.upd a {
 }
 
 table.diffstat td.graph {
-	width: 75%;
+	width: 500px;
 	vertical-align: middle;
 }
 

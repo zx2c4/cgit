@@ -85,8 +85,13 @@
 #root-title=Git repository browser
 
 
-## If specified, the file at this path will be included as HTML in the index
-## of repositories
+## If specified, the file at this path will be included as HTML in the
+## sidebar on the repository index page
+#index-info=
+
+
+## If specified, the file at this path will be included as HTML above
+## the repository index
 #index-header=
 
 
