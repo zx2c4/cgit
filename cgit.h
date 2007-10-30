@@ -124,6 +124,7 @@ extern char *cgit_root_title;
 extern char *cgit_css;
 extern char *cgit_logo;
 extern char *cgit_index_header;
+extern char *cgit_index_info;
 extern char *cgit_logo_link;
 extern char *cgit_module_link;
 extern char *cgit_agefile;

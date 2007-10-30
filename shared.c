@@ -18,6 +18,7 @@ char *cgit_root_title   = "Git repository browser";
 char *cgit_css          = "/cgit.css";
 char *cgit_logo         = "/git-logo.png";
 char *cgit_index_header = NULL;
+char *cgit_index_info   = NULL;
 char *cgit_logo_link    = "http://www.kernel.org/pub/software/scm/git/docs/";
 char *cgit_module_link  = "./?repo=%s&page=commit&id=%s";
 char *cgit_agefile      = "info/web/last-modified";
@@ -150,6 +151,8 @@ void cgit_global_config_cb(const char *name, const char *value)
 		cgit_logo = xstrdup(value);
 	else if (!strcmp(name, "index-header"))
 		cgit_index_header = xstrdup(value);
+	else if (!strcmp(name, "index-info"))
+		cgit_index_info = xstrdup(value);
 	else if (!strcmp(name, "logo-link"))
 		cgit_logo_link = xstrdup(value);
 	else if (!strcmp(name, "module-link"))
