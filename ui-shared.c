@@ -487,9 +487,13 @@ void cgit_print_pageheader(char *title, int show_search)
 		html("<p>\n<h1>branch</h1>\n");
 		html("<form method='get' action=''>\n");
 		add_hidden_formfields(0, 1, cgit_query_page);
+		html("<table class='grid'><tr><td id='branch-dropdown-cell'>");
 		html("<select name='h' onchange='this.form.submit();'>\n");
 		for_each_branch_ref(print_branch_option, cgit_query_head);
 		html("</select>\n");
+		html("</td><td>");
+		html("<input type='submit' id='switch-btn' value='..'>\n");
+		html("</td></tr></table>");
 		html("</form>\n");
 
 		html("<p>\n<h1>search</h1>\n");

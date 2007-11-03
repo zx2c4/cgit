@@ -134,6 +134,18 @@ div#sidebar div.infobox select {
 	padding: 0px;
 }
 
+td#branch-dropdown-cell {
+	width: 99%;
+}
+
+input#switch-btn {
+	width: 20px;
+	border: solid 1px #aaa;
+	background-color: #bbb;
+	margin: 2px 0px 0px 0px;
+	padding: 0px;
+}
+
 div#sidebar div.infobox input.txt {
 	width: 100%;
 	border: solid 1px #aaa;
