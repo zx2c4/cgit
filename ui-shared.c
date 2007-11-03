@@ -473,8 +473,8 @@ void cgit_print_pageheader(char *title, int show_search)
 		html("<p>\n<h1>navigate</h1>\n");
 		reporevlink(NULL, "summary", NULL, "menu", cgit_query_head,
 			    NULL, NULL);
-		cgit_log_link("log", NULL, "menu", cgit_query_head,
-			      cgit_query_sha1, NULL, 0, NULL, NULL);
+		cgit_log_link("log", NULL, "menu", cgit_query_head, NULL, NULL,
+			      0, NULL, NULL);
 		cgit_tree_link("tree", NULL, "menu", cgit_query_head,
 			       cgit_query_sha1, NULL);
 		cgit_commit_link("commit", NULL, "menu", cgit_query_head,
