@@ -118,13 +118,15 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 		if (ofs > 0) {
 			cgit_log_link("[prev]", NULL, NULL, cgit_query_head,
 				      cgit_query_sha1, cgit_query_path,
-				      ofs - cnt);
+				      ofs - cnt, cgit_query_grep,
+				      cgit_query_search);
 			html("&nbsp;");
 		}
 		if ((commit = get_revision(&rev)) != NULL) {
 			cgit_log_link("[next]", NULL, NULL, cgit_query_head,
 				      cgit_query_sha1, cgit_query_path,
-				      ofs + cnt);
+				      ofs + cnt, cgit_query_grep,
+				      cgit_query_search);
 		}
 		html("</div>");
 	}

@@ -100,7 +100,7 @@ static int ls_item(const unsigned char *sha1, const char *base, int baselen,
 
 	html("<td>");
 	cgit_log_link("log", NULL, "button", cgit_query_head, curr_rev,
-		      fullpath, 0);
+		      fullpath, 0, NULL, NULL);
 	html("</td></tr>\n");
 	free(name);
 	return 0;

@@ -194,7 +194,7 @@ void cgit_tree_link(char *name, char *title, char *class, char *head,
 }
 
 void cgit_log_link(char *name, char *title, char *class, char *head,
-		   char *rev, char *path, int ofs)
+		   char *rev, char *path, int ofs, char *grep, char *pattern)
 {
 	char *delim;
 
@@ -204,6 +204,15 @@ void cgit_log_link(char *name, char *title, char *class, char *head,
 		html("id=");
 		html_attr(rev);
 		delim = "&";
+	}
+	if (grep && pattern) {
+		html(delim);
+		html("qt=");
+		html_attr(grep);
+		delim = "&";
+		html(delim);
+		html("q=");
+		html_attr(pattern);
 	}
 	if (ofs > 0) {
 		html(delim);
@@ -461,7 +470,7 @@ void cgit_print_pageheader(char *title, int show_search)
 		reporevlink(NULL, "summary", NULL, "menu", cgit_query_head,
 			    NULL, NULL);
 		cgit_log_link("log", NULL, "menu", cgit_query_head,
-			      cgit_query_sha1, cgit_query_path, 0);
+			      cgit_query_sha1, cgit_query_path, 0, NULL, NULL);
 		cgit_tree_link("tree", NULL, "menu", cgit_query_head,
 			       cgit_query_sha1, NULL);
 		cgit_commit_link("commit", NULL, "menu", cgit_query_head,
