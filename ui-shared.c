@@ -60,19 +60,21 @@ char *cgit_repourl(const char *reponame)
 char *cgit_fileurl(const char *reponame, const char *pagename,
 		   const char *filename, const char *query)
 {
+	char *tmp;
+	char *delim;
+
 	if (cgit_virtual_root) {
-		if (query)
-			return fmt("%s/%s/%s/%s?%s", cgit_virtual_root, reponame,
-				   pagename, filename?filename:"", query);
-		else
-			return fmt("%s/%s/%s/", cgit_virtual_root, reponame,
-				   pagename);
+		tmp = fmt("%s/%s/%s/%s", cgit_virtual_root, reponame,
+			  pagename, (filename ? filename:""));
+		delim = "?";
 	} else {
-		if (query)
-			return fmt("?r=%s&amp;p=%s&amp;%s", reponame, pagename, query);
-		else
-			return fmt("?r=%s&amp;p=%s", reponame, pagename);
+		tmp = fmt("?url=%s/%s/%s", reponame, pagename,
+			  (filename ? filename : ""));
+		delim = "&";
 	}
+	if (query)
+		tmp = fmt("%s%s%s", tmp, delim, query);
+	return tmp;
 }
 
 char *cgit_pageurl(const char *reponame, const char *pagename,
@@ -421,13 +423,15 @@ int print_archive_ref(const char *refname, const unsigned char *sha1,
 	return 0;
 }
 
-void add_hidden_formfields(int incl_head, int incl_search)
+void add_hidden_formfields(int incl_head, int incl_search, char *page)
 {
+	char *url;
+
 	if (!cgit_virtual_root) {
-		if (cgit_query_repo)
-			html_hidden("r", cgit_query_repo);
-		if (cgit_query_page)
-			html_hidden("p", cgit_query_page);
+		url = fmt("%s/%s", cgit_query_repo, page);
+		if (cgit_query_path)
+			url = fmt("%s/%s", url, cgit_query_path);
+		html_hidden("url", url);
 	}
 
 	if (incl_head && strcmp(cgit_query_head, cgit_repo->defbranch))
@@ -483,7 +487,7 @@ void cgit_print_pageheader(char *title, int show_search)
 
 		html("<p>\n<h1>branch</h1>\n");
 		html("<form method='get' action=''>\n");
-		add_hidden_formfields(0, 1);
+		add_hidden_formfields(0, 1, cgit_query_page);
 		html("<select name='h' onchange='this.form.submit();'>\n");
 		for_each_branch_ref(print_branch_option, cgit_query_head);
 		html("</select>\n");
@@ -491,9 +495,11 @@ void cgit_print_pageheader(char *title, int show_search)
 
 		html("<p>\n<h1>search</h1>\n");
 		html("<form method='get' action='");
-		html_attr(cgit_pageurl(cgit_query_repo, "log", NULL));
+		if (cgit_virtual_root)
+			html_attr(cgit_fileurl(cgit_query_repo, "log",
+					       cgit_query_path, NULL));
 		html("'>\n");
-		add_hidden_formfields(1, 0);
+		add_hidden_formfields(1, 0, "log");
 		html("<select name='qt'>\n");
 		html_option("grep", "log msg", cgit_query_grep);
 		html_option("author", "author", cgit_query_grep);
