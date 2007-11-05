@@ -16,6 +16,7 @@
 #include <log-tree.h>
 #include <archive.h>
 #include <xdiff/xdiff.h>
+#include <utf8.h>
 
 
 /*
@@ -47,6 +48,11 @@
 #define TM_YEAR  (TM_DAY * 365)
 #define TM_MONTH (TM_YEAR / 12.0)
 
+
+/*
+ * Default encoding
+ */
+#define PAGE_ENCODING "UTF-8"
 
 typedef void (*configfn)(const char *name, const char *value);
 typedef void (*filepair_fn)(struct diff_filepair *pair);
@@ -90,6 +96,7 @@ struct commitinfo {
 	unsigned long committer_date;
 	char *subject;
 	char *msg;
+	char *msg_encoding;
 };
 
 struct taginfo {

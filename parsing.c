@@ -199,6 +199,7 @@ struct commitinfo *cgit_parse_commit(struct commit *commit)
 	ret->committer_email = NULL;
 	ret->subject = NULL;
 	ret->msg = NULL;
+	ret->msg_encoding = NULL;
 
 	if (p == NULL)
 		return ret;
@@ -233,6 +234,14 @@ struct commitinfo *cgit_parse_commit(struct commit *commit)
 		p = strchr(t, '\n') + 1;
 	}
 
+	if (!strncmp(p, "encoding ", 9)) {
+		p += 9;
+		t = strchr(p, '\n') + 1;
+		ret->msg_encoding = substr(p, t);
+		p = t;
+	} else
+		ret->msg_encoding = xstrdup(PAGE_ENCODING);
+
 	while (*p && (*p != '\n'))
 		p = strchr(p, '\n') + 1; // skip unknown header fields
 
@@ -252,6 +261,22 @@ struct commitinfo *cgit_parse_commit(struct commit *commit)
 		ret->msg = xstrdup(p);
 	} else
 		ret->subject = substr(p, p+strlen(p));
+
+	if(strcmp(ret->msg_encoding, PAGE_ENCODING)) {
+		t = reencode_string(ret->subject, PAGE_ENCODING,
+				    ret->msg_encoding);
+		if(t) {
+			free(ret->subject);
+			ret->subject = t;
+		}
+
+		t = reencode_string(ret->msg, PAGE_ENCODING,
+				    ret->msg_encoding);
+		if(t) {
+			free(ret->msg);
+			ret->msg = t;
+		}
+	}
 
 	return ret;
 }

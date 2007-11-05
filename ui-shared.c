@@ -352,7 +352,7 @@ void cgit_print_age(time_t t, time_t max_relative, char *format)
 
 void cgit_print_docstart(char *title, struct cacheitem *item)
 {
-	html("Content-Type: text/html; charset=utf-8\n");
+	html("Content-Type: text/html; charset=" PAGE_ENCODING "\n");
 	htmlf("Last-Modified: %s\n", http_date(item->st.st_mtime));
 	htmlf("Expires: %s\n", http_date(item->st.st_mtime +
 					 ttl_seconds(item->ttl)));
