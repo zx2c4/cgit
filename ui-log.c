@@ -8,12 +8,18 @@
 
 #include "cgit.h"
 
-int files, lines;
+int files, add_lines, rem_lines;
 
 void count_lines(char *line, int size)
 {
-	if (size>0 && (line[0] == '+' || line[0] == '-'))
-		lines++;
+	if (size <= 0)
+		return;
+
+	if (line[0] == '+')
+		add_lines++;
+
+	else if (line[0] == '-')
+		rem_lines++;
 }
 
 void inspect_files(struct diff_filepair *pair)
@@ -35,13 +41,14 @@ void print_commit(struct commit *commit)
 			 sha1_to_hex(commit->object.sha1));
 	if (cgit_repo->enable_log_filecount) {
 		files = 0;
-		lines = 0;
+		add_lines = 0;
+		rem_lines = 0;
 		cgit_diff_commit(commit, inspect_files);
 		html("</td><td class='right'>");
 		htmlf("%d", files);
 		if (cgit_repo->enable_log_linecount) {
 			html("</td><td class='right'>");
-			htmlf("%d", lines);
+			htmlf("-%d/+%d", rem_lines, add_lines);
 		}
 	}
 	html("</td><td>");
@@ -88,9 +95,9 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 	     "<th class='left'>Message</th>");
 
 	if (cgit_repo->enable_log_filecount) {
-		html("<th class='left'>Files</th>");
+		html("<th class='right'>Files</th>");
 		if (cgit_repo->enable_log_linecount)
-			html("<th class='left'>Lines</th>");
+			html("<th class='right'>Lines</th>");
 	}
 	html("<th class='left'>Author</th></tr>\n");
 
