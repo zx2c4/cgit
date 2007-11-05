@@ -16,6 +16,7 @@
 #include <log-tree.h>
 #include <archive.h>
 #include <xdiff/xdiff.h>
+#include <utf8.h>
 
 
 /*

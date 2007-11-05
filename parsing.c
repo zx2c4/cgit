@@ -6,8 +6,6 @@
  *   (see COPYING for full license text)
  */
 
-#include <iconv.h>
-
 #include "cgit.h"
 
 int next_char(FILE *f)
@@ -178,62 +176,6 @@ void cgit_parse_url(const char *url)
 	}
 }
 
-static char *iconv_msg(char *msg, const char *encoding)
-{
-	iconv_t msg_conv = iconv_open(PAGE_ENCODING, encoding);
-	size_t inlen = strlen(msg);
-	char *in;
-	char *out;
-	size_t inleft;
-	size_t outleft;
-	char *buf;
-	char *ret;
-	size_t buf_sz;
-	int again, fail;
-
-	if(msg_conv == (iconv_t)-1)
-		return NULL;
-
-	buf_sz = inlen * 2;
-	buf = xmalloc(buf_sz+1);
-	do {
-		in = msg;
-		inleft = inlen;
-
-		out = buf;
-		outleft = buf_sz;
-		iconv(msg_conv, &in, &inleft, &out, &outleft);
-
-		if(inleft == 0) {
-			fail = 0;
-			again = 0;
-		} else if(inleft != 0 && errno == E2BIG) {
-			fail = 0;
-			again = 1;
-
-			buf_sz *= 2;
-			free(buf);
-			buf = xmalloc(buf_sz+1);
-		} else {
-			fail = 1;
-			again = 0;
-		}
-	} while(again && !fail);
-
-	if(fail) {
-		free(buf);
-		ret = NULL;
-	} else {
-		buf = xrealloc(buf, out - buf);
-		*out = 0;
-		ret = buf;
-	}
-
-	iconv_close(msg_conv);
-
-	return ret;
-}
-
 char *substr(const char *head, const char *tail)
 {
 	char *buf;
@@ -321,13 +263,15 @@ struct commitinfo *cgit_parse_commit(struct commit *commit)
 		ret->subject = substr(p, p+strlen(p));
 
 	if(strcmp(ret->msg_encoding, PAGE_ENCODING)) {
-		t = iconv_msg(ret->subject, ret->msg_encoding);
+		t = reencode_string(ret->subject, PAGE_ENCODING,
+				    ret->msg_encoding);
 		if(t) {
 			free(ret->subject);
 			ret->subject = t;
 		}
 
-		t = iconv_msg(ret->msg, ret->msg_encoding);
+		t = reencode_string(ret->msg, PAGE_ENCODING,
+				    ret->msg_encoding);
 		if(t) {
 			free(ret->msg);
 			ret->msg = t;
