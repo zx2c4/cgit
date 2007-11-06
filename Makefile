@@ -19,6 +19,11 @@ OBJECTS = shared.o cache.o parsing.o html.o ui-shared.o ui-repolist.o \
 	ui-snapshot.o ui-blob.o ui-tag.o ui-refs.o
 
 
+ifdef NEEDS_LIBICONV
+	EXTLIBS += -liconv
+endif
+
+
 .PHONY: all git install clean distclean force-version get-git
 
 all: cgit git
