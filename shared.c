@@ -157,9 +157,11 @@ void cgit_global_config_cb(const char *name, const char *value)
 		cgit_logo_link = xstrdup(value);
 	else if (!strcmp(name, "module-link"))
 		cgit_module_link = xstrdup(value);
-	else if (!strcmp(name, "virtual-root"))
+	else if (!strcmp(name, "virtual-root")) {
 		cgit_virtual_root = trim_end(value, '/');
-	else if (!strcmp(name, "nocache"))
+		if (!cgit_virtual_root && (!strcmp(value, "/")))
+			cgit_virtual_root = "";
+	} else if (!strcmp(name, "nocache"))
 		cgit_nocache = atoi(value);
 	else if (!strcmp(name, "snapshots"))
 		cgit_snapshots = cgit_parse_snapshots_mask(value);
