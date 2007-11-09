@@ -19,7 +19,7 @@ OBJECTS = shared.o cache.o parsing.o html.o ui-shared.o ui-repolist.o \
 	ui-snapshot.o ui-blob.o ui-tag.o ui-refs.o
 
 
-.PHONY: all git install clean distclean force-version get-git
+.PHONY: all git install clean distclean emptycache force-version get-git
 
 all: cgit git
 
@@ -53,12 +53,12 @@ install: all
 	mkdir -p $(DESTDIR)$(CGIT_SCRIPT_PATH)
 	install cgit $(DESTDIR)$(CGIT_SCRIPT_PATH)/$(CGIT_SCRIPT_NAME)
 	install cgit.css $(DESTDIR)$(CGIT_SCRIPT_PATH)/cgit.css
-	rm -rf $(DESTDIR)$(CACHE_ROOT)/*
+	install cgit.png $(DESTDIR)$(CGIT_SCRIPT_PATH)/cgit.png
 
 uninstall:
 	rm -f $(CGIT_SCRIPT_PATH)/$(CGIT_SCRIPT_NAME)
 	rm -f $(CGIT_SCRIPT_PATH)/cgit.css
-	rm -rf $(CACHE_ROOT)
+	rm -f $(CGIT_SCRIPT_PATH)/cgit.png
 
 clean:
 	rm -f cgit VERSION *.o
@@ -67,6 +67,9 @@ clean:
 distclean: clean
 	git clean -d -x
 	cd git && git clean -d -x
+
+emptycache:
+	rm -rf $(DESTDIR)$(CACHE_ROOT)/*
 
 get-git:
 	curl $(GIT_URL) | tar -xj && rm -rf git && mv git-$(GIT_VER) git
