@@ -1,4 +1,4 @@
-CGIT_VERSION = v0.7
+CGIT_VERSION = v0.7.1
 CGIT_SCRIPT_NAME = cgit.cgi
 CGIT_SCRIPT_PATH = /var/www/htdocs/cgit
 CGIT_CONFIG = /etc/cgitrc
@@ -24,7 +24,7 @@ ifdef NEEDS_LIBICONV
 endif
 
 
-.PHONY: all git install clean distclean force-version get-git
+.PHONY: all git install clean distclean emptycache force-version get-git
 
 all: cgit git
 
@@ -58,12 +58,12 @@ install: all
 	mkdir -p $(DESTDIR)$(CGIT_SCRIPT_PATH)
 	install cgit $(DESTDIR)$(CGIT_SCRIPT_PATH)/$(CGIT_SCRIPT_NAME)
 	install cgit.css $(DESTDIR)$(CGIT_SCRIPT_PATH)/cgit.css
-	rm -rf $(DESTDIR)$(CACHE_ROOT)/*
+	install cgit.png $(DESTDIR)$(CGIT_SCRIPT_PATH)/cgit.png
 
 uninstall:
 	rm -f $(CGIT_SCRIPT_PATH)/$(CGIT_SCRIPT_NAME)
 	rm -f $(CGIT_SCRIPT_PATH)/cgit.css
-	rm -rf $(CACHE_ROOT)
+	rm -f $(CGIT_SCRIPT_PATH)/cgit.png
 
 clean:
 	rm -f cgit VERSION *.o
@@ -72,6 +72,9 @@ clean:
 distclean: clean
 	git clean -d -x
 	cd git && git clean -d -x
+
+emptycache:
+	rm -rf $(DESTDIR)$(CACHE_ROOT)/*
 
 get-git:
 	curl $(GIT_URL) | tar -xj && rm -rf git && mv git-$(GIT_VER) git
