@@ -1,4 +1,4 @@
-CGIT_VERSION = v0.7
+CGIT_VERSION = v0.7.1
 CGIT_SCRIPT_NAME = cgit.cgi
 CGIT_SCRIPT_PATH = /var/www/htdocs/cgit
 CGIT_CONFIG = /etc/cgitrc
