@@ -109,7 +109,7 @@ div#sidebar div.infobox {
 }
 
 div#sidebar div.infobox h1 {
-	font-size: 11pt;
+	font-size: 10pt;
 	font-weight: bold;
 	margin: 0px;
 }
@@ -128,10 +128,7 @@ div#sidebar div.infobox a.menu:hover {
 
 div#sidebar div.infobox select {
 	width: 100%;
-	border: solid 1px #aaa;
-	background-color: #bbb;
 	margin: 2px 0px 0px 0px;
-	padding: 0px;
 }
 
 td#branch-dropdown-cell {
@@ -140,18 +137,12 @@ td#branch-dropdown-cell {
 
 input#switch-btn {
 	width: 20px;
-	border: solid 1px #aaa;
-	background-color: #bbb;
 	margin: 2px 0px 0px 0px;
-	padding: 0px;
 }
 
 div#sidebar div.infobox input.txt {
 	width: 100%;
-	border: solid 1px #aaa;
-	background-color: #bbb;
 	margin: 2px 0px 0px 0px;
-	padding: 0;
 }
 
 table#grid {
