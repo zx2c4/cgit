@@ -24,7 +24,7 @@ ifdef NEEDS_LIBICONV
 endif
 
 
-.PHONY: all git install clean distclean emptycache force-version get-git
+.PHONY: all git test install clean distclean emptycache force-version get-git
 
 all: cgit git
 
@@ -53,6 +53,9 @@ git/libgit.a: | git
 git:
 	cd git && $(MAKE) xdiff/lib.a
 	cd git && $(MAKE) libgit.a
+
+test: all
+	$(MAKE) -C tests
 
 install: all
 	mkdir -p $(DESTDIR)$(CGIT_SCRIPT_PATH)
