@@ -26,6 +26,7 @@ char *cgit_virtual_root = NULL;
 char *cgit_script_name  = CGIT_SCRIPT_NAME;
 char *cgit_cache_root   = CGIT_CACHE_ROOT;
 char *cgit_repo_group   = NULL;
+char *cgit_robots       = "index, nofollow";
 
 int cgit_nocache               =  0;
 int cgit_snapshots             =  0;
@@ -197,6 +198,8 @@ void cgit_global_config_cb(const char *name, const char *value)
 		cgit_agefile = xstrdup(value);
 	else if (!strcmp(name, "renamelimit"))
 		cgit_renamelimit = atoi(value);
+	else if (!strcmp(name, "robots"))
+		cgit_robots = xstrdup(value);
 	else if (!strcmp(name, "repo.group"))
 		cgit_repo_group = xstrdup(value);
 	else if (!strcmp(name, "repo.url"))

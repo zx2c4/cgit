@@ -364,6 +364,8 @@ void cgit_print_docstart(char *title, struct cacheitem *item)
 	html_txt(title);
 	html("</title>\n");
 	htmlf("<meta name='generator' content='cgit %s'/>\n", cgit_version);
+	if (cgit_robots && *cgit_robots)
+		htmlf("<meta name='robots' content='%s'/>\n", cgit_robots);
 	html("<link rel='stylesheet' type='text/css' href='");
 	html_attr(cgit_css);
 	html("'/>\n");

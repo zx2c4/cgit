@@ -8,6 +8,11 @@
 #nocache=0
 
 
+## This variable can be used to override the default value for "robots"
+## meta-tag. If unset, the meta-tag isn't generated.
+#robots=index, nofollow
+
+
 ## Set allowed snapshot types by default. Can be overridden per repo
 # can be any combination of zip/tar.gz/tar.bz2/tar
 #snapshots=0

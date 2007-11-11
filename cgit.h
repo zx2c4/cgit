@@ -139,6 +139,7 @@ extern char *cgit_virtual_root;
 extern char *cgit_script_name;
 extern char *cgit_cache_root;
 extern char *cgit_repo_group;
+extern char *cgit_robots;
 
 extern int cgit_nocache;
 extern int cgit_snapshots;
