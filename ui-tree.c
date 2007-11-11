@@ -17,7 +17,7 @@ static void print_object(const unsigned char *sha1, char *path)
 	enum object_type type;
 	char *buf;
 	unsigned long size, lineno, start, idx;
-	const char *linefmt = "<tr><td class='no'><a name='%1$d'>%1$d</a></td><td class='txt'>";
+	const char *linefmt = "<tr><td class='no'><a id='n%1$d' name='n%1$d' href='#n%1$d'>%1$d</a></td><td class='txt'>";
 
 	type = sha1_object_info(sha1, &size);
 	if (type == OBJ_BAD) {
@@ -37,7 +37,7 @@ static void print_object(const unsigned char *sha1, char *path)
 	html_attr(cgit_pageurl(cgit_query_repo, "blob", fmt("id=%s", sha1_to_hex(sha1))));
 	htmlf("'>%s</a>",sha1_to_hex(sha1));
 
-	html("<table class='blob'>\n");
+	html("<table summary='blob content' class='blob'>\n");
 	idx = 0;
 	start = 0;
 	lineno = 0;
@@ -108,7 +108,7 @@ static int ls_item(const unsigned char *sha1, const char *base, int baselen,
 
 static void ls_head()
 {
-	html("<table class='list'>\n");
+	html("<table summary='tree listing' class='list'>\n");
 	html("<tr class='nohover'>");
 	html("<th class='left'>Mode</th>");
 	html("<th class='left'>Name</th>");

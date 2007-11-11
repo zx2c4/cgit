@@ -53,7 +53,7 @@ void cgit_print_repolist(struct cacheitem *item)
 	cgit_print_docstart(cgit_root_title, item);
 	cgit_print_pageheader(cgit_root_title, 0);
 
-	html("<table class='list nowrap'>");
+	html("<table summary='repository list' class='list nowrap'>");
 	if (cgit_index_header) {
 		htmlf("<tr class='nohover'><td colspan='%d' class='include-block'>",
 		      columns);

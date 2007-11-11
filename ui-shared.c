@@ -358,7 +358,7 @@ void cgit_print_docstart(char *title, struct cacheitem *item)
 					 ttl_seconds(item->ttl)));
 	html("\n");
 	html(cgit_doctype);
-	html("<html>\n");
+	html("<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='en' lang='en'>\n");
 	html("<head>\n");
 	html("<title>");
 	html_txt(title);
@@ -373,7 +373,7 @@ void cgit_print_docstart(char *title, struct cacheitem *item)
 
 void cgit_print_docend()
 {
-	html("</td>\n</tr>\n<table>\n</body>\n</html>\n");
+	html("</td>\n</tr>\n</table>\n</body>\n</html>\n");
 }
 
 int print_branch_option(const char *refname, const unsigned char *sha1,
@@ -456,21 +456,21 @@ void cgit_print_pageheader(char *title, int show_search)
 	int header = 0;
 
 	html("<div id='sidebar'>\n");
-	html("<a href='");
+	html("<div id='logo'><a href='");
 	html_attr(cgit_rooturl());
-	htmlf("'><div id='logo'><img src='%s' alt='cgit'/></div></a>\n",
+	htmlf("'><img src='%s' alt='cgit'/></a></div>\n",
 	      cgit_logo);
 	html("<div class='infobox'>");
 	if (cgit_query_repo) {
-		html("<h1>");
+		html("<h1 class='first'>");
 		html_txt(strrpart(cgit_repo->name, 20));
 		html("</h1>\n");
 		html_txt(cgit_repo->desc);
 		if (cgit_repo->owner) {
-			html("<p>\n<h1>owner</h1>\n");
+			html("<h1>owner</h1>\n");
 			html_txt(cgit_repo->owner);
 		}
-		html("<p>\n<h1>navigate</h1>\n");
+		html("<h1>navigate</h1>\n");
 		reporevlink(NULL, "summary", NULL, "menu", cgit_query_head,
 			    NULL, NULL);
 		cgit_log_link("log", NULL, "menu", cgit_query_head, NULL, NULL,
@@ -484,19 +484,19 @@ void cgit_print_pageheader(char *title, int show_search)
 
 		for_each_ref(print_archive_ref, &header);
 
-		html("<p>\n<h1>branch</h1>\n");
+		html("<h1>branch</h1>\n");
 		html("<form method='get' action=''>\n");
 		add_hidden_formfields(0, 1, cgit_query_page);
-		html("<table class='grid'><tr><td id='branch-dropdown-cell'>");
+		html("<table summary='branch selector' class='grid'><tr><td id='branch-dropdown-cell'>");
 		html("<select name='h' onchange='this.form.submit();'>\n");
 		for_each_branch_ref(print_branch_option, cgit_query_head);
 		html("</select>\n");
 		html("</td><td>");
-		html("<noscript><input type='submit' id='switch-btn' value='..'></noscript>\n");
+		html("<noscript><input type='submit' id='switch-btn' value='..'/></noscript>\n");
 		html("</td></tr></table>");
 		html("</form>\n");
 
-		html("<p>\n<h1>search</h1>\n");
+		html("<h1>search</h1>\n");
 		html("<form method='get' action='");
 		if (cgit_virtual_root)
 			html_attr(cgit_fileurl(cgit_query_repo, "log",
@@ -519,7 +519,7 @@ void cgit_print_pageheader(char *title, int show_search)
 
 	html("</div>\n");
 
-	html("</div>\n<table class='grid'><tr><td id='content'>\n");
+	html("</div>\n<table summary='page content' class='grid'><tr><td id='content'>\n");
 }
 
 

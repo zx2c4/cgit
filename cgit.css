@@ -111,7 +111,11 @@ div#sidebar div.infobox {
 div#sidebar div.infobox h1 {
 	font-size: 10pt;
 	font-weight: bold;
-	margin: 0px;
+	margin: 8px 0px 0px 0px;
+}
+
+div#sidebar div.infobox h1.first {
+	margin-top: 0px;
 }
 
 div#sidebar div.infobox a.menu {
