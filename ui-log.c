@@ -90,7 +90,7 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 	}
 	prepare_revision_walk(&rev);
 
-	html("<table class='list nowrap'>");
+	html("<table summary='log' class='list nowrap'>");
 	html("<tr class='nohover'><th class='left'>Age</th>"
 	     "<th class='left'>Message</th>");
 

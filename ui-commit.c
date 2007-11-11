@@ -84,7 +84,7 @@ void print_fileinfo(struct fileinfo *info)
 	html("</td><td class='right'>");
 	htmlf("%d", info->added + info->removed);
 	html("</td><td class='graph'>");
-	htmlf("<table width='%d%%'><tr>", (max_changes > 100 ? 100 : max_changes));
+	htmlf("<table summary='file diffstat' width='%d%%'><tr>", (max_changes > 100 ? 100 : max_changes));
 	htmlf("<td class='add' style='width: %.1f%%;'/>",
 	      info->added * 100.0 / max_changes);
 	htmlf("<td class='rem' style='width: %.1f%%;'/>",
@@ -157,7 +157,7 @@ void cgit_print_commit(char *hex)
 	}
 	info = cgit_parse_commit(commit);
 
-	html("<table class='commit-info'>\n");
+	html("<table summary='commit info' class='commit-info'>\n");
 	html("<tr><th>author</th><td>");
 	html_txt(info->author);
 	html(" ");
@@ -209,7 +209,7 @@ void cgit_print_commit(char *hex)
 	html("</div>");
 	if (!(commit->parents && commit->parents->next && commit->parents->next->next)) {
 		html("<div class='diffstat-header'>Diffstat</div>");
-		html("<table class='diffstat'>");
+		html("<table summary='diffstat' class='diffstat'>");
 		max_changes = 0;
 		cgit_diff_commit(commit, inspect_filepair);
 		for(i = 0; i<files; i++)

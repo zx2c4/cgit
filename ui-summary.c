@@ -190,7 +190,7 @@ void cgit_print_summary()
 	if (cgit_summary_log > 0)
 		cgit_print_log(cgit_query_head, 0, cgit_summary_log, NULL,
 			       NULL, NULL, 0);
-	html("<table class='list nowrap'>");
+	html("<table summary='repository info' class='list nowrap'>");
 	if (cgit_summary_log > 0)
 		html("<tr class='nohover'><td colspan='4'>&nbsp;</td></tr>");
 	cgit_print_branches(cgit_summary_branches);

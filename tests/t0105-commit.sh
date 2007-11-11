@@ -13,7 +13,7 @@ run_test 'find commit subject' '
 '
 
 run_test 'find commit msg' 'grep -e "<div class=.commit-msg.></div>" trash/tmp'
-run_test 'find diffstat' 'grep -e "<table class=.diffstat.>" trash/tmp'
+run_test 'find diffstat' 'grep -e "<table summary=.diffstat. class=.diffstat.>" trash/tmp'
 
 run_test 'find diff summary' '
 	 grep -e "1 files changed, 1 insertions, 0 deletions" trash/tmp
