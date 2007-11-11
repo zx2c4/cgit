@@ -411,7 +411,7 @@ int print_archive_ref(const char *refname, const unsigned char *sha1,
 		hashcpy(fileid, sha1);
 	}
 	if (!*header) {
-		html("<p><h1>download</h1>");
+		html("<h1>download</h1>\n");
 		*header = 1;
 	}
 	url = cgit_pageurl(cgit_query_repo, "blob",
