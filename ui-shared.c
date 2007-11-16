@@ -457,12 +457,14 @@ void cgit_print_pageheader(char *title, int show_search)
 	static const char *default_info = "This is cgit, a fast webinterface for git repositories";
 	int header = 0;
 
-	html("<div id='sidebar'>\n");
-	html("<div id='logo'><a href='");
+	html("<table id='layout' summary=''>\n");
+	html("<tr><td id='sidebar'>\n");
+	html("<table class='sidebar' summary=''>\n");
+	html("<tr><td class='sidebar'>\n<a href='");
 	html_attr(cgit_rooturl());
-	htmlf("'><img src='%s' alt='cgit'/></a></div>\n",
+	htmlf("'><img src='%s' alt='cgit'/></a>\n",
 	      cgit_logo);
-	html("<div class='infobox'>");
+	html("</td></tr>\n<tr><td class='sidebar'>\n");
 	if (cgit_query_repo) {
 		html("<h1 class='first'>");
 		html_txt(strrpart(cgit_repo->name, 20));
@@ -489,13 +491,13 @@ void cgit_print_pageheader(char *title, int show_search)
 		html("<h1>branch</h1>\n");
 		html("<form method='get' action=''>\n");
 		add_hidden_formfields(0, 1, cgit_query_page);
-		html("<table summary='branch selector' class='grid'><tr><td id='branch-dropdown-cell'>");
+//		html("<table summary='branch selector' class='grid'><tr><td id='branch-dropdown-cell'>");
 		html("<select name='h' onchange='this.form.submit();'>\n");
 		for_each_branch_ref(print_branch_option, cgit_query_head);
 		html("</select>\n");
-		html("</td><td>");
-		html("<noscript><input type='submit' id='switch-btn' value='..'/></noscript>\n");
-		html("</td></tr></table>");
+//		html("</td><td>");
+		html("<noscript><input type='submit' id='switch-btn' value='switch'/></noscript>\n");
+//		html("</td></tr></table>");
 		html("</form>\n");
 
 		html("<h1>search</h1>\n");
@@ -519,9 +521,9 @@ void cgit_print_pageheader(char *title, int show_search)
 			html(default_info);
 	}
 
-	html("</div>\n");
+	html("</td></tr></table></td>\n");
 
-	html("</div>\n<table summary='page content' class='grid'><tr><td id='content'>\n");
+	html("<td id='content'>\n");
 }
 
 

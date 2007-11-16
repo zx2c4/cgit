@@ -8,7 +8,7 @@ body {
 	font-size: 10pt;
 	color: #333;
 	background: white;
-	padding-left: 4px;
+	padding: 4px;
 }
 
 table {
@@ -78,12 +78,33 @@ img {
 	border: none;
 }
 
-div#sidebar {
+table#layout {
+	border-collapse: collapse;
+	border: none;
+	margin: 0px;
+}
+
+td#sidebar {
 	vertical-align: top;
 	width: 162px;
 	padding: 0px 0px 0px 0px;
-	margin: 4px;
-	float: left;
+	margin: 0px;
+}
+
+td#sidebar table {
+	border-collapse: separate;
+	border-spacing: 0px;
+	margin: 0px;
+	padding: 0px;
+	background-color: #ccc;
+}
+
+td#sidebar table.sidebar td.sidebar {
+	padding: 4px;
+	border-top: solid 1px #eee;
+	border-left: solid 1px #eee;
+	border-right: solid 1px #aaa;
+	border-bottom: solid 1px #aaa;
 }
 
 div#logo {
@@ -97,54 +118,42 @@ div#logo {
 	border-bottom: solid 1px #aaa;
 }
 
-div#sidebar div.infobox {
-	margin: 0px 0px 0px 0px;
-	padding: 0.5em;
-	text-align: left;
-	background-color: #ccc;
-	border-top: solid 1px #eee;
-	border-left: solid 1px #eee;
-	border-right: solid 1px #aaa;
-	border-bottom: solid 1px #aaa;
-}
-
-div#sidebar div.infobox h1 {
+td#sidebar h1 {
 	font-size: 10pt;
 	font-weight: bold;
 	margin: 8px 0px 0px 0px;
 }
 
-div#sidebar div.infobox h1.first {
+td#sidebar h1.first {
 	margin-top: 0px;
 }
 
-div#sidebar div.infobox a.menu {
+td#sidebar a.menu {
 	display: block;
 	background-color: #ccc;
 	padding: 0.1em 0.5em;
 	text-decoration: none;
 }
 
-div#sidebar div.infobox a.menu:hover {
+td#sidebar a.menu:hover {
 	background-color: #bbb;
 	text-decoration: none;
 }
 
-div#sidebar div.infobox select {
+td#sidebar select {
 	width: 100%;
 	margin: 2px 0px 0px 0px;
 }
 
-td#branch-dropdown-cell {
-	width: 99%;
+td#sidebar form {
+	text-align: right;
 }
 
 input#switch-btn {
-	width: 20px;
 	margin: 2px 0px 0px 0px;
 }
 
-div#sidebar div.infobox input.txt {
+td#sidebar input.txt {
 	width: 100%;
 	margin: 2px 0px 0px 0px;
 }
