@@ -459,7 +459,7 @@ void cgit_print_pageheader(char *title, int show_search)
 
 	html("<table id='layout' summary=''>\n");
 	html("<tr><td id='sidebar'>\n");
-	html("<table class='sidebar' summary=''>\n");
+	html("<table class='sidebar' cellspacing='0' summary=''>\n");
 	html("<tr><td class='sidebar'>\n<a href='");
 	html_attr(cgit_rooturl());
 	htmlf("'><img src='%s' alt='cgit'/></a>\n",
