@@ -219,7 +219,7 @@ struct commitinfo *cgit_parse_commit(struct commit *commit)
 		p = t;
 		t = strchr(t, '>') + 1;
 		ret->author_email = substr(p, t);
-		ret->author_date = atol(++t);
+		ret->author_date = atol(t+1);
 		p = strchr(t, '\n') + 1;
 	}
 
@@ -230,7 +230,7 @@ struct commitinfo *cgit_parse_commit(struct commit *commit)
 		p = t;
 		t = strchr(t, '>') + 1;
 		ret->committer_email = substr(p, t);
-		ret->committer_date = atol(++t);
+		ret->committer_date = atol(t+1);
 		p = strchr(t, '\n') + 1;
 	}
 
@@ -315,7 +315,7 @@ struct taginfo *cgit_parse_tag(struct tag *tag)
 			p = t;
 			t = strchr(t, '>') + 1;
 			ret->tagger_email = substr(p, t);
-			ret->tagger_date = atol(++t);
+			ret->tagger_date = atol(t+1);
 		}
 		p = strchr(p, '\n') + 1;
 	}
