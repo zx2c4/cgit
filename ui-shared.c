@@ -304,6 +304,8 @@ void cgit_print_date(time_t secs, char *format)
 	char buf[64];
 	struct tm *time;
 
+	if (!secs)
+		return;
 	time = gmtime(&secs);
 	strftime(buf, sizeof(buf)-1, format, time);
 	html_txt(buf);
@@ -313,6 +315,8 @@ void cgit_print_age(time_t t, time_t max_relative, char *format)
 {
 	time_t now, secs;
 
+	if (!t)
+		return;
 	time(&now);
 	secs = now - t;
 
