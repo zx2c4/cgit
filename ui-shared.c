@@ -460,6 +460,7 @@ void cgit_print_pageheader(char *title, int show_search)
 {
 	static const char *default_info = "This is cgit, a fast webinterface for git repositories";
 	int header = 0;
+	char *url;
 
 	html("<table id='layout' summary=''>\n");
 	html("<tr><td id='sidebar'>\n");
@@ -491,6 +492,22 @@ void cgit_print_pageheader(char *title, int show_search)
 			       cgit_query_sha1, cgit_query_sha2, NULL);
 
 		for_each_ref(print_archive_ref, &header);
+
+		if (cgit_repo->clone_url || cgit_clone_prefix) {
+			html("<h1>clone</h1>\n");
+			if (cgit_repo->clone_url)
+				url = cgit_repo->clone_url;
+			else
+				url = fmt("%s%s", cgit_clone_prefix,
+					  cgit_repo->url);
+			html("<a class='menu' href='");
+			html_attr(url);
+			html("' title='");
+			html_attr(url);
+			html("'>\n");
+			html_txt(strrpart(url, 20));
+			html("</a>\n");
+		}
 
 		html("<h1>branch</h1>\n");
 		html("<form method='get' action=''>\n");

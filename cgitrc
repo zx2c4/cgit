@@ -116,6 +116,11 @@
 #module-link=./?repo=%s&page=commit&id=%s
 
 
+## Shared prefix which, when combined with repo url, becomes the url used
+## to clone the repo
+#clone-prefix=
+
+
 ## Number of chars shown of repo description (in repolist view)
 #max-repodesc-length=60
 
@@ -167,12 +172,14 @@
 #repo.enable-log-linecount=0			## override the default linecount setting
 #repo.module-link=/git/%s/commit/?id=%s		## override the standard module-link
 #repo.readme=info/web/readme			## specify a file to include on summary page
+#repo.clone-url=git://hjemli.net/pub/git/cgit
 
 ## Additional repositories grouped under "mirrors"
 #repo.group=mirrors
 
 #repo.url=git
 #repo.path=/pub/git/git
+#repo.clone-url=git://hjemli.net/pub/git/git
 #
 #repo.url=linux
 #repo.path=/pub/git/linux

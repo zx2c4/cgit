@@ -75,6 +75,7 @@ struct repoinfo {
 	char *group;
 	char *module_link;
 	char *readme;
+	char *clone_url;
 	int snapshots;
 	int enable_log_filecount;
 	int enable_log_linecount;
@@ -140,6 +141,7 @@ extern char *cgit_script_name;
 extern char *cgit_cache_root;
 extern char *cgit_repo_group;
 extern char *cgit_robots;
+extern char *cgit_clone_prefix;
 
 extern int cgit_nocache;
 extern int cgit_snapshots;

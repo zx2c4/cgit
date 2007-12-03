@@ -27,6 +27,7 @@ char *cgit_script_name  = CGIT_SCRIPT_NAME;
 char *cgit_cache_root   = CGIT_CACHE_ROOT;
 char *cgit_repo_group   = NULL;
 char *cgit_robots       = "index, nofollow";
+char *cgit_clone_prefix = NULL;
 
 int cgit_nocache               =  0;
 int cgit_snapshots             =  0;
@@ -200,6 +201,8 @@ void cgit_global_config_cb(const char *name, const char *value)
 		cgit_renamelimit = atoi(value);
 	else if (!strcmp(name, "robots"))
 		cgit_robots = xstrdup(value);
+	else if (!strcmp(name, "clone-prefix"))
+		cgit_clone_prefix = xstrdup(value);
 	else if (!strcmp(name, "repo.group"))
 		cgit_repo_group = xstrdup(value);
 	else if (!strcmp(name, "repo.url"))
@@ -208,6 +211,8 @@ void cgit_global_config_cb(const char *name, const char *value)
 		cgit_repo->name = xstrdup(value);
 	else if (cgit_repo && !strcmp(name, "repo.path"))
 		cgit_repo->path = trim_end(value, '/');
+	else if (cgit_repo && !strcmp(name, "repo.clone-url"))
+		cgit_repo->clone_url = xstrdup(value);
 	else if (cgit_repo && !strcmp(name, "repo.desc"))
 		cgit_repo->desc = xstrdup(value);
 	else if (cgit_repo && !strcmp(name, "repo.owner"))
