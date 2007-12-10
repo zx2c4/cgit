@@ -30,6 +30,7 @@
 #define CMD_SNAPSHOT 6
 #define CMD_TAG      7
 #define CMD_REFS     8
+#define CMD_PATCH    9
 
 /*
  * Dateformats used on misc. pages
@@ -283,6 +284,7 @@ extern void cgit_print_commit(char *hex);
 extern void cgit_print_refs();
 extern void cgit_print_tag(char *revname);
 extern void cgit_print_diff(const char *new_hex, const char *old_hex, const char *prefix);
+extern void cgit_print_patch(char *hex, struct cacheitem *item);
 extern void cgit_print_snapshot(struct cacheitem *item, const char *head,
 				const char *hex, const char *prefix,
 				const char *filename, int snapshot);

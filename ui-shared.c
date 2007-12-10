@@ -272,6 +272,12 @@ void cgit_diff_link(char *name, char *title, char *class, char *head,
 	html("</a>");
 }
 
+void cgit_patch_link(char *name, char *title, char *class, char *head,
+		     char *rev)
+{
+	reporevlink("patch", name, title, class, head, rev, NULL);
+}
+
 void cgit_object_link(struct object *obj)
 {
 	char *page, *arg, *url;
@@ -490,6 +496,8 @@ void cgit_print_pageheader(char *title, int show_search)
 			      cgit_query_sha1);
 		cgit_diff_link("diff", NULL, "menu", cgit_query_head,
 			       cgit_query_sha1, cgit_query_sha2, NULL);
+		cgit_patch_link("patch", NULL, "menu", cgit_query_head,
+				cgit_query_sha1);
 
 		for_each_ref(print_archive_ref, &header);
 

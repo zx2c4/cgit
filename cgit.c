@@ -75,6 +75,11 @@ static void cgit_print_repo_page(struct cacheitem *item)
 		return;
 	}
 
+	if (cgit_cmd == CMD_PATCH) {
+		cgit_print_patch(cgit_query_sha1, item);
+		return;
+	}
+
 	if (cgit_cmd == CMD_BLOB) {
 		cgit_print_blob(item, cgit_query_sha1, cgit_query_path);
 		return;
