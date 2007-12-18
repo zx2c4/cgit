@@ -96,7 +96,12 @@ void cgit_print_patch(char *hex, struct cacheitem *item)
 	htmlf("From: %s%s\n", info->author, info->author_email);
 	html("Date: ");
 	cgit_print_date(info->author_date, "%a, %d  %b  %Y  %H:%M:%S  %z%n");
-	htmlf("Subject: %s\n\n%s", info->subject, info->msg);
+	htmlf("Subject: %s\n\n", info->subject);
+	if (info->msg && *info->msg) {
+		htmlf("%s", info->msg);
+		if (info->msg[strlen(info->msg) - 1] != '\n')
+			html("\n");
+	}
 	html("---\n");
 	cgit_diff_tree(old_sha1, sha1, filepair_cb, NULL);
 	html("--\n");
