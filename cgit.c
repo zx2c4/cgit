@@ -45,13 +45,44 @@ static int cgit_prepare_cache(struct cacheitem *item)
 	return 1;
 }
 
+struct refmatch {
+	char *req_ref;
+	char *first_ref;
+	int match;
+};
+
+int find_current_ref(const char *refname, const unsigned char *sha1,
+		     int flags, void *cb_data)
+{
+	struct refmatch *info;
+
+	info = (struct refmatch *)cb_data;
+	if (!strcmp(refname, info->req_ref))
+		info->match = 1;
+	if (!info->first_ref)
+		info->first_ref = xstrdup(refname);
+	return info->match;
+}
+
+char *find_default_branch(struct repoinfo *repo)
+{
+	struct refmatch info;
+
+	info.req_ref = repo->defbranch;
+	info.first_ref = NULL;
+	info.match = 0;
+	for_each_branch_ref(find_current_ref, &info);
+	if (info.match)
+		return info.req_ref;
+	else
+		return info.first_ref;
+}
+
 static void cgit_print_repo_page(struct cacheitem *item)
 {
-	char *title;
+	char *title, *tmp;
 	int show_search;
-
-	if (!cgit_query_head)
-		cgit_query_head = cgit_repo->defbranch;
+	unsigned char sha1[20];
 
 	if (chdir(cgit_repo->path)) {
 		title = fmt("%s - %s", cgit_root_title, "Bad request");
@@ -66,6 +97,29 @@ static void cgit_print_repo_page(struct cacheitem *item)
 	title = fmt("%s - %s", cgit_repo->name, cgit_repo->desc);
 	show_search = 0;
 	setenv("GIT_DIR", cgit_repo->path, 1);
+
+	if (!cgit_query_head) {
+		cgit_query_head = xstrdup(find_default_branch(cgit_repo));
+		cgit_repo->defbranch = cgit_query_head;
+	}
+
+	if (!cgit_query_head) {
+		cgit_print_docstart(title, item);
+		cgit_print_pageheader(title, 0);
+		cgit_print_error("Repository seems to be empty");
+		cgit_print_docend();
+		return;
+	}
+
+	if (get_sha1(cgit_query_head, sha1)) {
+		tmp = xstrdup(cgit_query_head);
+		cgit_query_head = cgit_repo->defbranch;
+		cgit_print_docstart(title, item);
+		cgit_print_pageheader(title, 0);
+		cgit_print_error(fmt("Invalid branch: %s", tmp));
+		cgit_print_docend();
+		return;
+	}
 
 	if ((cgit_cmd == CMD_SNAPSHOT) && cgit_repo->snapshots) {
 		cgit_print_snapshot(item, cgit_query_head, cgit_query_sha1,
