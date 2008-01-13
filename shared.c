@@ -492,7 +492,7 @@ void cgit_diff_tree(const unsigned char *old_sha1,
 	opt.output_format = DIFF_FORMAT_CALLBACK;
 	opt.detect_rename = 1;
 	opt.rename_limit = cgit_renamelimit;
-	opt.recursive = 1;
+	DIFF_OPT_SET(&opt, RECURSIVE);
 	opt.format_callback = cgit_diff_tree_cb;
 	opt.format_callback_data = fn;
 	if (prefix) {
