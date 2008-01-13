@@ -130,7 +130,7 @@ int cgit_parse_snapshots_mask(const char *str)
 {
 	const struct snapshot_archive_t* sat;
 	static const char *delim = " \t,:/|;";
-	int f, tl, rv = 0;
+	int f, tl, sl, rv = 0;
 
 	/* favor legacy setting */
 	if(atoi(str))
@@ -142,8 +142,9 @@ int cgit_parse_snapshots_mask(const char *str)
 			break;
 		for(f=0; f<snapshot_archives_len; f++) {
 			sat = &snapshot_archives[f];
-			if(!(strncmp(sat->suffix, str, tl) &&
-			     strncmp(sat->suffix+1, str, tl-1))) {
+			sl = strlen(sat->suffix);
+			if((tl == sl && !strncmp(sat->suffix, str, tl)) ||
+			   (tl == sl-1 && !strncmp(sat->suffix+1, str, tl-1))) {
 				rv |= sat->bit;
 				break;
 			}

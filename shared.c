@@ -118,7 +118,7 @@ struct repoinfo *add_repo(const char *url)
 	ret->url = trim_end(url, '/');
 	ret->name = ret->url;
 	ret->path = NULL;
-	ret->desc = NULL;
+	ret->desc = "[no description]";
 	ret->owner = NULL;
 	ret->group = cgit_repo_group;
 	ret->defbranch = "master";
