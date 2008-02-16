@@ -187,14 +187,14 @@ void cgit_print_summary()
 		html_include(cgit_repo->readme);
 		html("</div>");
 	}
-	if (cgit_summary_log > 0)
-		cgit_print_log(ctx.qry.head, 0, cgit_summary_log, NULL,
+	if (ctx.cfg.summary_log > 0)
+		cgit_print_log(ctx.qry.head, 0, ctx.cfg.summary_log, NULL,
 			       NULL, NULL, 0);
 	html("<table summary='repository info' class='list nowrap'>");
-	if (cgit_summary_log > 0)
+	if (ctx.cfg.summary_log > 0)
 		html("<tr class='nohover'><td colspan='4'>&nbsp;</td></tr>");
-	cgit_print_branches(cgit_summary_branches);
+	cgit_print_branches(ctx.cfg.summary_branches);
 	html("<tr class='nohover'><td colspan='4'>&nbsp;</td></tr>");
-	cgit_print_tags(cgit_summary_tags);
+	cgit_print_tags(ctx.cfg.summary_tags);
 	html("</table>");
 }

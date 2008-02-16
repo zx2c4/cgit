@@ -42,16 +42,16 @@ void cgit_print_error(char *msg)
 
 char *cgit_rooturl()
 {
-	if (cgit_virtual_root)
-		return fmt("%s/", cgit_virtual_root);
+	if (ctx.cfg.virtual_root)
+		return fmt("%s/", ctx.cfg.virtual_root);
 	else
-		return cgit_script_name;
+		return ctx.cfg.script_name;
 }
 
 char *cgit_repourl(const char *reponame)
 {
-	if (cgit_virtual_root) {
-		return fmt("%s/%s/", cgit_virtual_root, reponame);
+	if (ctx.cfg.virtual_root) {
+		return fmt("%s/%s/", ctx.cfg.virtual_root, reponame);
 	} else {
 		return fmt("?r=%s", reponame);
 	}
@@ -63,8 +63,8 @@ char *cgit_fileurl(const char *reponame, const char *pagename,
 	char *tmp;
 	char *delim;
 
-	if (cgit_virtual_root) {
-		tmp = fmt("%s/%s/%s/%s", cgit_virtual_root, reponame,
+	if (ctx.cfg.virtual_root) {
+		tmp = fmt("%s/%s/%s/%s", ctx.cfg.virtual_root, reponame,
 			  pagename, (filename ? filename:""));
 		delim = "?";
 	} else {
@@ -110,14 +110,14 @@ const char *cgit_repobasename(const char *reponame)
 
 char *cgit_currurl()
 {
-	if (!cgit_virtual_root)
-		return cgit_script_name;
+	if (!ctx.cfg.virtual_root)
+		return ctx.cfg.script_name;
 	else if (ctx.qry.page)
-		return fmt("%s/%s/%s/", cgit_virtual_root, ctx.qry.repo, ctx.qry.page);
+		return fmt("%s/%s/%s/", ctx.cfg.virtual_root, ctx.qry.repo, ctx.qry.page);
 	else if (ctx.qry.repo)
-		return fmt("%s/%s/", cgit_virtual_root, ctx.qry.repo);
+		return fmt("%s/%s/", ctx.cfg.virtual_root, ctx.qry.repo);
 	else
-		return fmt("%s/", cgit_virtual_root);
+		return fmt("%s/", ctx.cfg.virtual_root);
 }
 
 static char *repolink(char *title, char *class, char *page, char *head,
@@ -137,9 +137,9 @@ static char *repolink(char *title, char *class, char *page, char *head,
 		html("'");
 	}
 	html(" href='");
-	if (cgit_virtual_root) {
-		html_attr(cgit_virtual_root);
-		if (cgit_virtual_root[strlen(cgit_virtual_root) - 1] != '/')
+	if (ctx.cfg.virtual_root) {
+		html_attr(ctx.cfg.virtual_root);
+		if (ctx.cfg.virtual_root[strlen(ctx.cfg.virtual_root) - 1] != '/')
 			html("/");
 		html_attr(cgit_repo->url);
 		if (cgit_repo->url[strlen(cgit_repo->url) - 1] != '/')
@@ -151,7 +151,7 @@ static char *repolink(char *title, char *class, char *page, char *head,
 				html_attr(path);
 		}
 	} else {
-		html(cgit_script_name);
+		html(ctx.cfg.script_name);
 		html("?url=");
 		html_attr(cgit_repo->url);
 		if (cgit_repo->url[strlen(cgit_repo->url) - 1] != '/')
@@ -229,11 +229,11 @@ void cgit_log_link(char *name, char *title, char *class, char *head,
 void cgit_commit_link(char *name, char *title, char *class, char *head,
 		      char *rev)
 {
-	if (strlen(name) > cgit_max_msg_len && cgit_max_msg_len >= 15) {
-		name[cgit_max_msg_len] = '\0';
-		name[cgit_max_msg_len - 1] = '.';
-		name[cgit_max_msg_len - 2] = '.';
-		name[cgit_max_msg_len - 3] = '.';
+	if (strlen(name) > ctx.cfg.max_msg_len && ctx.cfg.max_msg_len >= 15) {
+		name[ctx.cfg.max_msg_len] = '\0';
+		name[ctx.cfg.max_msg_len - 1] = '.';
+		name[ctx.cfg.max_msg_len - 2] = '.';
+		name[ctx.cfg.max_msg_len - 3] = '.';
 	}
 	reporevlink("commit", name, title, class, head, rev, NULL);
 }
@@ -374,10 +374,10 @@ void cgit_print_docstart(char *title, struct cacheitem *item)
 	html_txt(title);
 	html("</title>\n");
 	htmlf("<meta name='generator' content='cgit %s'/>\n", cgit_version);
-	if (cgit_robots && *cgit_robots)
-		htmlf("<meta name='robots' content='%s'/>\n", cgit_robots);
+	if (ctx.cfg.robots && *ctx.cfg.robots)
+		htmlf("<meta name='robots' content='%s'/>\n", ctx.cfg.robots);
 	html("<link rel='stylesheet' type='text/css' href='");
-	html_attr(cgit_css);
+	html_attr(ctx.cfg.css);
 	html("'/>\n");
 	html("</head>\n");
 	html("<body>\n");
@@ -439,7 +439,7 @@ void add_hidden_formfields(int incl_head, int incl_search, char *page)
 {
 	char *url;
 
-	if (!cgit_virtual_root) {
+	if (!ctx.cfg.virtual_root) {
 		url = fmt("%s/%s", ctx.qry.repo, page);
 		if (ctx.qry.path)
 			url = fmt("%s/%s", url, ctx.qry.path);
@@ -474,7 +474,7 @@ void cgit_print_pageheader(char *title, int show_search)
 	html("<tr><td class='sidebar'>\n<a href='");
 	html_attr(cgit_rooturl());
 	htmlf("'><img src='%s' alt='cgit'/></a>\n",
-	      cgit_logo);
+	      ctx.cfg.logo);
 	html("</td></tr>\n<tr><td class='sidebar'>\n");
 	if (ctx.qry.repo) {
 		html("<h1 class='first'>");
@@ -501,12 +501,12 @@ void cgit_print_pageheader(char *title, int show_search)
 
 		for_each_ref(print_archive_ref, &header);
 
-		if (cgit_repo->clone_url || cgit_clone_prefix) {
+		if (cgit_repo->clone_url || ctx.cfg.clone_prefix) {
 			html("<h1>clone</h1>\n");
 			if (cgit_repo->clone_url)
 				url = cgit_repo->clone_url;
 			else
-				url = fmt("%s%s", cgit_clone_prefix,
+				url = fmt("%s%s", ctx.cfg.clone_prefix,
 					  cgit_repo->url);
 			html("<a class='menu' href='");
 			html_attr(url);
@@ -531,7 +531,7 @@ void cgit_print_pageheader(char *title, int show_search)
 
 		html("<h1>search</h1>\n");
 		html("<form method='get' action='");
-		if (cgit_virtual_root)
+		if (ctx.cfg.virtual_root)
 			html_attr(cgit_fileurl(ctx.qry.repo, "log",
 					       ctx.qry.path, NULL));
 		html("'>\n");
@@ -546,7 +546,7 @@ void cgit_print_pageheader(char *title, int show_search)
 		html("'/>\n");
 		html("</form>\n");
 	} else {
-		if (!cgit_index_info || html_include(cgit_index_info))
+		if (!ctx.cfg.index_info || html_include(ctx.cfg.index_info))
 			html(default_info);
 	}
 

@@ -15,42 +15,30 @@ int cgit_cmd;
 
 const char *cgit_version = CGIT_VERSION;
 
-char *cgit_root_title   = "Git repository browser";
-char *cgit_css          = "/cgit.css";
-char *cgit_logo         = "/git-logo.png";
-char *cgit_index_header = NULL;
-char *cgit_index_info   = NULL;
-char *cgit_logo_link    = "http://www.kernel.org/pub/software/scm/git/docs/";
-char *cgit_module_link  = "./?repo=%s&page=commit&id=%s";
-char *cgit_agefile      = "info/web/last-modified";
-char *cgit_virtual_root = NULL;
-char *cgit_script_name  = CGIT_SCRIPT_NAME;
-char *cgit_cache_root   = CGIT_CACHE_ROOT;
-char *cgit_repo_group   = NULL;
-char *cgit_robots       = "index, nofollow";
-char *cgit_clone_prefix = NULL;
-
-int cgit_nocache               =  0;
-int cgit_snapshots             =  0;
-int cgit_enable_index_links    =  0;
-int cgit_enable_log_filecount  =  0;
-int cgit_enable_log_linecount  =  0;
-int cgit_max_lock_attempts     =  5;
-int cgit_cache_root_ttl        =  5;
-int cgit_cache_repo_ttl        =  5;
-int cgit_cache_dynamic_ttl     =  5;
-int cgit_cache_static_ttl      = -1;
-int cgit_cache_max_create_time =  5;
-int cgit_summary_log           =  0;
-int cgit_summary_tags          =  0;
-int cgit_summary_branches      =  0;
-int cgit_renamelimit           = -1;
-
-int cgit_max_msg_len = 60;
-int cgit_max_repodesc_len = 60;
-int cgit_max_commit_count = 50;
-
 int htmlfd = 0;
+
+void cgit_prepare_context(struct cgit_context *ctx)
+{
+	memset(ctx, 0, sizeof(ctx));
+	ctx->cfg.agefile = "info/web/last-modified";
+	ctx->cfg.cache_dynamic_ttl = 5;
+	ctx->cfg.cache_max_create_time = 5;
+	ctx->cfg.cache_repo_ttl = 5;
+	ctx->cfg.cache_root = CGIT_CACHE_ROOT;
+	ctx->cfg.cache_root_ttl = 5;
+	ctx->cfg.cache_static_ttl = -1;
+	ctx->cfg.css = "/cgit.css";
+	ctx->cfg.logo = "/git-logo.png";
+	ctx->cfg.max_commit_count = 50;
+	ctx->cfg.max_lock_attempts = 5;
+	ctx->cfg.max_msg_len = 60;
+	ctx->cfg.max_repodesc_len = 60;
+	ctx->cfg.module_link = "./?repo=%s&page=commit&id=%s";
+	ctx->cfg.renamelimit = -1;
+	ctx->cfg.robots = "index, nofollow";
+	ctx->cfg.root_title = "Git repository browser";
+	ctx->cfg.script_name = CGIT_SCRIPT_NAME;
+}
 
 int cgit_get_cmd_index(const char *cmd)
 {
@@ -105,12 +93,12 @@ struct repoinfo *add_repo(const char *url)
 	ret->path = NULL;
 	ret->desc = "[no description]";
 	ret->owner = NULL;
-	ret->group = cgit_repo_group;
+	ret->group = ctx.cfg.repo_group;
 	ret->defbranch = "master";
-	ret->snapshots = cgit_snapshots;
-	ret->enable_log_filecount = cgit_enable_log_filecount;
-	ret->enable_log_linecount = cgit_enable_log_linecount;
-	ret->module_link = cgit_module_link;
+	ret->snapshots = ctx.cfg.snapshots;
+	ret->enable_log_filecount = ctx.cfg.enable_log_filecount;
+	ret->enable_log_linecount = ctx.cfg.enable_log_linecount;
+	ret->module_link = ctx.cfg.module_link;
 	ret->readme = NULL;
 	return ret;
 }
@@ -131,65 +119,65 @@ struct repoinfo *cgit_get_repoinfo(const char *url)
 void cgit_global_config_cb(const char *name, const char *value)
 {
 	if (!strcmp(name, "root-title"))
-		cgit_root_title = xstrdup(value);
+		ctx.cfg.root_title = xstrdup(value);
 	else if (!strcmp(name, "css"))
-		cgit_css = xstrdup(value);
+		ctx.cfg.css = xstrdup(value);
 	else if (!strcmp(name, "logo"))
-		cgit_logo = xstrdup(value);
+		ctx.cfg.logo = xstrdup(value);
 	else if (!strcmp(name, "index-header"))
-		cgit_index_header = xstrdup(value);
+		ctx.cfg.index_header = xstrdup(value);
 	else if (!strcmp(name, "index-info"))
-		cgit_index_info = xstrdup(value);
+		ctx.cfg.index_info = xstrdup(value);
 	else if (!strcmp(name, "logo-link"))
-		cgit_logo_link = xstrdup(value);
+		ctx.cfg.logo_link = xstrdup(value);
 	else if (!strcmp(name, "module-link"))
-		cgit_module_link = xstrdup(value);
+		ctx.cfg.module_link = xstrdup(value);
 	else if (!strcmp(name, "virtual-root")) {
-		cgit_virtual_root = trim_end(value, '/');
-		if (!cgit_virtual_root && (!strcmp(value, "/")))
-			cgit_virtual_root = "";
+		ctx.cfg.virtual_root = trim_end(value, '/');
+		if (!ctx.cfg.virtual_root && (!strcmp(value, "/")))
+			ctx.cfg.virtual_root = "";
 	} else if (!strcmp(name, "nocache"))
-		cgit_nocache = atoi(value);
+		ctx.cfg.nocache = atoi(value);
 	else if (!strcmp(name, "snapshots"))
-		cgit_snapshots = cgit_parse_snapshots_mask(value);
+		ctx.cfg.snapshots = cgit_parse_snapshots_mask(value);
 	else if (!strcmp(name, "enable-index-links"))
-		cgit_enable_index_links = atoi(value);
+		ctx.cfg.enable_index_links = atoi(value);
 	else if (!strcmp(name, "enable-log-filecount"))
-		cgit_enable_log_filecount = atoi(value);
+		ctx.cfg.enable_log_filecount = atoi(value);
 	else if (!strcmp(name, "enable-log-linecount"))
-		cgit_enable_log_linecount = atoi(value);
+		ctx.cfg.enable_log_linecount = atoi(value);
 	else if (!strcmp(name, "cache-root"))
-		cgit_cache_root = xstrdup(value);
+		ctx.cfg.cache_root = xstrdup(value);
 	else if (!strcmp(name, "cache-root-ttl"))
-		cgit_cache_root_ttl = atoi(value);
+		ctx.cfg.cache_root_ttl = atoi(value);
 	else if (!strcmp(name, "cache-repo-ttl"))
-		cgit_cache_repo_ttl = atoi(value);
+		ctx.cfg.cache_repo_ttl = atoi(value);
 	else if (!strcmp(name, "cache-static-ttl"))
-		cgit_cache_static_ttl = atoi(value);
+		ctx.cfg.cache_static_ttl = atoi(value);
 	else if (!strcmp(name, "cache-dynamic-ttl"))
-		cgit_cache_dynamic_ttl = atoi(value);
+		ctx.cfg.cache_dynamic_ttl = atoi(value);
 	else if (!strcmp(name, "max-message-length"))
-		cgit_max_msg_len = atoi(value);
+		ctx.cfg.max_msg_len = atoi(value);
 	else if (!strcmp(name, "max-repodesc-length"))
-		cgit_max_repodesc_len = atoi(value);
+		ctx.cfg.max_repodesc_len = atoi(value);
 	else if (!strcmp(name, "max-commit-count"))
-		cgit_max_commit_count = atoi(value);
+		ctx.cfg.max_commit_count = atoi(value);
 	else if (!strcmp(name, "summary-log"))
-		cgit_summary_log = atoi(value);
+		ctx.cfg.summary_log = atoi(value);
 	else if (!strcmp(name, "summary-branches"))
-		cgit_summary_branches = atoi(value);
+		ctx.cfg.summary_branches = atoi(value);
 	else if (!strcmp(name, "summary-tags"))
-		cgit_summary_tags = atoi(value);
+		ctx.cfg.summary_tags = atoi(value);
 	else if (!strcmp(name, "agefile"))
-		cgit_agefile = xstrdup(value);
+		ctx.cfg.agefile = xstrdup(value);
 	else if (!strcmp(name, "renamelimit"))
-		cgit_renamelimit = atoi(value);
+		ctx.cfg.renamelimit = atoi(value);
 	else if (!strcmp(name, "robots"))
-		cgit_robots = xstrdup(value);
+		ctx.cfg.robots = xstrdup(value);
 	else if (!strcmp(name, "clone-prefix"))
-		cgit_clone_prefix = xstrdup(value);
+		ctx.cfg.clone_prefix = xstrdup(value);
 	else if (!strcmp(name, "repo.group"))
-		cgit_repo_group = xstrdup(value);
+		ctx.cfg.repo_group = xstrdup(value);
 	else if (!strcmp(name, "repo.url"))
 		cgit_repo = add_repo(value);
 	else if (!strcmp(name, "repo.name"))
@@ -205,11 +193,11 @@ void cgit_global_config_cb(const char *name, const char *value)
 	else if (cgit_repo && !strcmp(name, "repo.defbranch"))
 		cgit_repo->defbranch = xstrdup(value);
 	else if (cgit_repo && !strcmp(name, "repo.snapshots"))
-		cgit_repo->snapshots = cgit_snapshots & cgit_parse_snapshots_mask(value); /* XXX: &? */
+		cgit_repo->snapshots = ctx.cfg.snapshots & cgit_parse_snapshots_mask(value); /* XXX: &? */
 	else if (cgit_repo && !strcmp(name, "repo.enable-log-filecount"))
-		cgit_repo->enable_log_filecount = cgit_enable_log_filecount * atoi(value);
+		cgit_repo->enable_log_filecount = ctx.cfg.enable_log_filecount * atoi(value);
 	else if (cgit_repo && !strcmp(name, "repo.enable-log-linecount"))
-		cgit_repo->enable_log_linecount = cgit_enable_log_linecount * atoi(value);
+		cgit_repo->enable_log_linecount = ctx.cfg.enable_log_linecount * atoi(value);
 	else if (cgit_repo && !strcmp(name, "repo.module-link"))
 		cgit_repo->module_link= xstrdup(value);
 	else if (cgit_repo && !strcmp(name, "repo.readme") && value != NULL) {
@@ -476,7 +464,7 @@ void cgit_diff_tree(const unsigned char *old_sha1,
 	diff_setup(&opt);
 	opt.output_format = DIFF_FORMAT_CALLBACK;
 	opt.detect_rename = 1;
-	opt.rename_limit = cgit_renamelimit;
+	opt.rename_limit = ctx.cfg.renamelimit;
 	DIFF_OPT_SET(&opt, RECURSIVE);
 	opt.format_callback = cgit_diff_tree_cb;
 	opt.format_callback_data = fn;

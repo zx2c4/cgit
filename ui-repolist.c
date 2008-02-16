@@ -30,7 +30,7 @@ static void print_modtime(struct repoinfo *repo)
 	char *path;
 	struct stat s;
 
-	path = fmt("%s/%s", repo->path, cgit_agefile);
+	path = fmt("%s/%s", repo->path, ctx.cfg.agefile);
 	if (stat(path, &s) == 0) {
 		cgit_print_age(read_agefile(path), -1, NULL);
 		return;
@@ -47,17 +47,17 @@ void cgit_print_repolist(struct cacheitem *item)
 	int i, columns = 4;
 	char *last_group = NULL;
 
-	if (cgit_enable_index_links)
+	if (ctx.cfg.enable_index_links)
 		columns++;
 
-	cgit_print_docstart(cgit_root_title, item);
-	cgit_print_pageheader(cgit_root_title, 0);
+	cgit_print_docstart(ctx.cfg.root_title, item);
+	cgit_print_pageheader(ctx.cfg.root_title, 0);
 
 	html("<table summary='repository list' class='list nowrap'>");
-	if (cgit_index_header) {
+	if (ctx.cfg.index_header) {
 		htmlf("<tr class='nohover'><td colspan='%d' class='include-block'>",
 		      columns);
-		html_include(cgit_index_header);
+		html_include(ctx.cfg.index_header);
 		html("</td></tr>");
 	}
 	html("<tr class='nohover'>"
@@ -65,7 +65,7 @@ void cgit_print_repolist(struct cacheitem *item)
 	     "<th class='left'>Description</th>"
 	     "<th class='left'>Owner</th>"
 	     "<th class='left'>Idle</th>");
-	if (cgit_enable_index_links)
+	if (ctx.cfg.enable_index_links)
 		html("<th>Links</th>");
 	html("</tr>\n");
 
@@ -87,13 +87,13 @@ void cgit_print_repolist(struct cacheitem *item)
 		html_txt(cgit_repo->name);
 		html_link_close();
 		html("</td><td>");
-		html_ntxt(cgit_max_repodesc_len, cgit_repo->desc);
+		html_ntxt(ctx.cfg.max_repodesc_len, cgit_repo->desc);
 		html("</td><td>");
 		html_txt(cgit_repo->owner);
 		html("</td><td>");
 		print_modtime(cgit_repo);
 		html("</td>");
-		if (cgit_enable_index_links) {
+		if (ctx.cfg.enable_index_links) {
 			html("<td>");
 			html_link_open(cgit_repourl(cgit_repo->url),
 				       NULL, "button");

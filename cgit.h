@@ -139,8 +139,44 @@ struct cgit_query {
 	int   ofs;
 };
 
+struct cgit_config {
+	char *agefile;
+	char *cache_root;
+	char *clone_prefix;
+	char *css;
+	char *index_header;
+	char *index_info;
+	char *logo;
+	char *logo_link;
+	char *module_link;
+	char *repo_group;
+	char *robots;
+	char *root_title;
+	char *script_name;
+	char *virtual_root;
+	int cache_dynamic_ttl;
+	int cache_max_create_time;
+	int cache_repo_ttl;
+	int cache_root_ttl;
+	int cache_static_ttl;
+	int enable_index_links;
+	int enable_log_filecount;
+	int enable_log_linecount;
+	int max_commit_count;
+	int max_lock_attempts;
+	int max_msg_len;
+	int max_repodesc_len;
+	int nocache;
+	int renamelimit;
+	int snapshots;
+	int summary_branches;
+	int summary_log;
+	int summary_tags;
+};
+
 struct cgit_context {
 	struct cgit_query qry;
+	struct cgit_config cfg;
 };
 
 extern const char *cgit_version;
@@ -150,43 +186,9 @@ extern struct repoinfo *cgit_repo;
 extern struct cgit_context ctx;
 extern int cgit_cmd;
 
-extern char *cgit_root_title;
-extern char *cgit_css;
-extern char *cgit_logo;
-extern char *cgit_index_header;
-extern char *cgit_index_info;
-extern char *cgit_logo_link;
-extern char *cgit_module_link;
-extern char *cgit_agefile;
-extern char *cgit_virtual_root;
-extern char *cgit_script_name;
-extern char *cgit_cache_root;
-extern char *cgit_repo_group;
-extern char *cgit_robots;
-extern char *cgit_clone_prefix;
-
-extern int cgit_nocache;
-extern int cgit_snapshots;
-extern int cgit_enable_index_links;
-extern int cgit_enable_log_filecount;
-extern int cgit_enable_log_linecount;
-extern int cgit_max_lock_attempts;
-extern int cgit_cache_root_ttl;
-extern int cgit_cache_repo_ttl;
-extern int cgit_cache_dynamic_ttl;
-extern int cgit_cache_static_ttl;
-extern int cgit_cache_max_create_time;
-extern int cgit_summary_log;
-extern int cgit_summary_tags;
-extern int cgit_summary_branches;
-
-extern int cgit_max_msg_len;
-extern int cgit_max_repodesc_len;
-extern int cgit_max_commit_count;
-
-
 extern int htmlfd;
 
+extern void cgit_prepare_context(struct cgit_context *ctx);
 extern int cgit_get_cmd_index(const char *cmd);
 extern struct repoinfo *cgit_get_repoinfo(const char *url);
 extern void cgit_global_config_cb(const char *name, const char *value);
