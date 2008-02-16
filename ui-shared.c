@@ -476,7 +476,7 @@ void cgit_print_pageheader(char *title, int show_search)
 	htmlf("'><img src='%s' alt='cgit'/></a>\n",
 	      ctx.cfg.logo);
 	html("</td></tr>\n<tr><td class='sidebar'>\n");
-	if (ctx.qry.repo) {
+	if (ctx.repo) {
 		html("<h1 class='first'>");
 		html_txt(strrpart(ctx.repo->name, 20));
 		html("</h1>\n");

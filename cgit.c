@@ -83,20 +83,23 @@ static void cgit_print_repo_page(struct cacheitem *item)
 	char *title, *tmp;
 	int show_search;
 	unsigned char sha1[20];
+	int nongit = 0;
 
-	if (chdir(ctx.repo->path)) {
-		title = fmt("%s - %s", ctx.cfg.root_title, "Bad request");
+	setenv("GIT_DIR", ctx.repo->path, 1);
+	setup_git_directory_gently(&nongit);
+	if (nongit) {
+		title = fmt("%s - %s", ctx.cfg.root_title, "config error");
+		tmp = fmt("Not a git repository: '%s'", ctx.repo->path);
+		ctx.repo = NULL;
 		cgit_print_docstart(title, item);
 		cgit_print_pageheader(title, 0);
-		cgit_print_error(fmt("Unable to scan repository: %s",
-				     strerror(errno)));
+		cgit_print_error(tmp);
 		cgit_print_docend();
 		return;
 	}
 
 	title = fmt("%s - %s", ctx.repo->name, ctx.repo->desc);
 	show_search = 0;
-	setenv("GIT_DIR", ctx.repo->path, 1);
 
 	if (!ctx.qry.head) {
 		ctx.qry.head = xstrdup(find_default_branch(ctx.repo));
@@ -179,10 +182,8 @@ static void cgit_print_repo_page(struct cacheitem *item)
 
 static void cgit_fill_cache(struct cacheitem *item, int use_cache)
 {
-	static char buf[PATH_MAX];
 	int stdout2;
 
-	getcwd(buf, sizeof(buf));
 	item->st.st_mtime = time(NULL);
 
 	if (use_cache) {
@@ -203,8 +204,6 @@ static void cgit_fill_cache(struct cacheitem *item, int use_cache)
 			     "Restoring original STDOUT");
 		chk_zero(close(stdout2), "Closing temporary STDOUT");
 	}
-
-	chdir(buf);
 }
 
 static void cgit_check_cache(struct cacheitem *item)
