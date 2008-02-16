@@ -94,7 +94,7 @@ static int print_tag(struct refinfo *ref)
 		if (!tag || !info)
 			return 1;
 		html("<tr><td>");
-		url = cgit_pageurl(cgit_query_repo, "tag",
+		url = cgit_pageurl(ctx.qry.repo, "tag",
 				   fmt("id=%s", name));
 		html_link_open(url, NULL, NULL);
 		html_txt(name);
@@ -123,7 +123,7 @@ static int print_tag(struct refinfo *ref)
 static void print_refs_link(char *path)
 {
 	html("<tr class='nohover'><td colspan='4'>");
-	cgit_refs_link("[...]", NULL, NULL, cgit_query_head, NULL, path);
+	cgit_refs_link("[...]", NULL, NULL, ctx.qry.head, NULL, path);
 	html("</td></tr>");
 }
 
@@ -188,7 +188,7 @@ void cgit_print_summary()
 		html("</div>");
 	}
 	if (cgit_summary_log > 0)
-		cgit_print_log(cgit_query_head, 0, cgit_summary_log, NULL,
+		cgit_print_log(ctx.qry.head, 0, cgit_summary_log, NULL,
 			       NULL, NULL, 0);
 	html("<table summary='repository info' class='list nowrap'>");
 	if (cgit_summary_log > 0)

@@ -34,7 +34,7 @@ static void print_object(const unsigned char *sha1, char *path)
 	}
 
 	html(" blob: <a href='");
-	html_attr(cgit_pageurl(cgit_query_repo, "blob", fmt("id=%s", sha1_to_hex(sha1))));
+	html_attr(cgit_pageurl(ctx.qry.repo, "blob", fmt("id=%s", sha1_to_hex(sha1))));
 	htmlf("'>%s</a>",sha1_to_hex(sha1));
 
 	html("<table summary='blob content' class='blob'>\n");
@@ -67,8 +67,8 @@ static int ls_item(const unsigned char *sha1, const char *base, int baselen,
 	unsigned long size = 0;
 
 	name = xstrdup(pathname);
-	fullpath = fmt("%s%s%s", cgit_query_path ? cgit_query_path : "",
-		       cgit_query_path ? "/" : "", name);
+	fullpath = fmt("%s%s%s", ctx.qry.path ? ctx.qry.path : "",
+		       ctx.qry.path ? "/" : "", name);
 
 	type = sha1_object_info(sha1, &size);
 	if (type == OBJ_BAD && !S_ISGITLINK(mode)) {
@@ -90,16 +90,16 @@ static int ls_item(const unsigned char *sha1, const char *base, int baselen,
 		html_txt(name);
 		html("</a>");
 	} else if (S_ISDIR(mode)) {
-		cgit_tree_link(name, NULL, "ls-dir", cgit_query_head,
+		cgit_tree_link(name, NULL, "ls-dir", ctx.qry.head,
 			       curr_rev, fullpath);
 	} else {
-		cgit_tree_link(name, NULL, "ls-blob", cgit_query_head,
+		cgit_tree_link(name, NULL, "ls-blob", ctx.qry.head,
 			       curr_rev, fullpath);
 	}
 	htmlf("</td><td class='ls-size'>%li</td>", size);
 
 	html("<td>");
-	cgit_log_link("log", NULL, "button", cgit_query_head, curr_rev,
+	cgit_log_link("log", NULL, "button", ctx.qry.head, curr_rev,
 		      fullpath, 0, NULL, NULL);
 	html("</td></tr>\n");
 	free(name);
@@ -153,10 +153,10 @@ static int walk_tree(const unsigned char *sha1, const char *base, int baselen,
 	if (state == 0) {
 		memcpy(buffer, base, baselen);
 		strcpy(buffer+baselen, pathname);
-		url = cgit_pageurl(cgit_query_repo, "tree",
+		url = cgit_pageurl(ctx.qry.repo, "tree",
 				   fmt("h=%s&amp;path=%s", curr_rev, buffer));
 		html("/");
-		cgit_tree_link(xstrdup(pathname), NULL, NULL, cgit_query_head,
+		cgit_tree_link(xstrdup(pathname), NULL, NULL, ctx.qry.head,
 			       curr_rev, buffer);
 
 		if (strcmp(match_path, buffer))
@@ -188,7 +188,7 @@ void cgit_print_tree(const char *rev, char *path)
 	const char *paths[] = {path, NULL};
 
 	if (!rev)
-		rev = cgit_query_head;
+		rev = ctx.qry.head;
 
 	curr_rev = xstrdup(rev);
 	if (get_sha1(rev, sha1)) {
@@ -202,7 +202,7 @@ void cgit_print_tree(const char *rev, char *path)
 	}
 
 	html("path: <a href='");
-	html_attr(cgit_pageurl(cgit_query_repo, "tree", fmt("h=%s", rev)));
+	html_attr(cgit_pageurl(ctx.qry.repo, "tree", fmt("h=%s", rev)));
 	html("'>root</a>");
 
 	if (path == NULL) {

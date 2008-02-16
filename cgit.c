@@ -10,11 +10,11 @@
 
 static int cgit_prepare_cache(struct cacheitem *item)
 {
-	if (!cgit_repo && cgit_query_repo) {
+	if (!cgit_repo && ctx.qry.repo) {
 		char *title = fmt("%s - %s", cgit_root_title, "Bad request");
 		cgit_print_docstart(title, item);
 		cgit_print_pageheader(title, 0);
-		cgit_print_error(fmt("Unknown repo: %s", cgit_query_repo));
+		cgit_print_error(fmt("Unknown repo: %s", ctx.qry.repo));
 		cgit_print_docend();
 		return 0;
 	}
@@ -28,16 +28,16 @@ static int cgit_prepare_cache(struct cacheitem *item)
 	if (!cgit_cmd) {
 		item->name = xstrdup(fmt("%s/%s/index.%s.html", cgit_cache_root,
 					 cache_safe_filename(cgit_repo->url),
-					 cache_safe_filename(cgit_querystring)));
+					 cache_safe_filename(ctx.qry.raw)));
 		item->ttl = cgit_cache_repo_ttl;
 	} else {
 		item->name = xstrdup(fmt("%s/%s/%s/%s.html", cgit_cache_root,
 					 cache_safe_filename(cgit_repo->url),
-					 cgit_query_page,
-					 cache_safe_filename(cgit_querystring)));
-		if (cgit_query_has_symref)
+					 ctx.qry.page,
+					 cache_safe_filename(ctx.qry.raw)));
+		if (ctx.qry.has_symref)
 			item->ttl = cgit_cache_dynamic_ttl;
-		else if (cgit_query_has_sha1)
+		else if (ctx.qry.has_sha1)
 			item->ttl = cgit_cache_static_ttl;
 		else
 			item->ttl = cgit_cache_repo_ttl;
@@ -98,12 +98,12 @@ static void cgit_print_repo_page(struct cacheitem *item)
 	show_search = 0;
 	setenv("GIT_DIR", cgit_repo->path, 1);
 
-	if (!cgit_query_head) {
-		cgit_query_head = xstrdup(find_default_branch(cgit_repo));
-		cgit_repo->defbranch = cgit_query_head;
+	if (!ctx.qry.head) {
+		ctx.qry.head = xstrdup(find_default_branch(cgit_repo));
+		cgit_repo->defbranch = ctx.qry.head;
 	}
 
-	if (!cgit_query_head) {
+	if (!ctx.qry.head) {
 		cgit_print_docstart(title, item);
 		cgit_print_pageheader(title, 0);
 		cgit_print_error("Repository seems to be empty");
@@ -111,9 +111,9 @@ static void cgit_print_repo_page(struct cacheitem *item)
 		return;
 	}
 
-	if (get_sha1(cgit_query_head, sha1)) {
-		tmp = xstrdup(cgit_query_head);
-		cgit_query_head = cgit_repo->defbranch;
+	if (get_sha1(ctx.qry.head, sha1)) {
+		tmp = xstrdup(ctx.qry.head);
+		ctx.qry.head = cgit_repo->defbranch;
 		cgit_print_docstart(title, item);
 		cgit_print_pageheader(title, 0);
 		cgit_print_error(fmt("Invalid branch: %s", tmp));
@@ -122,20 +122,20 @@ static void cgit_print_repo_page(struct cacheitem *item)
 	}
 
 	if ((cgit_cmd == CMD_SNAPSHOT) && cgit_repo->snapshots) {
-		cgit_print_snapshot(item, cgit_query_head, cgit_query_sha1,
+		cgit_print_snapshot(item, ctx.qry.head, ctx.qry.sha1,
 				    cgit_repobasename(cgit_repo->url),
-				    cgit_query_path,
+				    ctx.qry.path,
 				    cgit_repo->snapshots );
 		return;
 	}
 
 	if (cgit_cmd == CMD_PATCH) {
-		cgit_print_patch(cgit_query_sha1, item);
+		cgit_print_patch(ctx.qry.sha1, item);
 		return;
 	}
 
 	if (cgit_cmd == CMD_BLOB) {
-		cgit_print_blob(item, cgit_query_sha1, cgit_query_path);
+		cgit_print_blob(item, ctx.qry.sha1, ctx.qry.path);
 		return;
 	}
 
@@ -148,28 +148,28 @@ static void cgit_print_repo_page(struct cacheitem *item)
 		return;
 	}
 
-	cgit_print_pageheader(cgit_query_page, show_search);
+	cgit_print_pageheader(ctx.qry.page, show_search);
 
 	switch(cgit_cmd) {
 	case CMD_LOG:
-		cgit_print_log(cgit_query_sha1, cgit_query_ofs,
-			       cgit_max_commit_count, cgit_query_grep, cgit_query_search,
-			       cgit_query_path, 1);
+		cgit_print_log(ctx.qry.sha1, ctx.qry.ofs,
+			       cgit_max_commit_count, ctx.qry.grep, ctx.qry.search,
+			       ctx.qry.path, 1);
 		break;
 	case CMD_TREE:
-		cgit_print_tree(cgit_query_sha1, cgit_query_path);
+		cgit_print_tree(ctx.qry.sha1, ctx.qry.path);
 		break;
 	case CMD_COMMIT:
-		cgit_print_commit(cgit_query_sha1);
+		cgit_print_commit(ctx.qry.sha1);
 		break;
 	case CMD_REFS:
 		cgit_print_refs();
 		break;
 	case CMD_TAG:
-		cgit_print_tag(cgit_query_sha1);
+		cgit_print_tag(ctx.qry.sha1);
 		break;
 	case CMD_DIFF:
-		cgit_print_diff(cgit_query_sha1, cgit_query_sha2, cgit_query_path);
+		cgit_print_diff(ctx.qry.sha1, ctx.qry.sha2, ctx.qry.path);
 		break;
 	default:
 		cgit_print_error("Invalid request");
@@ -264,24 +264,24 @@ static void cgit_parse_args(int argc, const char **argv)
 			cgit_nocache = 1;
 		}
 		if (!strncmp(argv[i], "--query=", 8)) {
-			cgit_querystring = xstrdup(argv[i]+8);
+			ctx.qry.raw = xstrdup(argv[i]+8);
 		}
 		if (!strncmp(argv[i], "--repo=", 7)) {
-			cgit_query_repo = xstrdup(argv[i]+7);
+			ctx.qry.repo = xstrdup(argv[i]+7);
 		}
 		if (!strncmp(argv[i], "--page=", 7)) {
-			cgit_query_page = xstrdup(argv[i]+7);
+			ctx.qry.page = xstrdup(argv[i]+7);
 		}
 		if (!strncmp(argv[i], "--head=", 7)) {
-			cgit_query_head = xstrdup(argv[i]+7);
-			cgit_query_has_symref = 1;
+			ctx.qry.head = xstrdup(argv[i]+7);
+			ctx.qry.has_symref = 1;
 		}
 		if (!strncmp(argv[i], "--sha1=", 7)) {
-			cgit_query_sha1 = xstrdup(argv[i]+7);
-			cgit_query_has_sha1 = 1;
+			ctx.qry.sha1 = xstrdup(argv[i]+7);
+			ctx.qry.has_sha1 = 1;
 		}
 		if (!strncmp(argv[i], "--ofs=", 6)) {
-			cgit_query_ofs = atoi(argv[i]+6);
+			ctx.qry.ofs = atoi(argv[i]+6);
 		}
 	}
 }
@@ -303,9 +303,9 @@ int main(int argc, const char **argv)
 	if (getenv("SCRIPT_NAME"))
 		cgit_script_name = xstrdup(getenv("SCRIPT_NAME"));
 	if (getenv("QUERY_STRING"))
-		cgit_querystring = xstrdup(getenv("QUERY_STRING"));
+		ctx.qry.raw = xstrdup(getenv("QUERY_STRING"));
 	cgit_parse_args(argc, argv);
-	cgit_parse_query(cgit_querystring, cgit_querystring_cb);
+	cgit_parse_query(ctx.qry.raw, cgit_querystring_cb);
 	if (!cgit_prepare_cache(&item))
 		return 0;
 	if (cgit_nocache) {

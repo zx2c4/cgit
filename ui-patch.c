@@ -76,7 +76,7 @@ void cgit_print_patch(char *hex, struct cacheitem *item)
 	char *patchname;
 
 	if (!hex)
-		hex = cgit_query_head;
+		hex = ctx.qry.head;
 
 	if (get_sha1(hex, sha1)) {
 		cgit_print_error(fmt("Bad object id: %s", hex));

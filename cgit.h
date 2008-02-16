@@ -123,10 +123,31 @@ struct reflist {
 	int count;
 };
 
+struct cgit_query {
+	int has_symref;
+	int has_sha1;
+	char *raw;
+	char *repo;
+	char *page;
+	char *search;
+	char *grep;
+	char *head;
+	char *sha1;
+	char *sha2;
+	char *path;
+	char *name;
+	int   ofs;
+};
+
+struct cgit_context {
+	struct cgit_query qry;
+};
+
 extern const char *cgit_version;
 
 extern struct repolist cgit_repolist;
 extern struct repoinfo *cgit_repo;
+extern struct cgit_context ctx;
 extern int cgit_cmd;
 
 extern char *cgit_root_title;
@@ -163,20 +184,6 @@ extern int cgit_max_msg_len;
 extern int cgit_max_repodesc_len;
 extern int cgit_max_commit_count;
 
-extern int cgit_query_has_symref;
-extern int cgit_query_has_sha1;
-
-extern char *cgit_querystring;
-extern char *cgit_query_repo;
-extern char *cgit_query_page;
-extern char *cgit_query_search;
-extern char *cgit_query_grep;
-extern char *cgit_query_head;
-extern char *cgit_query_sha1;
-extern char *cgit_query_sha2;
-extern char *cgit_query_path;
-extern char *cgit_query_name;
-extern int   cgit_query_ofs;
 
 extern int htmlfd;
 

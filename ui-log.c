@@ -37,7 +37,7 @@ void print_commit(struct commit *commit)
 	html("<tr><td>");
 	cgit_print_age(commit->date, TM_WEEK * 2, FMT_SHORTDATE);
 	html("</td><td>");
-	cgit_commit_link(info->subject, NULL, NULL, cgit_query_head,
+	cgit_commit_link(info->subject, NULL, NULL, ctx.qry.head,
 			 sha1_to_hex(commit->object.sha1));
 	if (cgit_repo->enable_log_filecount) {
 		files = 0;
@@ -67,7 +67,7 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 	int i;
 
 	if (!tip)
-		argv[1] = cgit_query_head;
+		argv[1] = ctx.qry.head;
 
 	if (grep && pattern && (!strcmp(grep, "grep") ||
 				!strcmp(grep, "author") ||
@@ -123,17 +123,17 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 	if (pager) {
 		html("<div class='pager'>");
 		if (ofs > 0) {
-			cgit_log_link("[prev]", NULL, NULL, cgit_query_head,
-				      cgit_query_sha1, cgit_query_path,
-				      ofs - cnt, cgit_query_grep,
-				      cgit_query_search);
+			cgit_log_link("[prev]", NULL, NULL, ctx.qry.head,
+				      ctx.qry.sha1, ctx.qry.path,
+				      ofs - cnt, ctx.qry.grep,
+				      ctx.qry.search);
 			html("&nbsp;");
 		}
 		if ((commit = get_revision(&rev)) != NULL) {
-			cgit_log_link("[next]", NULL, NULL, cgit_query_head,
-				      cgit_query_sha1, cgit_query_path,
-				      ofs + cnt, cgit_query_grep,
-				      cgit_query_search);
+			cgit_log_link("[next]", NULL, NULL, ctx.qry.head,
+				      ctx.qry.sha1, ctx.qry.path,
+				      ofs + cnt, ctx.qry.grep,
+				      ctx.qry.search);
 		}
 		html("</div>");
 	}

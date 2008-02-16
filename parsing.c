@@ -149,7 +149,7 @@ void cgit_parse_url(const char *url)
 
 	cgit_repo = cgit_get_repoinfo(url);
 	if (cgit_repo) {
-		cgit_query_repo = cgit_repo->url;
+		ctx.qry.repo = cgit_repo->url;
 		return;
 	}
 
@@ -163,15 +163,15 @@ void cgit_parse_url(const char *url)
 			continue;
 		}
 
-		cgit_query_repo = cgit_repo->url;
+		ctx.qry.repo = cgit_repo->url;
 		p = strchr(cmd + 1, '/');
 		if (p) {
 			p[0] = '\0';
 			if (p[1])
-				cgit_query_path = trim_end(p + 1, '/');
+				ctx.qry.path = trim_end(p + 1, '/');
 		}
 		cgit_cmd = cgit_get_cmd_index(cmd + 1);
-		cgit_query_page = xstrdup(cmd + 1);
+		ctx.qry.page = xstrdup(cmd + 1);
 		return;
 	}
 }

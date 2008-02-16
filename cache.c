@@ -57,10 +57,10 @@ int cache_create_dirs()
 	if (mkdir(path, S_IRWXU) && errno!=EEXIST)
 		return 0;
 
-	if (cgit_query_page) {
+	if (ctx.qry.page) {
 		path = fmt("%s/%s/%s", cgit_cache_root,
 			   cache_safe_filename(cgit_repo->url),
-			   cgit_query_page);
+			   ctx.qry.page);
 		if (mkdir(path, S_IRWXU) && errno!=EEXIST)
 			return 0;
 	}
