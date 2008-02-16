@@ -8,8 +8,7 @@
 
 #include "cgit.h"
 
-struct repolist cgit_repolist;
-struct repoinfo *cgit_repo;
+struct cgit_repolist cgit_repolist;
 struct cgit_context ctx;
 int cgit_cmd;
 
@@ -73,9 +72,9 @@ int chk_non_negative(int result, char *msg)
 	return result;
 }
 
-struct repoinfo *add_repo(const char *url)
+struct cgit_repo *add_repo(const char *url)
 {
-	struct repoinfo *ret;
+	struct cgit_repo *ret;
 
 	if (++cgit_repolist.count > cgit_repolist.length) {
 		if (cgit_repolist.length == 0)
@@ -84,7 +83,7 @@ struct repoinfo *add_repo(const char *url)
 			cgit_repolist.length *= 2;
 		cgit_repolist.repos = xrealloc(cgit_repolist.repos,
 					       cgit_repolist.length *
-					       sizeof(struct repoinfo));
+					       sizeof(struct cgit_repo));
 	}
 
 	ret = &cgit_repolist.repos[cgit_repolist.count-1];
@@ -103,10 +102,10 @@ struct repoinfo *add_repo(const char *url)
 	return ret;
 }
 
-struct repoinfo *cgit_get_repoinfo(const char *url)
+struct cgit_repo *cgit_get_repoinfo(const char *url)
 {
 	int i;
-	struct repoinfo *repo;
+	struct cgit_repo *repo;
 
 	for (i=0; i<cgit_repolist.count; i++) {
 		repo = &cgit_repolist.repos[i];
@@ -179,32 +178,32 @@ void cgit_global_config_cb(const char *name, const char *value)
 	else if (!strcmp(name, "repo.group"))
 		ctx.cfg.repo_group = xstrdup(value);
 	else if (!strcmp(name, "repo.url"))
-		cgit_repo = add_repo(value);
+		ctx.repo = add_repo(value);
 	else if (!strcmp(name, "repo.name"))
-		cgit_repo->name = xstrdup(value);
-	else if (cgit_repo && !strcmp(name, "repo.path"))
-		cgit_repo->path = trim_end(value, '/');
-	else if (cgit_repo && !strcmp(name, "repo.clone-url"))
-		cgit_repo->clone_url = xstrdup(value);
-	else if (cgit_repo && !strcmp(name, "repo.desc"))
-		cgit_repo->desc = xstrdup(value);
-	else if (cgit_repo && !strcmp(name, "repo.owner"))
-		cgit_repo->owner = xstrdup(value);
-	else if (cgit_repo && !strcmp(name, "repo.defbranch"))
-		cgit_repo->defbranch = xstrdup(value);
-	else if (cgit_repo && !strcmp(name, "repo.snapshots"))
-		cgit_repo->snapshots = ctx.cfg.snapshots & cgit_parse_snapshots_mask(value); /* XXX: &? */
-	else if (cgit_repo && !strcmp(name, "repo.enable-log-filecount"))
-		cgit_repo->enable_log_filecount = ctx.cfg.enable_log_filecount * atoi(value);
-	else if (cgit_repo && !strcmp(name, "repo.enable-log-linecount"))
-		cgit_repo->enable_log_linecount = ctx.cfg.enable_log_linecount * atoi(value);
-	else if (cgit_repo && !strcmp(name, "repo.module-link"))
-		cgit_repo->module_link= xstrdup(value);
-	else if (cgit_repo && !strcmp(name, "repo.readme") && value != NULL) {
+		ctx.repo->name = xstrdup(value);
+	else if (ctx.repo && !strcmp(name, "repo.path"))
+		ctx.repo->path = trim_end(value, '/');
+	else if (ctx.repo && !strcmp(name, "repo.clone-url"))
+		ctx.repo->clone_url = xstrdup(value);
+	else if (ctx.repo && !strcmp(name, "repo.desc"))
+		ctx.repo->desc = xstrdup(value);
+	else if (ctx.repo && !strcmp(name, "repo.owner"))
+		ctx.repo->owner = xstrdup(value);
+	else if (ctx.repo && !strcmp(name, "repo.defbranch"))
+		ctx.repo->defbranch = xstrdup(value);
+	else if (ctx.repo && !strcmp(name, "repo.snapshots"))
+		ctx.repo->snapshots = ctx.cfg.snapshots & cgit_parse_snapshots_mask(value); /* XXX: &? */
+	else if (ctx.repo && !strcmp(name, "repo.enable-log-filecount"))
+		ctx.repo->enable_log_filecount = ctx.cfg.enable_log_filecount * atoi(value);
+	else if (ctx.repo && !strcmp(name, "repo.enable-log-linecount"))
+		ctx.repo->enable_log_linecount = ctx.cfg.enable_log_linecount * atoi(value);
+	else if (ctx.repo && !strcmp(name, "repo.module-link"))
+		ctx.repo->module_link= xstrdup(value);
+	else if (ctx.repo && !strcmp(name, "repo.readme") && value != NULL) {
 		if (*value == '/')
-			cgit_repo->readme = xstrdup(value);
+			ctx.repo->readme = xstrdup(value);
 		else
-			cgit_repo->readme = xstrdup(fmt("%s/%s", cgit_repo->path, value));
+			ctx.repo->readme = xstrdup(fmt("%s/%s", ctx.repo->path, value));
 	} else if (!strcmp(name, "include"))
 		cgit_read_config(value, cgit_global_config_cb);
 }
@@ -213,7 +212,7 @@ void cgit_querystring_cb(const char *name, const char *value)
 {
 	if (!strcmp(name,"r")) {
 		ctx.qry.repo = xstrdup(value);
-		cgit_repo = cgit_get_repoinfo(value);
+		ctx.repo = cgit_get_repoinfo(value);
 	} else if (!strcmp(name, "p")) {
 		ctx.qry.page = xstrdup(value);
 		cgit_cmd = cgit_get_cmd_index(value);

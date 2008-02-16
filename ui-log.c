@@ -25,7 +25,7 @@ void count_lines(char *line, int size)
 void inspect_files(struct diff_filepair *pair)
 {
 	files++;
-	if (cgit_repo->enable_log_linecount)
+	if (ctx.repo->enable_log_linecount)
 		cgit_diff_files(pair->one->sha1, pair->two->sha1, count_lines);
 }
 
@@ -39,14 +39,14 @@ void print_commit(struct commit *commit)
 	html("</td><td>");
 	cgit_commit_link(info->subject, NULL, NULL, ctx.qry.head,
 			 sha1_to_hex(commit->object.sha1));
-	if (cgit_repo->enable_log_filecount) {
+	if (ctx.repo->enable_log_filecount) {
 		files = 0;
 		add_lines = 0;
 		rem_lines = 0;
 		cgit_diff_commit(commit, inspect_files);
 		html("</td><td class='right'>");
 		htmlf("%d", files);
-		if (cgit_repo->enable_log_linecount) {
+		if (ctx.repo->enable_log_linecount) {
 			html("</td><td class='right'>");
 			htmlf("-%d/+%d", rem_lines, add_lines);
 		}
@@ -94,9 +94,9 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 	html("<tr class='nohover'><th class='left'>Age</th>"
 	     "<th class='left'>Message</th>");
 
-	if (cgit_repo->enable_log_filecount) {
+	if (ctx.repo->enable_log_filecount) {
 		html("<th class='right'>Files</th>");
-		if (cgit_repo->enable_log_linecount)
+		if (ctx.repo->enable_log_linecount)
 			html("<th class='right'>Lines</th>");
 	}
 	html("<th class='left'>Author</th></tr>\n");

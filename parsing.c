@@ -143,27 +143,27 @@ void cgit_parse_url(const char *url)
 {
 	char *cmd, *p;
 
-	cgit_repo = NULL;
+	ctx.repo = NULL;
 	if (!url || url[0] == '\0')
 		return;
 
-	cgit_repo = cgit_get_repoinfo(url);
-	if (cgit_repo) {
-		ctx.qry.repo = cgit_repo->url;
+	ctx.repo = cgit_get_repoinfo(url);
+	if (ctx.repo) {
+		ctx.qry.repo = ctx.repo->url;
 		return;
 	}
 
 	cmd = strchr(url, '/');
-	while (!cgit_repo && cmd) {
+	while (!ctx.repo && cmd) {
 		cmd[0] = '\0';
-		cgit_repo = cgit_get_repoinfo(url);
-		if (cgit_repo == NULL) {
+		ctx.repo = cgit_get_repoinfo(url);
+		if (ctx.repo == NULL) {
 			cmd[0] = '/';
 			cmd = strchr(cmd + 1, '/');
 			continue;
 		}
 
-		ctx.qry.repo = cgit_repo->url;
+		ctx.qry.repo = ctx.repo->url;
 		p = strchr(cmd + 1, '/');
 		if (p) {
 			p[0] = '\0';

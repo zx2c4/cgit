@@ -48,18 +48,18 @@ int cache_create_dirs()
 	if (mkdir(path, S_IRWXU) && errno!=EEXIST)
 		return 0;
 
-	if (!cgit_repo)
+	if (!ctx.repo)
 		return 0;
 
 	path = fmt("%s/%s", ctx.cfg.cache_root,
-		   cache_safe_filename(cgit_repo->url));
+		   cache_safe_filename(ctx.repo->url));
 
 	if (mkdir(path, S_IRWXU) && errno!=EEXIST)
 		return 0;
 
 	if (ctx.qry.page) {
 		path = fmt("%s/%s/%s", ctx.cfg.cache_root,
-			   cache_safe_filename(cgit_repo->url),
+			   cache_safe_filename(ctx.repo->url),
 			   ctx.qry.page);
 		if (mkdir(path, S_IRWXU) && errno!=EEXIST)
 			return 0;

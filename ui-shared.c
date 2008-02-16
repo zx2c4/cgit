@@ -141,8 +141,8 @@ static char *repolink(char *title, char *class, char *page, char *head,
 		html_attr(ctx.cfg.virtual_root);
 		if (ctx.cfg.virtual_root[strlen(ctx.cfg.virtual_root) - 1] != '/')
 			html("/");
-		html_attr(cgit_repo->url);
-		if (cgit_repo->url[strlen(cgit_repo->url) - 1] != '/')
+		html_attr(ctx.repo->url);
+		if (ctx.repo->url[strlen(ctx.repo->url) - 1] != '/')
 			html("/");
 		if (page) {
 			html(page);
@@ -153,8 +153,8 @@ static char *repolink(char *title, char *class, char *page, char *head,
 	} else {
 		html(ctx.cfg.script_name);
 		html("?url=");
-		html_attr(cgit_repo->url);
-		if (cgit_repo->url[strlen(cgit_repo->url) - 1] != '/')
+		html_attr(ctx.repo->url);
+		if (ctx.repo->url[strlen(ctx.repo->url) - 1] != '/')
 			html("/");
 		if (page) {
 			html(page);
@@ -164,7 +164,7 @@ static char *repolink(char *title, char *class, char *page, char *head,
 		}
 		delim = "&amp;";
 	}
-	if (head && strcmp(head, cgit_repo->defbranch)) {
+	if (head && strcmp(head, ctx.repo->defbranch)) {
 		html(delim);
 		html("h=");
 		html_attr(head);
@@ -446,7 +446,7 @@ void add_hidden_formfields(int incl_head, int incl_search, char *page)
 		html_hidden("url", url);
 	}
 
-	if (incl_head && strcmp(ctx.qry.head, cgit_repo->defbranch))
+	if (incl_head && strcmp(ctx.qry.head, ctx.repo->defbranch))
 		html_hidden("h", ctx.qry.head);
 
 	if (ctx.qry.sha1)
@@ -478,12 +478,12 @@ void cgit_print_pageheader(char *title, int show_search)
 	html("</td></tr>\n<tr><td class='sidebar'>\n");
 	if (ctx.qry.repo) {
 		html("<h1 class='first'>");
-		html_txt(strrpart(cgit_repo->name, 20));
+		html_txt(strrpart(ctx.repo->name, 20));
 		html("</h1>\n");
-		html_txt(cgit_repo->desc);
-		if (cgit_repo->owner) {
+		html_txt(ctx.repo->desc);
+		if (ctx.repo->owner) {
 			html("<h1>owner</h1>\n");
-			html_txt(cgit_repo->owner);
+			html_txt(ctx.repo->owner);
 		}
 		html("<h1>navigate</h1>\n");
 		reporevlink(NULL, "summary", NULL, "menu", ctx.qry.head,
@@ -501,13 +501,13 @@ void cgit_print_pageheader(char *title, int show_search)
 
 		for_each_ref(print_archive_ref, &header);
 
-		if (cgit_repo->clone_url || ctx.cfg.clone_prefix) {
+		if (ctx.repo->clone_url || ctx.cfg.clone_prefix) {
 			html("<h1>clone</h1>\n");
-			if (cgit_repo->clone_url)
-				url = cgit_repo->clone_url;
+			if (ctx.repo->clone_url)
+				url = ctx.repo->clone_url;
 			else
 				url = fmt("%s%s", ctx.cfg.clone_prefix,
-					  cgit_repo->url);
+					  ctx.repo->url);
 			html("<a class='menu' href='");
 			html_attr(url);
 			html("' title='");

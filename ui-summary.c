@@ -182,9 +182,9 @@ void cgit_print_tags(int maxcount)
 
 void cgit_print_summary()
 {
-	if (cgit_repo->readme) {
+	if (ctx.repo->readme) {
 		html("<div id='summary'>");
-		html_include(cgit_repo->readme);
+		html_include(ctx.repo->readme);
 		html("</div>");
 	}
 	if (ctx.cfg.summary_log > 0)

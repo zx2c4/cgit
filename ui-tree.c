@@ -83,7 +83,7 @@ static int ls_item(const unsigned char *sha1, const char *base, int baselen,
 	html("</td><td>");
 	if (S_ISGITLINK(mode)) {
 		htmlf("<a class='ls-mod' href='");
-		html_attr(fmt(cgit_repo->module_link,
+		html_attr(fmt(ctx.repo->module_link,
 			      name,
 			      sha1_to_hex(sha1)));
 		html("'>");

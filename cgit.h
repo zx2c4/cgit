@@ -66,7 +66,7 @@ struct cacheitem {
 	int fd;
 };
 
-struct repoinfo {
+struct cgit_repo {
 	char *url;
 	char *name;
 	char *path;
@@ -82,10 +82,10 @@ struct repoinfo {
 	int enable_log_linecount;
 };
 
-struct repolist {
+struct cgit_repolist {
 	int length;
 	int count;
-	struct repoinfo *repos;
+	struct cgit_repo *repos;
 };
 
 struct commitinfo {
@@ -177,12 +177,12 @@ struct cgit_config {
 struct cgit_context {
 	struct cgit_query qry;
 	struct cgit_config cfg;
+	struct cgit_repo *repo;
 };
 
 extern const char *cgit_version;
 
-extern struct repolist cgit_repolist;
-extern struct repoinfo *cgit_repo;
+extern struct cgit_repolist cgit_repolist;
 extern struct cgit_context ctx;
 extern int cgit_cmd;
 
@@ -190,7 +190,7 @@ extern int htmlfd;
 
 extern void cgit_prepare_context(struct cgit_context *ctx);
 extern int cgit_get_cmd_index(const char *cmd);
-extern struct repoinfo *cgit_get_repoinfo(const char *url);
+extern struct cgit_repo *cgit_get_repoinfo(const char *url);
 extern void cgit_global_config_cb(const char *name, const char *value);
 extern void cgit_repo_config_cb(const char *name, const char *value);
 extern void cgit_querystring_cb(const char *name, const char *value);

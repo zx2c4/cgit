@@ -25,7 +25,7 @@ time_t read_agefile(char *path)
 		return 0;
 }
 
-static void print_modtime(struct repoinfo *repo)
+static void print_modtime(struct cgit_repo *repo)
 {
 	char *path;
 	struct stat s;
@@ -70,32 +70,32 @@ void cgit_print_repolist(struct cacheitem *item)
 	html("</tr>\n");
 
 	for (i=0; i<cgit_repolist.count; i++) {
-		cgit_repo = &cgit_repolist.repos[i];
-		if ((last_group == NULL && cgit_repo->group != NULL) ||
-		    (last_group != NULL && cgit_repo->group == NULL) ||
-		    (last_group != NULL && cgit_repo->group != NULL &&
-		     strcmp(cgit_repo->group, last_group))) {
+		ctx.repo = &cgit_repolist.repos[i];
+		if ((last_group == NULL && ctx.repo->group != NULL) ||
+		    (last_group != NULL && ctx.repo->group == NULL) ||
+		    (last_group != NULL && ctx.repo->group != NULL &&
+		     strcmp(ctx.repo->group, last_group))) {
 			htmlf("<tr class='nohover'><td colspan='%d' class='repogroup'>",
 			      columns);
-			html_txt(cgit_repo->group);
+			html_txt(ctx.repo->group);
 			html("</td></tr>");
-			last_group = cgit_repo->group;
+			last_group = ctx.repo->group;
 		}
 		htmlf("<tr><td class='%s'>",
-		      cgit_repo->group ? "sublevel-repo" : "toplevel-repo");
-		html_link_open(cgit_repourl(cgit_repo->url), NULL, NULL);
-		html_txt(cgit_repo->name);
+		      ctx.repo->group ? "sublevel-repo" : "toplevel-repo");
+		html_link_open(cgit_repourl(ctx.repo->url), NULL, NULL);
+		html_txt(ctx.repo->name);
 		html_link_close();
 		html("</td><td>");
-		html_ntxt(ctx.cfg.max_repodesc_len, cgit_repo->desc);
+		html_ntxt(ctx.cfg.max_repodesc_len, ctx.repo->desc);
 		html("</td><td>");
-		html_txt(cgit_repo->owner);
+		html_txt(ctx.repo->owner);
 		html("</td><td>");
-		print_modtime(cgit_repo);
+		print_modtime(ctx.repo);
 		html("</td>");
 		if (ctx.cfg.enable_index_links) {
 			html("<td>");
-			html_link_open(cgit_repourl(cgit_repo->url),
+			html_link_open(cgit_repourl(ctx.repo->url),
 				       NULL, "button");
 			html("summary</a>");
 			cgit_log_link("log", NULL, "button", NULL, NULL, NULL,

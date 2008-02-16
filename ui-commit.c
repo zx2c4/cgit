@@ -194,10 +194,10 @@ void cgit_print_commit(char *hex)
 			       sha1_to_hex(p->item->object.sha1), NULL);
 		html(")</td></tr>");
 	}
-	if (cgit_repo->snapshots) {
+	if (ctx.repo->snapshots) {
 		html("<tr><th>download</th><td colspan='2' class='sha1'>");
 		cgit_print_snapshot_links(ctx.qry.repo, ctx.qry.head,
-					  hex, cgit_repo->snapshots);
+					  hex, ctx.repo->snapshots);
 		html("</td></tr>");
 	}
 	html("</table>\n");
