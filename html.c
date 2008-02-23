@@ -48,9 +48,7 @@ void html_txt(char *txt)
 	while(t && *t){
 		int c = *t;
 		if (c=='<' || c=='>' || c=='&') {
-			*t = '\0';
-			html(txt);
-			*t = c;
+			write(htmlfd, txt, t - txt);
 			if (c=='>')
 				html("&gt;");
 			else if (c=='<')
@@ -71,9 +69,7 @@ void html_ntxt(int len, char *txt)
 	while(t && *t && len--){
 		int c = *t;
 		if (c=='<' || c=='>' || c=='&') {
-			*t = '\0';
-			html(txt);
-			*t = c;
+			write(htmlfd, txt, t - txt);
 			if (c=='>')
 				html("&gt;");
 			else if (c=='<')
@@ -84,12 +80,8 @@ void html_ntxt(int len, char *txt)
 		}
 		t++;
 	}
-	if (t!=txt) {
-		char c = *t;
-		*t = '\0';
-		html(txt);
-		*t = c;
-	}
+	if (t!=txt)
+		write(htmlfd, txt, t - txt);
 	if (len<0)
 		html("...");
 }
@@ -100,9 +92,7 @@ void html_attr(char *txt)
 	while(t && *t){
 		int c = *t;
 		if (c=='<' || c=='>' || c=='\'') {
-			*t = '\0';
-			html(txt);
-			*t = c;
+			write(htmlfd, txt, t - txt);
 			if (c=='>')
 				html("&gt;");
 			else if (c=='<')
