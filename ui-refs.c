@@ -7,9 +7,7 @@
  */
 
 #include "cgit.h"
-
-
-
+#include "html.h"
 
 void cgit_print_refs()
 {

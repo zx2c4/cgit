@@ -7,7 +7,7 @@
  */
 
 #include "cgit.h"
-
+#include "html.h"
 
 unsigned char old_rev_sha1[20];
 unsigned char new_rev_sha1[20];

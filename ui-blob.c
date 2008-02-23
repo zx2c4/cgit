@@ -1,4 +1,13 @@
+/* ui-blob.c: show blob content
+ *
+ * Copyright (C) 2008 Lars Hjemli
+ *
+ * Licensed under GNU General Public License v2
+ *   (see COPYING for full license text)
+ */
+
 #include "cgit.h"
+#include "html.h"
 
 void cgit_print_blob(struct cacheitem *item, const char *hex, char *path)
 {

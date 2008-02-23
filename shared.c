@@ -14,8 +14,6 @@ int cgit_cmd;
 
 const char *cgit_version = CGIT_VERSION;
 
-int htmlfd = 0;
-
 void cgit_prepare_context(struct cgit_context *ctx)
 {
 	memset(ctx, 0, sizeof(ctx));

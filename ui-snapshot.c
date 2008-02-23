@@ -7,6 +7,7 @@
  */
 
 #include "cgit.h"
+#include "html.h"
 
 static int write_compressed_tar_archive(struct archiver_args *args,const char *filter)
 {

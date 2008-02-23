@@ -6,7 +6,13 @@
  *   (see COPYING for full license text)
  */
 
-#include "cgit.h"
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdarg.h>
+#include <string.h>
+
+int htmlfd = STDOUT_FILENO;
 
 char *fmt(const char *format, ...)
 {
@@ -21,8 +27,10 @@ char *fmt(const char *format, ...)
 	va_start(args, format);
 	len = vsnprintf(buf[bufidx], sizeof(buf[bufidx]), format, args);
 	va_end(args);
-	if (len>sizeof(buf[bufidx]))
-		die("[html.c] string truncated: %s", format);
+	if (len>sizeof(buf[bufidx])) {
+		fprintf(stderr, "[html.c] string truncated: %s\n", format);
+		exit(1);
+	}
 	return buf[bufidx];
 }
 
@@ -160,23 +168,8 @@ void html_link_close(void)
 
 void html_fileperm(unsigned short mode)
 {
-	htmlf("%c%c%c", (mode & 4 ? 'r' : '-'), 
+	htmlf("%c%c%c", (mode & 4 ? 'r' : '-'),
 	      (mode & 2 ? 'w' : '-'), (mode & 1 ? 'x' : '-'));
-}
-
-void html_filemode(unsigned short mode)
-{
-	if (S_ISDIR(mode))
-		html("d");
-	else if (S_ISLNK(mode))
-		html("l");
-	else if (S_ISGITLINK(mode))
-		html("m");
-	else
-		html("-");
-	html_fileperm(mode >> 6);
-	html_fileperm(mode >> 3);
-	html_fileperm(mode);
 }
 
 int html_include(const char *filename)

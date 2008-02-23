@@ -7,6 +7,7 @@
  */
 
 #include "cgit.h"
+#include "html.h"
 
 static int files, slots;
 static int total_adds, total_rems, max_changes;
@@ -62,16 +63,16 @@ void print_fileinfo(struct fileinfo *info)
 	html("<tr>");
 	htmlf("<td class='mode'>");
 	if (is_null_sha1(info->new_sha1)) {
-		html_filemode(info->old_mode);
+		cgit_print_filemode(info->old_mode);
 	} else {
-		html_filemode(info->new_mode);
+		cgit_print_filemode(info->new_mode);
 	}
 
 	if (info->old_mode != info->new_mode &&
 	    !is_null_sha1(info->old_sha1) &&
 	    !is_null_sha1(info->new_sha1)) {
 		html("<span class='modechange'>[");
-		html_filemode(info->old_mode);
+		cgit_print_filemode(info->old_mode);
 		html("]</span>");
 	}
 	htmlf("</td><td class='%s'>", class);

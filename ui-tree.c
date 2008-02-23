@@ -7,6 +7,7 @@
  */
 
 #include "cgit.h"
+#include "html.h"
 
 char *curr_rev;
 char *match_path;
@@ -79,7 +80,7 @@ static int ls_item(const unsigned char *sha1, const char *base, int baselen,
 	}
 
 	html("<tr><td class='ls-mode'>");
-	html_filemode(mode);
+	cgit_print_filemode(mode);
 	html("</td><td>");
 	if (S_ISGITLINK(mode)) {
 		htmlf("<a class='ls-mod' href='");

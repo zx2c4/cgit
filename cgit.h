@@ -186,8 +186,6 @@ extern struct cgit_repolist cgit_repolist;
 extern struct cgit_context ctx;
 extern int cgit_cmd;
 
-extern int htmlfd;
-
 extern void cgit_prepare_context(struct cgit_context *ctx);
 extern int cgit_get_cmd_index(const char *cmd);
 extern struct cgit_repo *cgit_get_repoinfo(const char *url);
@@ -221,18 +219,6 @@ extern void cgit_diff_tree(const unsigned char *old_sha1,
 extern void cgit_diff_commit(struct commit *commit, filepair_fn fn);
 
 extern char *fmt(const char *format,...);
-
-extern void html(const char *txt);
-extern void htmlf(const char *format,...);
-extern void html_txt(char *txt);
-extern void html_ntxt(int len, char *txt);
-extern void html_attr(char *txt);
-extern void html_hidden(char *name, char *value);
-extern void html_option(char *value, char *text, char *selected_value);
-extern void html_link_open(char *url, char *title, char *class);
-extern void html_link_close(void);
-extern void html_filemode(unsigned short mode);
-extern int html_include(const char *filename);
 
 extern int cgit_read_config(const char *filename, configfn fn);
 extern int cgit_parse_query(char *txt, configfn fn);
@@ -280,6 +266,7 @@ extern void cgit_print_pageheader(char *title, int show_search);
 extern void cgit_print_snapshot_start(const char *mimetype,
 				      const char *filename,
 				      struct cacheitem *item);
+extern void cgit_print_filemode(unsigned short mode);
 extern void cgit_print_branches(int maxcount);
 extern void cgit_print_tags(int maxcount);
 

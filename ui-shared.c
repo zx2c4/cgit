@@ -7,6 +7,7 @@
  */
 
 #include "cgit.h"
+#include "html.h"
 
 const char cgit_doctype[] =
 "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"\n"
@@ -565,6 +566,21 @@ void cgit_print_snapshot_start(const char *mimetype, const char *filename,
 	htmlf("Expires: %s\n", http_date(item->st.st_mtime +
 					 ttl_seconds(item->ttl)));
 	html("\n");
+}
+
+void cgit_print_filemode(unsigned short mode)
+{
+	if (S_ISDIR(mode))
+		html("d");
+	else if (S_ISLNK(mode))
+		html("l");
+	else if (S_ISGITLINK(mode))
+		html("m");
+	else
+		html("-");
+	html_fileperm(mode >> 6);
+	html_fileperm(mode >> 3);
+	html_fileperm(mode);
 }
 
 /* vim:set sw=8: */

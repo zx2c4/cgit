@@ -291,7 +291,6 @@ int main(int argc, const char **argv)
 	const char *cgit_config_env = getenv("CGIT_CONFIG");
 
 	cgit_prepare_context(&ctx);
-	htmlfd = STDOUT_FILENO;
 	item.st.st_mtime = time(NULL);
 	cgit_repolist.length = 0;
 	cgit_repolist.count = 0;

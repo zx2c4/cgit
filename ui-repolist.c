@@ -6,9 +6,10 @@
  *   (see COPYING for full license text)
  */
 
-#include "cgit.h"
 #include <time.h>
 
+#include "cgit.h"
+#include "html.h"
 
 time_t read_agefile(char *path)
 {

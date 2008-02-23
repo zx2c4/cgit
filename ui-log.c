@@ -7,6 +7,7 @@
  */
 
 #include "cgit.h"
+#include "html.h"
 
 int files, add_lines, rem_lines;
 
