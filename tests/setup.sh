@@ -91,10 +91,10 @@ run_test()
 	res=$?
 	if test $res = 0
 	then
-		printf "  %s: ok - %s\n" $test_count "$desc"
+		printf " %2d) %-60s [ok]\n" $test_count "$desc"
 	else
 		((test_failed++))
-		printf "  %s: fail - %s\n" $test_count "$desc"
+		printf " %2d) %-60s [failed]\n" $test_count "$desc"
 	fi
 }
 
