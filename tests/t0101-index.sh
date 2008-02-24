@@ -9,7 +9,7 @@ run_test 'find foo repo' 'grep -e "foo" trash/tmp'
 run_test 'find foo description' 'grep -e "\[no description\]" trash/tmp'
 run_test 'find bar repo' 'grep -e "bar" trash/tmp'
 run_test 'find bar description' 'grep -e "the bar repo" trash/tmp'
-run_test 'no tree-link' 'grep -ve "foo/tree" trash/tmp'
-run_test 'no log-link' 'grep -ve "foo/log" trash/tmp'
+run_test 'no tree-link' '! grep -e "foo/tree" trash/tmp'
+run_test 'no log-link' '! grep -e "foo/log" trash/tmp'
 
 tests_done
