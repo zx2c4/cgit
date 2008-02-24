@@ -67,8 +67,10 @@ EOF
 prepare_tests()
 {
 	setup_repos
+	rm -f test-output.log 2>/dev/null
 	test_count=0
 	test_failed=0
+	echo "[$0]" "$@" >test-output.log
 	echo "$@" "($0)"
 }
 
@@ -77,7 +79,8 @@ tests_done()
 	printf "\n"
 	if test $test_failed -gt 0
 	then
-		printf "[%s of %s tests failed]\n" $test_failed $test_count
+		printf "test: *** %s failure(s), logfile=%s\n" \
+			$test_failed "$(pwd)/test-output.log"
 		false
 	fi
 }
@@ -87,8 +90,11 @@ run_test()
 	desc=$1
 	script=$2
 	((test_count++))
-	eval "$2" >test-output.log
+	printf "\ntest %d: name='%s'\n" $test_count "$desc" >>test-output.log
+	printf "test %d: eval='%s'\n" $test_count "$2" >>test-output.log
+	eval "$2" >>test-output.log 2>>test-output.log
 	res=$?
+	printf "test %d: exitcode=%d\n" $test_count $res >>test-output.log
 	if test $res = 0
 	then
 		printf " %2d) %-60s [ok]\n" $test_count "$desc"
