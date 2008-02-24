@@ -7,9 +7,12 @@ test_url()
 {
 	tidy_opt="-eq"
 	test -z "$NO_TIDY_WARNINGS" || tidy_opt+=" --show-warnings no"
-	cgit_url "$1" | sed -e "1,4d" >trash/tidy-$test_count
+	cgit_url "$1" >trash/tidy-$test_count || return
+	sed -ie "1,4d" trash/tidy-$test_count || return
 	tidy $tidy_opt trash/tidy-$test_count
 	rc=$?
+
+	# tidy returns with exitcode 1 on warnings, 2 on error
 	if test $rc = 2
 	then
 		false
