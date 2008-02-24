@@ -54,7 +54,9 @@ summary-tags=5
 
 repo.url=foo
 repo.path=$PWD/trash/repos/foo/.git
-repo.desc=the foo repo
+# Do not specify a description for this repo, as it then will be assigned
+# the constant value "[no description]" (which actually used to cause a
+# segfault).
 
 repo.url=bar
 repo.path=$PWD/trash/repos/bar/.git
