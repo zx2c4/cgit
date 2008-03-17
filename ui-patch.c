@@ -88,7 +88,11 @@ void cgit_print_patch(char *hex, struct cacheitem *item)
 		return;
 	}
 	info = cgit_parse_commit(commit);
-	hashcpy(old_sha1, commit->parents->item->object.sha1);
+
+	if (commit->parents && commit->parents->item)
+		hashcpy(old_sha1, commit->parents->item->object.sha1);
+	else
+		hashclr(old_sha1);
 
 	patchname = fmt("%s.patch", sha1_to_hex(sha1));
 	cgit_print_snapshot_start("text/plain", patchname, item);
