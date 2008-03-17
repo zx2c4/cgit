@@ -4,7 +4,7 @@ CGIT_SCRIPT_PATH = /var/www/htdocs/cgit
 CGIT_CONFIG = /etc/cgitrc
 CACHE_ROOT = /var/cache/cgit
 SHA1_HEADER = <openssl/sha.h>
-GIT_VER = 1.5.4.1
+GIT_VER = 1.5.4.4
 GIT_URL = http://www.kernel.org/pub/software/scm/git/git-$(GIT_VER).tar.bz2
 
 #
