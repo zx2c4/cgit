@@ -35,6 +35,9 @@ void cgit_prepare_context(struct cgit_context *ctx)
 	ctx->cfg.robots = "index, nofollow";
 	ctx->cfg.root_title = "Git repository browser";
 	ctx->cfg.script_name = CGIT_SCRIPT_NAME;
+	ctx->page.mimetype = "text/html";
+	ctx->page.charset = PAGE_ENCODING;
+	ctx->page.filename = NULL;
 }
 
 int cgit_get_cmd_index(const char *cmd)

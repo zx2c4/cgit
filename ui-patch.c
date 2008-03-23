@@ -92,7 +92,9 @@ void cgit_print_patch(char *hex, struct cacheitem *item)
 	hashcpy(old_sha1, commit->parents->item->object.sha1);
 
 	patchname = fmt("%s.patch", sha1_to_hex(sha1));
-	cgit_print_snapshot_start("text/plain", patchname, item);
+	ctx.page.mimetype = "text/plain";
+	ctx.page.filename = patchname;
+	cgit_print_http_headers(&ctx);
 	htmlf("From %s Mon Sep 17 00:00:00 2001\n", sha1_to_hex(sha1));
 	htmlf("From: %s%s\n", info->author, info->author_email);
 	html("Date: ");

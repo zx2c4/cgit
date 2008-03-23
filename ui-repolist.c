@@ -51,8 +51,10 @@ void cgit_print_repolist(struct cacheitem *item)
 	if (ctx.cfg.enable_index_links)
 		columns++;
 
-	cgit_print_docstart(ctx.cfg.root_title, item);
-	cgit_print_pageheader(ctx.cfg.root_title, 0);
+	ctx.page.title = ctx.cfg.root_title;
+	cgit_print_http_headers(&ctx);
+	cgit_print_docstart(&ctx);
+	cgit_print_pageheader(&ctx);
 
 	html("<table summary='repository list' class='list nowrap'>");
 	if (ctx.cfg.index_header) {

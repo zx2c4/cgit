@@ -174,10 +174,20 @@ struct cgit_config {
 	int summary_tags;
 };
 
+struct cgit_page {
+	time_t modified;
+	time_t expires;
+	char *mimetype;
+	char *charset;
+	char *filename;
+	char *title;
+};
+
 struct cgit_context {
 	struct cgit_query qry;
 	struct cgit_config cfg;
 	struct cgit_repo *repo;
+	struct cgit_page page;
 };
 
 extern const char *cgit_version;
@@ -260,12 +270,10 @@ extern void cgit_object_link(struct object *obj);
 extern void cgit_print_error(char *msg);
 extern void cgit_print_date(time_t secs, char *format);
 extern void cgit_print_age(time_t t, time_t max_relative, char *format);
-extern void cgit_print_docstart(char *title, struct cacheitem *item);
+extern void cgit_print_http_headers(struct cgit_context *ctx);
+extern void cgit_print_docstart(struct cgit_context *ctx);
 extern void cgit_print_docend();
-extern void cgit_print_pageheader(char *title, int show_search);
-extern void cgit_print_snapshot_start(const char *mimetype,
-				      const char *filename,
-				      struct cacheitem *item);
+extern void cgit_print_pageheader(struct cgit_context *ctx);
 extern void cgit_print_filemode(unsigned short mode);
 extern void cgit_print_branches(int maxcount);
 extern void cgit_print_tags(int maxcount);

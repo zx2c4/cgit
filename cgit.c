@@ -7,13 +7,16 @@
  */
 
 #include "cgit.h"
+#include "cmd.h"
 
 static int cgit_prepare_cache(struct cacheitem *item)
 {
 	if (!ctx.repo && ctx.qry.repo) {
-		char *title = fmt("%s - %s", ctx.cfg.root_title, "Bad request");
-		cgit_print_docstart(title, item);
-		cgit_print_pageheader(title, 0);
+		ctx.page.title = fmt("%s - %s", ctx.cfg.root_title,
+				      "Bad request");
+		cgit_print_http_headers(&ctx);
+		cgit_print_docstart(&ctx);
+		cgit_print_pageheader(&ctx);
 		cgit_print_error(fmt("Unknown repo: %s", ctx.qry.repo));
 		cgit_print_docend();
 		return 0;
@@ -80,7 +83,7 @@ char *find_default_branch(struct cgit_repo *repo)
 
 static void cgit_print_repo_page(struct cacheitem *item)
 {
-	char *title, *tmp;
+	char *tmp;
 	int show_search;
 	unsigned char sha1[20];
 	int nongit = 0;
@@ -88,17 +91,19 @@ static void cgit_print_repo_page(struct cacheitem *item)
 	setenv("GIT_DIR", ctx.repo->path, 1);
 	setup_git_directory_gently(&nongit);
 	if (nongit) {
-		title = fmt("%s - %s", ctx.cfg.root_title, "config error");
+		ctx.page.title = fmt("%s - %s", ctx.cfg.root_title,
+				     "config error");
 		tmp = fmt("Not a git repository: '%s'", ctx.repo->path);
 		ctx.repo = NULL;
-		cgit_print_docstart(title, item);
-		cgit_print_pageheader(title, 0);
+		cgit_print_http_headers(&ctx);
+		cgit_print_docstart(&ctx);
+		cgit_print_pageheader(&ctx);
 		cgit_print_error(tmp);
 		cgit_print_docend();
 		return;
 	}
 
-	title = fmt("%s - %s", ctx.repo->name, ctx.repo->desc);
+	ctx.page.title = fmt("%s - %s", ctx.repo->name, ctx.repo->desc);
 	show_search = 0;
 
 	if (!ctx.qry.head) {
@@ -107,8 +112,9 @@ static void cgit_print_repo_page(struct cacheitem *item)
 	}
 
 	if (!ctx.qry.head) {
-		cgit_print_docstart(title, item);
-		cgit_print_pageheader(title, 0);
+		cgit_print_http_headers(&ctx);
+		cgit_print_docstart(&ctx);
+		cgit_print_pageheader(&ctx);
 		cgit_print_error("Repository seems to be empty");
 		cgit_print_docend();
 		return;
@@ -117,8 +123,9 @@ static void cgit_print_repo_page(struct cacheitem *item)
 	if (get_sha1(ctx.qry.head, sha1)) {
 		tmp = xstrdup(ctx.qry.head);
 		ctx.qry.head = ctx.repo->defbranch;
-		cgit_print_docstart(title, item);
-		cgit_print_pageheader(title, 0);
+		cgit_print_http_headers(&ctx);
+		cgit_print_docstart(&ctx);
+		cgit_print_pageheader(&ctx);
 		cgit_print_error(fmt("Invalid branch: %s", tmp));
 		cgit_print_docend();
 		return;
@@ -143,15 +150,16 @@ static void cgit_print_repo_page(struct cacheitem *item)
 	}
 
 	show_search = (cgit_cmd == CMD_LOG);
-	cgit_print_docstart(title, item);
+	cgit_print_http_headers(&ctx);
+	cgit_print_docstart(&ctx);
 	if (!cgit_cmd) {
-		cgit_print_pageheader("summary", show_search);
+		cgit_print_pageheader(&ctx);
 		cgit_print_summary();
 		cgit_print_docend();
 		return;
 	}
 
-	cgit_print_pageheader(ctx.qry.page, show_search);
+	cgit_print_pageheader(&ctx);
 
 	switch(cgit_cmd) {
 	case CMD_LOG:
@@ -180,11 +188,17 @@ static void cgit_print_repo_page(struct cacheitem *item)
 	cgit_print_docend();
 }
 
+static long ttl_seconds(long ttl)
+{
+	if (ttl<0)
+		return 60 * 60 * 24 * 365;
+	else
+		return ttl * 60;
+}
+
 static void cgit_fill_cache(struct cacheitem *item, int use_cache)
 {
 	int stdout2;
-
-	item->st.st_mtime = time(NULL);
 
 	if (use_cache) {
 		stdout2 = chk_positive(dup(STDOUT_FILENO),
@@ -193,6 +207,8 @@ static void cgit_fill_cache(struct cacheitem *item, int use_cache)
 		chk_positive(dup2(item->fd, STDOUT_FILENO), "Dup2(cachefile)");
 	}
 
+	ctx.page.modified = time(NULL);
+	ctx.page.expires = ctx.page.modified + ttl_seconds(item->ttl);
 	if (ctx.repo)
 		cgit_print_repo_page(item);
 	else

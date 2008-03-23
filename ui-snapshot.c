@@ -101,7 +101,9 @@ void cgit_print_snapshot(struct cacheitem *item, const char *head,
 		args.base = fmt("%s/", prefix);
 		args.tree = commit->tree;
 		args.time = commit->date;
-		cgit_print_snapshot_start(sat->mimetype, filename, item);
+		ctx.page.mimetype = xstrdup(sat->mimetype);
+		ctx.page.filename = xstrdup(filename);
+		cgit_print_http_headers(&ctx);
 		(*sat->write_func)(&args);
 		return;
 	}

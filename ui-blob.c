@@ -35,6 +35,8 @@ void cgit_print_blob(struct cacheitem *item, const char *hex, char *path)
 	}
 
 	buf[size] = '\0';
-	cgit_print_snapshot_start("text/plain", path, item);
+	ctx.page.mimetype = "text/plain";
+	ctx.page.filename = path;
+	cgit_print_http_headers(&ctx);
 	write(htmlfd, buf, size);
 }
