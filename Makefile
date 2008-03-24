@@ -13,6 +13,13 @@ GIT_URL = http://www.kernel.org/pub/software/scm/git/git-$(GIT_VER).tar.bz2
 -include cgit.conf
 
 
+#
+# Define a pattern rule for automatic dependency building
+#
+%.d: %.c
+	$(CC) $(CFLAGS) -MM $< | sed -e 's/\($*\)\.o:/\1.o $@:/g' >$@
+
+
 EXTLIBS = git/libgit.a git/xdiff/lib.a -lz -lcrypto
 OBJECTS =
 OBJECTS += cache.o
@@ -61,6 +68,8 @@ cgit: $(OBJECTS)
 
 $(OBJECTS): git/xdiff/lib.a git/libgit.a VERSION
 
+-include $(OBJECTS:.o=.d)
+
 git/xdiff/lib.a: | git
 
 git/libgit.a: | git
@@ -84,7 +93,7 @@ uninstall:
 	rm -f $(CGIT_SCRIPT_PATH)/cgit.png
 
 clean:
-	rm -f cgit VERSION *.o
+	rm -f cgit VERSION *.o *.d
 	cd git && $(MAKE) clean
 
 distclean: clean

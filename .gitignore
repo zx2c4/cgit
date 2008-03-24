@@ -3,3 +3,4 @@ cgit
 cgit.conf
 VERSION
 *.o
+*.d
