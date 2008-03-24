@@ -66,7 +66,9 @@ CFLAGS += -DCGIT_CACHE_ROOT='"$(CACHE_ROOT)"'
 cgit: $(OBJECTS)
 	$(CC) $(CFLAGS) -o cgit $(OBJECTS) $(EXTLIBS)
 
-$(OBJECTS): git/xdiff/lib.a git/libgit.a VERSION
+$(OBJECTS): git/xdiff/lib.a git/libgit.a
+
+cgit.o: VERSION
 
 -include $(OBJECTS:.o=.d)
 

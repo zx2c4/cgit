@@ -12,8 +12,6 @@ struct cgit_repolist cgit_repolist;
 struct cgit_context ctx;
 int cgit_cmd;
 
-const char *cgit_version = CGIT_VERSION;
-
 int chk_zero(int result, char *msg)
 {
 	if (result != 0)

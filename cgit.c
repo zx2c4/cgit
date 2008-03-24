@@ -10,6 +10,8 @@
 #include "cmd.h"
 #include "ui-shared.h"
 
+const char *cgit_version = CGIT_VERSION;
+
 void config_cb(const char *name, const char *value)
 {
 	if (!strcmp(name, "root-title"))
