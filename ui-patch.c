@@ -69,7 +69,7 @@ static void filepair_cb(struct diff_filepair *pair)
 		html("Error running diff");
 }
 
-void cgit_print_patch(char *hex, struct cacheitem *item)
+void cgit_print_patch(char *hex)
 {
 	struct commit *commit;
 	struct commitinfo *info;

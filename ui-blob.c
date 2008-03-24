@@ -9,7 +9,7 @@
 #include "cgit.h"
 #include "html.h"
 
-void cgit_print_blob(struct cacheitem *item, const char *hex, char *path)
+void cgit_print_blob(const char *hex, char *path)
 {
 
 	unsigned char sha1[20];

@@ -69,8 +69,7 @@ static const struct snapshot_archive_t {
 
 #define snapshot_archives_len (sizeof(snapshot_archives) / sizeof(*snapshot_archives))
 
-void cgit_print_snapshot(struct cacheitem *item, const char *head,
-			 const char *hex, const char *prefix,
+void cgit_print_snapshot(const char *head, const char *hex, const char *prefix,
 			 const char *filename, int snapshots)
 {
 	const struct snapshot_archive_t* sat;

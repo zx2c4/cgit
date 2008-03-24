@@ -43,7 +43,7 @@ static void print_modtime(struct cgit_repo *repo)
 	cgit_print_age(s.st_mtime, -1, NULL);
 }
 
-void cgit_print_repolist(struct cacheitem *item)
+void cgit_print_repolist()
 {
 	int i, columns = 4;
 	char *last_group = NULL;

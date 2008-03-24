@@ -81,7 +81,7 @@ char *find_default_branch(struct cgit_repo *repo)
 		return info.first_ref;
 }
 
-static void cgit_print_repo_page(struct cacheitem *item)
+static void cgit_print_repo_page()
 {
 	char *tmp;
 	int show_search;
@@ -132,7 +132,7 @@ static void cgit_print_repo_page(struct cacheitem *item)
 	}
 
 	if ((cgit_cmd == CMD_SNAPSHOT) && ctx.repo->snapshots) {
-		cgit_print_snapshot(item, ctx.qry.head, ctx.qry.sha1,
+		cgit_print_snapshot(ctx.qry.head, ctx.qry.sha1,
 				    cgit_repobasename(ctx.repo->url),
 				    ctx.qry.path,
 				    ctx.repo->snapshots );
@@ -140,12 +140,12 @@ static void cgit_print_repo_page(struct cacheitem *item)
 	}
 
 	if (cgit_cmd == CMD_PATCH) {
-		cgit_print_patch(ctx.qry.sha1, item);
+		cgit_print_patch(ctx.qry.sha1);
 		return;
 	}
 
 	if (cgit_cmd == CMD_BLOB) {
-		cgit_print_blob(item, ctx.qry.sha1, ctx.qry.path);
+		cgit_print_blob(ctx.qry.sha1, ctx.qry.path);
 		return;
 	}
 
@@ -210,9 +210,9 @@ static void cgit_fill_cache(struct cacheitem *item, int use_cache)
 	ctx.page.modified = time(NULL);
 	ctx.page.expires = ctx.page.modified + ttl_seconds(item->ttl);
 	if (ctx.repo)
-		cgit_print_repo_page(item);
+		cgit_print_repo_page();
 	else
-		cgit_print_repolist(item);
+		cgit_print_repolist();
 
 	if (use_cache) {
 		chk_zero(close(STDOUT_FILENO), "Close redirected STDOUT");

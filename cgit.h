@@ -278,20 +278,20 @@ extern void cgit_print_filemode(unsigned short mode);
 extern void cgit_print_branches(int maxcount);
 extern void cgit_print_tags(int maxcount);
 
-extern void cgit_print_repolist(struct cacheitem *item);
+extern void cgit_print_repolist();
 extern void cgit_print_summary();
 extern void cgit_print_log(const char *tip, int ofs, int cnt, char *grep,
 			   char *pattern, char *path, int pager);
-extern void cgit_print_blob(struct cacheitem *item, const char *hex, char *path);
+extern void cgit_print_blob(const char *hex, char *path);
 extern void cgit_print_tree(const char *rev, char *path);
 extern void cgit_print_commit(char *hex);
 extern void cgit_print_refs();
 extern void cgit_print_tag(char *revname);
 extern void cgit_print_diff(const char *new_hex, const char *old_hex, const char *prefix);
-extern void cgit_print_patch(char *hex, struct cacheitem *item);
-extern void cgit_print_snapshot(struct cacheitem *item, const char *head,
-				const char *hex, const char *prefix,
-				const char *filename, int snapshot);
+extern void cgit_print_patch(char *hex);
+extern void cgit_print_snapshot(const char *head, const char *hex,
+				const char *prefix, const char *filename,
+				int snapshot);
 extern void cgit_print_snapshot_links(const char *repo, const char *head,
 				      const char *hex, int snapshots);
 extern int cgit_parse_snapshots_mask(const char *str);
