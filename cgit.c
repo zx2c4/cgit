@@ -81,111 +81,84 @@ char *find_default_branch(struct cgit_repo *repo)
 		return info.first_ref;
 }
 
-static void cgit_print_repo_page()
+static int prepare_repo_cmd(struct cgit_context *ctx)
 {
 	char *tmp;
-	int show_search;
 	unsigned char sha1[20];
 	int nongit = 0;
 
-	setenv("GIT_DIR", ctx.repo->path, 1);
+	setenv("GIT_DIR", ctx->repo->path, 1);
 	setup_git_directory_gently(&nongit);
 	if (nongit) {
-		ctx.page.title = fmt("%s - %s", ctx.cfg.root_title,
-				     "config error");
-		tmp = fmt("Not a git repository: '%s'", ctx.repo->path);
-		ctx.repo = NULL;
-		cgit_print_http_headers(&ctx);
-		cgit_print_docstart(&ctx);
-		cgit_print_pageheader(&ctx);
+		ctx->page.title = fmt("%s - %s", ctx->cfg.root_title,
+				      "config error");
+		tmp = fmt("Not a git repository: '%s'", ctx->repo->path);
+		ctx->repo = NULL;
+		cgit_print_http_headers(ctx);
+		cgit_print_docstart(ctx);
+		cgit_print_pageheader(ctx);
 		cgit_print_error(tmp);
 		cgit_print_docend();
-		return;
+		return 1;
+	}
+	ctx->page.title = fmt("%s - %s", ctx->repo->name, ctx->repo->desc);
+
+	if (!ctx->qry.head) {
+		ctx->qry.head = xstrdup(find_default_branch(ctx->repo));
+		ctx->repo->defbranch = ctx->qry.head;
 	}
 
-	ctx.page.title = fmt("%s - %s", ctx.repo->name, ctx.repo->desc);
-	show_search = 0;
-
-	if (!ctx.qry.head) {
-		ctx.qry.head = xstrdup(find_default_branch(ctx.repo));
-		ctx.repo->defbranch = ctx.qry.head;
-	}
-
-	if (!ctx.qry.head) {
-		cgit_print_http_headers(&ctx);
-		cgit_print_docstart(&ctx);
-		cgit_print_pageheader(&ctx);
+	if (!ctx->qry.head) {
+		cgit_print_http_headers(ctx);
+		cgit_print_docstart(ctx);
+		cgit_print_pageheader(ctx);
 		cgit_print_error("Repository seems to be empty");
 		cgit_print_docend();
-		return;
+		return 1;
 	}
 
-	if (get_sha1(ctx.qry.head, sha1)) {
-		tmp = xstrdup(ctx.qry.head);
-		ctx.qry.head = ctx.repo->defbranch;
-		cgit_print_http_headers(&ctx);
-		cgit_print_docstart(&ctx);
-		cgit_print_pageheader(&ctx);
+	if (get_sha1(ctx->qry.head, sha1)) {
+		tmp = xstrdup(ctx->qry.head);
+		ctx->qry.head = ctx->repo->defbranch;
+		cgit_print_http_headers(ctx);
+		cgit_print_docstart(ctx);
+		cgit_print_pageheader(ctx);
 		cgit_print_error(fmt("Invalid branch: %s", tmp));
 		cgit_print_docend();
-		return;
+		return 1;
 	}
+	return 0;
+}
 
-	if ((cgit_cmd == CMD_SNAPSHOT) && ctx.repo->snapshots) {
-		cgit_print_snapshot(ctx.qry.head, ctx.qry.sha1,
-				    cgit_repobasename(ctx.repo->url),
-				    ctx.qry.path,
-				    ctx.repo->snapshots );
-		return;
-	}
+static void process_request(struct cgit_context *ctx)
+{
+	struct cgit_cmd *cmd;
 
-	if (cgit_cmd == CMD_PATCH) {
-		cgit_print_patch(ctx.qry.sha1);
-		return;
-	}
-
-	if (cgit_cmd == CMD_BLOB) {
-		cgit_print_blob(ctx.qry.sha1, ctx.qry.path);
-		return;
-	}
-
-	show_search = (cgit_cmd == CMD_LOG);
-	cgit_print_http_headers(&ctx);
-	cgit_print_docstart(&ctx);
-	if (!cgit_cmd) {
-		cgit_print_pageheader(&ctx);
-		cgit_print_summary();
+	cmd = cgit_get_cmd(ctx);
+	if (!cmd) {
+		ctx->page.title = "cgit error";
+		ctx->repo = NULL;
+		cgit_print_http_headers(ctx);
+		cgit_print_docstart(ctx);
+		cgit_print_pageheader(ctx);
+		cgit_print_error("Invalid request");
 		cgit_print_docend();
 		return;
 	}
 
-	cgit_print_pageheader(&ctx);
+	if (cmd->want_repo && prepare_repo_cmd(ctx))
+		return;
 
-	switch(cgit_cmd) {
-	case CMD_LOG:
-		cgit_print_log(ctx.qry.sha1, ctx.qry.ofs,
-			       ctx.cfg.max_commit_count, ctx.qry.grep, ctx.qry.search,
-			       ctx.qry.path, 1);
-		break;
-	case CMD_TREE:
-		cgit_print_tree(ctx.qry.sha1, ctx.qry.path);
-		break;
-	case CMD_COMMIT:
-		cgit_print_commit(ctx.qry.sha1);
-		break;
-	case CMD_REFS:
-		cgit_print_refs();
-		break;
-	case CMD_TAG:
-		cgit_print_tag(ctx.qry.sha1);
-		break;
-	case CMD_DIFF:
-		cgit_print_diff(ctx.qry.sha1, ctx.qry.sha2, ctx.qry.path);
-		break;
-	default:
-		cgit_print_error("Invalid request");
+	if (cmd->want_layout) {
+		cgit_print_http_headers(ctx);
+		cgit_print_docstart(ctx);
+		cgit_print_pageheader(ctx);
 	}
-	cgit_print_docend();
+
+	cmd->fn(ctx);
+
+	if (cmd->want_layout)
+		cgit_print_docend();
 }
 
 static long ttl_seconds(long ttl)
@@ -209,10 +182,7 @@ static void cgit_fill_cache(struct cacheitem *item, int use_cache)
 
 	ctx.page.modified = time(NULL);
 	ctx.page.expires = ctx.page.modified + ttl_seconds(item->ttl);
-	if (ctx.repo)
-		cgit_print_repo_page();
-	else
-		cgit_print_repolist();
+	process_request(&ctx);
 
 	if (use_cache) {
 		chk_zero(close(STDOUT_FILENO), "Close redirected STDOUT");

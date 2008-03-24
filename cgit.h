@@ -20,19 +20,6 @@
 
 
 /*
- * The valid cgit repo-commands
- */
-#define CMD_LOG      1
-#define CMD_COMMIT   2
-#define CMD_DIFF     3
-#define CMD_TREE     4
-#define CMD_BLOB     5
-#define CMD_SNAPSHOT 6
-#define CMD_TAG      7
-#define CMD_REFS     8
-#define CMD_PATCH    9
-
-/*
  * Dateformats used on misc. pages
  */
 #define FMT_LONGDATE "%Y-%m-%d %H:%M:%S"
@@ -197,7 +184,6 @@ extern struct cgit_context ctx;
 extern int cgit_cmd;
 
 extern void cgit_prepare_context(struct cgit_context *ctx);
-extern int cgit_get_cmd_index(const char *cmd);
 extern struct cgit_repo *cgit_get_repoinfo(const char *url);
 extern void cgit_global_config_cb(const char *name, const char *value);
 extern void cgit_repo_config_cb(const char *name, const char *value);

@@ -170,8 +170,8 @@ void cgit_parse_url(const char *url)
 			if (p[1])
 				ctx.qry.path = trim_end(p + 1, '/');
 		}
-		cgit_cmd = cgit_get_cmd_index(cmd + 1);
-		ctx.qry.page = xstrdup(cmd + 1);
+		if (cmd[1])
+			ctx.qry.page = xstrdup(cmd + 1);
 		return;
 	}
 }

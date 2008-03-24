@@ -40,18 +40,6 @@ void cgit_prepare_context(struct cgit_context *ctx)
 	ctx->page.filename = NULL;
 }
 
-int cgit_get_cmd_index(const char *cmd)
-{
-	static char *cmds[] = {"log", "commit", "diff", "tree", "blob",
-			       "snapshot", "tag", "refs", "patch", NULL};
-	int i;
-
-	for(i = 0; cmds[i]; i++)
-		if (!strcmp(cmd, cmds[i]))
-			return i + 1;
-	return 0;
-}
-
 int chk_zero(int result, char *msg)
 {
 	if (result != 0)
@@ -216,7 +204,6 @@ void cgit_querystring_cb(const char *name, const char *value)
 		ctx.repo = cgit_get_repoinfo(value);
 	} else if (!strcmp(name, "p")) {
 		ctx.qry.page = xstrdup(value);
-		cgit_cmd = cgit_get_cmd_index(value);
 	} else if (!strcmp(name, "url")) {
 		cgit_parse_url(value);
 	} else if (!strcmp(name, "qt")) {

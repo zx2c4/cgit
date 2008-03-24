@@ -16,7 +16,7 @@ GIT_URL = http://www.kernel.org/pub/software/scm/git/git-$(GIT_VER).tar.bz2
 EXTLIBS = git/libgit.a git/xdiff/lib.a -lz -lcrypto
 OBJECTS = shared.o cache.o parsing.o html.o ui-shared.o ui-repolist.o \
 	ui-summary.o ui-log.o ui-tree.o ui-commit.o ui-diff.o \
-	ui-snapshot.o ui-blob.o ui-tag.o ui-refs.o ui-patch.o
+	ui-snapshot.o ui-blob.o ui-tag.o ui-refs.o ui-patch.o cmd.o
 
 
 ifdef NEEDS_LIBICONV
