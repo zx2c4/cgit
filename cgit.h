@@ -191,11 +191,9 @@ extern struct cgit_context ctx;
 extern const struct cgit_snapshot_format cgit_snapshot_formats[];
 extern int cgit_cmd;
 
-extern void cgit_prepare_context(struct cgit_context *ctx);
+extern struct cgit_repo *cgit_add_repo(const char *url);
 extern struct cgit_repo *cgit_get_repoinfo(const char *url);
-extern void cgit_global_config_cb(const char *name, const char *value);
 extern void cgit_repo_config_cb(const char *name, const char *value);
-extern void cgit_querystring_cb(const char *name, const char *value);
 
 extern int chk_zero(int result, char *msg);
 extern int chk_positive(int result, char *msg);

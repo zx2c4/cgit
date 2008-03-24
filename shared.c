@@ -14,32 +14,6 @@ int cgit_cmd;
 
 const char *cgit_version = CGIT_VERSION;
 
-void cgit_prepare_context(struct cgit_context *ctx)
-{
-	memset(ctx, 0, sizeof(ctx));
-	ctx->cfg.agefile = "info/web/last-modified";
-	ctx->cfg.cache_dynamic_ttl = 5;
-	ctx->cfg.cache_max_create_time = 5;
-	ctx->cfg.cache_repo_ttl = 5;
-	ctx->cfg.cache_root = CGIT_CACHE_ROOT;
-	ctx->cfg.cache_root_ttl = 5;
-	ctx->cfg.cache_static_ttl = -1;
-	ctx->cfg.css = "/cgit.css";
-	ctx->cfg.logo = "/git-logo.png";
-	ctx->cfg.max_commit_count = 50;
-	ctx->cfg.max_lock_attempts = 5;
-	ctx->cfg.max_msg_len = 60;
-	ctx->cfg.max_repodesc_len = 60;
-	ctx->cfg.module_link = "./?repo=%s&page=commit&id=%s";
-	ctx->cfg.renamelimit = -1;
-	ctx->cfg.robots = "index, nofollow";
-	ctx->cfg.root_title = "Git repository browser";
-	ctx->cfg.script_name = CGIT_SCRIPT_NAME;
-	ctx->page.mimetype = "text/html";
-	ctx->page.charset = PAGE_ENCODING;
-	ctx->page.filename = NULL;
-}
-
 int chk_zero(int result, char *msg)
 {
 	if (result != 0)
@@ -61,7 +35,7 @@ int chk_non_negative(int result, char *msg)
 	return result;
 }
 
-struct cgit_repo *add_repo(const char *url)
+struct cgit_repo *cgit_add_repo(const char *url)
 {
 	struct cgit_repo *ret;
 
@@ -102,130 +76,6 @@ struct cgit_repo *cgit_get_repoinfo(const char *url)
 			return repo;
 	}
 	return NULL;
-}
-
-void cgit_global_config_cb(const char *name, const char *value)
-{
-	if (!strcmp(name, "root-title"))
-		ctx.cfg.root_title = xstrdup(value);
-	else if (!strcmp(name, "css"))
-		ctx.cfg.css = xstrdup(value);
-	else if (!strcmp(name, "logo"))
-		ctx.cfg.logo = xstrdup(value);
-	else if (!strcmp(name, "index-header"))
-		ctx.cfg.index_header = xstrdup(value);
-	else if (!strcmp(name, "index-info"))
-		ctx.cfg.index_info = xstrdup(value);
-	else if (!strcmp(name, "logo-link"))
-		ctx.cfg.logo_link = xstrdup(value);
-	else if (!strcmp(name, "module-link"))
-		ctx.cfg.module_link = xstrdup(value);
-	else if (!strcmp(name, "virtual-root")) {
-		ctx.cfg.virtual_root = trim_end(value, '/');
-		if (!ctx.cfg.virtual_root && (!strcmp(value, "/")))
-			ctx.cfg.virtual_root = "";
-	} else if (!strcmp(name, "nocache"))
-		ctx.cfg.nocache = atoi(value);
-	else if (!strcmp(name, "snapshots"))
-		ctx.cfg.snapshots = cgit_parse_snapshots_mask(value);
-	else if (!strcmp(name, "enable-index-links"))
-		ctx.cfg.enable_index_links = atoi(value);
-	else if (!strcmp(name, "enable-log-filecount"))
-		ctx.cfg.enable_log_filecount = atoi(value);
-	else if (!strcmp(name, "enable-log-linecount"))
-		ctx.cfg.enable_log_linecount = atoi(value);
-	else if (!strcmp(name, "cache-root"))
-		ctx.cfg.cache_root = xstrdup(value);
-	else if (!strcmp(name, "cache-root-ttl"))
-		ctx.cfg.cache_root_ttl = atoi(value);
-	else if (!strcmp(name, "cache-repo-ttl"))
-		ctx.cfg.cache_repo_ttl = atoi(value);
-	else if (!strcmp(name, "cache-static-ttl"))
-		ctx.cfg.cache_static_ttl = atoi(value);
-	else if (!strcmp(name, "cache-dynamic-ttl"))
-		ctx.cfg.cache_dynamic_ttl = atoi(value);
-	else if (!strcmp(name, "max-message-length"))
-		ctx.cfg.max_msg_len = atoi(value);
-	else if (!strcmp(name, "max-repodesc-length"))
-		ctx.cfg.max_repodesc_len = atoi(value);
-	else if (!strcmp(name, "max-commit-count"))
-		ctx.cfg.max_commit_count = atoi(value);
-	else if (!strcmp(name, "summary-log"))
-		ctx.cfg.summary_log = atoi(value);
-	else if (!strcmp(name, "summary-branches"))
-		ctx.cfg.summary_branches = atoi(value);
-	else if (!strcmp(name, "summary-tags"))
-		ctx.cfg.summary_tags = atoi(value);
-	else if (!strcmp(name, "agefile"))
-		ctx.cfg.agefile = xstrdup(value);
-	else if (!strcmp(name, "renamelimit"))
-		ctx.cfg.renamelimit = atoi(value);
-	else if (!strcmp(name, "robots"))
-		ctx.cfg.robots = xstrdup(value);
-	else if (!strcmp(name, "clone-prefix"))
-		ctx.cfg.clone_prefix = xstrdup(value);
-	else if (!strcmp(name, "repo.group"))
-		ctx.cfg.repo_group = xstrdup(value);
-	else if (!strcmp(name, "repo.url"))
-		ctx.repo = add_repo(value);
-	else if (!strcmp(name, "repo.name"))
-		ctx.repo->name = xstrdup(value);
-	else if (ctx.repo && !strcmp(name, "repo.path"))
-		ctx.repo->path = trim_end(value, '/');
-	else if (ctx.repo && !strcmp(name, "repo.clone-url"))
-		ctx.repo->clone_url = xstrdup(value);
-	else if (ctx.repo && !strcmp(name, "repo.desc"))
-		ctx.repo->desc = xstrdup(value);
-	else if (ctx.repo && !strcmp(name, "repo.owner"))
-		ctx.repo->owner = xstrdup(value);
-	else if (ctx.repo && !strcmp(name, "repo.defbranch"))
-		ctx.repo->defbranch = xstrdup(value);
-	else if (ctx.repo && !strcmp(name, "repo.snapshots"))
-		ctx.repo->snapshots = ctx.cfg.snapshots & cgit_parse_snapshots_mask(value); /* XXX: &? */
-	else if (ctx.repo && !strcmp(name, "repo.enable-log-filecount"))
-		ctx.repo->enable_log_filecount = ctx.cfg.enable_log_filecount * atoi(value);
-	else if (ctx.repo && !strcmp(name, "repo.enable-log-linecount"))
-		ctx.repo->enable_log_linecount = ctx.cfg.enable_log_linecount * atoi(value);
-	else if (ctx.repo && !strcmp(name, "repo.module-link"))
-		ctx.repo->module_link= xstrdup(value);
-	else if (ctx.repo && !strcmp(name, "repo.readme") && value != NULL) {
-		if (*value == '/')
-			ctx.repo->readme = xstrdup(value);
-		else
-			ctx.repo->readme = xstrdup(fmt("%s/%s", ctx.repo->path, value));
-	} else if (!strcmp(name, "include"))
-		cgit_read_config(value, cgit_global_config_cb);
-}
-
-void cgit_querystring_cb(const char *name, const char *value)
-{
-	if (!strcmp(name,"r")) {
-		ctx.qry.repo = xstrdup(value);
-		ctx.repo = cgit_get_repoinfo(value);
-	} else if (!strcmp(name, "p")) {
-		ctx.qry.page = xstrdup(value);
-	} else if (!strcmp(name, "url")) {
-		cgit_parse_url(value);
-	} else if (!strcmp(name, "qt")) {
-		ctx.qry.grep = xstrdup(value);
-	} else if (!strcmp(name, "q")) {
-		ctx.qry.search = xstrdup(value);
-	} else if (!strcmp(name, "h")) {
-		ctx.qry.head = xstrdup(value);
-		ctx.qry.has_symref = 1;
-	} else if (!strcmp(name, "id")) {
-		ctx.qry.sha1 = xstrdup(value);
-		ctx.qry.has_sha1 = 1;
-	} else if (!strcmp(name, "id2")) {
-		ctx.qry.sha2 = xstrdup(value);
-		ctx.qry.has_sha1 = 1;
-	} else if (!strcmp(name, "ofs")) {
-		ctx.qry.ofs = atoi(value);
-	} else if (!strcmp(name, "path")) {
-		ctx.qry.path = trim_end(value, '/');
-	} else if (!strcmp(name, "name")) {
-		ctx.qry.name = xstrdup(value);
-	}
 }
 
 void *cgit_free_commitinfo(struct commitinfo *info)
