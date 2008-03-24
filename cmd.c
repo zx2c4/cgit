@@ -8,6 +8,17 @@
 
 #include "cgit.h"
 #include "cmd.h"
+#include "ui-blob.h"
+#include "ui-commit.h"
+#include "ui-diff.h"
+#include "ui-log.h"
+#include "ui-patch.h"
+#include "ui-refs.h"
+#include "ui-repolist.h"
+#include "ui-snapshot.h"
+#include "ui-summary.h"
+#include "ui-tag.h"
+#include "ui-tree.h"
 
 static void blob_fn(struct cgit_context *ctx)
 {
