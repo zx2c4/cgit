@@ -8,6 +8,7 @@
 
 #include "cgit.h"
 #include "html.h"
+#include "ui-shared.h"
 
 static int header;
 

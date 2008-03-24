@@ -8,6 +8,7 @@
 
 #include "cgit.h"
 #include "html.h"
+#include "ui-shared.h"
 
 void cgit_print_blob(const char *hex, char *path)
 {

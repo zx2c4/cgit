@@ -8,6 +8,7 @@
 
 #include "cgit.h"
 #include "html.h"
+#include "ui-shared.h"
 
 static void print_line(char *line, int len)
 {

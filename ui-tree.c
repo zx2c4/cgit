@@ -8,6 +8,7 @@
 
 #include "cgit.h"
 #include "html.h"
+#include "ui-shared.h"
 
 char *curr_rev;
 char *match_path;

@@ -1,0 +1,36 @@
+#ifndef UI_SHARED_H
+#define UI_SHARED_H
+
+extern char *cgit_repourl(const char *reponame);
+extern char *cgit_fileurl(const char *reponame, const char *pagename,
+			  const char *filename, const char *query);
+extern char *cgit_pageurl(const char *reponame, const char *pagename,
+			  const char *query);
+
+extern void cgit_tree_link(char *name, char *title, char *class, char *head,
+			   char *rev, char *path);
+extern void cgit_log_link(char *name, char *title, char *class, char *head,
+			  char *rev, char *path, int ofs, char *grep,
+			  char *pattern);
+extern void cgit_commit_link(char *name, char *title, char *class, char *head,
+			     char *rev);
+extern void cgit_refs_link(char *name, char *title, char *class, char *head,
+			   char *rev, char *path);
+extern void cgit_snapshot_link(char *name, char *title, char *class,
+			       char *head, char *rev, char *archivename);
+extern void cgit_diff_link(char *name, char *title, char *class, char *head,
+			   char *new_rev, char *old_rev, char *path);
+extern void cgit_object_link(struct object *obj);
+
+extern void cgit_print_error(char *msg);
+extern void cgit_print_date(time_t secs, char *format);
+extern void cgit_print_age(time_t t, time_t max_relative, char *format);
+extern void cgit_print_http_headers(struct cgit_context *ctx);
+extern void cgit_print_docstart(struct cgit_context *ctx);
+extern void cgit_print_docend();
+extern void cgit_print_pageheader(struct cgit_context *ctx);
+extern void cgit_print_filemode(unsigned short mode);
+extern void cgit_print_snapshot_links(const char *repo, const char *head,
+				      const char *hex, int snapshots);
+
+#endif /* UI_SHARED_H */

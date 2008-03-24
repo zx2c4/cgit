@@ -8,6 +8,7 @@
 
 #include "cgit.h"
 #include "html.h"
+#include "ui-shared.h"
 
 static int files, slots;
 static int total_adds, total_rems, max_changes;

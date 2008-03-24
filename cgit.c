@@ -8,6 +8,7 @@
 
 #include "cgit.h"
 #include "cmd.h"
+#include "ui-shared.h"
 
 static int cgit_prepare_cache(struct cacheitem *item)
 {
