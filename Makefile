@@ -14,10 +14,25 @@ GIT_URL = http://www.kernel.org/pub/software/scm/git/git-$(GIT_VER).tar.bz2
 
 
 EXTLIBS = git/libgit.a git/xdiff/lib.a -lz -lcrypto
-OBJECTS = shared.o cache.o parsing.o html.o ui-shared.o ui-repolist.o \
-	ui-summary.o ui-log.o ui-tree.o ui-commit.o ui-diff.o \
-	ui-snapshot.o ui-blob.o ui-tag.o ui-refs.o ui-patch.o cmd.o
-
+OBJECTS =
+OBJECTS += cache.o
+OBJECTS += cgit.o
+OBJECTS += cmd.o
+OBJECTS += html.o
+OBJECTS += parsing.o
+OBJECTS += shared.o
+OBJECTS += ui-blob.o
+OBJECTS += ui-commit.o
+OBJECTS += ui-diff.o
+OBJECTS += ui-log.o
+OBJECTS += ui-patch.o
+OBJECTS += ui-refs.o
+OBJECTS += ui-repolist.o
+OBJECTS += ui-shared.o
+OBJECTS += ui-snapshot.o
+OBJECTS += ui-summary.o
+OBJECTS += ui-tag.o
+OBJECTS += ui-tree.o
 
 ifdef NEEDS_LIBICONV
 	EXTLIBS += -liconv
@@ -41,10 +56,10 @@ CFLAGS += -DCGIT_SCRIPT_NAME='"$(CGIT_SCRIPT_NAME)"'
 CFLAGS += -DCGIT_CACHE_ROOT='"$(CACHE_ROOT)"'
 
 
-cgit: cgit.c $(OBJECTS)
-	$(CC) $(CFLAGS) cgit.c -o cgit $(OBJECTS) $(EXTLIBS)
+cgit: $(OBJECTS)
+	$(CC) $(CFLAGS) -o cgit $(OBJECTS) $(EXTLIBS)
 
-$(OBJECTS): cgit.h git/xdiff/lib.a git/libgit.a VERSION
+$(OBJECTS): git/xdiff/lib.a git/libgit.a VERSION
 
 git/xdiff/lib.a: | git
 
