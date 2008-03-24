@@ -479,3 +479,30 @@ void cgit_diff_commit(struct commit *commit, filepair_fn fn)
 		old_sha1 = commit->parents->item->object.sha1;
 	cgit_diff_tree(old_sha1, commit->object.sha1, fn, NULL);
 }
+
+int cgit_parse_snapshots_mask(const char *str)
+{
+	const struct cgit_snapshot_format *f;
+	static const char *delim = " \t,:/|;";
+	int tl, sl, rv = 0;
+
+	/* favor legacy setting */
+	if(atoi(str))
+		return 1;
+	for(;;) {
+		str += strspn(str,delim);
+		tl = strcspn(str,delim);
+		if (!tl)
+			break;
+		for (f = cgit_snapshot_formats; f->suffix; f++) {
+			sl = strlen(f->suffix);
+			if((tl == sl && !strncmp(f->suffix, str, tl)) ||
+			   (tl == sl-1 && !strncmp(f->suffix+1, str, tl-1))) {
+				rv |= f->bit;
+				break;
+			}
+		}
+		str += tl;
+	}
+	return rv;
+}

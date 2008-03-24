@@ -573,4 +573,19 @@ void cgit_print_filemode(unsigned short mode)
 	html_fileperm(mode);
 }
 
-/* vim:set sw=8: */
+void cgit_print_snapshot_links(const char *repo, const char *head,
+			       const char *hex, int snapshots)
+{
+	const struct cgit_snapshot_format* f;
+    	char *filename;
+
+	for (f = cgit_snapshot_formats; f->suffix; f++) {
+		if (!(snapshots & f->bit))
+			continue;
+		filename = fmt("%s-%s%s", cgit_repobasename(repo), hex,
+			       f->suffix);
+		cgit_snapshot_link(filename, NULL, NULL, (char *)head,
+				   (char *)hex, filename);
+		html("<br/>");
+	}
+}

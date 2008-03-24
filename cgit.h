@@ -177,10 +177,18 @@ struct cgit_context {
 	struct cgit_page page;
 };
 
+struct cgit_snapshot_format {
+	const char *suffix;
+	const char *mimetype;
+	write_archive_fn_t write_func;
+	int bit;
+};
+
 extern const char *cgit_version;
 
 extern struct cgit_repolist cgit_repolist;
 extern struct cgit_context ctx;
+extern const struct cgit_snapshot_format cgit_snapshot_formats[];
 extern int cgit_cmd;
 
 extern void cgit_prepare_context(struct cgit_context *ctx);
