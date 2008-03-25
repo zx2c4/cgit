@@ -12,12 +12,38 @@ GIT_URL = http://www.kernel.org/pub/software/scm/git/git-$(GIT_VER).tar.bz2
 #
 -include cgit.conf
 
+#
+# Define a way to invoke make in subdirs quietly, shamelessly ripped
+# from git.git
+#
+QUIET_SUBDIR0  = +$(MAKE) -C # space to separate -C and subdir
+QUIET_SUBDIR1  =
+
+ifneq ($(findstring $(MAKEFLAGS),w),w)
+PRINT_DIR = --no-print-directory
+else # "make -w"
+NO_SUBDIR = :
+endif
+
+ifndef V
+	QUIET_CC       = @echo '   ' CC $@;
+	QUIET_MM       = @echo '   ' MM $@;
+	QUIET_SUBDIR0  = +@subdir=
+	QUIET_SUBDIR1  = ;$(NO_SUBDIR) echo '   ' SUBDIR $$subdir; \
+			 $(MAKE) $(PRINT_DIR) -C $$subdir
+endif
 
 #
 # Define a pattern rule for automatic dependency building
 #
 %.d: %.c
-	$(CC) $(CFLAGS) -MM $< | sed -e 's/\($*\)\.o:/\1.o $@:/g' >$@
+	$(QUIET_MM)$(CC) $(CFLAGS) -MM $< | sed -e 's/\($*\)\.o:/\1.o $@:/g' >$@
+
+#
+# Define a pattern rule for silent object building
+#
+%.o: %.c
+	$(QUIET_CC)$(CC) -o $*.o -c $(CFLAGS) $<
 
 
 EXTLIBS = git/libgit.a git/xdiff/lib.a -lz -lcrypto
@@ -64,7 +90,7 @@ CFLAGS += -DCGIT_CACHE_ROOT='"$(CACHE_ROOT)"'
 
 
 cgit: $(OBJECTS)
-	$(CC) $(CFLAGS) -o cgit $(OBJECTS) $(EXTLIBS)
+	$(QUIET_CC)$(CC) $(CFLAGS) -o cgit $(OBJECTS) $(EXTLIBS)
 
 $(OBJECTS): git/xdiff/lib.a git/libgit.a
 
@@ -77,11 +103,11 @@ git/xdiff/lib.a: | git
 git/libgit.a: | git
 
 git:
-	cd git && $(MAKE) xdiff/lib.a
-	cd git && $(MAKE) libgit.a
+	$(QUIET_SUBDIR0)git $(QUIET_SUBDIR1) xdiff/lib.a
+	$(QUIET_SUBDIR0)git $(QUIET_SUBDIR1) libgit.a
 
 test: all
-	$(MAKE) -C tests
+	$(QUIET_SUBDIR0)tests $(QUIET_SUBDIR1) all
 
 install: all
 	mkdir -p $(DESTDIR)$(CGIT_SCRIPT_PATH)
