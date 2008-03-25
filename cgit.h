@@ -189,7 +189,6 @@ extern const char *cgit_version;
 extern struct cgit_repolist cgit_repolist;
 extern struct cgit_context ctx;
 extern const struct cgit_snapshot_format cgit_snapshot_formats[];
-extern int cgit_cmd;
 
 extern struct cgit_repo *cgit_add_repo(const char *url);
 extern struct cgit_repo *cgit_get_repoinfo(const char *url);

@@ -181,7 +181,7 @@ static int cgit_prepare_cache(struct cacheitem *item)
 		return 1;
 	}
 
-	if (!cgit_cmd) {
+	if (!ctx.qry.page) {
 		item->name = xstrdup(fmt("%s/%s/index.%s.html", ctx.cfg.cache_root,
 					 cache_safe_filename(ctx.repo->url),
 					 cache_safe_filename(ctx.qry.raw)));
