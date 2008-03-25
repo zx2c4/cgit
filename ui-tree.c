@@ -36,7 +36,8 @@ static void print_object(const unsigned char *sha1, char *path)
 	}
 
 	html(" blob: <a href='");
-	html_attr(cgit_pageurl(ctx.qry.repo, "blob", fmt("id=%s", sha1_to_hex(sha1))));
+	html_attr(cgit_pageurl(ctx.qry.repo, "blob",
+			       fmt("id=%s&path=%s", sha1_to_hex(sha1), path)));
 	htmlf("'>%s</a>",sha1_to_hex(sha1));
 
 	html("<table summary='blob content' class='blob'>\n");
