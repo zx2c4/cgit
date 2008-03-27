@@ -7,6 +7,7 @@
  */
 
 #include "cgit.h"
+#include "cache.h"
 #include "cmd.h"
 #include "ui-shared.h"
 

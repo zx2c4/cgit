@@ -7,6 +7,7 @@
  */
 
 #include "cgit.h"
+#include "cache.h"
 
 const int NOLOCK = -1;
 

@@ -46,13 +46,6 @@ typedef void (*configfn)(const char *name, const char *value);
 typedef void (*filepair_fn)(struct diff_filepair *pair);
 typedef void (*linediff_fn)(char *line, int len);
 
-struct cacheitem {
-	char *name;
-	struct stat st;
-	int ttl;
-	int fd;
-};
-
 struct cgit_repo {
 	char *url;
 	char *name;
@@ -226,13 +219,6 @@ extern int cgit_parse_query(char *txt, configfn fn);
 extern struct commitinfo *cgit_parse_commit(struct commit *commit);
 extern struct taginfo *cgit_parse_tag(struct tag *tag);
 extern void cgit_parse_url(const char *url);
-
-extern char *cache_safe_filename(const char *unsafe);
-extern int cache_lock(struct cacheitem *item);
-extern int cache_unlock(struct cacheitem *item);
-extern int cache_cancel_lock(struct cacheitem *item);
-extern int cache_exist(struct cacheitem *item);
-extern int cache_expired(struct cacheitem *item);
 
 extern const char *cgit_repobasename(const char *reponame);
 
