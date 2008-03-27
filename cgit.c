@@ -9,6 +9,7 @@
 #include "cgit.h"
 #include "cache.h"
 #include "cmd.h"
+#include "configfile.h"
 #include "ui-shared.h"
 
 const char *cgit_version = CGIT_VERSION;
@@ -103,7 +104,7 @@ void config_cb(const char *name, const char *value)
 		else
 			ctx.repo->readme = xstrdup(fmt("%s/%s", ctx.repo->path, value));
 	} else if (!strcmp(name, "include"))
-		cgit_read_config(value, config_cb);
+		parse_configfile(value, config_cb);
 }
 
 static void querystring_cb(const char *name, const char *value)
@@ -436,7 +437,7 @@ int main(int argc, const char **argv)
 	cgit_repolist.count = 0;
 	cgit_repolist.repos = NULL;
 
-	cgit_read_config(cgit_config_env ? cgit_config_env : CGIT_CONFIG,
+	parse_configfile(cgit_config_env ? cgit_config_env : CGIT_CONFIG,
 			 config_cb);
 	if (getenv("SCRIPT_NAME"))
 		ctx.cfg.script_name = xstrdup(getenv("SCRIPT_NAME"));

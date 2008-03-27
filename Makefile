@@ -51,6 +51,7 @@ OBJECTS =
 OBJECTS += cache.o
 OBJECTS += cgit.o
 OBJECTS += cmd.o
+OBJECTS += configfile.o
 OBJECTS += html.o
 OBJECTS += parsing.o
 OBJECTS += shared.o

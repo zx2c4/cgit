@@ -214,7 +214,6 @@ extern void cgit_diff_commit(struct commit *commit, filepair_fn fn);
 
 extern char *fmt(const char *format,...);
 
-extern int cgit_read_config(const char *filename, configfn fn);
 extern int cgit_parse_query(char *txt, configfn fn);
 extern struct commitinfo *cgit_parse_commit(struct commit *commit);
 extern struct taginfo *cgit_parse_tag(struct tag *tag);
