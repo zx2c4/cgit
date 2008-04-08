@@ -185,3 +185,67 @@ int html_include(const char *filename)
 	fclose(f);
 	return 0;
 }
+
+int hextoint(char c)
+{
+	if (c >= 'a' && c <= 'f')
+		return 10 + c - 'a';
+	else if (c >= 'A' && c <= 'F')
+		return 10 + c - 'A';
+	else if (c >= '0' && c <= '9')
+		return c - '0';
+	else
+		return -1;
+}
+
+char *convert_query_hexchar(char *txt)
+{
+	int d1, d2;
+	if (strlen(txt) < 3) {
+		*txt = '\0';
+		return txt-1;
+	}
+	d1 = hextoint(*(txt+1));
+	d2 = hextoint(*(txt+2));
+	if (d1<0 || d2<0) {
+		strcpy(txt, txt+3);
+		return txt-1;
+	} else {
+		*txt = d1 * 16 + d2;
+		strcpy(txt+1, txt+3);
+		return txt;
+	}
+}
+
+int http_parse_querystring(char *txt, void (*fn)(const char *name, const char *value))
+{
+	char *t, *value = NULL, c;
+
+	if (!txt)
+		return 0;
+
+	t = txt = strdup(txt);
+	if (t == NULL) {
+		printf("Out of memory\n");
+		exit(1);
+	}
+	while((c=*t) != '\0') {
+		if (c=='=') {
+			*t = '\0';
+			value = t+1;
+		} else if (c=='+') {
+			*t = ' ';
+		} else if (c=='%') {
+			t = convert_query_hexchar(t);
+		} else if (c=='&') {
+			*t = '\0';
+			(*fn)(txt, value);
+			txt = t+1;
+			value = NULL;
+		}
+		t++;
+	}
+	if (t!=txt)
+		(*fn)(txt, value);
+	return 0;
+}

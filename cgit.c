@@ -10,6 +10,7 @@
 #include "cache.h"
 #include "cmd.h"
 #include "configfile.h"
+#include "html.h"
 #include "ui-shared.h"
 
 const char *cgit_version = CGIT_VERSION;
@@ -444,7 +445,7 @@ int main(int argc, const char **argv)
 	if (getenv("QUERY_STRING"))
 		ctx.qry.raw = xstrdup(getenv("QUERY_STRING"));
 	cgit_parse_args(argc, argv);
-	cgit_parse_query(ctx.qry.raw, querystring_cb);
+	http_parse_querystring(ctx.qry.raw, querystring_cb);
 	if (!cgit_prepare_cache(&item))
 		return 0;
 	if (ctx.cfg.nocache) {

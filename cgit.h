@@ -191,7 +191,6 @@ extern int chk_zero(int result, char *msg);
 extern int chk_positive(int result, char *msg);
 extern int chk_non_negative(int result, char *msg);
 
-extern int hextoint(char c);
 extern char *trim_end(const char *str, char c);
 extern char *strlpart(char *txt, int maxlen);
 extern char *strrpart(char *txt, int maxlen);
@@ -214,7 +213,6 @@ extern void cgit_diff_commit(struct commit *commit, filepair_fn fn);
 
 extern char *fmt(const char *format,...);
 
-extern int cgit_parse_query(char *txt, configfn fn);
 extern struct commitinfo *cgit_parse_commit(struct commit *commit);
 extern struct taginfo *cgit_parse_tag(struct tag *tag);
 extern void cgit_parse_url(const char *url);

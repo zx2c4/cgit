@@ -15,4 +15,6 @@ extern void html_link_close(void);
 extern void html_fileperm(unsigned short mode);
 extern int html_include(const char *filename);
 
+extern int http_parse_querystring(char *txt, void (*fn)(const char *name, const char *value));
+
 #endif /* HTML_H */
