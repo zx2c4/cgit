@@ -440,6 +440,7 @@ int main(int argc, const char **argv)
 
 	parse_configfile(cgit_config_env ? cgit_config_env : CGIT_CONFIG,
 			 config_cb);
+	ctx.repo = NULL;
 	if (getenv("SCRIPT_NAME"))
 		ctx.cfg.script_name = xstrdup(getenv("SCRIPT_NAME"));
 	if (getenv("QUERY_STRING"))
