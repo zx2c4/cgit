@@ -20,19 +20,6 @@
 
 
 /*
- * The valid cgit repo-commands
- */
-#define CMD_LOG      1
-#define CMD_COMMIT   2
-#define CMD_DIFF     3
-#define CMD_TREE     4
-#define CMD_BLOB     5
-#define CMD_SNAPSHOT 6
-#define CMD_TAG      7
-#define CMD_REFS     8
-#define CMD_PATCH    9
-
-/*
  * Dateformats used on misc. pages
  */
 #define FMT_LONGDATE "%Y-%m-%d %H:%M:%S"
@@ -59,14 +46,7 @@ typedef void (*configfn)(const char *name, const char *value);
 typedef void (*filepair_fn)(struct diff_filepair *pair);
 typedef void (*linediff_fn)(char *line, int len);
 
-struct cacheitem {
-	char *name;
-	struct stat st;
-	int ttl;
-	int fd;
-};
-
-struct repoinfo {
+struct cgit_repo {
 	char *url;
 	char *name;
 	char *path;
@@ -82,10 +62,10 @@ struct repoinfo {
 	int enable_log_linecount;
 };
 
-struct repolist {
+struct cgit_repolist {
 	int length;
 	int count;
-	struct repoinfo *repos;
+	struct cgit_repo *repos;
 };
 
 struct commitinfo {
@@ -123,74 +103,94 @@ struct reflist {
 	int count;
 };
 
+struct cgit_query {
+	int has_symref;
+	int has_sha1;
+	char *raw;
+	char *repo;
+	char *page;
+	char *search;
+	char *grep;
+	char *head;
+	char *sha1;
+	char *sha2;
+	char *path;
+	char *name;
+	int   ofs;
+};
+
+struct cgit_config {
+	char *agefile;
+	char *cache_root;
+	char *clone_prefix;
+	char *css;
+	char *index_header;
+	char *index_info;
+	char *logo;
+	char *logo_link;
+	char *module_link;
+	char *repo_group;
+	char *robots;
+	char *root_title;
+	char *script_name;
+	char *virtual_root;
+	int cache_dynamic_ttl;
+	int cache_max_create_time;
+	int cache_repo_ttl;
+	int cache_root_ttl;
+	int cache_static_ttl;
+	int enable_index_links;
+	int enable_log_filecount;
+	int enable_log_linecount;
+	int max_commit_count;
+	int max_lock_attempts;
+	int max_msg_len;
+	int max_repodesc_len;
+	int nocache;
+	int renamelimit;
+	int snapshots;
+	int summary_branches;
+	int summary_log;
+	int summary_tags;
+};
+
+struct cgit_page {
+	time_t modified;
+	time_t expires;
+	char *mimetype;
+	char *charset;
+	char *filename;
+	char *title;
+};
+
+struct cgit_context {
+	struct cgit_query qry;
+	struct cgit_config cfg;
+	struct cgit_repo *repo;
+	struct cgit_page page;
+};
+
+struct cgit_snapshot_format {
+	const char *suffix;
+	const char *mimetype;
+	write_archive_fn_t write_func;
+	int bit;
+};
+
 extern const char *cgit_version;
 
-extern struct repolist cgit_repolist;
-extern struct repoinfo *cgit_repo;
-extern int cgit_cmd;
+extern struct cgit_repolist cgit_repolist;
+extern struct cgit_context ctx;
+extern const struct cgit_snapshot_format cgit_snapshot_formats[];
 
-extern char *cgit_root_title;
-extern char *cgit_css;
-extern char *cgit_logo;
-extern char *cgit_index_header;
-extern char *cgit_index_info;
-extern char *cgit_logo_link;
-extern char *cgit_module_link;
-extern char *cgit_agefile;
-extern char *cgit_virtual_root;
-extern char *cgit_script_name;
-extern char *cgit_cache_root;
-extern char *cgit_repo_group;
-extern char *cgit_robots;
-extern char *cgit_clone_prefix;
-
-extern int cgit_nocache;
-extern int cgit_snapshots;
-extern int cgit_enable_index_links;
-extern int cgit_enable_log_filecount;
-extern int cgit_enable_log_linecount;
-extern int cgit_max_lock_attempts;
-extern int cgit_cache_root_ttl;
-extern int cgit_cache_repo_ttl;
-extern int cgit_cache_dynamic_ttl;
-extern int cgit_cache_static_ttl;
-extern int cgit_cache_max_create_time;
-extern int cgit_summary_log;
-extern int cgit_summary_tags;
-extern int cgit_summary_branches;
-
-extern int cgit_max_msg_len;
-extern int cgit_max_repodesc_len;
-extern int cgit_max_commit_count;
-
-extern int cgit_query_has_symref;
-extern int cgit_query_has_sha1;
-
-extern char *cgit_querystring;
-extern char *cgit_query_repo;
-extern char *cgit_query_page;
-extern char *cgit_query_search;
-extern char *cgit_query_grep;
-extern char *cgit_query_head;
-extern char *cgit_query_sha1;
-extern char *cgit_query_sha2;
-extern char *cgit_query_path;
-extern char *cgit_query_name;
-extern int   cgit_query_ofs;
-
-extern int htmlfd;
-
-extern int cgit_get_cmd_index(const char *cmd);
-extern struct repoinfo *cgit_get_repoinfo(const char *url);
-extern void cgit_global_config_cb(const char *name, const char *value);
+extern struct cgit_repo *cgit_add_repo(const char *url);
+extern struct cgit_repo *cgit_get_repoinfo(const char *url);
 extern void cgit_repo_config_cb(const char *name, const char *value);
-extern void cgit_querystring_cb(const char *name, const char *value);
 
 extern int chk_zero(int result, char *msg);
 extern int chk_positive(int result, char *msg);
 extern int chk_non_negative(int result, char *msg);
 
-extern int hextoint(char c);
 extern char *trim_end(const char *str, char c);
 extern char *strlpart(char *txt, int maxlen);
 extern char *strrpart(char *txt, int maxlen);
@@ -213,83 +213,12 @@ extern void cgit_diff_commit(struct commit *commit, filepair_fn fn);
 
 extern char *fmt(const char *format,...);
 
-extern void html(const char *txt);
-extern void htmlf(const char *format,...);
-extern void html_txt(char *txt);
-extern void html_ntxt(int len, char *txt);
-extern void html_attr(char *txt);
-extern void html_hidden(char *name, char *value);
-extern void html_option(char *value, char *text, char *selected_value);
-extern void html_link_open(char *url, char *title, char *class);
-extern void html_link_close(void);
-extern void html_filemode(unsigned short mode);
-extern int html_include(const char *filename);
-
-extern int cgit_read_config(const char *filename, configfn fn);
-extern int cgit_parse_query(char *txt, configfn fn);
 extern struct commitinfo *cgit_parse_commit(struct commit *commit);
 extern struct taginfo *cgit_parse_tag(struct tag *tag);
 extern void cgit_parse_url(const char *url);
 
-extern char *cache_safe_filename(const char *unsafe);
-extern int cache_lock(struct cacheitem *item);
-extern int cache_unlock(struct cacheitem *item);
-extern int cache_cancel_lock(struct cacheitem *item);
-extern int cache_exist(struct cacheitem *item);
-extern int cache_expired(struct cacheitem *item);
-
-extern char *cgit_repourl(const char *reponame);
-extern char *cgit_fileurl(const char *reponame, const char *pagename,
-			  const char *filename, const char *query);
-extern char *cgit_pageurl(const char *reponame, const char *pagename,
-			  const char *query);
-
 extern const char *cgit_repobasename(const char *reponame);
 
-extern void cgit_tree_link(char *name, char *title, char *class, char *head,
-			   char *rev, char *path);
-extern void cgit_log_link(char *name, char *title, char *class, char *head,
-			  char *rev, char *path, int ofs, char *grep,
-			  char *pattern);
-extern void cgit_commit_link(char *name, char *title, char *class, char *head,
-			     char *rev);
-extern void cgit_refs_link(char *name, char *title, char *class, char *head,
-			   char *rev, char *path);
-extern void cgit_snapshot_link(char *name, char *title, char *class,
-			       char *head, char *rev, char *archivename);
-extern void cgit_diff_link(char *name, char *title, char *class, char *head,
-			   char *new_rev, char *old_rev, char *path);
-
-extern void cgit_object_link(struct object *obj);
-
-extern void cgit_print_error(char *msg);
-extern void cgit_print_date(time_t secs, char *format);
-extern void cgit_print_age(time_t t, time_t max_relative, char *format);
-extern void cgit_print_docstart(char *title, struct cacheitem *item);
-extern void cgit_print_docend();
-extern void cgit_print_pageheader(char *title, int show_search);
-extern void cgit_print_snapshot_start(const char *mimetype,
-				      const char *filename,
-				      struct cacheitem *item);
-extern void cgit_print_branches(int maxcount);
-extern void cgit_print_tags(int maxcount);
-
-extern void cgit_print_repolist(struct cacheitem *item);
-extern void cgit_print_summary();
-extern void cgit_print_log(const char *tip, int ofs, int cnt, char *grep,
-			   char *pattern, char *path, int pager);
-extern void cgit_print_blob(struct cacheitem *item, const char *hex, char *path);
-extern void cgit_print_tree(const char *rev, char *path);
-extern void cgit_print_commit(char *hex);
-extern void cgit_print_refs();
-extern void cgit_print_tag(char *revname);
-extern void cgit_print_diff(const char *new_hex, const char *old_hex, const char *prefix);
-extern void cgit_print_patch(char *hex, struct cacheitem *item);
-extern void cgit_print_snapshot(struct cacheitem *item, const char *head,
-				const char *hex, const char *prefix,
-				const char *filename, int snapshot);
-extern void cgit_print_snapshot_links(const char *repo, const char *head,
-				      const char *hex, int snapshots);
 extern int cgit_parse_snapshots_mask(const char *str);
 
 #endif /* CGIT_H */

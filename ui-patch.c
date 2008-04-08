@@ -7,6 +7,8 @@
  */
 
 #include "cgit.h"
+#include "html.h"
+#include "ui-shared.h"
 
 static void print_line(char *line, int len)
 {
@@ -68,7 +70,7 @@ static void filepair_cb(struct diff_filepair *pair)
 		html("Error running diff");
 }
 
-void cgit_print_patch(char *hex, struct cacheitem *item)
+void cgit_print_patch(char *hex)
 {
 	struct commit *commit;
 	struct commitinfo *info;
@@ -76,7 +78,7 @@ void cgit_print_patch(char *hex, struct cacheitem *item)
 	char *patchname;
 
 	if (!hex)
-		hex = cgit_query_head;
+		hex = ctx.qry.head;
 
 	if (get_sha1(hex, sha1)) {
 		cgit_print_error(fmt("Bad object id: %s", hex));
@@ -95,7 +97,9 @@ void cgit_print_patch(char *hex, struct cacheitem *item)
 		hashclr(old_sha1);
 
 	patchname = fmt("%s.patch", sha1_to_hex(sha1));
-	cgit_print_snapshot_start("text/plain", patchname, item);
+	ctx.page.mimetype = "text/plain";
+	ctx.page.filename = patchname;
+	cgit_print_http_headers(&ctx);
 	htmlf("From %s Mon Sep 17 00:00:00 2001\n", sha1_to_hex(sha1));
 	htmlf("From: %s%s\n", info->author, info->author_email);
 	html("Date: ");

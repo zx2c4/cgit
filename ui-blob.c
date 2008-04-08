@@ -1,6 +1,16 @@
-#include "cgit.h"
+/* ui-blob.c: show blob content
+ *
+ * Copyright (C) 2008 Lars Hjemli
+ *
+ * Licensed under GNU General Public License v2
+ *   (see COPYING for full license text)
+ */
 
-void cgit_print_blob(struct cacheitem *item, const char *hex, char *path)
+#include "cgit.h"
+#include "html.h"
+#include "ui-shared.h"
+
+void cgit_print_blob(const char *hex, char *path)
 {
 
 	unsigned char sha1[20];
@@ -26,6 +36,8 @@ void cgit_print_blob(struct cacheitem *item, const char *hex, char *path)
 	}
 
 	buf[size] = '\0';
-	cgit_print_snapshot_start("text/plain", path, item);
+	ctx.page.mimetype = "text/plain";
+	ctx.page.filename = path;
+	cgit_print_http_headers(&ctx);
 	write(htmlfd, buf, size);
 }

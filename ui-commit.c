@@ -7,6 +7,8 @@
  */
 
 #include "cgit.h"
+#include "html.h"
+#include "ui-shared.h"
 
 static int files, slots;
 static int total_adds, total_rems, max_changes;
@@ -62,20 +64,20 @@ void print_fileinfo(struct fileinfo *info)
 	html("<tr>");
 	htmlf("<td class='mode'>");
 	if (is_null_sha1(info->new_sha1)) {
-		html_filemode(info->old_mode);
+		cgit_print_filemode(info->old_mode);
 	} else {
-		html_filemode(info->new_mode);
+		cgit_print_filemode(info->new_mode);
 	}
 
 	if (info->old_mode != info->new_mode &&
 	    !is_null_sha1(info->old_sha1) &&
 	    !is_null_sha1(info->new_sha1)) {
 		html("<span class='modechange'>[");
-		html_filemode(info->old_mode);
+		cgit_print_filemode(info->old_mode);
 		html("]</span>");
 	}
 	htmlf("</td><td class='%s'>", class);
-	cgit_diff_link(info->new_path, NULL, NULL, cgit_query_head, curr_rev,
+	cgit_diff_link(info->new_path, NULL, NULL, ctx.qry.head, curr_rev,
 		       NULL, info->new_path);
 	if (info->status == DIFF_STATUS_COPIED || info->status == DIFF_STATUS_RENAMED)
 		htmlf(" (%s from %s)",
@@ -143,7 +145,7 @@ void cgit_print_commit(char *hex)
 	int i;
 
 	if (!hex)
-		hex = cgit_query_head;
+		hex = ctx.qry.head;
 	curr_rev = hex;
 
 	if (get_sha1(hex, sha1)) {
@@ -175,7 +177,7 @@ void cgit_print_commit(char *hex)
 	html("<tr><th>tree</th><td colspan='2' class='sha1'>");
 	tmp = xstrdup(hex);
 	cgit_tree_link(sha1_to_hex(commit->tree->object.sha1), NULL, NULL,
-		       cgit_query_head, tmp, NULL);
+		       ctx.qry.head, tmp, NULL);
 	html("</td></tr>\n");
       	for (p = commit->parents; p ; p = p->next) {
 		parent = lookup_commit_reference(p->item->object.sha1);
@@ -188,16 +190,16 @@ void cgit_print_commit(char *hex)
 		html("<tr><th>parent</th>"
 		     "<td colspan='2' class='sha1'>");
 		cgit_commit_link(sha1_to_hex(p->item->object.sha1), NULL, NULL,
-				 cgit_query_head, sha1_to_hex(p->item->object.sha1));
+				 ctx.qry.head, sha1_to_hex(p->item->object.sha1));
 		html(" (");
-		cgit_diff_link("diff", NULL, NULL, cgit_query_head, hex,
+		cgit_diff_link("diff", NULL, NULL, ctx.qry.head, hex,
 			       sha1_to_hex(p->item->object.sha1), NULL);
 		html(")</td></tr>");
 	}
-	if (cgit_repo->snapshots) {
+	if (ctx.repo->snapshots) {
 		html("<tr><th>download</th><td colspan='2' class='sha1'>");
-		cgit_print_snapshot_links(cgit_query_repo, cgit_query_head,
-					  hex, cgit_repo->snapshots);
+		cgit_print_snapshot_links(ctx.qry.repo, ctx.qry.head,
+					  hex, ctx.repo->snapshots);
 		html("</td></tr>");
 	}
 	html("</table>\n");
@@ -218,7 +220,7 @@ void cgit_print_commit(char *hex)
 		html("<div class='diffstat-summary'>");
 		htmlf("%d files changed, %d insertions, %d deletions (",
 		      files, total_adds, total_rems);
-		cgit_diff_link("show diff", NULL, NULL, cgit_query_head, hex,
+		cgit_diff_link("show diff", NULL, NULL, ctx.qry.head, hex,
 			       NULL, NULL);
 		html(")</div>");
 	}

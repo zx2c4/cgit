@@ -7,40 +7,199 @@
  */
 
 #include "cgit.h"
+#include "cache.h"
+#include "cmd.h"
+#include "configfile.h"
+#include "html.h"
+#include "ui-shared.h"
+
+const char *cgit_version = CGIT_VERSION;
+
+void config_cb(const char *name, const char *value)
+{
+	if (!strcmp(name, "root-title"))
+		ctx.cfg.root_title = xstrdup(value);
+	else if (!strcmp(name, "css"))
+		ctx.cfg.css = xstrdup(value);
+	else if (!strcmp(name, "logo"))
+		ctx.cfg.logo = xstrdup(value);
+	else if (!strcmp(name, "index-header"))
+		ctx.cfg.index_header = xstrdup(value);
+	else if (!strcmp(name, "index-info"))
+		ctx.cfg.index_info = xstrdup(value);
+	else if (!strcmp(name, "logo-link"))
+		ctx.cfg.logo_link = xstrdup(value);
+	else if (!strcmp(name, "module-link"))
+		ctx.cfg.module_link = xstrdup(value);
+	else if (!strcmp(name, "virtual-root")) {
+		ctx.cfg.virtual_root = trim_end(value, '/');
+		if (!ctx.cfg.virtual_root && (!strcmp(value, "/")))
+			ctx.cfg.virtual_root = "";
+	} else if (!strcmp(name, "nocache"))
+		ctx.cfg.nocache = atoi(value);
+	else if (!strcmp(name, "snapshots"))
+		ctx.cfg.snapshots = cgit_parse_snapshots_mask(value);
+	else if (!strcmp(name, "enable-index-links"))
+		ctx.cfg.enable_index_links = atoi(value);
+	else if (!strcmp(name, "enable-log-filecount"))
+		ctx.cfg.enable_log_filecount = atoi(value);
+	else if (!strcmp(name, "enable-log-linecount"))
+		ctx.cfg.enable_log_linecount = atoi(value);
+	else if (!strcmp(name, "cache-root"))
+		ctx.cfg.cache_root = xstrdup(value);
+	else if (!strcmp(name, "cache-root-ttl"))
+		ctx.cfg.cache_root_ttl = atoi(value);
+	else if (!strcmp(name, "cache-repo-ttl"))
+		ctx.cfg.cache_repo_ttl = atoi(value);
+	else if (!strcmp(name, "cache-static-ttl"))
+		ctx.cfg.cache_static_ttl = atoi(value);
+	else if (!strcmp(name, "cache-dynamic-ttl"))
+		ctx.cfg.cache_dynamic_ttl = atoi(value);
+	else if (!strcmp(name, "max-message-length"))
+		ctx.cfg.max_msg_len = atoi(value);
+	else if (!strcmp(name, "max-repodesc-length"))
+		ctx.cfg.max_repodesc_len = atoi(value);
+	else if (!strcmp(name, "max-commit-count"))
+		ctx.cfg.max_commit_count = atoi(value);
+	else if (!strcmp(name, "summary-log"))
+		ctx.cfg.summary_log = atoi(value);
+	else if (!strcmp(name, "summary-branches"))
+		ctx.cfg.summary_branches = atoi(value);
+	else if (!strcmp(name, "summary-tags"))
+		ctx.cfg.summary_tags = atoi(value);
+	else if (!strcmp(name, "agefile"))
+		ctx.cfg.agefile = xstrdup(value);
+	else if (!strcmp(name, "renamelimit"))
+		ctx.cfg.renamelimit = atoi(value);
+	else if (!strcmp(name, "robots"))
+		ctx.cfg.robots = xstrdup(value);
+	else if (!strcmp(name, "clone-prefix"))
+		ctx.cfg.clone_prefix = xstrdup(value);
+	else if (!strcmp(name, "repo.group"))
+		ctx.cfg.repo_group = xstrdup(value);
+	else if (!strcmp(name, "repo.url"))
+		ctx.repo = cgit_add_repo(value);
+	else if (!strcmp(name, "repo.name"))
+		ctx.repo->name = xstrdup(value);
+	else if (ctx.repo && !strcmp(name, "repo.path"))
+		ctx.repo->path = trim_end(value, '/');
+	else if (ctx.repo && !strcmp(name, "repo.clone-url"))
+		ctx.repo->clone_url = xstrdup(value);
+	else if (ctx.repo && !strcmp(name, "repo.desc"))
+		ctx.repo->desc = xstrdup(value);
+	else if (ctx.repo && !strcmp(name, "repo.owner"))
+		ctx.repo->owner = xstrdup(value);
+	else if (ctx.repo && !strcmp(name, "repo.defbranch"))
+		ctx.repo->defbranch = xstrdup(value);
+	else if (ctx.repo && !strcmp(name, "repo.snapshots"))
+		ctx.repo->snapshots = ctx.cfg.snapshots & cgit_parse_snapshots_mask(value); /* XXX: &? */
+	else if (ctx.repo && !strcmp(name, "repo.enable-log-filecount"))
+		ctx.repo->enable_log_filecount = ctx.cfg.enable_log_filecount * atoi(value);
+	else if (ctx.repo && !strcmp(name, "repo.enable-log-linecount"))
+		ctx.repo->enable_log_linecount = ctx.cfg.enable_log_linecount * atoi(value);
+	else if (ctx.repo && !strcmp(name, "repo.module-link"))
+		ctx.repo->module_link= xstrdup(value);
+	else if (ctx.repo && !strcmp(name, "repo.readme") && value != NULL) {
+		if (*value == '/')
+			ctx.repo->readme = xstrdup(value);
+		else
+			ctx.repo->readme = xstrdup(fmt("%s/%s", ctx.repo->path, value));
+	} else if (!strcmp(name, "include"))
+		parse_configfile(value, config_cb);
+}
+
+static void querystring_cb(const char *name, const char *value)
+{
+	if (!strcmp(name,"r")) {
+		ctx.qry.repo = xstrdup(value);
+		ctx.repo = cgit_get_repoinfo(value);
+	} else if (!strcmp(name, "p")) {
+		ctx.qry.page = xstrdup(value);
+	} else if (!strcmp(name, "url")) {
+		cgit_parse_url(value);
+	} else if (!strcmp(name, "qt")) {
+		ctx.qry.grep = xstrdup(value);
+	} else if (!strcmp(name, "q")) {
+		ctx.qry.search = xstrdup(value);
+	} else if (!strcmp(name, "h")) {
+		ctx.qry.head = xstrdup(value);
+		ctx.qry.has_symref = 1;
+	} else if (!strcmp(name, "id")) {
+		ctx.qry.sha1 = xstrdup(value);
+		ctx.qry.has_sha1 = 1;
+	} else if (!strcmp(name, "id2")) {
+		ctx.qry.sha2 = xstrdup(value);
+		ctx.qry.has_sha1 = 1;
+	} else if (!strcmp(name, "ofs")) {
+		ctx.qry.ofs = atoi(value);
+	} else if (!strcmp(name, "path")) {
+		ctx.qry.path = trim_end(value, '/');
+	} else if (!strcmp(name, "name")) {
+		ctx.qry.name = xstrdup(value);
+	}
+}
+
+static void prepare_context(struct cgit_context *ctx)
+{
+	memset(ctx, 0, sizeof(ctx));
+	ctx->cfg.agefile = "info/web/last-modified";
+	ctx->cfg.cache_dynamic_ttl = 5;
+	ctx->cfg.cache_max_create_time = 5;
+	ctx->cfg.cache_repo_ttl = 5;
+	ctx->cfg.cache_root = CGIT_CACHE_ROOT;
+	ctx->cfg.cache_root_ttl = 5;
+	ctx->cfg.cache_static_ttl = -1;
+	ctx->cfg.css = "/cgit.css";
+	ctx->cfg.logo = "/git-logo.png";
+	ctx->cfg.max_commit_count = 50;
+	ctx->cfg.max_lock_attempts = 5;
+	ctx->cfg.max_msg_len = 60;
+	ctx->cfg.max_repodesc_len = 60;
+	ctx->cfg.module_link = "./?repo=%s&page=commit&id=%s";
+	ctx->cfg.renamelimit = -1;
+	ctx->cfg.robots = "index, nofollow";
+	ctx->cfg.root_title = "Git repository browser";
+	ctx->cfg.script_name = CGIT_SCRIPT_NAME;
+	ctx->page.mimetype = "text/html";
+	ctx->page.charset = PAGE_ENCODING;
+	ctx->page.filename = NULL;
+}
 
 static int cgit_prepare_cache(struct cacheitem *item)
 {
-	if (!cgit_repo && cgit_query_repo) {
-		char *title = fmt("%s - %s", cgit_root_title, "Bad request");
-		cgit_print_docstart(title, item);
-		cgit_print_pageheader(title, 0);
-		cgit_print_error(fmt("Unknown repo: %s", cgit_query_repo));
+	if (!ctx.repo && ctx.qry.repo) {
+		ctx.page.title = fmt("%s - %s", ctx.cfg.root_title,
+				      "Bad request");
+		cgit_print_http_headers(&ctx);
+		cgit_print_docstart(&ctx);
+		cgit_print_pageheader(&ctx);
+		cgit_print_error(fmt("Unknown repo: %s", ctx.qry.repo));
 		cgit_print_docend();
 		return 0;
 	}
 
-	if (!cgit_repo) {
-		item->name = xstrdup(fmt("%s/index.html", cgit_cache_root));
-		item->ttl = cgit_cache_root_ttl;
+	if (!ctx.repo) {
+		item->name = xstrdup(fmt("%s/index.html", ctx.cfg.cache_root));
+		item->ttl = ctx.cfg.cache_root_ttl;
 		return 1;
 	}
 
-	if (!cgit_cmd) {
-		item->name = xstrdup(fmt("%s/%s/index.%s.html", cgit_cache_root,
-					 cache_safe_filename(cgit_repo->url),
-					 cache_safe_filename(cgit_querystring)));
-		item->ttl = cgit_cache_repo_ttl;
+	if (!ctx.qry.page) {
+		item->name = xstrdup(fmt("%s/%s/index.%s.html", ctx.cfg.cache_root,
+					 cache_safe_filename(ctx.repo->url),
+					 cache_safe_filename(ctx.qry.raw)));
+		item->ttl = ctx.cfg.cache_repo_ttl;
 	} else {
-		item->name = xstrdup(fmt("%s/%s/%s/%s.html", cgit_cache_root,
-					 cache_safe_filename(cgit_repo->url),
-					 cgit_query_page,
-					 cache_safe_filename(cgit_querystring)));
-		if (cgit_query_has_symref)
-			item->ttl = cgit_cache_dynamic_ttl;
-		else if (cgit_query_has_sha1)
-			item->ttl = cgit_cache_static_ttl;
+		item->name = xstrdup(fmt("%s/%s/%s/%s.html", ctx.cfg.cache_root,
+					 cache_safe_filename(ctx.repo->url),
+					 ctx.qry.page,
+					 cache_safe_filename(ctx.qry.raw)));
+		if (ctx.qry.has_symref)
+			item->ttl = ctx.cfg.cache_dynamic_ttl;
+		else if (ctx.qry.has_sha1)
+			item->ttl = ctx.cfg.cache_static_ttl;
 		else
-			item->ttl = cgit_cache_repo_ttl;
+			item->ttl = ctx.cfg.cache_repo_ttl;
 	}
 	return 1;
 }
@@ -64,7 +223,7 @@ int find_current_ref(const char *refname, const unsigned char *sha1,
 	return info->match;
 }
 
-char *find_default_branch(struct repoinfo *repo)
+char *find_default_branch(struct cgit_repo *repo)
 {
 	struct refmatch info;
 
@@ -78,112 +237,97 @@ char *find_default_branch(struct repoinfo *repo)
 		return info.first_ref;
 }
 
-static void cgit_print_repo_page(struct cacheitem *item)
+static int prepare_repo_cmd(struct cgit_context *ctx)
 {
-	char *title, *tmp;
-	int show_search;
+	char *tmp;
 	unsigned char sha1[20];
+	int nongit = 0;
 
-	if (chdir(cgit_repo->path)) {
-		title = fmt("%s - %s", cgit_root_title, "Bad request");
-		cgit_print_docstart(title, item);
-		cgit_print_pageheader(title, 0);
-		cgit_print_error(fmt("Unable to scan repository: %s",
-				     strerror(errno)));
+	setenv("GIT_DIR", ctx->repo->path, 1);
+	setup_git_directory_gently(&nongit);
+	if (nongit) {
+		ctx->page.title = fmt("%s - %s", ctx->cfg.root_title,
+				      "config error");
+		tmp = fmt("Not a git repository: '%s'", ctx->repo->path);
+		ctx->repo = NULL;
+		cgit_print_http_headers(ctx);
+		cgit_print_docstart(ctx);
+		cgit_print_pageheader(ctx);
+		cgit_print_error(tmp);
 		cgit_print_docend();
-		return;
+		return 1;
+	}
+	ctx->page.title = fmt("%s - %s", ctx->repo->name, ctx->repo->desc);
+
+	if (!ctx->qry.head) {
+		ctx->qry.head = xstrdup(find_default_branch(ctx->repo));
+		ctx->repo->defbranch = ctx->qry.head;
 	}
 
-	title = fmt("%s - %s", cgit_repo->name, cgit_repo->desc);
-	show_search = 0;
-	setenv("GIT_DIR", cgit_repo->path, 1);
-
-	if (!cgit_query_head) {
-		cgit_query_head = xstrdup(find_default_branch(cgit_repo));
-		cgit_repo->defbranch = cgit_query_head;
-	}
-
-	if (!cgit_query_head) {
-		cgit_print_docstart(title, item);
-		cgit_print_pageheader(title, 0);
+	if (!ctx->qry.head) {
+		cgit_print_http_headers(ctx);
+		cgit_print_docstart(ctx);
+		cgit_print_pageheader(ctx);
 		cgit_print_error("Repository seems to be empty");
 		cgit_print_docend();
-		return;
+		return 1;
 	}
 
-	if (get_sha1(cgit_query_head, sha1)) {
-		tmp = xstrdup(cgit_query_head);
-		cgit_query_head = cgit_repo->defbranch;
-		cgit_print_docstart(title, item);
-		cgit_print_pageheader(title, 0);
+	if (get_sha1(ctx->qry.head, sha1)) {
+		tmp = xstrdup(ctx->qry.head);
+		ctx->qry.head = ctx->repo->defbranch;
+		cgit_print_http_headers(ctx);
+		cgit_print_docstart(ctx);
+		cgit_print_pageheader(ctx);
 		cgit_print_error(fmt("Invalid branch: %s", tmp));
 		cgit_print_docend();
-		return;
+		return 1;
 	}
+	return 0;
+}
 
-	if ((cgit_cmd == CMD_SNAPSHOT) && cgit_repo->snapshots) {
-		cgit_print_snapshot(item, cgit_query_head, cgit_query_sha1,
-				    cgit_repobasename(cgit_repo->url),
-				    cgit_query_path,
-				    cgit_repo->snapshots );
-		return;
-	}
+static void process_request(struct cgit_context *ctx)
+{
+	struct cgit_cmd *cmd;
 
-	if (cgit_cmd == CMD_PATCH) {
-		cgit_print_patch(cgit_query_sha1, item);
-		return;
-	}
-
-	if (cgit_cmd == CMD_BLOB) {
-		cgit_print_blob(item, cgit_query_sha1, cgit_query_path);
-		return;
-	}
-
-	show_search = (cgit_cmd == CMD_LOG);
-	cgit_print_docstart(title, item);
-	if (!cgit_cmd) {
-		cgit_print_pageheader("summary", show_search);
-		cgit_print_summary();
+	cmd = cgit_get_cmd(ctx);
+	if (!cmd) {
+		ctx->page.title = "cgit error";
+		ctx->repo = NULL;
+		cgit_print_http_headers(ctx);
+		cgit_print_docstart(ctx);
+		cgit_print_pageheader(ctx);
+		cgit_print_error("Invalid request");
 		cgit_print_docend();
 		return;
 	}
 
-	cgit_print_pageheader(cgit_query_page, show_search);
+	if (cmd->want_repo && prepare_repo_cmd(ctx))
+		return;
 
-	switch(cgit_cmd) {
-	case CMD_LOG:
-		cgit_print_log(cgit_query_sha1, cgit_query_ofs,
-			       cgit_max_commit_count, cgit_query_grep, cgit_query_search,
-			       cgit_query_path, 1);
-		break;
-	case CMD_TREE:
-		cgit_print_tree(cgit_query_sha1, cgit_query_path);
-		break;
-	case CMD_COMMIT:
-		cgit_print_commit(cgit_query_sha1);
-		break;
-	case CMD_REFS:
-		cgit_print_refs();
-		break;
-	case CMD_TAG:
-		cgit_print_tag(cgit_query_sha1);
-		break;
-	case CMD_DIFF:
-		cgit_print_diff(cgit_query_sha1, cgit_query_sha2, cgit_query_path);
-		break;
-	default:
-		cgit_print_error("Invalid request");
+	if (cmd->want_layout) {
+		cgit_print_http_headers(ctx);
+		cgit_print_docstart(ctx);
+		cgit_print_pageheader(ctx);
 	}
-	cgit_print_docend();
+
+	cmd->fn(ctx);
+
+	if (cmd->want_layout)
+		cgit_print_docend();
+}
+
+static long ttl_seconds(long ttl)
+{
+	if (ttl<0)
+		return 60 * 60 * 24 * 365;
+	else
+		return ttl * 60;
 }
 
 static void cgit_fill_cache(struct cacheitem *item, int use_cache)
 {
-	static char buf[PATH_MAX];
 	int stdout2;
-
-	getcwd(buf, sizeof(buf));
-	item->st.st_mtime = time(NULL);
 
 	if (use_cache) {
 		stdout2 = chk_positive(dup(STDOUT_FILENO),
@@ -192,10 +336,9 @@ static void cgit_fill_cache(struct cacheitem *item, int use_cache)
 		chk_positive(dup2(item->fd, STDOUT_FILENO), "Dup2(cachefile)");
 	}
 
-	if (cgit_repo)
-		cgit_print_repo_page(item);
-	else
-		cgit_print_repolist(item);
+	ctx.page.modified = time(NULL);
+	ctx.page.expires = ctx.page.modified + ttl_seconds(item->ttl);
+	process_request(&ctx);
 
 	if (use_cache) {
 		chk_zero(close(STDOUT_FILENO), "Close redirected STDOUT");
@@ -203,8 +346,6 @@ static void cgit_fill_cache(struct cacheitem *item, int use_cache)
 			     "Restoring original STDOUT");
 		chk_zero(close(stdout2), "Closing temporary STDOUT");
 	}
-
-	chdir(buf);
 }
 
 static void cgit_check_cache(struct cacheitem *item)
@@ -212,7 +353,7 @@ static void cgit_check_cache(struct cacheitem *item)
 	int i = 0;
 
  top:
-	if (++i > cgit_max_lock_attempts) {
+	if (++i > ctx.cfg.max_lock_attempts) {
 		die("cgit_refresh_cache: unable to lock %s: %s",
 		    item->name, strerror(errno));
 	}
@@ -258,30 +399,30 @@ static void cgit_parse_args(int argc, const char **argv)
 
 	for (i = 1; i < argc; i++) {
 		if (!strncmp(argv[i], "--cache=", 8)) {
-			cgit_cache_root = xstrdup(argv[i]+8);
+			ctx.cfg.cache_root = xstrdup(argv[i]+8);
 		}
 		if (!strcmp(argv[i], "--nocache")) {
-			cgit_nocache = 1;
+			ctx.cfg.nocache = 1;
 		}
 		if (!strncmp(argv[i], "--query=", 8)) {
-			cgit_querystring = xstrdup(argv[i]+8);
+			ctx.qry.raw = xstrdup(argv[i]+8);
 		}
 		if (!strncmp(argv[i], "--repo=", 7)) {
-			cgit_query_repo = xstrdup(argv[i]+7);
+			ctx.qry.repo = xstrdup(argv[i]+7);
 		}
 		if (!strncmp(argv[i], "--page=", 7)) {
-			cgit_query_page = xstrdup(argv[i]+7);
+			ctx.qry.page = xstrdup(argv[i]+7);
 		}
 		if (!strncmp(argv[i], "--head=", 7)) {
-			cgit_query_head = xstrdup(argv[i]+7);
-			cgit_query_has_symref = 1;
+			ctx.qry.head = xstrdup(argv[i]+7);
+			ctx.qry.has_symref = 1;
 		}
 		if (!strncmp(argv[i], "--sha1=", 7)) {
-			cgit_query_sha1 = xstrdup(argv[i]+7);
-			cgit_query_has_sha1 = 1;
+			ctx.qry.sha1 = xstrdup(argv[i]+7);
+			ctx.qry.has_sha1 = 1;
 		}
 		if (!strncmp(argv[i], "--ofs=", 6)) {
-			cgit_query_ofs = atoi(argv[i]+6);
+			ctx.qry.ofs = atoi(argv[i]+6);
 		}
 	}
 }
@@ -291,24 +432,24 @@ int main(int argc, const char **argv)
 	struct cacheitem item;
 	const char *cgit_config_env = getenv("CGIT_CONFIG");
 
-	htmlfd = STDOUT_FILENO;
+	prepare_context(&ctx);
 	item.st.st_mtime = time(NULL);
 	cgit_repolist.length = 0;
 	cgit_repolist.count = 0;
 	cgit_repolist.repos = NULL;
 
-	cgit_read_config(cgit_config_env ? cgit_config_env : CGIT_CONFIG,
-			 cgit_global_config_cb);
-	cgit_repo = NULL;
+	parse_configfile(cgit_config_env ? cgit_config_env : CGIT_CONFIG,
+			 config_cb);
+	ctx.repo = NULL;
 	if (getenv("SCRIPT_NAME"))
-		cgit_script_name = xstrdup(getenv("SCRIPT_NAME"));
+		ctx.cfg.script_name = xstrdup(getenv("SCRIPT_NAME"));
 	if (getenv("QUERY_STRING"))
-		cgit_querystring = xstrdup(getenv("QUERY_STRING"));
+		ctx.qry.raw = xstrdup(getenv("QUERY_STRING"));
 	cgit_parse_args(argc, argv);
-	cgit_parse_query(cgit_querystring, cgit_querystring_cb);
+	http_parse_querystring(ctx.qry.raw, querystring_cb);
 	if (!cgit_prepare_cache(&item))
 		return 0;
-	if (cgit_nocache) {
+	if (ctx.cfg.nocache) {
 		cgit_fill_cache(&item, 0);
 	} else {
 		cgit_check_cache(&item);

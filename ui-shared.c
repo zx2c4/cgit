@@ -7,6 +7,7 @@
  */
 
 #include "cgit.h"
+#include "html.h"
 
 const char cgit_doctype[] =
 "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"\n"
@@ -25,14 +26,6 @@ static char *http_date(time_t t)
 		   tm->tm_hour, tm->tm_min, tm->tm_sec);
 }
 
-static long ttl_seconds(long ttl)
-{
-	if (ttl<0)
-		return 60 * 60 * 24 * 365;
-	else
-		return ttl * 60;
-}
-
 void cgit_print_error(char *msg)
 {
 	html("<div class='error'>");
@@ -42,16 +35,16 @@ void cgit_print_error(char *msg)
 
 char *cgit_rooturl()
 {
-	if (cgit_virtual_root)
-		return fmt("%s/", cgit_virtual_root);
+	if (ctx.cfg.virtual_root)
+		return fmt("%s/", ctx.cfg.virtual_root);
 	else
-		return cgit_script_name;
+		return ctx.cfg.script_name;
 }
 
 char *cgit_repourl(const char *reponame)
 {
-	if (cgit_virtual_root) {
-		return fmt("%s/%s/", cgit_virtual_root, reponame);
+	if (ctx.cfg.virtual_root) {
+		return fmt("%s/%s/", ctx.cfg.virtual_root, reponame);
 	} else {
 		return fmt("?r=%s", reponame);
 	}
@@ -63,8 +56,8 @@ char *cgit_fileurl(const char *reponame, const char *pagename,
 	char *tmp;
 	char *delim;
 
-	if (cgit_virtual_root) {
-		tmp = fmt("%s/%s/%s/%s", cgit_virtual_root, reponame,
+	if (ctx.cfg.virtual_root) {
+		tmp = fmt("%s/%s/%s/%s", ctx.cfg.virtual_root, reponame,
 			  pagename, (filename ? filename:""));
 		delim = "?";
 	} else {
@@ -110,14 +103,14 @@ const char *cgit_repobasename(const char *reponame)
 
 char *cgit_currurl()
 {
-	if (!cgit_virtual_root)
-		return cgit_script_name;
-	else if (cgit_query_page)
-		return fmt("%s/%s/%s/", cgit_virtual_root, cgit_query_repo, cgit_query_page);
-	else if (cgit_query_repo)
-		return fmt("%s/%s/", cgit_virtual_root, cgit_query_repo);
+	if (!ctx.cfg.virtual_root)
+		return ctx.cfg.script_name;
+	else if (ctx.qry.page)
+		return fmt("%s/%s/%s/", ctx.cfg.virtual_root, ctx.qry.repo, ctx.qry.page);
+	else if (ctx.qry.repo)
+		return fmt("%s/%s/", ctx.cfg.virtual_root, ctx.qry.repo);
 	else
-		return fmt("%s/", cgit_virtual_root);
+		return fmt("%s/", ctx.cfg.virtual_root);
 }
 
 static char *repolink(char *title, char *class, char *page, char *head,
@@ -137,12 +130,12 @@ static char *repolink(char *title, char *class, char *page, char *head,
 		html("'");
 	}
 	html(" href='");
-	if (cgit_virtual_root) {
-		html_attr(cgit_virtual_root);
-		if (cgit_virtual_root[strlen(cgit_virtual_root) - 1] != '/')
+	if (ctx.cfg.virtual_root) {
+		html_attr(ctx.cfg.virtual_root);
+		if (ctx.cfg.virtual_root[strlen(ctx.cfg.virtual_root) - 1] != '/')
 			html("/");
-		html_attr(cgit_repo->url);
-		if (cgit_repo->url[strlen(cgit_repo->url) - 1] != '/')
+		html_attr(ctx.repo->url);
+		if (ctx.repo->url[strlen(ctx.repo->url) - 1] != '/')
 			html("/");
 		if (page) {
 			html(page);
@@ -151,10 +144,10 @@ static char *repolink(char *title, char *class, char *page, char *head,
 				html_attr(path);
 		}
 	} else {
-		html(cgit_script_name);
+		html(ctx.cfg.script_name);
 		html("?url=");
-		html_attr(cgit_repo->url);
-		if (cgit_repo->url[strlen(cgit_repo->url) - 1] != '/')
+		html_attr(ctx.repo->url);
+		if (ctx.repo->url[strlen(ctx.repo->url) - 1] != '/')
 			html("/");
 		if (page) {
 			html(page);
@@ -164,7 +157,7 @@ static char *repolink(char *title, char *class, char *page, char *head,
 		}
 		delim = "&amp;";
 	}
-	if (head && strcmp(head, cgit_repo->defbranch)) {
+	if (head && strcmp(head, ctx.repo->defbranch)) {
 		html(delim);
 		html("h=");
 		html_attr(head);
@@ -179,7 +172,7 @@ static void reporevlink(char *page, char *name, char *title, char *class,
 	char *delim;
 
 	delim = repolink(title, class, page, head, path);
-	if (rev && strcmp(rev, cgit_query_head)) {
+	if (rev && strcmp(rev, ctx.qry.head)) {
 		html(delim);
 		html("id=");
 		html_attr(rev);
@@ -201,7 +194,7 @@ void cgit_log_link(char *name, char *title, char *class, char *head,
 	char *delim;
 
 	delim = repolink(title, class, "log", head, path);
-	if (rev && strcmp(rev, cgit_query_head)) {
+	if (rev && strcmp(rev, ctx.qry.head)) {
 		html(delim);
 		html("id=");
 		html_attr(rev);
@@ -229,11 +222,11 @@ void cgit_log_link(char *name, char *title, char *class, char *head,
 void cgit_commit_link(char *name, char *title, char *class, char *head,
 		      char *rev)
 {
-	if (strlen(name) > cgit_max_msg_len && cgit_max_msg_len >= 15) {
-		name[cgit_max_msg_len] = '\0';
-		name[cgit_max_msg_len - 1] = '.';
-		name[cgit_max_msg_len - 2] = '.';
-		name[cgit_max_msg_len - 3] = '.';
+	if (strlen(name) > ctx.cfg.max_msg_len && ctx.cfg.max_msg_len >= 15) {
+		name[ctx.cfg.max_msg_len] = '\0';
+		name[ctx.cfg.max_msg_len - 1] = '.';
+		name[ctx.cfg.max_msg_len - 2] = '.';
+		name[ctx.cfg.max_msg_len - 3] = '.';
 	}
 	reporevlink("commit", name, title, class, head, rev, NULL);
 }
@@ -256,7 +249,7 @@ void cgit_diff_link(char *name, char *title, char *class, char *head,
 	char *delim;
 
 	delim = repolink(title, class, "diff", head, path);
-	if (new_rev && strcmp(new_rev, cgit_query_head)) {
+	if (new_rev && strcmp(new_rev, ctx.qry.head)) {
 		html(delim);
 		html("id=");
 		html_attr(new_rev);
@@ -284,7 +277,7 @@ void cgit_object_link(struct object *obj)
 
 	if (obj->type == OBJ_COMMIT) {
                 cgit_commit_link(fmt("commit %s", sha1_to_hex(obj->sha1)), NULL, NULL,
-				 cgit_query_head, sha1_to_hex(obj->sha1));
+				 ctx.qry.head, sha1_to_hex(obj->sha1));
 		return;
 	} else if (obj->type == OBJ_TREE) {
 		page = "tree";
@@ -297,7 +290,7 @@ void cgit_object_link(struct object *obj)
 		arg = "id";
 	}
 
-	url = cgit_pageurl(cgit_query_repo, page,
+	url = cgit_pageurl(ctx.qry.repo, page,
 			   fmt("%s=%s", arg, sha1_to_hex(obj->sha1)));
 	html_link_open(url, NULL, NULL);
 	htmlf("%s %s", typename(obj->type),
@@ -360,24 +353,34 @@ void cgit_print_age(time_t t, time_t max_relative, char *format)
 	      secs * 1.0 / TM_YEAR);
 }
 
-void cgit_print_docstart(char *title, struct cacheitem *item)
+void cgit_print_http_headers(struct cgit_context *ctx)
 {
-	html("Content-Type: text/html; charset=" PAGE_ENCODING "\n");
-	htmlf("Last-Modified: %s\n", http_date(item->st.st_mtime));
-	htmlf("Expires: %s\n", http_date(item->st.st_mtime +
-					 ttl_seconds(item->ttl)));
+	if (ctx->page.mimetype && ctx->page.charset)
+		htmlf("Content-Type: %s; charset=%s\n", ctx->page.mimetype,
+		      ctx->page.charset);
+	else if (ctx->page.mimetype)
+		htmlf("Content-Type: %s\n", ctx->page.mimetype);
+	if (ctx->page.filename)
+		htmlf("Content-Disposition: inline; filename=\"%s\"\n",
+		      ctx->page.filename);
+	htmlf("Last-Modified: %s\n", http_date(ctx->page.modified));
+	htmlf("Expires: %s\n", http_date(ctx->page.expires));
 	html("\n");
+}
+
+void cgit_print_docstart(struct cgit_context *ctx)
+{
 	html(cgit_doctype);
 	html("<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='en' lang='en'>\n");
 	html("<head>\n");
 	html("<title>");
-	html_txt(title);
+	html_txt(ctx->page.title);
 	html("</title>\n");
 	htmlf("<meta name='generator' content='cgit %s'/>\n", cgit_version);
-	if (cgit_robots && *cgit_robots)
-		htmlf("<meta name='robots' content='%s'/>\n", cgit_robots);
+	if (ctx->cfg.robots && *ctx->cfg.robots)
+		htmlf("<meta name='robots' content='%s'/>\n", ctx->cfg.robots);
 	html("<link rel='stylesheet' type='text/css' href='");
-	html_attr(cgit_css);
+	html_attr(ctx->cfg.css);
 	html("'/>\n");
 	html("</head>\n");
 	html("<body>\n");
@@ -392,7 +395,7 @@ int print_branch_option(const char *refname, const unsigned char *sha1,
 			int flags, void *cb_data)
 {
 	char *name = (char *)refname;
-	html_option(name, name, cgit_query_head);
+	html_option(name, name, ctx.qry.head);
 	return 0;
 }
 
@@ -426,7 +429,7 @@ int print_archive_ref(const char *refname, const unsigned char *sha1,
 		html("<h1>download</h1>\n");
 		*header = 1;
 	}
-	url = cgit_pageurl(cgit_query_repo, "blob",
+	url = cgit_pageurl(ctx.qry.repo, "blob",
 			   fmt("id=%s&amp;path=%s", sha1_to_hex(fileid),
 			       buf));
 	html_link_open(url, NULL, "menu");
@@ -439,30 +442,30 @@ void add_hidden_formfields(int incl_head, int incl_search, char *page)
 {
 	char *url;
 
-	if (!cgit_virtual_root) {
-		url = fmt("%s/%s", cgit_query_repo, page);
-		if (cgit_query_path)
-			url = fmt("%s/%s", url, cgit_query_path);
+	if (!ctx.cfg.virtual_root) {
+		url = fmt("%s/%s", ctx.qry.repo, page);
+		if (ctx.qry.path)
+			url = fmt("%s/%s", url, ctx.qry.path);
 		html_hidden("url", url);
 	}
 
-	if (incl_head && strcmp(cgit_query_head, cgit_repo->defbranch))
-		html_hidden("h", cgit_query_head);
+	if (incl_head && strcmp(ctx.qry.head, ctx.repo->defbranch))
+		html_hidden("h", ctx.qry.head);
 
-	if (cgit_query_sha1)
-		html_hidden("id", cgit_query_sha1);
-	if (cgit_query_sha2)
-		html_hidden("id2", cgit_query_sha2);
+	if (ctx.qry.sha1)
+		html_hidden("id", ctx.qry.sha1);
+	if (ctx.qry.sha2)
+		html_hidden("id2", ctx.qry.sha2);
 
 	if (incl_search) {
-		if (cgit_query_grep)
-			html_hidden("qt", cgit_query_grep);
-		if (cgit_query_search)
-			html_hidden("q", cgit_query_search);
+		if (ctx.qry.grep)
+			html_hidden("qt", ctx.qry.grep);
+		if (ctx.qry.search)
+			html_hidden("q", ctx.qry.search);
 	}
 }
 
-void cgit_print_pageheader(char *title, int show_search)
+void cgit_print_pageheader(struct cgit_context *ctx)
 {
 	static const char *default_info = "This is cgit, a fast webinterface for git repositories";
 	int header = 0;
@@ -474,40 +477,40 @@ void cgit_print_pageheader(char *title, int show_search)
 	html("<tr><td class='sidebar'>\n<a href='");
 	html_attr(cgit_rooturl());
 	htmlf("'><img src='%s' alt='cgit'/></a>\n",
-	      cgit_logo);
+	      ctx->cfg.logo);
 	html("</td></tr>\n<tr><td class='sidebar'>\n");
-	if (cgit_query_repo) {
+	if (ctx->repo) {
 		html("<h1 class='first'>");
-		html_txt(strrpart(cgit_repo->name, 20));
+		html_txt(strrpart(ctx->repo->name, 20));
 		html("</h1>\n");
-		html_txt(cgit_repo->desc);
-		if (cgit_repo->owner) {
+		html_txt(ctx->repo->desc);
+		if (ctx->repo->owner) {
 			html("<h1>owner</h1>\n");
-			html_txt(cgit_repo->owner);
+			html_txt(ctx->repo->owner);
 		}
 		html("<h1>navigate</h1>\n");
-		reporevlink(NULL, "summary", NULL, "menu", cgit_query_head,
+		reporevlink(NULL, "summary", NULL, "menu", ctx->qry.head,
 			    NULL, NULL);
-		cgit_log_link("log", NULL, "menu", cgit_query_head, NULL, NULL,
+		cgit_log_link("log", NULL, "menu", ctx->qry.head, NULL, NULL,
 			      0, NULL, NULL);
-		cgit_tree_link("tree", NULL, "menu", cgit_query_head,
-			       cgit_query_sha1, NULL);
-		cgit_commit_link("commit", NULL, "menu", cgit_query_head,
-			      cgit_query_sha1);
-		cgit_diff_link("diff", NULL, "menu", cgit_query_head,
-			       cgit_query_sha1, cgit_query_sha2, NULL);
-		cgit_patch_link("patch", NULL, "menu", cgit_query_head,
-				cgit_query_sha1);
+		cgit_tree_link("tree", NULL, "menu", ctx->qry.head,
+			       ctx->qry.sha1, NULL);
+		cgit_commit_link("commit", NULL, "menu", ctx->qry.head,
+			      ctx->qry.sha1);
+		cgit_diff_link("diff", NULL, "menu", ctx->qry.head,
+			       ctx->qry.sha1, ctx->qry.sha2, NULL);
+		cgit_patch_link("patch", NULL, "menu", ctx->qry.head,
+				ctx->qry.sha1);
 
 		for_each_ref(print_archive_ref, &header);
 
-		if (cgit_repo->clone_url || cgit_clone_prefix) {
+		if (ctx->repo->clone_url || ctx->cfg.clone_prefix) {
 			html("<h1>clone</h1>\n");
-			if (cgit_repo->clone_url)
-				url = cgit_repo->clone_url;
+			if (ctx->repo->clone_url)
+				url = ctx->repo->clone_url;
 			else
-				url = fmt("%s%s", cgit_clone_prefix,
-					  cgit_repo->url);
+				url = fmt("%s%s", ctx->cfg.clone_prefix,
+					  ctx->repo->url);
 			html("<a class='menu' href='");
 			html_attr(url);
 			html("' title='");
@@ -519,10 +522,10 @@ void cgit_print_pageheader(char *title, int show_search)
 
 		html("<h1>branch</h1>\n");
 		html("<form method='get' action=''>\n");
-		add_hidden_formfields(0, 1, cgit_query_page);
+		add_hidden_formfields(0, 1, ctx->qry.page);
 //		html("<table summary='branch selector' class='grid'><tr><td id='branch-dropdown-cell'>");
 		html("<select name='h' onchange='this.form.submit();'>\n");
-		for_each_branch_ref(print_branch_option, cgit_query_head);
+		for_each_branch_ref(print_branch_option, ctx->qry.head);
 		html("</select>\n");
 //		html("</td><td>");
 		html("<noscript><input type='submit' id='switch-btn' value='switch'/></noscript>\n");
@@ -531,22 +534,22 @@ void cgit_print_pageheader(char *title, int show_search)
 
 		html("<h1>search</h1>\n");
 		html("<form method='get' action='");
-		if (cgit_virtual_root)
-			html_attr(cgit_fileurl(cgit_query_repo, "log",
-					       cgit_query_path, NULL));
+		if (ctx->cfg.virtual_root)
+			html_attr(cgit_fileurl(ctx->qry.repo, "log",
+					       ctx->qry.path, NULL));
 		html("'>\n");
 		add_hidden_formfields(1, 0, "log");
 		html("<select name='qt'>\n");
-		html_option("grep", "log msg", cgit_query_grep);
-		html_option("author", "author", cgit_query_grep);
-		html_option("committer", "committer", cgit_query_grep);
+		html_option("grep", "log msg", ctx->qry.grep);
+		html_option("author", "author", ctx->qry.grep);
+		html_option("committer", "committer", ctx->qry.grep);
 		html("</select>\n");
 		html("<input class='txt' type='text' name='q' value='");
-		html_attr(cgit_query_search);
+		html_attr(ctx->qry.search);
 		html("'/>\n");
 		html("</form>\n");
 	} else {
-		if (!cgit_index_info || html_include(cgit_index_info))
+		if (!ctx->cfg.index_info || html_include(ctx->cfg.index_info))
 			html(default_info);
 	}
 
@@ -555,16 +558,34 @@ void cgit_print_pageheader(char *title, int show_search)
 	html("<td id='content'>\n");
 }
 
-
-void cgit_print_snapshot_start(const char *mimetype, const char *filename,
-			       struct cacheitem *item)
+void cgit_print_filemode(unsigned short mode)
 {
-	htmlf("Content-Type: %s\n", mimetype);
-	htmlf("Content-Disposition: inline; filename=\"%s\"\n", filename);
-	htmlf("Last-Modified: %s\n", http_date(item->st.st_mtime));
-	htmlf("Expires: %s\n", http_date(item->st.st_mtime +
-					 ttl_seconds(item->ttl)));
-	html("\n");
+	if (S_ISDIR(mode))
+		html("d");
+	else if (S_ISLNK(mode))
+		html("l");
+	else if (S_ISGITLINK(mode))
+		html("m");
+	else
+		html("-");
+	html_fileperm(mode >> 6);
+	html_fileperm(mode >> 3);
+	html_fileperm(mode);
 }
 
-/* vim:set sw=8: */
+void cgit_print_snapshot_links(const char *repo, const char *head,
+			       const char *hex, int snapshots)
+{
+	const struct cgit_snapshot_format* f;
+    	char *filename;
+
+	for (f = cgit_snapshot_formats; f->suffix; f++) {
+		if (!(snapshots & f->bit))
+			continue;
+		filename = fmt("%s-%s%s", cgit_repobasename(repo), hex,
+			       f->suffix);
+		cgit_snapshot_link(filename, NULL, NULL, (char *)head,
+				   (char *)hex, filename);
+		html("<br/>");
+	}
+}

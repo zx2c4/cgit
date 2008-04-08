@@ -7,6 +7,7 @@
  */
 
 #include "cgit.h"
+#include "cache.h"
 
 const int NOLOCK = -1;
 
@@ -44,23 +45,23 @@ int cache_create_dirs()
 {
 	char *path;
 
-	path = fmt("%s", cgit_cache_root);
+	path = fmt("%s", ctx.cfg.cache_root);
 	if (mkdir(path, S_IRWXU) && errno!=EEXIST)
 		return 0;
 
-	if (!cgit_repo)
+	if (!ctx.repo)
 		return 0;
 
-	path = fmt("%s/%s", cgit_cache_root,
-		   cache_safe_filename(cgit_repo->url));
+	path = fmt("%s/%s", ctx.cfg.cache_root,
+		   cache_safe_filename(ctx.repo->url));
 
 	if (mkdir(path, S_IRWXU) && errno!=EEXIST)
 		return 0;
 
-	if (cgit_query_page) {
-		path = fmt("%s/%s/%s", cgit_cache_root,
-			   cache_safe_filename(cgit_repo->url),
-			   cgit_query_page);
+	if (ctx.qry.page) {
+		path = fmt("%s/%s/%s", ctx.cfg.cache_root,
+			   cache_safe_filename(ctx.repo->url),
+			   ctx.qry.page);
 		if (mkdir(path, S_IRWXU) && errno!=EEXIST)
 			return 0;
 	}
@@ -74,7 +75,7 @@ int cache_refill_overdue(const char *lockfile)
 	if (stat(lockfile, &st))
 		return 0;
 	else
-		return (time(NULL) - st.st_mtime > cgit_cache_max_create_time);
+		return (time(NULL) - st.st_mtime > ctx.cfg.cache_max_create_time);
 }
 
 int cache_lock(struct cacheitem *item)
@@ -83,7 +84,7 @@ int cache_lock(struct cacheitem *item)
 	char *lockfile = xstrdup(fmt("%s.lock", item->name));
 
  top:
-	if (++i > cgit_max_lock_attempts)
+	if (++i > ctx.cfg.max_lock_attempts)
 		die("cache_lock: unable to lock %s: %s",
 		    item->name, strerror(errno));
 

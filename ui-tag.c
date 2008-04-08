@@ -7,7 +7,8 @@
  */
 
 #include "cgit.h"
-
+#include "html.h"
+#include "ui-shared.h"
 
 static void print_tag_content(char *buf)
 {

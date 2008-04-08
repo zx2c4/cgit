@@ -8,130 +8,6 @@
 
 #include "cgit.h"
 
-int next_char(FILE *f)
-{
-	int c = fgetc(f);
-	if (c=='\r') {
-		c = fgetc(f);
-		if (c!='\n') {
-			ungetc(c, f);
-			c = '\r';
-		}
-	}
-	return c;
-}
-
-void skip_line(FILE *f)
-{
-	int c;
-
-	while((c=next_char(f)) && c!='\n' && c!=EOF)
-		;
-}
-
-int read_config_line(FILE *f, char *line, const char **value, int bufsize)
-{
-	int i = 0, isname = 0;
-
-	*value = NULL;
-	while(i<bufsize-1) {
-		int c = next_char(f);
-		if (!isname && (c=='#' || c==';')) {
-			skip_line(f);
-			continue;
-		}
-		if (!isname && isspace(c))
-			continue;
-
-		if (c=='=' && !*value) {
-			line[i] = 0;
-			*value = &line[i+1];
-		} else if (c=='\n' && !isname) {
-			i = 0;
-			continue;
-		} else if (c=='\n' || c==EOF) {
-			line[i] = 0;
-			break;
-		} else {
-			line[i]=c;
-		}
-		isname = 1;
-		i++;
-	}
-	line[i+1] = 0;
-	return i;
-}
-
-int cgit_read_config(const char *filename, configfn fn)
-{
-	static int nesting;
-	int len;
-	char line[256];
-	const char *value;
-	FILE *f;
-
-	/* cancel deeply nested include-commands */
-	if (nesting > 8)
-		return -1;
-	if (!(f = fopen(filename, "r")))
-		return -1;
-	nesting++;
-	while((len = read_config_line(f, line, &value, sizeof(line))) > 0)
-		(*fn)(line, value);
-	nesting--;
-	fclose(f);
-	return 0;
-}
-
-char *convert_query_hexchar(char *txt)
-{
-	int d1, d2;
-	if (strlen(txt) < 3) {
-		*txt = '\0';
-		return txt-1;
-	}
-	d1 = hextoint(*(txt+1));
-	d2 = hextoint(*(txt+2));
-	if (d1<0 || d2<0) {
-		strcpy(txt, txt+3);
-		return txt-1;
-	} else {
-		*txt = d1 * 16 + d2;
-		strcpy(txt+1, txt+3);
-		return txt;
-	}
-}
-
-int cgit_parse_query(char *txt, configfn fn)
-{
-	char *t, *value = NULL, c;
-
-	if (!txt)
-		return 0;
-
-	t = txt = xstrdup(txt);
-
-	while((c=*t) != '\0') {
-		if (c=='=') {
-			*t = '\0';
-			value = t+1;
-		} else if (c=='+') {
-			*t = ' ';
-		} else if (c=='%') {
-			t = convert_query_hexchar(t);
-		} else if (c=='&') {
-			*t = '\0';
-			(*fn)(txt, value);
-			txt = t+1;
-			value = NULL;
-		}
-		t++;
-	}
-	if (t!=txt)
-		(*fn)(txt, value);
-	return 0;
-}
-
 /*
  * url syntax: [repo ['/' cmd [ '/' path]]]
  *   repo: any valid repo url, may contain '/'
@@ -143,35 +19,35 @@ void cgit_parse_url(const char *url)
 {
 	char *cmd, *p;
 
-	cgit_repo = NULL;
+	ctx.repo = NULL;
 	if (!url || url[0] == '\0')
 		return;
 
-	cgit_repo = cgit_get_repoinfo(url);
-	if (cgit_repo) {
-		cgit_query_repo = cgit_repo->url;
+	ctx.repo = cgit_get_repoinfo(url);
+	if (ctx.repo) {
+		ctx.qry.repo = ctx.repo->url;
 		return;
 	}
 
 	cmd = strchr(url, '/');
-	while (!cgit_repo && cmd) {
+	while (!ctx.repo && cmd) {
 		cmd[0] = '\0';
-		cgit_repo = cgit_get_repoinfo(url);
-		if (cgit_repo == NULL) {
+		ctx.repo = cgit_get_repoinfo(url);
+		if (ctx.repo == NULL) {
 			cmd[0] = '/';
 			cmd = strchr(cmd + 1, '/');
 			continue;
 		}
 
-		cgit_query_repo = cgit_repo->url;
+		ctx.qry.repo = ctx.repo->url;
 		p = strchr(cmd + 1, '/');
 		if (p) {
 			p[0] = '\0';
 			if (p[1])
-				cgit_query_path = trim_end(p + 1, '/');
+				ctx.qry.path = trim_end(p + 1, '/');
 		}
-		cgit_cmd = cgit_get_cmd_index(cmd + 1);
-		cgit_query_page = xstrdup(cmd + 1);
+		if (cmd[1])
+			ctx.qry.page = xstrdup(cmd + 1);
 		return;
 	}
 }

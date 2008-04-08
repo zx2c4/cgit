@@ -12,12 +12,61 @@ GIT_URL = http://www.kernel.org/pub/software/scm/git/git-$(GIT_VER).tar.bz2
 #
 -include cgit.conf
 
+#
+# Define a way to invoke make in subdirs quietly, shamelessly ripped
+# from git.git
+#
+QUIET_SUBDIR0  = +$(MAKE) -C # space to separate -C and subdir
+QUIET_SUBDIR1  =
+
+ifneq ($(findstring $(MAKEFLAGS),w),w)
+PRINT_DIR = --no-print-directory
+else # "make -w"
+NO_SUBDIR = :
+endif
+
+ifndef V
+	QUIET_CC       = @echo '   ' CC $@;
+	QUIET_MM       = @echo '   ' MM $@;
+	QUIET_SUBDIR0  = +@subdir=
+	QUIET_SUBDIR1  = ;$(NO_SUBDIR) echo '   ' SUBDIR $$subdir; \
+			 $(MAKE) $(PRINT_DIR) -C $$subdir
+endif
+
+#
+# Define a pattern rule for automatic dependency building
+#
+%.d: %.c
+	$(QUIET_MM)$(CC) $(CFLAGS) -MM $< | sed -e 's/\($*\)\.o:/\1.o $@:/g' >$@
+
+#
+# Define a pattern rule for silent object building
+#
+%.o: %.c
+	$(QUIET_CC)$(CC) -o $*.o -c $(CFLAGS) $<
+
 
 EXTLIBS = git/libgit.a git/xdiff/lib.a -lz -lcrypto
-OBJECTS = shared.o cache.o parsing.o html.o ui-shared.o ui-repolist.o \
-	ui-summary.o ui-log.o ui-tree.o ui-commit.o ui-diff.o \
-	ui-snapshot.o ui-blob.o ui-tag.o ui-refs.o ui-patch.o
-
+OBJECTS =
+OBJECTS += cache.o
+OBJECTS += cgit.o
+OBJECTS += cmd.o
+OBJECTS += configfile.o
+OBJECTS += html.o
+OBJECTS += parsing.o
+OBJECTS += shared.o
+OBJECTS += ui-blob.o
+OBJECTS += ui-commit.o
+OBJECTS += ui-diff.o
+OBJECTS += ui-log.o
+OBJECTS += ui-patch.o
+OBJECTS += ui-refs.o
+OBJECTS += ui-repolist.o
+OBJECTS += ui-shared.o
+OBJECTS += ui-snapshot.o
+OBJECTS += ui-summary.o
+OBJECTS += ui-tag.o
+OBJECTS += ui-tree.o
 
 ifdef NEEDS_LIBICONV
 	EXTLIBS += -liconv
@@ -41,21 +90,25 @@ CFLAGS += -DCGIT_SCRIPT_NAME='"$(CGIT_SCRIPT_NAME)"'
 CFLAGS += -DCGIT_CACHE_ROOT='"$(CACHE_ROOT)"'
 
 
-cgit: cgit.c $(OBJECTS)
-	$(CC) $(CFLAGS) cgit.c -o cgit $(OBJECTS) $(EXTLIBS)
+cgit: $(OBJECTS)
+	$(QUIET_CC)$(CC) $(CFLAGS) -o cgit $(OBJECTS) $(EXTLIBS)
 
-$(OBJECTS): cgit.h git/xdiff/lib.a git/libgit.a VERSION
+$(OBJECTS): git/xdiff/lib.a git/libgit.a
+
+cgit.o: VERSION
+
+-include $(OBJECTS:.o=.d)
 
 git/xdiff/lib.a: | git
 
 git/libgit.a: | git
 
 git:
-	cd git && $(MAKE) xdiff/lib.a
-	cd git && $(MAKE) libgit.a
+	$(QUIET_SUBDIR0)git $(QUIET_SUBDIR1) xdiff/lib.a
+	$(QUIET_SUBDIR0)git $(QUIET_SUBDIR1) libgit.a
 
 test: all
-	$(MAKE) -C tests
+	$(QUIET_SUBDIR0)tests $(QUIET_SUBDIR1) all
 
 install: all
 	mkdir -p $(DESTDIR)$(CGIT_SCRIPT_PATH)
@@ -69,7 +122,7 @@ uninstall:
 	rm -f $(CGIT_SCRIPT_PATH)/cgit.png
 
 clean:
-	rm -f cgit VERSION *.o
+	rm -f cgit VERSION *.o *.d
 	cd git && $(MAKE) clean
 
 distclean: clean

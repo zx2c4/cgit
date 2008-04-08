@@ -7,7 +7,8 @@
  */
 
 #include "cgit.h"
-
+#include "html.h"
+#include "ui-shared.h"
 
 unsigned char old_rev_sha1[20];
 unsigned char new_rev_sha1[20];
@@ -71,13 +72,13 @@ static void header(unsigned char *sha1, char *path1, int mode1,
 		}
 		html("<br/>--- a/");
 		if (mode1 != 0)
-			cgit_tree_link(path1, NULL, NULL, cgit_query_head,
+			cgit_tree_link(path1, NULL, NULL, ctx.qry.head,
 				       sha1_to_hex(old_rev_sha1), path1);
 		else
 			html_txt(path1);
 		html("<br/>+++ b/");
 		if (mode2 != 0)
-			cgit_tree_link(path2, NULL, NULL, cgit_query_head,
+			cgit_tree_link(path2, NULL, NULL, ctx.qry.head,
 				       sha1_to_hex(new_rev_sha1), path2);
 		else
 			html_txt(path2);
@@ -107,7 +108,7 @@ void cgit_print_diff(const char *new_rev, const char *old_rev, const char *prefi
 	struct commit *commit, *commit2;
 
 	if (!new_rev)
-		new_rev = cgit_query_head;
+		new_rev = ctx.qry.head;
 	get_sha1(new_rev, new_rev_sha1);
 	type = sha1_object_info(new_rev_sha1, &size);
 	if (type == OBJ_BAD) {
