@@ -7,6 +7,7 @@
  */
 
 #include "cgit.h"
+#include "cmd.h"
 #include "html.h"
 
 const char cgit_doctype[] =
@@ -465,97 +466,59 @@ void add_hidden_formfields(int incl_head, int incl_search, char *page)
 	}
 }
 
+char *hc(struct cgit_cmd *cmd, const char *page)
+{
+	return (strcmp(cmd->name, page) ? NULL : "active");
+}
+
 void cgit_print_pageheader(struct cgit_context *ctx)
 {
-	static const char *default_info = "This is cgit, a fast webinterface for git repositories";
-	int header = 0;
-	char *url;
+	struct cgit_cmd *cmd = cgit_get_cmd(ctx);
 
-	html("<table id='layout' summary=''>\n");
-	html("<tr><td id='sidebar'>\n");
-	html("<table class='sidebar' cellspacing='0' summary=''>\n");
-	html("<tr><td class='sidebar'>\n<a href='");
+	html("<table id='header'>\n");
+	html("<tr>\n");
+	html("<td class='logo' rowspan='2'><a href='");
 	html_attr(cgit_rooturl());
-	htmlf("'><img src='%s' alt='cgit'/></a>\n",
-	      ctx->cfg.logo);
-	html("</td></tr>\n<tr><td class='sidebar'>\n");
-	if (ctx->repo) {
-		html("<h1 class='first'>");
-		html_txt(strrpart(ctx->repo->name, 20));
-		html("</h1>\n");
+	html("'><img src='");
+	html_attr(ctx->cfg.logo);
+	html("'/></a></td>\n");
+	html("<td class='main'>");
+	if (ctx->repo)
+		html_txt(ctx->repo->name);
+	else
+		html_txt(ctx->cfg.root_title);
+	html("</td></tr>\n");
+	html("<tr><td class='sub'>");
+	if (ctx->repo)
 		html_txt(ctx->repo->desc);
-		if (ctx->repo->owner) {
-			html("<h1>owner</h1>\n");
-			html_txt(ctx->repo->owner);
-		}
-		html("<h1>navigate</h1>\n");
-		reporevlink(NULL, "summary", NULL, "menu", ctx->qry.head,
-			    NULL, NULL);
-		cgit_log_link("log", NULL, "menu", ctx->qry.head, NULL, NULL,
-			      0, NULL, NULL);
-		cgit_tree_link("tree", NULL, "menu", ctx->qry.head,
+	else
+		html_txt(ctx->cfg.index_info);
+	html("</td></tr>\n");
+	html("</table>\n");
+
+	html("<table class='tabs'><tr><td>\n");
+	if (ctx->repo) {
+		reporevlink(NULL, "summary", NULL, hc(cmd, "summary"),
+			    ctx->qry.head, NULL, NULL);
+		cgit_refs_link("refs", NULL, hc(cmd, "refs"), ctx->qry.head,
 			       ctx->qry.sha1, NULL);
-		cgit_commit_link("commit", NULL, "menu", ctx->qry.head,
-			      ctx->qry.sha1);
-		cgit_diff_link("diff", NULL, "menu", ctx->qry.head,
+		cgit_log_link("log", NULL, hc(cmd, "log"), ctx->qry.head,
+			      NULL, NULL, 0, NULL, NULL);
+		cgit_tree_link("tree", NULL, hc(cmd, "tree"), ctx->qry.head,
+			       ctx->qry.sha1, NULL);
+		cgit_commit_link("commit", NULL, hc(cmd, "commit"),
+				 ctx->qry.head, ctx->qry.sha1);
+		cgit_diff_link("diff", NULL, hc(cmd, "diff"), ctx->qry.head,
 			       ctx->qry.sha1, ctx->qry.sha2, NULL);
-		cgit_patch_link("patch", NULL, "menu", ctx->qry.head,
+		cgit_patch_link("patch", NULL, hc(cmd, "patch"), ctx->qry.head,
 				ctx->qry.sha1);
-
-		for_each_ref(print_archive_ref, &header);
-
-		if (ctx->repo->clone_url || ctx->cfg.clone_prefix) {
-			html("<h1>clone</h1>\n");
-			if (ctx->repo->clone_url)
-				url = ctx->repo->clone_url;
-			else
-				url = fmt("%s%s", ctx->cfg.clone_prefix,
-					  ctx->repo->url);
-			html("<a class='menu' href='");
-			html_attr(url);
-			html("' title='");
-			html_attr(url);
-			html("'>\n");
-			html_txt(strrpart(url, 20));
-			html("</a>\n");
-		}
-
-		html("<h1>branch</h1>\n");
-		html("<form method='get' action=''>\n");
-		add_hidden_formfields(0, 1, ctx->qry.page);
-//		html("<table summary='branch selector' class='grid'><tr><td id='branch-dropdown-cell'>");
-		html("<select name='h' onchange='this.form.submit();'>\n");
-		for_each_branch_ref(print_branch_option, ctx->qry.head);
-		html("</select>\n");
-//		html("</td><td>");
-		html("<noscript><input type='submit' id='switch-btn' value='switch'/></noscript>\n");
-//		html("</td></tr></table>");
-		html("</form>\n");
-
-		html("<h1>search</h1>\n");
-		html("<form method='get' action='");
-		if (ctx->cfg.virtual_root)
-			html_attr(cgit_fileurl(ctx->qry.repo, "log",
-					       ctx->qry.path, NULL));
-		html("'>\n");
-		add_hidden_formfields(1, 0, "log");
-		html("<select name='qt'>\n");
-		html_option("grep", "log msg", ctx->qry.grep);
-		html_option("author", "author", ctx->qry.grep);
-		html_option("committer", "committer", ctx->qry.grep);
-		html("</select>\n");
-		html("<input class='txt' type='text' name='q' value='");
-		html_attr(ctx->qry.search);
-		html("'/>\n");
-		html("</form>\n");
 	} else {
-		if (!ctx->cfg.index_info || html_include(ctx->cfg.index_info))
-			html(default_info);
+		html("<a class='active' href='");
+		html_attr(cgit_rooturl());
+		html("'>index</a>\n");
 	}
-
-	html("</td></tr></table></td>\n");
-
-	html("<td id='content'>\n");
+	html("</td></tr></table>\n");
+	html("<div class='content'>");
 }
 
 void cgit_print_filemode(unsigned short mode)
