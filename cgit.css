@@ -170,14 +170,13 @@ a.ls-blob, a.ls-dir, a.ls-mod {
 
 td.ls-size {
 	text-align: right;
-}
-
-td.ls-size {
 	font-family: monospace;
+	width: 10em;
 }
 
 td.ls-mode {
 	font-family: monospace;
+	width: 10em;
 }
 
 table.blob {
