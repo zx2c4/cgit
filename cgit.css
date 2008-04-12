@@ -52,6 +52,7 @@ table.tabs {
 
 table.tabs td {
 	padding: 0px 0.5em;
+	vertical-align: bottom;
 }
 
 table.tabs td a {
@@ -62,6 +63,15 @@ table.tabs td a {
 table.tabs td a.active {
 	color: #000;
 	background-color: #ccc;
+}
+
+table.tabs td.branch {
+	text-align: right;
+}
+
+table.tabs td.branch form {
+	padding-bottom: 2px;
+	font-size: 90%;
 }
 
 div.content {

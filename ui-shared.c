@@ -518,6 +518,13 @@ void cgit_print_pageheader(struct cgit_context *ctx)
 			       ctx->qry.sha1, ctx->qry.sha2, NULL);
 		cgit_patch_link("patch", NULL, hc(cmd, "patch"), ctx->qry.head,
 				ctx->qry.sha1);
+		html("</td><td class='branch'>");
+		html("<form method='get' action=''>\n");
+		add_hidden_formfields(0, 1, ctx->qry.page);
+		html("<select name='h' onchange='this.form.submit();'>\n");
+		for_each_branch_ref(print_branch_option, ctx->qry.head);
+		html("</select> ");
+		html("<input type='submit' name='' value='switch'/>");
 	} else {
 		html("<a class='active' href='");
 		html_attr(cgit_rooturl());
