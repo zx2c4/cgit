@@ -9,6 +9,7 @@
 #include "cgit.h"
 #include "html.h"
 #include "ui-shared.h"
+#include "ui-diff.h"
 
 static int files, slots;
 static int total_adds, total_rems, max_changes;
@@ -218,10 +219,11 @@ void cgit_print_commit(char *hex)
 			print_fileinfo(&items[i]);
 		html("</table>");
 		html("<div class='diffstat-summary'>");
-		htmlf("%d files changed, %d insertions, %d deletions (",
+		htmlf("%d files changed, %d insertions, %d deletions",
 		      files, total_adds, total_rems);
-		cgit_diff_link("show diff", NULL, NULL, ctx.qry.head, hex,
-			       NULL, NULL);
+		cgit_print_diff(ctx.qry.sha1,
+				sha1_to_hex(commit->parents->item->object.sha1),
+				NULL);
 		html(")</div>");
 	}
 	cgit_free_commitinfo(info);
