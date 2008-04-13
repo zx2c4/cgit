@@ -44,20 +44,23 @@ static void print_modtime(struct cgit_repo *repo)
 	cgit_print_age(s.st_mtime, -1, NULL);
 }
 
-void cgit_print_repolist()
+int is_match(struct cgit_repo *repo)
 {
-	int i, columns = 4;
-	char *last_group = NULL;
+	if (!ctx.qry.search)
+		return 1;
+	if (repo->url && strstr(repo->url, ctx.qry.search))
+		return 1;
+	if (repo->name && strstr(repo->name, ctx.qry.search))
+		return 1;
+	if (repo->desc && strstr(repo->desc, ctx.qry.search))
+		return 1;
+	if (repo->owner && strstr(repo->owner, ctx.qry.search))
+		return 1;
+	return 0;
+}
 
-	if (ctx.cfg.enable_index_links)
-		columns++;
-
-	ctx.page.title = ctx.cfg.root_title;
-	cgit_print_http_headers(&ctx);
-	cgit_print_docstart(&ctx);
-	cgit_print_pageheader(&ctx);
-
-	html("<table summary='repository list' class='list nowrap'>");
+void print_header(int columns)
+{
 	if (ctx.cfg.index_header) {
 		htmlf("<tr class='nohover'><td colspan='%d' class='include-block'>",
 		      columns);
@@ -72,9 +75,29 @@ void cgit_print_repolist()
 	if (ctx.cfg.enable_index_links)
 		html("<th class='left'>Links</th>");
 	html("</tr>\n");
+}
 
+void cgit_print_repolist()
+{
+	int i, columns = 4, hits = 0, header = 0;
+	char *last_group = NULL;
+
+	if (ctx.cfg.enable_index_links)
+		columns++;
+
+	ctx.page.title = ctx.cfg.root_title;
+	cgit_print_http_headers(&ctx);
+	cgit_print_docstart(&ctx);
+	cgit_print_pageheader(&ctx);
+
+	html("<table summary='repository list' class='list nowrap'>");
 	for (i=0; i<cgit_repolist.count; i++) {
 		ctx.repo = &cgit_repolist.repos[i];
+		if (!is_match(ctx.repo))
+			continue;
+		if (!header++)
+			print_header(columns);
+		hits++;
 		if ((last_group == NULL && ctx.repo->group != NULL) ||
 		    (last_group != NULL && ctx.repo->group == NULL) ||
 		    (last_group != NULL && ctx.repo->group != NULL &&
@@ -110,5 +133,7 @@ void cgit_print_repolist()
 		html("</tr>\n");
 	}
 	html("</table>");
+	if (!hits)
+		cgit_print_error("No repositories found");
 	cgit_print_docend();
 }
