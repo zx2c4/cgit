@@ -48,13 +48,13 @@ int is_match(struct cgit_repo *repo)
 {
 	if (!ctx.qry.search)
 		return 1;
-	if (repo->url && strstr(repo->url, ctx.qry.search))
+	if (repo->url && strcasestr(repo->url, ctx.qry.search))
 		return 1;
-	if (repo->name && strstr(repo->name, ctx.qry.search))
+	if (repo->name && strcasestr(repo->name, ctx.qry.search))
 		return 1;
-	if (repo->desc && strstr(repo->desc, ctx.qry.search))
+	if (repo->desc && strcasestr(repo->desc, ctx.qry.search))
 		return 1;
-	if (repo->owner && strstr(repo->owner, ctx.qry.search))
+	if (repo->owner && strcasestr(repo->owner, ctx.qry.search))
 		return 1;
 	return 0;
 }
