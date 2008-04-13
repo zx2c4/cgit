@@ -541,8 +541,6 @@ void cgit_print_pageheader(struct cgit_context *ctx)
 				 ctx->qry.head, ctx->qry.sha1);
 		cgit_diff_link("diff", NULL, hc(cmd, "diff"), ctx->qry.head,
 			       ctx->qry.sha1, ctx->qry.sha2, NULL);
-		cgit_patch_link("patch", NULL, hc(cmd, "patch"), ctx->qry.head,
-				ctx->qry.sha1);
 		html("</td><td class='form'>");
 		html("<form class='right' method='get' action='");
 		if (ctx->cfg.virtual_root)
