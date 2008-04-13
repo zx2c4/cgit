@@ -389,7 +389,7 @@ void cgit_print_docstart(struct cgit_context *ctx)
 
 void cgit_print_docend()
 {
-	html("</td>\n</tr>\n</table>\n</body>\n</html>\n");
+	html("</div>\n</body>\n</html>\n");
 }
 
 int print_branch_option(const char *refname, const unsigned char *sha1,
@@ -485,21 +485,46 @@ void cgit_print_pageheader(struct cgit_context *ctx)
 	html("'><img src='");
 	html_attr(ctx->cfg.logo);
 	html("'/></a></td>\n");
+
 	html("<td class='main'>");
 	if (ctx->repo) {
+/*
 		html("<a href='");
 		html_attr(cgit_rooturl());
-		html("'>index</a> / ");
-		html_txt(ctx->repo->name);
+		html("'>index</a> : ");
+*/
+		reporevlink(NULL, ctx->repo->name, NULL, hc(cmd, "summary"),
+			    ctx->qry.head, NULL, NULL);
+		html(" : ");
+		html_txt(ctx->qry.page);
+		html("</td><td class='form'>");
+		html("<form method='get' action=''>\n");
+		add_hidden_formfields(0, 1, ctx->qry.page);
+		html("<select name='h' onchange='this.form.submit();'>\n");
+		for_each_branch_ref(print_branch_option, ctx->qry.head);
+		html("</select> ");
+		html("<input type='submit' name='' value='switch'/>");
+		html("</form>");
 	} else
 		html_txt(ctx->cfg.root_title);
-	html("</td></tr>\n");
-	html("<tr><td class='sub'>");
-	if (ctx->repo)
+	html("</td>\n");
+
+	html("<tr><td class='sub'");
+	if (ctx->repo) {
+		html(" colspan='2'>");
 		html_txt(ctx->repo->desc);
-	else
-		html_txt(ctx->cfg.index_info);
+	}
+/*
+	else if (ctx->cfg.root_subtitle)
+		html_txt(ctx->cfg.root_subtitle);
+*/
+	else {
+		html(">");
+		html_txt("a fast webinterface for the git dscm");
+	}
 	html("</td></tr>\n");
+
+	html("</tr>\n");
 	html("</table>\n");
 
 	html("<table class='tabs'><tr><td>\n");
@@ -518,13 +543,23 @@ void cgit_print_pageheader(struct cgit_context *ctx)
 			       ctx->qry.sha1, ctx->qry.sha2, NULL);
 		cgit_patch_link("patch", NULL, hc(cmd, "patch"), ctx->qry.head,
 				ctx->qry.sha1);
-		html("</td><td class='branch'>");
-		html("<form method='get' action=''>\n");
-		add_hidden_formfields(0, 1, ctx->qry.page);
-		html("<select name='h' onchange='this.form.submit();'>\n");
-		for_each_branch_ref(print_branch_option, ctx->qry.head);
-		html("</select> ");
-		html("<input type='submit' name='' value='switch'/>");
+		html("</td><td class='form'>");
+		html("<form class='right' method='get' action='");
+		if (ctx->cfg.virtual_root)
+			html_attr(cgit_fileurl(ctx->qry.repo, "log",
+					       ctx->qry.path, NULL));
+		html("'>\n");
+		add_hidden_formfields(1, 0, "log");
+		html("<select name='qt'>\n");
+		html_option("grep", "log msg", ctx->qry.grep);
+		html_option("author", "author", ctx->qry.grep);
+		html_option("committer", "committer", ctx->qry.grep);
+		html("</select>\n");
+		html("<input class='txt' type='text' size='8' name='q' value='");
+		html_attr(ctx->qry.search);
+		html("'/>\n");
+		html("<input type='submit' value='search'/>\n");
+		html("</form>\n");
 	} else {
 		html("<a class='active' href='");
 		html_attr(cgit_rooturl());

@@ -70,7 +70,7 @@ void cgit_print_repolist()
 	     "<th class='left'>Owner</th>"
 	     "<th class='left'>Idle</th>");
 	if (ctx.cfg.enable_index_links)
-		html("<th>Links</th>");
+		html("<th class='left'>Links</th>");
 	html("</tr>\n");
 
 	for (i=0; i<cgit_repolist.count; i++) {

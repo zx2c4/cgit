@@ -34,30 +34,50 @@ table#header td.logo {
 }
 
 table#header td.main {
-	font-size: 200%;
+	font-size: 250%;
+	padding-left: 10px;
+}
+
+table#header td.main a {
+	color: #000;
+}
+
+table#header td.form {
+	text-align: right;
+	vertical-align: bottom;
+	padding-right: 1em;
+	padding-bottom: 2px;
+}
+
+table#header td.form form,
+table#header td.form input,
+table#header td.form select {
+	font-size: 90%;
 }
 
 table#header td.sub {
 	color: #777;
 	border-top: solid 1px #ccc;
+	padding-left: 10px;
 }
 
 table.tabs {
-	border-bottom: solid 2px #ccc;
+	/* border-bottom: solid 2px #ccc; */
 	border-collapse: collapse;
 	margin-top: 2em;
-	margin-bottom: 1em;
+	margin-bottom: 0px;
 	width: 100%;
 }
 
 table.tabs td {
-	padding: 0px 0.5em;
+	padding: 0px 1em;
 	vertical-align: bottom;
 }
 
 table.tabs td a {
-	padding: 2px 1em;
-	color: #007;
+	padding: 2px 0.75em;
+	color: #777;
+	font-size: 110%;
 }
 
 table.tabs td a.active {
@@ -65,18 +85,25 @@ table.tabs td a.active {
 	background-color: #ccc;
 }
 
-table.tabs td.branch {
+table.tabs td.form {
 	text-align: right;
 }
 
-table.tabs td.branch form {
+table.tabs td.form form {
 	padding-bottom: 2px;
+	font-size: 90%;
+}
+
+table.tabs td.form input,
+table.tabs td.form select {
 	font-size: 90%;
 }
 
 div.content {
 	margin: 0px;
-	padding: 1em;
+	padding: 2em;
+	border-top: solid 3px #ccc;
+	border-bottom: solid 3px #ccc;
 }
 
 
@@ -99,9 +126,12 @@ table.list tr.nohover:hover {
 }
 
 table.list th {
-	font-weight: normal;
-	border-bottom: solid 1px #ccc;
-	padding: 0.1em 0.5em 0.1em 0.5em;
+	font-weight: bold;
+	/* color: #888;
+	border-top: dashed 1px #888;
+	border-bottom: dashed 1px #888;
+	*/
+	padding: 0.1em 0.5em 0.05em 0.5em;
 	vertical-align: baseline;
 }
 
@@ -360,17 +390,17 @@ table.list td.repogroup {
 
 a.button {
 	font-size: 80%;
-	color: #aaa;
+	color: #33c;
+/*
 	background-color: #eee;
 	border: solid 1px #aaa;
-	padding: 0em 0.5em;
 	margin: 0.1em 0.25em;
+*/
+	padding: 0em 0.5em;
 }
 
 a.button:hover {
-	text-decoration: none;
-	color: #333;
-	background-color: #ccc;
+	text-decoration: underline;
 }
 
 a.primary {
