@@ -221,4 +221,11 @@ extern const char *cgit_repobasename(const char *reponame);
 
 extern int cgit_parse_snapshots_mask(const char *str);
 
+/* libgit.a either links against or compiles its own implementation of
+ * strcasestr(), and we'd like to reuse it. Simply re-declaring it
+ * seems to do the trick.
+ */
+extern char *strcasestr(const char *haystack, const char *needle);
+
+
 #endif /* CGIT_H */

@@ -9,6 +9,7 @@
 #include "cgit.h"
 #include "html.h"
 #include "ui-shared.h"
+#include "ui-diff.h"
 
 static int files, slots;
 static int total_adds, total_rems, max_changes;
@@ -174,6 +175,12 @@ void cgit_print_commit(char *hex)
 	html("</td><td class='right'>");
 	cgit_print_date(info->committer_date, FMT_LONGDATE);
 	html("</td></tr>\n");
+	html("<tr><th>commit</th><td colspan='2' class='sha1'>");
+	tmp = sha1_to_hex(commit->object.sha1);
+	cgit_commit_link(tmp, NULL, NULL, ctx.qry.head, tmp);
+	html(" (");
+	cgit_patch_link("patch", NULL, NULL, NULL, tmp);
+	html(")</td></tr>\n");
 	html("<tr><th>tree</th><td colspan='2' class='sha1'>");
 	tmp = xstrdup(hex);
 	cgit_tree_link(sha1_to_hex(commit->tree->object.sha1), NULL, NULL,
@@ -218,10 +225,11 @@ void cgit_print_commit(char *hex)
 			print_fileinfo(&items[i]);
 		html("</table>");
 		html("<div class='diffstat-summary'>");
-		htmlf("%d files changed, %d insertions, %d deletions (",
+		htmlf("%d files changed, %d insertions, %d deletions",
 		      files, total_adds, total_rems);
-		cgit_diff_link("show diff", NULL, NULL, ctx.qry.head, hex,
-			       NULL, NULL);
+		cgit_print_diff(ctx.qry.sha1,
+				sha1_to_hex(commit->parents->item->object.sha1),
+				NULL);
 		html(")</div>");
 	}
 	cgit_free_commitinfo(info);

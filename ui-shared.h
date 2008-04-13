@@ -14,6 +14,8 @@ extern void cgit_log_link(char *name, char *title, char *class, char *head,
 			  char *pattern);
 extern void cgit_commit_link(char *name, char *title, char *class, char *head,
 			     char *rev);
+extern void cgit_patch_link(char *name, char *title, char *class, char *head,
+			    char *rev);
 extern void cgit_refs_link(char *name, char *title, char *class, char *head,
 			   char *rev, char *path);
 extern void cgit_snapshot_link(char *name, char *title, char *class,

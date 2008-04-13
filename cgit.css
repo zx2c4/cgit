@@ -11,41 +11,104 @@ body {
 	padding: 4px;
 }
 
-table {
-      border-collapse: collapse;
-}
-
-h2 {
-	font-size: 120%;
-	font-weight: bold;
-	margin-top: 0em;
-	margin-bottom: 0.25em;
-}
-
-h3 {
-	margin-top: 0em;
-	font-size: 100%;
-	font-weight: normal;
-}
-
-h4 {
-	margin-top: 1.5em;
-	margin-bottom: 0.1em;
-	font-size: 100%;
-	font-weight: bold;
-}
-
 a {
-	color: #600;
+	color: blue;
 	text-decoration: none;
 }
 
 a:hover {
-	background-color: #ddd;
-	text-decoration: none;
+	text-decoration: underline;
 }
 
+table {
+      border-collapse: collapse;
+}
+
+table#header {
+	width: 100%;
+	margin-bottom: 1em;
+}
+
+table#header td.logo {
+	width: 96px;
+}
+
+table#header td.main {
+	font-size: 250%;
+	padding-left: 10px;
+}
+
+table#header td.main a {
+	color: #000;
+}
+
+table#header td.form {
+	text-align: right;
+	vertical-align: bottom;
+	padding-right: 1em;
+	padding-bottom: 2px;
+}
+
+table#header td.form form,
+table#header td.form input,
+table#header td.form select {
+	font-size: 90%;
+}
+
+table#header td.sub {
+	color: #777;
+	border-top: solid 1px #ccc;
+	padding-left: 10px;
+}
+
+table.tabs {
+	/* border-bottom: solid 2px #ccc; */
+	border-collapse: collapse;
+	margin-top: 2em;
+	margin-bottom: 0px;
+	width: 100%;
+}
+
+table.tabs td {
+	padding: 0px 1em;
+	vertical-align: bottom;
+}
+
+table.tabs td a {
+	padding: 2px 0.75em;
+	color: #777;
+	font-size: 110%;
+}
+
+table.tabs td a.active {
+	color: #000;
+	background-color: #ccc;
+}
+
+table.tabs td.form {
+	text-align: right;
+}
+
+table.tabs td.form form {
+	padding-bottom: 2px;
+	font-size: 90%;
+}
+
+table.tabs td.form input,
+table.tabs td.form select {
+	font-size: 90%;
+}
+
+div.content {
+	margin: 0px;
+	padding: 2em;
+	border-top: solid 3px #ccc;
+	border-bottom: solid 3px #ccc;
+}
+
+
 table.list {
+	width: 100%;
 	border: none;
 	border-collapse: collapse;
 }
@@ -55,7 +118,7 @@ table.list tr {
 }
 
 table.list tr:hover {
-	background: #f8f8f8;
+	background: #eee;
 }
 
 table.list tr.nohover:hover {
@@ -64,8 +127,11 @@ table.list tr.nohover:hover {
 
 table.list th {
 	font-weight: bold;
-	border-bottom: solid 1px #777;
-	padding: 0.1em 0.5em 0.1em 0.5em;
+	/* color: #888;
+	border-top: dashed 1px #888;
+	border-bottom: dashed 1px #888;
+	*/
+	padding: 0.1em 0.5em 0.05em 0.5em;
 	vertical-align: baseline;
 }
 
@@ -74,79 +140,12 @@ table.list td {
 	padding: 0.1em 0.5em 0.1em 0.5em;
 }
 
+table.list td a {
+	color: black;
+}
+
 img {
 	border: none;
-}
-
-table#layout {
-	border-collapse: collapse;
-	border: none;
-	margin: 0px;
-}
-
-td#sidebar {
-	vertical-align: top;
-	width: 162px;
-	padding: 0px 0px 0px 0px;
-	margin: 0px;
-}
-
-td#sidebar table {
-	border-collapse: separate;
-	border-spacing: 0px;
-	margin: 0px;
-	padding: 0px;
-	background-color: #ccc;
-}
-
-td#sidebar table.sidebar td.sidebar {
-	padding: 4px;
-	border-top: solid 1px #eee;
-	border-left: solid 1px #eee;
-	border-right: solid 1px #aaa;
-	border-bottom: solid 1px #aaa;
-}
-
-div#logo {
-	margin: 0px;
-	padding: 4px 0px 4px 0px;
-	text-align: center;
-	background-color: #ccc;
-	border-top: solid 1px #eee;
-	border-left: solid 1px #eee;
-	border-right: solid 1px #aaa;
-	border-bottom: solid 1px #aaa;
-}
-
-td#sidebar h1 {
-	font-size: 10pt;
-	font-weight: bold;
-	margin: 8px 0px 0px 0px;
-}
-
-td#sidebar h1.first {
-	margin-top: 0px;
-}
-
-td#sidebar a.menu {
-	display: block;
-	background-color: #ccc;
-	padding: 0.1em 0.5em;
-	text-decoration: none;
-}
-
-td#sidebar a.menu:hover {
-	background-color: #bbb;
-	text-decoration: none;
-}
-
-td#sidebar select {
-	width: 100%;
-	margin: 2px 0px 0px 0px;
-}
-
-td#sidebar form {
-	text-align: right;
 }
 
 input#switch-btn {
@@ -201,14 +200,13 @@ a.ls-blob, a.ls-dir, a.ls-mod {
 
 td.ls-size {
 	text-align: right;
-}
-
-td.ls-size {
 	font-family: monospace;
+	width: 10em;
 }
 
 td.ls-mode {
 	font-family: monospace;
+	width: 10em;
 }
 
 table.blob {
@@ -357,7 +355,7 @@ table.diff td {
 table.diff td div.head {
 	font-weight: bold;
 	margin-top: 1em;
-	background-color: #eee;
+	color: black;
 }
 
 table.diff td div.hunk {
@@ -392,17 +390,17 @@ table.list td.repogroup {
 
 a.button {
 	font-size: 80%;
-	color: #aaa;
+	color: #33c;
+/*
 	background-color: #eee;
 	border: solid 1px #aaa;
-	padding: 0em 0.5em;
 	margin: 0.1em 0.25em;
+*/
+	padding: 0em 0.5em;
 }
 
 a.button:hover {
-	text-decoration: none;
-	color: #333;
-	background-color: #ccc;
+	text-decoration: underline;
 }
 
 a.primary {
