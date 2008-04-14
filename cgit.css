@@ -144,6 +144,10 @@ table.list td a {
 	color: black;
 }
 
+table.list td a:hover {
+	color: #00f;
+}
+
 img {
 	border: none;
 }
@@ -390,17 +394,7 @@ table.list td.repogroup {
 
 a.button {
 	font-size: 80%;
-	color: #33c;
-/*
-	background-color: #eee;
-	border: solid 1px #aaa;
-	margin: 0.1em 0.25em;
-*/
 	padding: 0em 0.5em;
-}
-
-a.button:hover {
-	text-decoration: underline;
 }
 
 a.primary {
