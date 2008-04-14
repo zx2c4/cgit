@@ -484,15 +484,10 @@ void cgit_print_pageheader(struct cgit_context *ctx)
 		html_attr(cgit_rooturl());
 	html("'><img src='");
 	html_attr(ctx->cfg.logo);
-	html("'/></a></td>\n");
+	html("' alt='cgit logo'/></a></td>\n");
 
 	html("<td class='main'>");
 	if (ctx->repo) {
-/*
-		html("<a href='");
-		html_attr(cgit_rooturl());
-		html("'>index</a> : ");
-*/
 		reporevlink(NULL, ctx->repo->name, NULL, hc(cmd, "summary"),
 			    ctx->qry.head, NULL, NULL);
 		html(" : ");
@@ -507,25 +502,17 @@ void cgit_print_pageheader(struct cgit_context *ctx)
 		html("</form>");
 	} else
 		html_txt(ctx->cfg.root_title);
-	html("</td>\n");
+	html("</td></tr>\n");
 
 	html("<tr><td class='sub'");
 	if (ctx->repo) {
 		html(" colspan='2'>");
 		html_txt(ctx->repo->desc);
-	}
-/*
-	else if (ctx->cfg.root_subtitle)
-		html_txt(ctx->cfg.root_subtitle);
-*/
-	else {
+	} else {
 		html(">");
 		html_txt("a fast webinterface for the git dscm");
 	}
-	html("</td></tr>\n");
-
-	html("</tr>\n");
-	html("</table>\n");
+	html("</td></tr></table>\n");
 
 	html("<table class='tabs'><tr><td>\n");
 	if (ctx->repo) {
