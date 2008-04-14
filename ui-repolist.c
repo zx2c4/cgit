@@ -114,7 +114,9 @@ void cgit_print_repolist()
 		html_txt(ctx.repo->name);
 		html_link_close();
 		html("</td><td>");
+		html_link_open(cgit_repourl(ctx.repo->url), NULL, NULL);
 		html_ntxt(ctx.cfg.max_repodesc_len, ctx.repo->desc);
+		html_link_close();
 		html("</td><td>");
 		html_txt(ctx.repo->owner);
 		html("</td><td>");

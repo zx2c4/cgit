@@ -34,10 +34,15 @@ void inspect_files(struct diff_filepair *pair)
 void print_commit(struct commit *commit)
 {
 	struct commitinfo *info;
+	char *tmp;
 
 	info = cgit_parse_commit(commit);
 	html("<tr><td>");
+	tmp = fmt("id=%s", sha1_to_hex(commit->object.sha1));
+	tmp = cgit_pageurl(ctx.repo->url, "commit", tmp);
+	html_link_open(tmp, NULL, NULL);
 	cgit_print_age(commit->date, TM_WEEK * 2, FMT_SHORTDATE);
+	html_link_close();
 	html("</td><td>");
 	cgit_commit_link(info->subject, NULL, NULL, ctx.qry.head,
 			 sha1_to_hex(commit->object.sha1));
