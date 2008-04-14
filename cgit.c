@@ -179,7 +179,9 @@ static int cgit_prepare_cache(struct cacheitem *item)
 	}
 
 	if (!ctx.repo) {
-		item->name = xstrdup(fmt("%s/index.html", ctx.cfg.cache_root));
+		item->name = xstrdup(fmt("%s/index.%s.html",
+					 ctx.cfg.cache_root,
+					 cache_safe_filename(ctx.qry.raw)));
 		item->ttl = ctx.cfg.cache_root_ttl;
 		return 1;
 	}
