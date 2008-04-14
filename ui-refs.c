@@ -62,11 +62,11 @@ static int print_branch(struct refinfo *ref)
 	html("</td><td>");
 
 	if (ref->object->type == OBJ_COMMIT) {
-		cgit_print_age(info->commit->date, -1, NULL);
+		cgit_commit_link(info->subject, NULL, NULL, name, NULL);
 		html("</td><td>");
 		html_txt(info->author);
-		html("</td><td>");
-		cgit_commit_link(info->subject, NULL, NULL, name, NULL);
+		html("</td><td colspan='2'>");
+		cgit_print_age(info->commit->date, -1, NULL);
 	} else {
 		html("</td><td></td><td>");
 		cgit_object_link(ref->object);
@@ -78,9 +78,9 @@ static int print_branch(struct refinfo *ref)
 static void print_tag_header()
 {
 	html("<tr class='nohover'><th class='left'>Tag</th>"
-	     "<th class='left'>Age</th>"
+	     "<th class='left'>Reference</th>"
 	     "<th class='left'>Author</th>"
-	     "<th class='left'>Reference</th></tr>\n");
+	     "<th class='left' colspan='2'>Age</th></tr>\n");
 	header = 1;
 }
 
@@ -102,20 +102,20 @@ static int print_tag(struct refinfo *ref)
 		html_txt(name);
 		html_link_close();
 		html("</td><td>");
-		if (info->tagger_date > 0)
-			cgit_print_age(info->tagger_date, -1, NULL);
+		cgit_object_link(tag->tagged);
 		html("</td><td>");
 		if (info->tagger)
 			html(info->tagger);
-		html("</td><td>");
-		cgit_object_link(tag->tagged);
+		html("</td><td colspan='2'>");
+		if (info->tagger_date > 0)
+			cgit_print_age(info->tagger_date, -1, NULL);
 		html("</td></tr>\n");
 	} else {
 		if (!header)
 			print_tag_header();
 		html("<tr><td>");
 		html_txt(name);
-		html("</td><td colspan='2'/><td>");
+		html("</td><td>");
 		cgit_object_link(ref->object);
 		html("</td></tr>\n");
 	}
@@ -135,9 +135,9 @@ void cgit_print_branches(int maxcount)
 	int i;
 
 	html("<tr class='nohover'><th class='left'>Branch</th>"
-	     "<th class='left'>Idle</th>"
+	     "<th class='left'>Commit message</th>"
 	     "<th class='left'>Author</th>"
-	     "<th class='left'>Head commit</th></tr>\n");
+	     "<th class='left' colspan='2'>Age</th></tr>\n");
 
 	list.refs = NULL;
 	list.alloc = list.count = 0;
@@ -196,6 +196,5 @@ void cgit_print_refs()
 		html("<tr class='nohover'><td colspan='4'>&nbsp;</td></tr>");
 		cgit_print_tags(0);
 	}
-
 	html("</table>");
 }

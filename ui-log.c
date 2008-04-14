@@ -41,32 +41,33 @@ void print_commit(struct commit *commit)
 	html("</td><td>");
 	cgit_commit_link(info->subject, NULL, NULL, ctx.qry.head,
 			 sha1_to_hex(commit->object.sha1));
+	html("</td><td>");
+	html_txt(info->author);
 	if (ctx.repo->enable_log_filecount) {
 		files = 0;
 		add_lines = 0;
 		rem_lines = 0;
 		cgit_diff_commit(commit, inspect_files);
-		html("</td><td class='right'>");
+		html("</td><td>");
 		htmlf("%d", files);
 		if (ctx.repo->enable_log_linecount) {
-			html("</td><td class='right'>");
+			html("</td><td>");
 			htmlf("-%d/+%d", rem_lines, add_lines);
 		}
 	}
-	html("</td><td>");
-	html_txt(info->author);
 	html("</td></tr>\n");
 	cgit_free_commitinfo(info);
 }
 
 
-void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern, char *path, int pager)
+void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern,
+		    char *path, int pager)
 {
 	struct rev_info rev;
 	struct commit *commit;
 	const char *argv[] = {NULL, tip, NULL, NULL, NULL};
 	int argc = 2;
-	int i;
+	int i, columns = 3;
 
 	if (!tip)
 		argv[1] = ctx.qry.head;
@@ -92,16 +93,21 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 	}
 	prepare_revision_walk(&rev);
 
-	html("<table summary='log' class='list nowrap'>");
-	html("<tr class='nohover'><th class='left'>Age</th>"
-	     "<th class='left'>Message</th>");
+	if (pager)
+		html("<table class='list nowrap'>");
 
+	html("<tr class='nohover'><th class='left'>Age</th>"
+	     "<th class='left'>Commit message</th>"
+	     "<th class='left'>Author</th>");
 	if (ctx.repo->enable_log_filecount) {
-		html("<th class='right'>Files</th>");
-		if (ctx.repo->enable_log_linecount)
-			html("<th class='right'>Lines</th>");
+		html("<th class='left'>Files</th>");
+		columns++;
+		if (ctx.repo->enable_log_linecount) {
+			html("<th class='left'>Lines</th>");
+			columns++;
+		}
 	}
-	html("<th class='left'>Author</th></tr>\n");
+	html("</tr>\n");
 
 	if (ofs<0)
 		ofs = 0;
@@ -120,10 +126,9 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 		free_commit_list(commit->parents);
 		commit->parents = NULL;
 	}
-	html("</table>\n");
-
 	if (pager) {
-		html("<div class='pager'>");
+		htmlf("</table><div class='pager'>",
+		     columns);
 		if (ofs > 0) {
 			cgit_log_link("[prev]", NULL, NULL, ctx.qry.head,
 				      ctx.qry.sha1, ctx.qry.path,
@@ -138,5 +143,10 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 				      ctx.qry.search);
 		}
 		html("</div>");
+	} else if ((commit = get_revision(&rev)) != NULL) {
+		html("<tr class='nohover'><td colspan='3'>");
+		cgit_log_link("[...]", NULL, NULL, ctx.qry.head, NULL, NULL, 0,
+			      NULL, NULL);
+		html("</td></tr>\n");
 	}
 }
