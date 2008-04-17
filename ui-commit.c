@@ -227,10 +227,10 @@ void cgit_print_commit(char *hex)
 		html("<div class='diffstat-summary'>");
 		htmlf("%d files changed, %d insertions, %d deletions",
 		      files, total_adds, total_rems);
+		html("</div>");
 		cgit_print_diff(ctx.qry.sha1,
 				sha1_to_hex(commit->parents->item->object.sha1),
 				NULL);
-		html(")</div>");
 	}
 	cgit_free_commitinfo(info);
 }
