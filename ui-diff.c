@@ -258,12 +258,6 @@ void cgit_print_diff(const char *new_rev, const char *old_rev, const char *prefi
 		cgit_print_error(fmt("Bad object name: %s", new_rev));
 		return;
 	}
-	if (type != OBJ_COMMIT) {
-		cgit_print_error(fmt("Unhandled object type: %s",
-				     typename(type)));
-		return;
-	}
-
 	commit = lookup_commit_reference(new_rev_sha1);
 	if (!commit || parse_commit(commit))
 		cgit_print_error(fmt("Bad commit: %s", sha1_to_hex(new_rev_sha1)));
