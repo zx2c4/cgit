@@ -19,6 +19,8 @@ void config_cb(const char *name, const char *value)
 {
 	if (!strcmp(name, "root-title"))
 		ctx.cfg.root_title = xstrdup(value);
+	else if (!strcmp(name, "root-desc"))
+		ctx.cfg.root_desc = xstrdup(value);
 	else if (!strcmp(name, "css"))
 		ctx.cfg.css = xstrdup(value);
 	else if (!strcmp(name, "logo"))
@@ -159,6 +161,7 @@ static void prepare_context(struct cgit_context *ctx)
 	ctx->cfg.renamelimit = -1;
 	ctx->cfg.robots = "index, nofollow";
 	ctx->cfg.root_title = "Git repository browser";
+	ctx->cfg.root_desc = "a fast webinterface for the git dscm";
 	ctx->cfg.script_name = CGIT_SCRIPT_NAME;
 	ctx->page.mimetype = "text/html";
 	ctx->page.charset = PAGE_ENCODING;

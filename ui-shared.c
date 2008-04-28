@@ -510,7 +510,10 @@ void cgit_print_pageheader(struct cgit_context *ctx)
 		html_txt(ctx->repo->desc);
 	} else {
 		html(">");
-		html_txt("a fast webinterface for the git dscm");
+		if (ctx->cfg.root_desc)
+			html_txt(ctx->cfg.root_desc);
+		else if (ctx->cfg.index_info)
+			html_include(ctx->cfg.index_info);
 	}
 	html("</td></tr></table>\n");
 
