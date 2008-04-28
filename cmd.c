@@ -8,6 +8,8 @@
 
 #include "cgit.h"
 #include "cmd.h"
+#include "cache.h"
+#include "ui-shared.h"
 #include "ui-blob.h"
 #include "ui-commit.h"
 #include "ui-diff.h"
@@ -35,15 +37,23 @@ static void diff_fn(struct cgit_context *ctx)
 	cgit_print_diff(ctx->qry.sha1, ctx->qry.sha2, ctx->qry.path);
 }
 
-static void repolist_fn(struct cgit_context *ctx)
-{
-	cgit_print_repolist();
-}
-
 static void log_fn(struct cgit_context *ctx)
 {
 	cgit_print_log(ctx->qry.sha1, ctx->qry.ofs, ctx->cfg.max_commit_count,
 		       ctx->qry.grep, ctx->qry.search, ctx->qry.path, 1);
+}
+
+static void ls_cache_fn(struct cgit_context *ctx)
+{
+	ctx->page.mimetype = "text/plain";
+	ctx->page.filename = "ls-cache.txt";
+	cgit_print_http_headers(ctx);
+	cache_ls(ctx->cfg.cache_root);
+}
+
+static void repolist_fn(struct cgit_context *ctx)
+{
+	cgit_print_repolist();
 }
 
 static void patch_fn(struct cgit_context *ctx)
@@ -88,6 +98,7 @@ struct cgit_cmd *cgit_get_cmd(struct cgit_context *ctx)
 		def_cmd(commit, 1, 1),
 		def_cmd(diff, 1, 1),
 		def_cmd(log, 1, 1),
+		def_cmd(ls_cache, 0, 0),
 		def_cmd(patch, 1, 0),
 		def_cmd(refs, 1, 1),
 		def_cmd(repolist, 0, 0),

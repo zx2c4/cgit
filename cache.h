@@ -26,6 +26,9 @@ extern int cache_process(int size, const char *path, const char *key, int ttl,
 			 cache_fill_fn fn, void *cbdata);
 
 
+/* List info about all cache entries on stdout */
+extern int cache_ls(const char *path);
+
 /* Print a message to stdout */
 extern void cache_log(const char *format, ...);
 

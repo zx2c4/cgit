@@ -332,6 +332,74 @@ int cache_process(int size, const char *path, const char *key, int ttl,
 	return process_slot(&slot);
 }
 
+/* Return a strftime formatted date/time
+ * NB: the result from this function is to shared memory
+ */
+char *sprintftime(const char *format, time_t time)
+{
+	static char buf[64];
+	struct tm *tm;
+
+	if (!time)
+		return NULL;
+	tm = gmtime(&time);
+	strftime(buf, sizeof(buf)-1, format, tm);
+	return buf;
+}
+
+int cache_ls(const char *path)
+{
+	DIR *dir;
+	struct dirent *ent;
+	int err = 0;
+	struct cache_slot slot;
+	char fullname[1024];
+	char *name;
+
+	if (!path) {
+		cache_log("[cgit] cache path not specified\n");
+		return -1;
+	}
+	if (strlen(path) > 1024 - 10) {
+		cache_log("[cgit] cache path too long: %s\n",
+			  path);
+		return -1;
+	}
+	dir = opendir(path);
+	if (!dir) {
+		err = errno;
+		cache_log("[cgit] unable to open path %s: %s (%d)\n",
+			  path, strerror(err), err);
+		return err;
+	}
+	strcpy(fullname, path);
+	name = fullname + strlen(path);
+	if (*(name - 1) != '/') {
+		*name++ = '/';
+		*name = '\0';
+	}
+	slot.cache_name = fullname;
+	while((ent = readdir(dir)) != NULL) {
+		if (strlen(ent->d_name) != 8)
+			continue;
+		strcpy(name, ent->d_name);
+		if ((err = open_slot(&slot)) != 0) {
+			cache_log("[cgit] unable to open path %s: %s (%d)\n",
+				  fullname, strerror(err), err);
+			continue;
+		}
+		printf("%s %s %10lld %s\n",
+		       name,
+		       sprintftime("%Y-%m-%d %H:%M:%S",
+				   slot.cache_st.st_mtime),
+		       slot.cache_st.st_size,
+		       slot.buf);
+		close_slot(&slot);
+	}
+	closedir(dir);
+	return 0;
+}
+
 /* Print a message to stdout */
 void cache_log(const char *format, ...)
 {
