@@ -134,6 +134,7 @@ struct cgit_config {
 	char *root_title;
 	char *script_name;
 	char *virtual_root;
+	int cache_size;
 	int cache_dynamic_ttl;
 	int cache_max_create_time;
 	int cache_repo_ttl;

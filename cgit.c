@@ -45,6 +45,8 @@ void config_cb(const char *name, const char *value)
 		ctx.cfg.enable_log_filecount = atoi(value);
 	else if (!strcmp(name, "enable-log-linecount"))
 		ctx.cfg.enable_log_linecount = atoi(value);
+	else if (!strcmp(name, "cache-size"))
+		ctx.cfg.cache_size = atoi(value);
 	else if (!strcmp(name, "cache-root"))
 		ctx.cfg.cache_root = xstrdup(value);
 	else if (!strcmp(name, "cache-root-ttl"))
@@ -143,6 +145,8 @@ static void prepare_context(struct cgit_context *ctx)
 {
 	memset(ctx, 0, sizeof(ctx));
 	ctx->cfg.agefile = "info/web/last-modified";
+	ctx->cfg.nocache = 0;
+	ctx->cfg.cache_size = 0;
 	ctx->cfg.cache_dynamic_ttl = 5;
 	ctx->cfg.cache_max_create_time = 5;
 	ctx->cfg.cache_repo_ttl = 5;
@@ -163,47 +167,8 @@ static void prepare_context(struct cgit_context *ctx)
 	ctx->page.mimetype = "text/html";
 	ctx->page.charset = PAGE_ENCODING;
 	ctx->page.filename = NULL;
-}
-
-static int cgit_prepare_cache(struct cacheitem *item)
-{
-	if (!ctx.repo && ctx.qry.repo) {
-		ctx.page.title = fmt("%s - %s", ctx.cfg.root_title,
-				      "Bad request");
-		cgit_print_http_headers(&ctx);
-		cgit_print_docstart(&ctx);
-		cgit_print_pageheader(&ctx);
-		cgit_print_error(fmt("Unknown repo: %s", ctx.qry.repo));
-		cgit_print_docend();
-		return 0;
-	}
-
-	if (!ctx.repo) {
-		item->name = xstrdup(fmt("%s/index.%s.html",
-					 ctx.cfg.cache_root,
-					 cache_safe_filename(ctx.qry.raw)));
-		item->ttl = ctx.cfg.cache_root_ttl;
-		return 1;
-	}
-
-	if (!ctx.qry.page) {
-		item->name = xstrdup(fmt("%s/%s/index.%s.html", ctx.cfg.cache_root,
-					 cache_safe_filename(ctx.repo->url),
-					 cache_safe_filename(ctx.qry.raw)));
-		item->ttl = ctx.cfg.cache_repo_ttl;
-	} else {
-		item->name = xstrdup(fmt("%s/%s/%s/%s.html", ctx.cfg.cache_root,
-					 cache_safe_filename(ctx.repo->url),
-					 ctx.qry.page,
-					 cache_safe_filename(ctx.qry.raw)));
-		if (ctx.qry.has_symref)
-			item->ttl = ctx.cfg.cache_dynamic_ttl;
-		else if (ctx.qry.has_sha1)
-			item->ttl = ctx.cfg.cache_static_ttl;
-		else
-			item->ttl = ctx.cfg.cache_repo_ttl;
-	}
-	return 1;
+	ctx->page.modified = time(NULL);
+	ctx->page.expires = ctx->page.modified;
 }
 
 struct refmatch {
@@ -288,8 +253,9 @@ static int prepare_repo_cmd(struct cgit_context *ctx)
 	return 0;
 }
 
-static void process_request(struct cgit_context *ctx)
+static void process_request(void *cbdata)
 {
+	struct cgit_context *ctx = cbdata;
 	struct cgit_cmd *cmd;
 
 	cmd = cgit_get_cmd(ctx);
@@ -317,82 +283,6 @@ static void process_request(struct cgit_context *ctx)
 
 	if (cmd->want_layout)
 		cgit_print_docend();
-}
-
-static long ttl_seconds(long ttl)
-{
-	if (ttl<0)
-		return 60 * 60 * 24 * 365;
-	else
-		return ttl * 60;
-}
-
-static void cgit_fill_cache(struct cacheitem *item, int use_cache)
-{
-	int stdout2;
-
-	if (use_cache) {
-		stdout2 = chk_positive(dup(STDOUT_FILENO),
-				       "Preserving STDOUT");
-		chk_zero(close(STDOUT_FILENO), "Closing STDOUT");
-		chk_positive(dup2(item->fd, STDOUT_FILENO), "Dup2(cachefile)");
-	}
-
-	ctx.page.modified = time(NULL);
-	ctx.page.expires = ctx.page.modified + ttl_seconds(item->ttl);
-	process_request(&ctx);
-
-	if (use_cache) {
-		chk_zero(close(STDOUT_FILENO), "Close redirected STDOUT");
-		chk_positive(dup2(stdout2, STDOUT_FILENO),
-			     "Restoring original STDOUT");
-		chk_zero(close(stdout2), "Closing temporary STDOUT");
-	}
-}
-
-static void cgit_check_cache(struct cacheitem *item)
-{
-	int i = 0;
-
- top:
-	if (++i > ctx.cfg.max_lock_attempts) {
-		die("cgit_refresh_cache: unable to lock %s: %s",
-		    item->name, strerror(errno));
-	}
-	if (!cache_exist(item)) {
-		if (!cache_lock(item)) {
-			sleep(1);
-			goto top;
-		}
-		if (!cache_exist(item)) {
-			cgit_fill_cache(item, 1);
-			cache_unlock(item);
-		} else {
-			cache_cancel_lock(item);
-		}
-	} else if (cache_expired(item) && cache_lock(item)) {
-		if (cache_expired(item)) {
-			cgit_fill_cache(item, 1);
-			cache_unlock(item);
-		} else {
-			cache_cancel_lock(item);
-		}
-	}
-}
-
-static void cgit_print_cache(struct cacheitem *item)
-{
-	static char buf[4096];
-	ssize_t i;
-
-	int fd = open(item->name, O_RDONLY);
-	if (fd<0)
-		die("Unable to open cached file %s", item->name);
-
-	while((i=read(fd, buf, sizeof(buf))) > 0)
-		write(STDOUT_FILENO, buf, i);
-
-	close(fd);
 }
 
 static void cgit_parse_args(int argc, const char **argv)
@@ -429,13 +319,29 @@ static void cgit_parse_args(int argc, const char **argv)
 	}
 }
 
+static int calc_ttl()
+{
+	if (!ctx.repo)
+		return ctx.cfg.cache_root_ttl;
+
+	if (!ctx.qry.page)
+		return ctx.cfg.cache_repo_ttl;
+
+	if (ctx.qry.has_symref)
+		return ctx.cfg.cache_dynamic_ttl;
+
+	if (ctx.qry.has_sha1)
+		return ctx.cfg.cache_static_ttl;
+
+	return ctx.cfg.cache_repo_ttl;
+}
+
 int main(int argc, const char **argv)
 {
-	struct cacheitem item;
 	const char *cgit_config_env = getenv("CGIT_CONFIG");
+	int err, ttl;
 
 	prepare_context(&ctx);
-	item.st.st_mtime = time(NULL);
 	cgit_repolist.length = 0;
 	cgit_repolist.count = 0;
 	cgit_repolist.repos = NULL;
@@ -449,13 +355,15 @@ int main(int argc, const char **argv)
 		ctx.qry.raw = xstrdup(getenv("QUERY_STRING"));
 	cgit_parse_args(argc, argv);
 	http_parse_querystring(ctx.qry.raw, querystring_cb);
-	if (!cgit_prepare_cache(&item))
-		return 0;
-	if (ctx.cfg.nocache) {
-		cgit_fill_cache(&item, 0);
-	} else {
-		cgit_check_cache(&item);
-		cgit_print_cache(&item);
-	}
-	return 0;
+
+	ttl = calc_ttl();
+	ctx.page.expires += ttl*60;
+	if (ctx.cfg.nocache)
+		ctx.cfg.cache_size = 0;
+	err = cache_process(ctx.cfg.cache_size, ctx.cfg.cache_root,
+			    ctx.qry.raw, ttl, process_request, &ctx);
+	if (err)
+		cache_log("[cgit] error %d - %s\n",
+			  err, strerror(err));
+	return err;
 }
