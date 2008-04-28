@@ -307,7 +307,16 @@ static void process_request(struct cgit_context *ctx)
 		return;
 	}
 
-	if (cmd->want_repo && prepare_repo_cmd(ctx))
+	if (cmd->want_repo && !ctx->repo) {
+		cgit_print_http_headers(ctx);
+		cgit_print_docstart(ctx);
+		cgit_print_pageheader(ctx);
+		cgit_print_error(fmt("No repository selected"));
+		cgit_print_docend();
+		return;
+	}
+
+	if (ctx->repo && prepare_repo_cmd(ctx))
 		return;
 
 	if (cmd->want_layout) {
