@@ -114,6 +114,49 @@ char *cgit_currurl()
 		return fmt("%s/", ctx.cfg.virtual_root);
 }
 
+static void site_url(char *page, char *search)
+{
+	char *delim = "?";
+
+	if (ctx.cfg.virtual_root) {
+		html_attr(ctx.cfg.virtual_root);
+		if (ctx.cfg.virtual_root[strlen(ctx.cfg.virtual_root) - 1] != '/')
+			html("/");
+	} else
+		html(ctx.cfg.script_name);
+
+	if (page) {
+		htmlf("?p=%s", page);
+		delim = "&";
+	}
+	if (search) {
+		html(delim);
+		html("q=");
+		html_attr(search);
+	}
+}
+
+static void site_link(char *page, char *name, char *title, char *class,
+		       char *search)
+{
+	html("<a");
+	if (title) {
+		html(" title='");
+		html_attr(title);
+		html("'");
+	}
+	if (class) {
+		html(" class='");
+		html_attr(class);
+		html("'");
+	}
+	html(" href='");
+	site_url(page, search);
+	html("'>");
+	html_txt(name);
+	html("</a>");
+}
+
 static char *repolink(char *title, char *class, char *page, char *head,
 		      char *path)
 {
@@ -531,6 +574,10 @@ void cgit_print_pageheader(struct cgit_context *ctx)
 				 ctx->qry.head, ctx->qry.sha1);
 		cgit_diff_link("diff", NULL, hc(cmd, "diff"), ctx->qry.head,
 			       ctx->qry.sha1, ctx->qry.sha2, NULL);
+		if (ctx->repo->readme)
+			reporevlink("about", "about", NULL,
+				    hc(cmd, "about"), ctx->qry.head, NULL,
+				    NULL);
 		html("</td><td class='form'>");
 		html("<form class='right' method='get' action='");
 		if (ctx->cfg.virtual_root)
@@ -549,9 +596,9 @@ void cgit_print_pageheader(struct cgit_context *ctx)
 		html("<input type='submit' value='search'/>\n");
 		html("</form>\n");
 	} else {
-		html("<a class='active' href='");
-		html_attr(cgit_rooturl());
-		html("'>index</a>\n");
+		site_link(NULL, "index", NULL, hc(cmd, "repolist"), NULL);
+		if (ctx->cfg.root_readme)
+			site_link("about", "about", NULL, hc(cmd, "about"), NULL);
 		html("</td><td class='form'>");
 		html("<form method='get' action='");
 		html_attr(cgit_rooturl());
