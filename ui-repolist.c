@@ -136,3 +136,9 @@ void cgit_print_repolist()
 		cgit_print_error("No repositories found");
 	cgit_print_docend();
 }
+
+void cgit_print_site_readme()
+{
+	if (ctx.cfg.root_readme)
+		html_include(ctx.cfg.root_readme);
+}
