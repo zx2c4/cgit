@@ -20,6 +20,14 @@
 #include "ui-tag.h"
 #include "ui-tree.h"
 
+static void about_fn(struct cgit_context *ctx)
+{
+	if (ctx->repo)
+		cgit_print_repo_readme();
+	else
+		cgit_print_site_readme();
+}
+
 static void blob_fn(struct cgit_context *ctx)
 {
 	cgit_print_blob(ctx->qry.sha1, ctx->qry.path);
@@ -84,6 +92,7 @@ static void tree_fn(struct cgit_context *ctx)
 struct cgit_cmd *cgit_get_cmd(struct cgit_context *ctx)
 {
 	static struct cgit_cmd cmds[] = {
+		def_cmd(about, 0, 1),
 		def_cmd(blob, 1, 0),
 		def_cmd(commit, 1, 1),
 		def_cmd(diff, 1, 1),

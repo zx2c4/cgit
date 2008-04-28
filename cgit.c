@@ -19,6 +19,10 @@ void config_cb(const char *name, const char *value)
 {
 	if (!strcmp(name, "root-title"))
 		ctx.cfg.root_title = xstrdup(value);
+	else if (!strcmp(name, "root-desc"))
+		ctx.cfg.root_desc = xstrdup(value);
+	else if (!strcmp(name, "root-readme"))
+		ctx.cfg.root_readme = xstrdup(value);
 	else if (!strcmp(name, "css"))
 		ctx.cfg.css = xstrdup(value);
 	else if (!strcmp(name, "logo"))
@@ -159,6 +163,7 @@ static void prepare_context(struct cgit_context *ctx)
 	ctx->cfg.renamelimit = -1;
 	ctx->cfg.robots = "index, nofollow";
 	ctx->cfg.root_title = "Git repository browser";
+	ctx->cfg.root_desc = "a fast webinterface for the git dscm";
 	ctx->cfg.script_name = CGIT_SCRIPT_NAME;
 	ctx->page.mimetype = "text/html";
 	ctx->page.charset = PAGE_ENCODING;
@@ -304,7 +309,16 @@ static void process_request(struct cgit_context *ctx)
 		return;
 	}
 
-	if (cmd->want_repo && prepare_repo_cmd(ctx))
+	if (cmd->want_repo && !ctx->repo) {
+		cgit_print_http_headers(ctx);
+		cgit_print_docstart(ctx);
+		cgit_print_pageheader(ctx);
+		cgit_print_error(fmt("No repository selected"));
+		cgit_print_docend();
+		return;
+	}
+
+	if (ctx->repo && prepare_repo_cmd(ctx))
 		return;
 
 	if (cmd->want_layout) {

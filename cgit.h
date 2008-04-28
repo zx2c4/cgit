@@ -132,6 +132,8 @@ struct cgit_config {
 	char *repo_group;
 	char *robots;
 	char *root_title;
+	char *root_desc;
+	char *root_readme;
 	char *script_name;
 	char *virtual_root;
 	int cache_dynamic_ttl;
