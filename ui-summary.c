@@ -13,11 +13,6 @@
 
 void cgit_print_summary()
 {
-	if (ctx.repo->readme) {
-		html("<div id='summary'>");
-		html_include(ctx.repo->readme);
-		html("</div>");
-	}
 	html("<table summary='repository info' class='list nowrap'>");
 	cgit_print_branches(ctx.cfg.summary_branches);
 	html("<tr class='nohover'><td colspan='4'>&nbsp;</td></tr>");
@@ -28,4 +23,13 @@ void cgit_print_summary()
 			       NULL, NULL, 0);
 	}
 	html("</table>");
+}
+
+void cgit_print_repo_readme()
+{
+	if (ctx.repo->readme) {
+		html("<div id='summary'>");
+		html_include(ctx.repo->readme);
+		html("</div>");
+	}
 }
