@@ -61,12 +61,6 @@ int is_match(struct cgit_repo *repo)
 
 void print_header(int columns)
 {
-	if (ctx.cfg.index_header) {
-		htmlf("<tr class='nohover'><td colspan='%d' class='include-block'>",
-		      columns);
-		html_include(ctx.cfg.index_header);
-		html("</td></tr>");
-	}
 	html("<tr class='nohover'>"
 	     "<th class='left'>Name</th>"
 	     "<th class='left'>Description</th>"
@@ -89,6 +83,9 @@ void cgit_print_repolist()
 	cgit_print_http_headers(&ctx);
 	cgit_print_docstart(&ctx);
 	cgit_print_pageheader(&ctx);
+
+	if (ctx.cfg.index_header)
+		html_include(ctx.cfg.index_header);
 
 	html("<table summary='repository list' class='list nowrap'>");
 	for (i=0; i<cgit_repolist.count; i++) {
