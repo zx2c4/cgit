@@ -413,6 +413,16 @@ table.list td.sublevel-repo {
 	padding-left: 1.5em;
 }
 
+div.pager {
+	text-align: center;
+	margin: 1em 0em 0em 0em;
+}
+
+div.pager a {
+	color: #777;
+	margin: 0em 0.5em;
+}
+
 span.age-mins {
 	font-weight: bold;
 	color: #080;

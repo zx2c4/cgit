@@ -65,6 +65,8 @@ void config_cb(const char *name, const char *value)
 		ctx.cfg.max_msg_len = atoi(value);
 	else if (!strcmp(name, "max-repodesc-length"))
 		ctx.cfg.max_repodesc_len = atoi(value);
+	else if (!strcmp(name, "max-repo-count"))
+		ctx.cfg.max_repo_count = atoi(value);
 	else if (!strcmp(name, "max-commit-count"))
 		ctx.cfg.max_commit_count = atoi(value);
 	else if (!strcmp(name, "summary-log"))
@@ -159,6 +161,7 @@ static void prepare_context(struct cgit_context *ctx)
 	ctx->cfg.cache_static_ttl = -1;
 	ctx->cfg.css = "/cgit.css";
 	ctx->cfg.logo = "/git-logo.png";
+	ctx->cfg.max_repo_count = 50;
 	ctx->cfg.max_commit_count = 50;
 	ctx->cfg.max_lock_attempts = 5;
 	ctx->cfg.max_msg_len = 60;
