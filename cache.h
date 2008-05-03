@@ -6,18 +6,30 @@
 #ifndef CGIT_CACHE_H
 #define CGIT_CACHE_H
 
-struct cacheitem {
-	char *name;
-	struct stat st;
-	int ttl;
-	int fd;
-};
+typedef void (*cache_fill_fn)(void *cbdata);
 
-extern char *cache_safe_filename(const char *unsafe);
-extern int cache_lock(struct cacheitem *item);
-extern int cache_unlock(struct cacheitem *item);
-extern int cache_cancel_lock(struct cacheitem *item);
-extern int cache_exist(struct cacheitem *item);
-extern int cache_expired(struct cacheitem *item);
+
+/* Print cached content to stdout, generate the content if necessary.
+ *
+ * Parameters
+ *   size    max number of cache files
+ *   path    directory used to store cache files
+ *   key     the key used to lookup cache files
+ *   ttl     max cache time in seconds for this key
+ *   fn      content generator function for this key
+ *   cbdata  user-supplied data to the content generator function
+ *
+ * Return value
+ *   0 indicates success, everyting else is an error
+ */
+extern int cache_process(int size, const char *path, const char *key, int ttl,
+			 cache_fill_fn fn, void *cbdata);
+
+
+/* List info about all cache entries on stdout */
+extern int cache_ls(const char *path);
+
+/* Print a message to stdout */
+extern void cache_log(const char *format, ...);
 
 #endif /* CGIT_CACHE_H */

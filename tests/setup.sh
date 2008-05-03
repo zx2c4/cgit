@@ -44,7 +44,7 @@ setup_repos()
 virtual-root=/
 cache-root=$PWD/trash/cache
 
-nocache=0
+cache-size=1021
 snapshots=tar.gz tar.bz zip
 enable-log-filecount=1
 enable-log-linecount=1
