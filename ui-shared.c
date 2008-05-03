@@ -114,7 +114,7 @@ char *cgit_currurl()
 		return fmt("%s/", ctx.cfg.virtual_root);
 }
 
-static void site_url(char *page, char *search)
+static void site_url(char *page, char *search, int ofs)
 {
 	char *delim = "?";
 
@@ -133,11 +133,16 @@ static void site_url(char *page, char *search)
 		html(delim);
 		html("q=");
 		html_attr(search);
+		delim = "&";
+	}
+	if (ofs) {
+		html(delim);
+		htmlf("ofs=%d", ofs);
 	}
 }
 
 static void site_link(char *page, char *name, char *title, char *class,
-		       char *search)
+		      char *search, int ofs)
 {
 	html("<a");
 	if (title) {
@@ -151,10 +156,16 @@ static void site_link(char *page, char *name, char *title, char *class,
 		html("'");
 	}
 	html(" href='");
-	site_url(page, search);
+	site_url(page, search, ofs);
 	html("'>");
 	html_txt(name);
 	html("</a>");
+}
+
+void cgit_index_link(char *name, char *title, char *class, char *pattern,
+		     int ofs)
+{
+	site_link(NULL, name, title, class, pattern, ofs);
 }
 
 static char *repolink(char *title, char *class, char *page, char *head,
@@ -596,9 +607,10 @@ void cgit_print_pageheader(struct cgit_context *ctx)
 		html("<input type='submit' value='search'/>\n");
 		html("</form>\n");
 	} else {
-		site_link(NULL, "index", NULL, hc(cmd, "repolist"), NULL);
+		site_link(NULL, "index", NULL, hc(cmd, "repolist"), NULL, 0);
 		if (ctx->cfg.root_readme)
-			site_link("about", "about", NULL, hc(cmd, "about"), NULL);
+			site_link("about", "about", NULL, hc(cmd, "about"),
+				  NULL, 0);
 		html("</td><td class='form'>");
 		html("<form method='get' action='");
 		html_attr(cgit_rooturl());
