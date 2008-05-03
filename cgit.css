@@ -447,3 +447,9 @@ span.age-months {
 span.age-years {
 	color: #bbb;
 }
+div.footer {
+	margin-top: 0.5em;
+	text-align: center;
+	font-size: 80%;
+	color: #ccc;
+}

@@ -443,6 +443,9 @@ void cgit_print_docstart(struct cgit_context *ctx)
 
 void cgit_print_docend()
 {
+	html("</div><div class='footer'>generated ");
+	cgit_print_date(time(NULL), FMT_LONGDATE);
+	htmlf(" by cgit %s", cgit_version);
 	html("</div>\n</body>\n</html>\n");
 }
 
