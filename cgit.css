@@ -36,6 +36,7 @@ table#header td.logo {
 table#header td.main {
 	font-size: 250%;
 	padding-left: 10px;
+	white-space: nowrap;
 }
 
 table#header td.main a {
@@ -47,6 +48,7 @@ table#header td.form {
 	vertical-align: bottom;
 	padding-right: 1em;
 	padding-bottom: 2px;
+	white-space: nowrap;
 }
 
 table#header td.form form,
@@ -92,6 +94,7 @@ table.tabs td.form {
 table.tabs td.form form {
 	padding-bottom: 2px;
 	font-size: 90%;
+	white-space: nowrap;
 }
 
 table.tabs td.form input,

@@ -545,10 +545,10 @@ void cgit_print_pageheader(struct cgit_context *ctx)
 
 	html("<td class='main'>");
 	if (ctx->repo) {
+		cgit_index_link("index", NULL, NULL, NULL, 0);
+		html(" : ");
 		reporevlink(NULL, ctx->repo->name, NULL, hc(cmd, "summary"),
 			    ctx->qry.head, NULL, NULL);
-		html(" : ");
-		html_txt(ctx->qry.page);
 		html("</td><td class='form'>");
 		html("<form method='get' action=''>\n");
 		add_hidden_formfields(0, 1, ctx->qry.page);
