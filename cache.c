@@ -252,9 +252,14 @@ static int process_slot(struct cache_slot *slot)
 				}
 			}
 		}
-		print_slot(slot);
+		if ((err = print_slot(slot)) != 0) {
+			cache_log("[cgit] error printing cache %s: %s (%d)\n",
+				  slot->cache_name,
+				  strerror(err),
+				  err);
+		}
 		close_slot(slot);
-		return 0;
+		return err;
 	}
 
 	/* If the cache slot does not exist (or its key doesn't match the
@@ -289,7 +294,12 @@ static int process_slot(struct cache_slot *slot)
 	// the lock file.
 	slot->cache_fd = slot->lock_fd;
 	unlock_slot(slot, 1);
-	err = print_slot(slot);
+	if ((err = print_slot(slot)) != 0) {
+		cache_log("[cgit] error printing cache %s: %s (%d)\n",
+			  slot->cache_name,
+			  strerror(err),
+			  err);
+	}
 	close_slot(slot);
 	return err;
 }

@@ -380,7 +380,7 @@ int main(int argc, const char **argv)
 	err = cache_process(ctx.cfg.cache_size, ctx.cfg.cache_root,
 			    ctx.qry.raw, ttl, process_request, &ctx);
 	if (err)
-		cache_log("[cgit] error %d - %s\n",
-			  err, strerror(err));
+		cgit_print_error(fmt("Error processing page: %s (%d)",
+				     strerror(err), err));
 	return err;
 }
