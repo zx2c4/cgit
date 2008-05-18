@@ -18,6 +18,7 @@ void cgit_print_commit(char *hex)
 	struct commit_list *p;
 	unsigned char sha1[20];
 	char *tmp;
+	int parents = 0;
 
 	if (!hex)
 		hex = ctx.qry.head;
@@ -75,6 +76,7 @@ void cgit_print_commit(char *hex)
 		cgit_diff_link("diff", NULL, NULL, ctx.qry.head, hex,
 			       sha1_to_hex(p->item->object.sha1), NULL);
 		html(")</td></tr>");
+		parents++;
 	}
 	if (ctx.repo->snapshots) {
 		html("<tr><th>download</th><td colspan='2' class='sha1'>");
@@ -89,9 +91,11 @@ void cgit_print_commit(char *hex)
 	html("<div class='commit-msg'>");
 	html_txt(info->msg);
 	html("</div>");
-	if (!(commit->parents && commit->parents->next &&
-	      commit->parents->next->next)) {
-		tmp = sha1_to_hex(commit->parents->item->object.sha1);
+	if (parents < 3) {
+		if (parents)
+			tmp = sha1_to_hex(commit->parents->item->object.sha1);
+		else
+			tmp = NULL;
 		cgit_print_diff(ctx.qry.sha1, tmp, NULL);
 	}
 	cgit_free_commitinfo(info);

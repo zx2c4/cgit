@@ -19,4 +19,19 @@ run_test 'find diff summary' '
 	 grep -e "1 files changed, 1 insertions, 0 deletions" trash/tmp
 '
 
+run_test 'get root commit' '
+	 root=$(cd trash/repos/foo && git rev-list --reverse HEAD | head -1) &&
+	 cgit_url "foo/commit&id=$root" >trash/tmp &&
+	 grep "</html>" trash/tmp
+'
+
+run_test 'root commit contains diffstat' '
+	 grep "<a href=./foo/diff/file-1.>file-1</a>" trash/tmp
+'
+
+run_test 'root commit contains diff' '
+	 grep ">diff --git a/file-1 b/file-1<" trash/tmp &&
+	 grep -e "<div class=.add.>+1</div>" trash/tmp
+'
+
 tests_done
