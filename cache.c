@@ -52,7 +52,7 @@ static int open_slot(struct cache_slot *slot)
 		return errno;
 
 	slot->bufsize = read(slot->cache_fd, slot->buf, sizeof(slot->buf));
-	if (slot->bufsize == 0)
+	if (slot->bufsize < 0)
 		return errno;
 
 	bufz = memchr(slot->buf, 0, slot->bufsize);
