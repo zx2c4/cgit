@@ -145,6 +145,7 @@ void cgit_print_diffstat(const unsigned char *old_sha1,
 	html("<div class='diffstat-header'>Diffstat</div>");
 	html("<table summary='diffstat' class='diffstat'>");
 	max_changes = 0;
+	curr_rev = xstrdup(sha1_to_hex(new_sha1));
 	cgit_diff_tree(old_sha1, new_sha1, inspect_filepair, NULL);
 	for(i = 0; i<files; i++)
 		print_fileinfo(&items[i]);

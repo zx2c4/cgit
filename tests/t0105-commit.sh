@@ -26,7 +26,7 @@ run_test 'get root commit' '
 '
 
 run_test 'root commit contains diffstat' '
-	 grep "<a href=./foo/diff/file-1.>file-1</a>" trash/tmp
+	 grep "<a href=./foo/diff/file-1.id=[0-9a-f]\{40\}.>file-1</a>" trash/tmp
 '
 
 run_test 'root commit contains diff' '
