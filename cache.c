@@ -66,12 +66,16 @@ static int open_slot(struct cache_slot *slot)
 }
 
 /* Close the active cache slot */
-static void close_slot(struct cache_slot *slot)
+static int close_slot(struct cache_slot *slot)
 {
+	int err = 0;
 	if (slot->cache_fd > 0) {
-		close(slot->cache_fd);
-		slot->cache_fd = -1;
+		if (close(slot->cache_fd))
+			err = errno;
+		else
+			slot->cache_fd = -1;
 	}
+	return err;
 }
 
 /* Print the content of the active cache slot (but skip the key). */
@@ -116,12 +120,16 @@ static int is_modified(struct cache_slot *slot)
 }
 
 /* Close an open lockfile */
-static void close_lock(struct cache_slot *slot)
+static int close_lock(struct cache_slot *slot)
 {
+	int err = 0;
 	if (slot->lock_fd > 0) {
-		close(slot->lock_fd);
-		slot->lock_fd = -1;
+		if (close(slot->lock_fd))
+			err = errno;
+		else
+			slot->lock_fd = -1;
 	}
+	return err;
 }
 
 /* Create a lockfile used to store the generated content for a cache
@@ -134,7 +142,8 @@ static int lock_slot(struct cache_slot *slot)
 			     S_IRUSR|S_IWUSR);
 	if (slot->lock_fd == -1)
 		return errno;
-	write(slot->lock_fd, slot->key, slot->keylen + 1);
+	if (write(slot->lock_fd, slot->key, slot->keylen + 1) < 0)
+		return errno;
 	return 0;
 }
 
@@ -150,7 +159,11 @@ static int unlock_slot(struct cache_slot *slot, int replace_old_slot)
 		err = rename(slot->lock_name, slot->cache_name);
 	else
 		err = unlink(slot->lock_name);
-	return err;
+
+	if (err)
+		return errno;
+
+	return 0;
 }
 
 /* Generate the content for the current cache slot by redirecting
@@ -177,7 +190,9 @@ static int fill_slot(struct cache_slot *slot)
 		return errno;
 
 	/* Close the temporary filedescriptor */
-	close(tmp);
+	if (close(tmp))
+		return errno;
+
 	return 0;
 }
 
