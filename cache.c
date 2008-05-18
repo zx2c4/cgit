@@ -51,7 +51,7 @@ static int open_slot(struct cache_slot *slot)
 	if (fstat(slot->cache_fd, &slot->cache_st))
 		return errno;
 
-	slot->bufsize = read(slot->cache_fd, slot->buf, sizeof(slot->buf));
+	slot->bufsize = xread(slot->cache_fd, slot->buf, sizeof(slot->buf));
 	if (slot->bufsize < 0)
 		return errno;
 
@@ -81,16 +81,16 @@ static int close_slot(struct cache_slot *slot)
 /* Print the content of the active cache slot (but skip the key). */
 static int print_slot(struct cache_slot *slot)
 {
-	ssize_t i, j = 0;
+	ssize_t i;
 
 	i = lseek(slot->cache_fd, slot->keylen + 1, SEEK_SET);
 	if (i != slot->keylen + 1)
 		return errno;
 
-	while((i=read(slot->cache_fd, slot->buf, sizeof(slot->buf))) > 0)
-		j = write(STDOUT_FILENO, slot->buf, i);
+	while((i = xread(slot->cache_fd, slot->buf, sizeof(slot->buf))) > 0)
+		i = xwrite(STDOUT_FILENO, slot->buf, i);
 
-	if (j < 0)
+	if (i < 0)
 		return errno;
 	else
 		return 0;
@@ -142,7 +142,7 @@ static int lock_slot(struct cache_slot *slot)
 			     S_IRUSR|S_IWUSR);
 	if (slot->lock_fd == -1)
 		return errno;
-	if (write(slot->lock_fd, slot->key, slot->keylen + 1) < 0)
+	if (xwrite(slot->lock_fd, slot->key, slot->keylen + 1) < 0)
 		return errno;
 	return 0;
 }
