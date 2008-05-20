@@ -81,16 +81,19 @@ static int close_slot(struct cache_slot *slot)
 /* Print the content of the active cache slot (but skip the key). */
 static int print_slot(struct cache_slot *slot)
 {
-	ssize_t i;
+	ssize_t i, j;
 
 	i = lseek(slot->cache_fd, slot->keylen + 1, SEEK_SET);
 	if (i != slot->keylen + 1)
 		return errno;
 
-	while((i = xread(slot->cache_fd, slot->buf, sizeof(slot->buf))) > 0)
-		i = xwrite(STDOUT_FILENO, slot->buf, i);
+	do {
+		i = j = xread(slot->cache_fd, slot->buf, sizeof(slot->buf));
+		if (i > 0)
+			j = xwrite(STDOUT_FILENO, slot->buf, i);
+	} while (i > 0 && j == i);
 
-	if (i < 0)
+	if (i < 0 || j != i)
 		return errno;
 	else
 		return 0;
