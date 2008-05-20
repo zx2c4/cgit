@@ -73,12 +73,14 @@ static int ls_item(const unsigned char *sha1, const char *base, int baselen,
 	fullpath = fmt("%s%s%s", ctx.qry.path ? ctx.qry.path : "",
 		       ctx.qry.path ? "/" : "", name);
 
-	type = sha1_object_info(sha1, &size);
-	if (type == OBJ_BAD && !S_ISGITLINK(mode)) {
-		htmlf("<tr><td colspan='3'>Bad object: %s %s</td></tr>",
-		      name,
-		      sha1_to_hex(sha1));
-		return 0;
+	if (!S_ISGITLINK(mode)) {
+		type = sha1_object_info(sha1, &size);
+		if (type == OBJ_BAD) {
+			htmlf("<tr><td colspan='3'>Bad object: %s %s</td></tr>",
+			      name,
+			      sha1_to_hex(sha1));
+			return 0;
+		}
 	}
 
 	html("<tr><td class='ls-mode'>");
