@@ -90,6 +90,10 @@
 #root-title=Git repository browser
 
 
+## Set the description printed on the root page
+#root-desc=a fast web interface for the git dscm
+
+
 ## If specified, the file at this path will be included as HTML in the
 ## sidebar on the repository index page
 #index-info=
