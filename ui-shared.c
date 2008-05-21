@@ -34,6 +34,21 @@ void cgit_print_error(char *msg)
 	html("</div>\n");
 }
 
+char *cgit_hosturl()
+{
+	char *host, *port;
+
+	host = getenv("SERVER_NAME");
+	if (!host)
+		return NULL;
+	port = getenv("SERVER_PORT");
+	if (port && atoi(port) != 80)
+		host = xstrdup(fmt("%s:%d", host, atoi(port)));
+	else
+		host = xstrdup(host);
+	return host;
+}
+
 char *cgit_rooturl()
 {
 	if (ctx.cfg.virtual_root)
@@ -428,6 +443,7 @@ void cgit_print_http_headers(struct cgit_context *ctx)
 
 void cgit_print_docstart(struct cgit_context *ctx)
 {
+	char *host = cgit_hosturl();
 	html(cgit_doctype);
 	html("<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='en' lang='en'>\n");
 	html("<head>\n");
@@ -444,6 +460,13 @@ void cgit_print_docstart(struct cgit_context *ctx)
 		html("<link rel='shortcut icon' href='");
 		html_attr(ctx->cfg.favicon);
 		html("'/>\n");
+	}
+	if (host && ctx->repo) {
+		html("<link rel='alternate' title='Atom feed' href='http://");
+		html_attr(cgit_hosturl());
+		html_attr(cgit_fileurl(ctx->repo->url, "atom", ctx->qry.path,
+				       fmt("h=%s", ctx->qry.head)));
+		html("' type='application/atom+xml'/>");
 	}
 	html("</head>\n");
 	html("<body>\n");
