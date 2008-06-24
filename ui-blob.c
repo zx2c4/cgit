@@ -10,20 +10,49 @@
 #include "html.h"
 #include "ui-shared.h"
 
-void cgit_print_blob(const char *hex, char *path)
+static char *match_path;
+static unsigned char *matched_sha1;
+
+static int walk_tree(const unsigned char *sha1, const char *base,int baselen, const char *pathname, unsigned mode, int stage) {
+	if(strncmp(base,match_path,baselen)
+		|| strcmp(match_path+baselen,pathname) )
+		return READ_TREE_RECURSIVE;
+	memmove(matched_sha1,sha1,20);
+	return 0;
+}
+
+void cgit_print_blob(const char *hex, char *path, const char *head)
 {
 
 	unsigned char sha1[20];
 	enum object_type type;
 	unsigned char *buf;
 	unsigned long size;
+	struct commit *commit;
+	const char *paths[] = {path, NULL};
 
-	if (get_sha1_hex(hex, sha1)){
-		cgit_print_error(fmt("Bad hex value: %s", hex));
-	        return;
+	if (hex) {
+		if (get_sha1_hex(hex, sha1)){
+			cgit_print_error(fmt("Bad hex value: %s", hex));
+			return;
+		}
+	} else {
+		if (get_sha1(head,sha1)) {
+			cgit_print_error(fmt("Bad ref: %s", head));
+			return;
+		}
 	}
 
 	type = sha1_object_info(sha1, &size);
+
+	if((!hex) && type == OBJ_COMMIT && path) {
+		commit = lookup_commit_reference(sha1);
+		match_path = path;
+		matched_sha1 = sha1;
+		read_tree_recursive(commit->tree, NULL, 0, 0, paths, walk_tree);
+		type = sha1_object_info(sha1,&size);
+	}
+
 	if (type == OBJ_BAD) {
 		cgit_print_error(fmt("Bad object name: %s", hex));
 		return;
