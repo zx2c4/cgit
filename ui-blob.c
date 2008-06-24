@@ -65,7 +65,7 @@ void cgit_print_blob(const char *hex, char *path, const char *head)
 	}
 
 	buf[size] = '\0';
-	ctx.page.mimetype = NULL;
+	ctx.page.mimetype = ctx.qry.mimetype;
 	ctx.page.filename = path;
 	cgit_print_http_headers(&ctx);
 	write(htmlfd, buf, size);
