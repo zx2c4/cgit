@@ -116,6 +116,7 @@ struct cgit_query {
 	char *sha2;
 	char *path;
 	char *name;
+	char *mimetype;
 	int   ofs;
 };
 
