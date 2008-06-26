@@ -443,10 +443,16 @@ void cgit_print_docstart(struct cgit_context *ctx)
 
 void cgit_print_docend()
 {
-	html("</div><div class='footer'>generated ");
-	cgit_print_date(time(NULL), FMT_LONGDATE);
-	htmlf(" by cgit %s", cgit_version);
-	html("</div>\n</body>\n</html>\n");
+	html("</div>");
+	if (ctx.cfg.footer)
+		html_include(ctx.cfg.footer);
+	else {
+		html("<div class='footer'>generated ");
+		cgit_print_date(time(NULL), FMT_LONGDATE);
+		htmlf(" by cgit %s", cgit_version);
+		html("</div>\n");
+	}
+	html("</body>\n</html>\n");
 }
 
 int print_branch_option(const char *refname, const unsigned char *sha1,

@@ -25,6 +25,8 @@ void config_cb(const char *name, const char *value)
 		ctx.cfg.root_readme = xstrdup(value);
 	else if (!strcmp(name, "css"))
 		ctx.cfg.css = xstrdup(value);
+	else if (!strcmp(name, "footer"))
+		ctx.cfg.footer = xstrdup(value);
 	else if (!strcmp(name, "logo"))
 		ctx.cfg.logo = xstrdup(value);
 	else if (!strcmp(name, "index-header"))
