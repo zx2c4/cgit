@@ -437,6 +437,11 @@ void cgit_print_docstart(struct cgit_context *ctx)
 	html("<link rel='stylesheet' type='text/css' href='");
 	html_attr(ctx->cfg.css);
 	html("'/>\n");
+	if (ctx->cfg.favicon) {
+		html("<link rel='shortcut icon' href='");
+		html_attr(ctx->cfg.favicon);
+		html("'/>\n");
+	}
 	html("</head>\n");
 	html("<body>\n");
 }

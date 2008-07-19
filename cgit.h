@@ -125,6 +125,7 @@ struct cgit_config {
 	char *cache_root;
 	char *clone_prefix;
 	char *css;
+	char *favicon;
 	char *footer;
 	char *index_header;
 	char *index_info;

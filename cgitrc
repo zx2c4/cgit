@@ -107,6 +107,8 @@
 ## Link to css file
 #css=/cgit/cgit.css
 
+## Link to favicon
+#favicon=/favicon.ico
 
 ## Link to logo file
 #logo=/cgit/git-logo.png
