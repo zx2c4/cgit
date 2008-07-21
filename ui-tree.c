@@ -62,7 +62,8 @@ static void print_object(const unsigned char *sha1, char *path)
 
 
 static int ls_item(const unsigned char *sha1, const char *base, int baselen,
-		   const char *pathname, unsigned int mode, int stage)
+		   const char *pathname, unsigned int mode, int stage,
+		   void *cbdata)
 {
 	char *name;
 	char *fullpath;
@@ -143,13 +144,14 @@ static void ls_tree(const unsigned char *sha1, char *path)
 	}
 
 	ls_head();
-	read_tree_recursive(tree, "", 0, 1, NULL, ls_item);
+	read_tree_recursive(tree, "", 0, 1, NULL, ls_item, NULL);
 	ls_tail();
 }
 
 
 static int walk_tree(const unsigned char *sha1, const char *base, int baselen,
-		     const char *pathname, unsigned mode, int stage)
+		     const char *pathname, unsigned mode, int stage,
+		     void *cbdata)
 {
 	static int state;
 	static char buffer[PATH_MAX];
@@ -176,7 +178,7 @@ static int walk_tree(const unsigned char *sha1, const char *base, int baselen,
 			return 0;
 		}
 	}
-	ls_item(sha1, base, baselen, pathname, mode, stage);
+	ls_item(sha1, base, baselen, pathname, mode, stage, NULL);
 	return 0;
 }
 
@@ -216,6 +218,6 @@ void cgit_print_tree(const char *rev, char *path)
 	}
 
 	match_path = path;
-	read_tree_recursive(commit->tree, NULL, 0, 0, paths, walk_tree);
+	read_tree_recursive(commit->tree, NULL, 0, 0, paths, walk_tree, NULL);
 	ls_tail();
 }

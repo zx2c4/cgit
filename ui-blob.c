@@ -13,7 +13,8 @@
 static char *match_path;
 static unsigned char *matched_sha1;
 
-static int walk_tree(const unsigned char *sha1, const char *base,int baselen, const char *pathname, unsigned mode, int stage) {
+static int walk_tree(const unsigned char *sha1, const char *base,int baselen,
+	const char *pathname, unsigned mode, int stage, void *cbdata) {
 	if(strncmp(base,match_path,baselen)
 		|| strcmp(match_path+baselen,pathname) )
 		return READ_TREE_RECURSIVE;
@@ -49,7 +50,7 @@ void cgit_print_blob(const char *hex, char *path, const char *head)
 		commit = lookup_commit_reference(sha1);
 		match_path = path;
 		matched_sha1 = sha1;
-		read_tree_recursive(commit->tree, NULL, 0, 0, paths, walk_tree);
+		read_tree_recursive(commit->tree, NULL, 0, 0, paths, walk_tree, NULL);
 		type = sha1_object_info(sha1,&size);
 	}
 
