@@ -75,7 +75,7 @@ endif
 
 .PHONY: all git test install clean distclean emptycache force-version get-git
 
-all: cgit git
+all: cgit
 
 VERSION: force-version
 	@./gen-version.sh "$(CGIT_VERSION)"
@@ -93,15 +93,13 @@ CFLAGS += -DCGIT_CACHE_ROOT='"$(CACHE_ROOT)"'
 cgit: $(OBJECTS)
 	$(QUIET_CC)$(CC) $(CFLAGS) -o cgit $(OBJECTS) $(EXTLIBS)
 
-$(OBJECTS): git/xdiff/lib.a git/libgit.a
+$(OBJECTS): | git/xdiff/lib.a git/libgit.a
 
 cgit.o: VERSION
 
 -include $(OBJECTS:.o=.d)
 
-git/xdiff/lib.a: | git
-
-git/libgit.a: | git
+git/xdiff/lib.a, git/libgit.a: git
 
 git:
 	$(QUIET_SUBDIR0)git $(QUIET_SUBDIR1) xdiff/lib.a
