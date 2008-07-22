@@ -122,12 +122,5 @@ uninstall:
 clean:
 	rm -f cgit VERSION *.o *.d
 
-distclean: clean
-	git clean -d -x
-	cd git && git clean -d -x
-
-emptycache:
-	rm -rf $(DESTDIR)$(CACHE_ROOT)/*
-
 get-git:
 	curl $(GIT_URL) | tar -xj && rm -rf git && mv git-$(GIT_VER) git
