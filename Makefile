@@ -121,7 +121,6 @@ uninstall:
 
 clean:
 	rm -f cgit VERSION *.o *.d
-	cd git && $(MAKE) clean
 
 distclean: clean
 	git clean -d -x
