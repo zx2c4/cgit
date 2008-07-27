@@ -572,12 +572,12 @@ void cgit_print_pageheader(struct cgit_context *ctx)
 		html_txt(ctx->cfg.root_title);
 	html("</td></tr>\n");
 
-	html("<tr><td class='sub'");
+	html("<tr><td class='sub'>");
 	if (ctx->repo) {
-		html(" colspan='2'>");
 		html_txt(ctx->repo->desc);
+		html("</td><td class='sub right'>");
+		html_txt(ctx->repo->owner);
 	} else {
-		html(">");
 		if (ctx->cfg.root_desc)
 			html_txt(ctx->cfg.root_desc);
 		else if (ctx->cfg.index_info)
