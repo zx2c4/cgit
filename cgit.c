@@ -207,15 +207,19 @@ int find_current_ref(const char *refname, const unsigned char *sha1,
 char *find_default_branch(struct cgit_repo *repo)
 {
 	struct refmatch info;
+	char *ref;
 
 	info.req_ref = repo->defbranch;
 	info.first_ref = NULL;
 	info.match = 0;
 	for_each_branch_ref(find_current_ref, &info);
 	if (info.match)
-		return info.req_ref;
+		ref = info.req_ref;
 	else
-		return info.first_ref;
+		ref = info.first_ref;
+	if (ref)
+		ref = xstrdup(ref);
+	return ref;
 }
 
 static int prepare_repo_cmd(struct cgit_context *ctx)
@@ -241,7 +245,7 @@ static int prepare_repo_cmd(struct cgit_context *ctx)
 	ctx->page.title = fmt("%s - %s", ctx->repo->name, ctx->repo->desc);
 
 	if (!ctx->qry.head) {
-		ctx->qry.head = xstrdup(find_default_branch(ctx->repo));
+		ctx->qry.head = find_default_branch(ctx->repo);
 		ctx->repo->defbranch = ctx->qry.head;
 	}
 

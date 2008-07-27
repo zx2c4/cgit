@@ -518,7 +518,8 @@ void add_hidden_formfields(int incl_head, int incl_search, char *page)
 		html_hidden("url", url);
 	}
 
-	if (incl_head && strcmp(ctx.qry.head, ctx.repo->defbranch))
+	if (incl_head && ctx.qry.head && ctx.repo->defbranch &&
+	    strcmp(ctx.qry.head, ctx.repo->defbranch))
 		html_hidden("h", ctx.qry.head);
 
 	if (ctx.qry.sha1)
