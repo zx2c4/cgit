@@ -73,7 +73,7 @@ ifdef NEEDS_LIBICONV
 endif
 
 
-.PHONY: all git test install clean distclean emptycache force-version get-git
+.PHONY: all git test install uninstall clean force-version get-git
 
 all: cgit
 
@@ -90,20 +90,18 @@ CFLAGS += -DCGIT_SCRIPT_NAME='"$(CGIT_SCRIPT_NAME)"'
 CFLAGS += -DCGIT_CACHE_ROOT='"$(CACHE_ROOT)"'
 
 
-cgit: $(OBJECTS)
+cgit: $(OBJECTS) git/libgit.a git/xdiff/lib.a
 	$(QUIET_CC)$(CC) $(CFLAGS) -o cgit $(OBJECTS) $(EXTLIBS)
-
-$(OBJECTS): | git/xdiff/lib.a git/libgit.a
 
 cgit.o: VERSION
 
 -include $(OBJECTS:.o=.d)
 
-git/xdiff/lib.a, git/libgit.a: git
-
-git:
-	$(QUIET_SUBDIR0)git $(QUIET_SUBDIR1) xdiff/lib.a
+git/libgit.a: git
 	$(QUIET_SUBDIR0)git $(QUIET_SUBDIR1) libgit.a
+
+git/xdiff/lib.a: git
+	$(QUIET_SUBDIR0)git $(QUIET_SUBDIR1) xdiff/lib.a
 
 test: all
 	$(QUIET_SUBDIR0)tests $(QUIET_SUBDIR1) all
