@@ -27,7 +27,7 @@ extern void cgit_diff_link(char *name, char *title, char *class, char *head,
 extern void cgit_object_link(struct object *obj);
 
 extern void cgit_print_error(char *msg);
-extern void cgit_print_date(time_t secs, char *format);
+extern void cgit_print_date(time_t secs, char *format, int local_time);
 extern void cgit_print_age(time_t t, time_t max_relative, char *format);
 extern void cgit_print_http_headers(struct cgit_context *ctx);
 extern void cgit_print_docstart(struct cgit_context *ctx);

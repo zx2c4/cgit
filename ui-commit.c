@@ -40,14 +40,14 @@ void cgit_print_commit(char *hex)
 	html(" ");
 	html_txt(info->author_email);
 	html("</td><td class='right'>");
-	cgit_print_date(info->author_date, FMT_LONGDATE);
+	cgit_print_date(info->author_date, FMT_LONGDATE, ctx.cfg.local_time);
 	html("</td></tr>\n");
 	html("<tr><th>committer</th><td>");
 	html_txt(info->committer);
 	html(" ");
 	html_txt(info->committer_email);
 	html("</td><td class='right'>");
-	cgit_print_date(info->committer_date, FMT_LONGDATE);
+	cgit_print_date(info->committer_date, FMT_LONGDATE, ctx.cfg.local_time);
 	html("</td></tr>\n");
 	html("<tr><th>commit</th><td colspan='2' class='sha1'>");
 	tmp = sha1_to_hex(commit->object.sha1);

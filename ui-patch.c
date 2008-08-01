@@ -103,7 +103,7 @@ void cgit_print_patch(char *hex)
 	htmlf("From %s Mon Sep 17 00:00:00 2001\n", sha1_to_hex(sha1));
 	htmlf("From: %s%s\n", info->author, info->author_email);
 	html("Date: ");
-	cgit_print_date(info->author_date, "%a, %d  %b  %Y  %H:%M:%S  %z%n");
+	cgit_print_date(info->author_date, "%a, %d  %b  %Y  %H:%M:%S  %z%n", ctx.cfg.local_time);
 	htmlf("Subject: %s\n\n", info->subject);
 	if (info->msg && *info->msg) {
 		htmlf("%s", info->msg);

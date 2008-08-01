@@ -353,14 +353,17 @@ void cgit_object_link(struct object *obj)
 	html_link_close();
 }
 
-void cgit_print_date(time_t secs, char *format)
+void cgit_print_date(time_t secs, char *format, int local_time)
 {
 	char buf[64];
 	struct tm *time;
 
 	if (!secs)
 		return;
-	time = gmtime(&secs);
+	if(local_time)
+		time = localtime(&secs);
+	else
+		time = gmtime(&secs);
 	strftime(buf, sizeof(buf)-1, format, time);
 	html_txt(buf);
 }
@@ -375,7 +378,7 @@ void cgit_print_age(time_t t, time_t max_relative, char *format)
 	secs = now - t;
 
 	if (secs > max_relative && max_relative >= 0) {
-		cgit_print_date(t, format);
+		cgit_print_date(t, format, ctx.cfg.local_time);
 		return;
 	}
 
@@ -453,7 +456,7 @@ void cgit_print_docend()
 		html_include(ctx.cfg.footer);
 	else {
 		html("<div class='footer'>generated ");
-		cgit_print_date(time(NULL), FMT_LONGDATE);
+		cgit_print_date(time(NULL), FMT_LONGDATE, ctx.cfg.local_time);
 		htmlf(" by cgit %s", cgit_version);
 		html("</div>\n");
 	}

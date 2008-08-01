@@ -87,6 +87,8 @@ void config_cb(const char *name, const char *value)
 		ctx.cfg.robots = xstrdup(value);
 	else if (!strcmp(name, "clone-prefix"))
 		ctx.cfg.clone_prefix = xstrdup(value);
+	else if (!strcmp(name, "local-time"))
+		ctx.cfg.local_time = atoi(value);
 	else if (!strcmp(name, "repo.group"))
 		ctx.cfg.repo_group = xstrdup(value);
 	else if (!strcmp(name, "repo.url"))
@@ -167,6 +169,7 @@ static void prepare_context(struct cgit_context *ctx)
 	ctx->cfg.cache_static_ttl = -1;
 	ctx->cfg.css = "/cgit.css";
 	ctx->cfg.logo = "/git-logo.png";
+	ctx->cfg.local_time = 0;
 	ctx->cfg.max_repo_count = 50;
 	ctx->cfg.max_commit_count = 50;
 	ctx->cfg.max_lock_attempts = 5;
