@@ -56,6 +56,7 @@ OBJECTS += html.o
 OBJECTS += parsing.o
 OBJECTS += shared.o
 OBJECTS += ui-blob.o
+OBJECTS += ui-clone.o
 OBJECTS += ui-commit.o
 OBJECTS += ui-diff.o
 OBJECTS += ui-log.o
