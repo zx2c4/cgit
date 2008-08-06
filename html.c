@@ -56,9 +56,9 @@ void htmlf(const char *format, ...)
 	html(buf);
 }
 
-void html_status(int code, int more_headers)
+void html_status(int code, const char *msg, int more_headers)
 {
-	htmlf("Status: %d\n", code);
+	htmlf("Status: %d %s\n", code, msg);
 	if (!more_headers)
 		html("\n");
 }

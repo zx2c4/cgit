@@ -48,20 +48,18 @@ static void print_pack_info(struct cgit_context *ctx)
 static void send_file(struct cgit_context *ctx, char *path)
 {
 	struct stat st;
-	int err;
 
 	if (stat(path, &st)) {
 		switch (errno) {
 		case ENOENT:
-			err = 404;
+			html_status(404, "Not found", 0);
 			break;
 		case EACCES:
-			err = 403;
+			html_status(403, "Forbidden", 0);
 			break;
 		default:
-			err = 400;
+			html_status(400, "Bad request", 0);
 		}
-		html_status(err, 0);
 		return;
 	}
 	ctx->page.mimetype = "application/octet-stream";
@@ -86,7 +84,7 @@ void cgit_clone_info(struct cgit_context *ctx)
 void cgit_clone_objects(struct cgit_context *ctx)
 {
 	if (!ctx->qry.path) {
-		html_status(400, 0);
+		html_status(400, "Bad request", 0);
 		return;
 	}
 
