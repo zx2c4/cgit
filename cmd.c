@@ -10,6 +10,7 @@
 #include "cmd.h"
 #include "cache.h"
 #include "ui-shared.h"
+#include "ui-atom.h"
 #include "ui-blob.h"
 #include "ui-commit.h"
 #include "ui-diff.h"
@@ -21,6 +22,11 @@
 #include "ui-summary.h"
 #include "ui-tag.h"
 #include "ui-tree.h"
+
+static void atom_fn(struct cgit_context *ctx)
+{
+	cgit_print_atom(ctx->qry.head, ctx->qry.path, 10);
+}
 
 static void about_fn(struct cgit_context *ctx)
 {
@@ -102,6 +108,7 @@ static void tree_fn(struct cgit_context *ctx)
 struct cgit_cmd *cgit_get_cmd(struct cgit_context *ctx)
 {
 	static struct cgit_cmd cmds[] = {
+		def_cmd(atom, 1, 0),
 		def_cmd(about, 0, 1),
 		def_cmd(blob, 1, 0),
 		def_cmd(commit, 1, 1),
