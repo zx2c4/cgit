@@ -35,6 +35,11 @@ char *fmt(const char *format, ...)
 	return buf[bufidx];
 }
 
+void html_raw(const char *data, size_t size)
+{
+	write(htmlfd, data, size);
+}
+
 void html(const char *txt)
 {
 	write(htmlfd, txt, strlen(txt));

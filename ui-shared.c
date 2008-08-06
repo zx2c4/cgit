@@ -418,6 +418,8 @@ void cgit_print_http_headers(struct cgit_context *ctx)
 		      ctx->page.charset);
 	else if (ctx->page.mimetype)
 		htmlf("Content-Type: %s\n", ctx->page.mimetype);
+	if (ctx->page.size)
+		htmlf("Content-Length: %ld\n", ctx->page.size);
 	if (ctx->page.filename)
 		htmlf("Content-Disposition: inline; filename=\"%s\"\n",
 		      ctx->page.filename);
