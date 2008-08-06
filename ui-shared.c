@@ -243,6 +243,12 @@ void cgit_tree_link(char *name, char *title, char *class, char *head,
 	reporevlink("tree", name, title, class, head, rev, path);
 }
 
+void cgit_plain_link(char *name, char *title, char *class, char *head,
+		     char *rev, char *path)
+{
+	reporevlink("plain", name, title, class, head, rev, path);
+}
+
 void cgit_log_link(char *name, char *title, char *class, char *head,
 		   char *rev, char *path, int ofs, char *grep, char *pattern)
 {
