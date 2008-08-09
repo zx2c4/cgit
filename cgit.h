@@ -118,6 +118,7 @@ struct cgit_query {
 	char *path;
 	char *name;
 	char *mimetype;
+	char *url;
 	int   ofs;
 };
 
