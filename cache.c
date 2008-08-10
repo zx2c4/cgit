@@ -416,7 +416,7 @@ int cache_ls(const char *path)
 				  fullname, strerror(err), err);
 			continue;
 		}
-		printf("%s %s %10lld %s\n",
+		printf("%s %s %10zd %s\n",
 		       name,
 		       sprintftime("%Y-%m-%d %H:%M:%S",
 				   slot.cache_st.st_mtime),
