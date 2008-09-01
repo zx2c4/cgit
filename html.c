@@ -35,6 +35,11 @@ char *fmt(const char *format, ...)
 	return buf[bufidx];
 }
 
+void html_raw(const char *data, size_t size)
+{
+	write(htmlfd, data, size);
+}
+
 void html(const char *txt)
 {
 	write(htmlfd, txt, strlen(txt));
@@ -51,9 +56,9 @@ void htmlf(const char *format, ...)
 	html(buf);
 }
 
-void html_status(int code, int more_headers)
+void html_status(int code, const char *msg, int more_headers)
 {
-	htmlf("Status: %d\n", code);
+	htmlf("Status: %d %s\n", code, msg);
 	if (!more_headers)
 		html("\n");
 }

@@ -17,6 +17,7 @@
 #include "ui-diff.h"
 #include "ui-log.h"
 #include "ui-patch.h"
+#include "ui-plain.h"
 #include "ui-refs.h"
 #include "ui-repolist.h"
 #include "ui-snapshot.h"
@@ -91,6 +92,11 @@ static void patch_fn(struct cgit_context *ctx)
 	cgit_print_patch(ctx->qry.sha1);
 }
 
+static void plain_fn(struct cgit_context *ctx)
+{
+	cgit_print_plain(ctx);
+}
+
 static void refs_fn(struct cgit_context *ctx)
 {
 	cgit_print_refs();
@@ -135,6 +141,7 @@ struct cgit_cmd *cgit_get_cmd(struct cgit_context *ctx)
 		def_cmd(ls_cache, 0, 0),
 		def_cmd(objects, 1, 0),
 		def_cmd(patch, 1, 0),
+		def_cmd(plain, 1, 0),
 		def_cmd(refs, 1, 1),
 		def_cmd(repolist, 0, 0),
 		def_cmd(snapshot, 1, 0),

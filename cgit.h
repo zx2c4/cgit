@@ -166,6 +166,7 @@ struct cgit_config {
 struct cgit_page {
 	time_t modified;
 	time_t expires;
+	size_t size;
 	char *mimetype;
 	char *charset;
 	char *filename;

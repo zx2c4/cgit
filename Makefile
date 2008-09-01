@@ -62,6 +62,7 @@ OBJECTS += ui-commit.o
 OBJECTS += ui-diff.o
 OBJECTS += ui-log.o
 OBJECTS += ui-patch.o
+OBJECTS += ui-plain.o
 OBJECTS += ui-refs.o
 OBJECTS += ui-repolist.o
 OBJECTS += ui-shared.o

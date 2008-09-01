@@ -187,6 +187,7 @@ static void prepare_context(struct cgit_context *ctx)
 	ctx->page.mimetype = "text/html";
 	ctx->page.charset = PAGE_ENCODING;
 	ctx->page.filename = NULL;
+	ctx->page.size = 0;
 	ctx->page.modified = time(NULL);
 	ctx->page.expires = ctx->page.modified;
 }

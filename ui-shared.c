@@ -258,6 +258,12 @@ void cgit_tree_link(char *name, char *title, char *class, char *head,
 	reporevlink("tree", name, title, class, head, rev, path);
 }
 
+void cgit_plain_link(char *name, char *title, char *class, char *head,
+		     char *rev, char *path)
+{
+	reporevlink("plain", name, title, class, head, rev, path);
+}
+
 void cgit_log_link(char *name, char *title, char *class, char *head,
 		   char *rev, char *path, int ofs, char *grep, char *pattern)
 {
@@ -433,6 +439,8 @@ void cgit_print_http_headers(struct cgit_context *ctx)
 		      ctx->page.charset);
 	else if (ctx->page.mimetype)
 		htmlf("Content-Type: %s\n", ctx->page.mimetype);
+	if (ctx->page.size)
+		htmlf("Content-Length: %ld\n", ctx->page.size);
 	if (ctx->page.filename)
 		htmlf("Content-Disposition: inline; filename=\"%s\"\n",
 		      ctx->page.filename);
