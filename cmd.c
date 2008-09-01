@@ -12,6 +12,7 @@
 #include "ui-shared.h"
 #include "ui-atom.h"
 #include "ui-blob.h"
+#include "ui-clone.h"
 #include "ui-commit.h"
 #include "ui-diff.h"
 #include "ui-log.h"
@@ -22,6 +23,11 @@
 #include "ui-summary.h"
 #include "ui-tag.h"
 #include "ui-tree.h"
+
+static void HEAD_fn(struct cgit_context *ctx)
+{
+	cgit_clone_head(ctx);
+}
 
 static void atom_fn(struct cgit_context *ctx)
 {
@@ -51,6 +57,11 @@ static void diff_fn(struct cgit_context *ctx)
 	cgit_print_diff(ctx->qry.sha1, ctx->qry.sha2, ctx->qry.path);
 }
 
+static void info_fn(struct cgit_context *ctx)
+{
+	cgit_clone_info(ctx);
+}
+
 static void log_fn(struct cgit_context *ctx)
 {
 	cgit_print_log(ctx->qry.sha1, ctx->qry.ofs, ctx->cfg.max_commit_count,
@@ -63,6 +74,11 @@ static void ls_cache_fn(struct cgit_context *ctx)
 	ctx->page.filename = "ls-cache.txt";
 	cgit_print_http_headers(ctx);
 	cache_ls(ctx->cfg.cache_root);
+}
+
+static void objects_fn(struct cgit_context *ctx)
+{
+	cgit_clone_objects(ctx);
 }
 
 static void repolist_fn(struct cgit_context *ctx)
@@ -108,13 +124,16 @@ static void tree_fn(struct cgit_context *ctx)
 struct cgit_cmd *cgit_get_cmd(struct cgit_context *ctx)
 {
 	static struct cgit_cmd cmds[] = {
+		def_cmd(HEAD, 1, 0),
 		def_cmd(atom, 1, 0),
 		def_cmd(about, 0, 1),
 		def_cmd(blob, 1, 0),
 		def_cmd(commit, 1, 1),
 		def_cmd(diff, 1, 1),
+		def_cmd(info, 1, 0),
 		def_cmd(log, 1, 1),
 		def_cmd(ls_cache, 0, 0),
+		def_cmd(objects, 1, 0),
 		def_cmd(patch, 1, 0),
 		def_cmd(refs, 1, 1),
 		def_cmd(repolist, 0, 0),
