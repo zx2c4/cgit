@@ -43,9 +43,7 @@ static int walk_tree(const unsigned char *sha1, const char *base, int baselen,
 		     const char *pathname, unsigned mode, int stage,
 		     void *cbdata)
 {
-	fprintf(stderr, "[cgit] walk_tree.pathname=%s", pathname);
-
-	if (!pathname || strcmp(match_path, pathname))
+	if (S_ISDIR(mode))
 		return READ_TREE_RECURSIVE;
 
 	if (S_ISREG(mode))
@@ -75,7 +73,6 @@ void cgit_print_plain(struct cgit_context *ctx)
 		return;
 	}
 	match_path = ctx->qry.path;
-	fprintf(stderr, "[cgit] match_path=%s", match_path);
 	read_tree_recursive(commit->tree, NULL, 0, 0, paths, walk_tree, NULL);
 	if (!match)
 		html_status(404, "Not found", 0);
