@@ -54,6 +54,7 @@ OBJECTS += cmd.o
 OBJECTS += configfile.o
 OBJECTS += html.o
 OBJECTS += parsing.o
+OBJECTS += scan-tree.o
 OBJECTS += shared.o
 OBJECTS += ui-atom.o
 OBJECTS += ui-blob.o

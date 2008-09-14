@@ -12,6 +12,7 @@
 #include "configfile.h"
 #include "html.h"
 #include "ui-shared.h"
+#include "scan-tree.h"
 
 const char *cgit_version = CGIT_VERSION;
 
@@ -320,9 +321,39 @@ static void process_request(void *cbdata)
 		cgit_print_docend();
 }
 
+int cmp_repos(const void *a, const void *b)
+{
+	const struct cgit_repo *ra = a, *rb = b;
+	return strcmp(ra->url, rb->url);
+}
+
+void print_repo(struct cgit_repo *repo)
+{
+	printf("repo.url=%s\n", repo->url);
+	printf("repo.name=%s\n", repo->name);
+	printf("repo.path=%s\n", repo->path);
+	if (repo->owner)
+		printf("repo.owner=%s\n", repo->owner);
+	if (repo->desc)
+		printf("repo.desc=%s\n", repo->desc);
+	if (repo->readme)
+		printf("repo.readme=%s\n", repo->readme);
+	printf("\n");
+}
+
+void print_repolist(struct cgit_repolist *list)
+{
+	int i;
+
+	for(i = 0; i < list->count; i++)
+		print_repo(&list->repos[i]);
+}
+
+
 static void cgit_parse_args(int argc, const char **argv)
 {
 	int i;
+	int scan = 0;
 
 	for (i = 1; i < argc; i++) {
 		if (!strncmp(argv[i], "--cache=", 8)) {
@@ -351,6 +382,16 @@ static void cgit_parse_args(int argc, const char **argv)
 		if (!strncmp(argv[i], "--ofs=", 6)) {
 			ctx.qry.ofs = atoi(argv[i]+6);
 		}
+		if (!strncmp(argv[i], "--scan-tree=", 12)) {
+			scan++;
+			scan_tree(argv[i] + 12);
+		}
+	}
+	if (scan) {
+		qsort(cgit_repolist.repos, cgit_repolist.count,
+			sizeof(struct cgit_repo), cmp_repos);
+		print_repolist(&cgit_repolist);
+		exit(0);
 	}
 }
 
@@ -383,14 +424,14 @@ int main(int argc, const char **argv)
 	cgit_repolist.count = 0;
 	cgit_repolist.repos = NULL;
 
-	parse_configfile(cgit_config_env ? cgit_config_env : CGIT_CONFIG,
-			 config_cb);
-	ctx.repo = NULL;
 	if (getenv("SCRIPT_NAME"))
 		ctx.cfg.script_name = xstrdup(getenv("SCRIPT_NAME"));
 	if (getenv("QUERY_STRING"))
 		ctx.qry.raw = xstrdup(getenv("QUERY_STRING"));
 	cgit_parse_args(argc, argv);
+	parse_configfile(cgit_config_env ? cgit_config_env : CGIT_CONFIG,
+			 config_cb);
+	ctx.repo = NULL;
 	http_parse_querystring(ctx.qry.raw, querystring_cb);
 
 	/* If virtual-root isn't specified in cgitrc and no url
