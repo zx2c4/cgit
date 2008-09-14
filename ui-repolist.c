@@ -59,6 +59,15 @@ int is_match(struct cgit_repo *repo)
 	return 0;
 }
 
+int is_in_url(struct cgit_repo *repo)
+{
+	if (!ctx.qry.url)
+		return 1;
+	if (repo->url && !prefixcmp(repo->url, ctx.qry.url))
+		return 1;
+	return 0;
+}
+
 void print_header(int columns)
 {
 	html("<tr class='nohover'>"
@@ -101,7 +110,7 @@ void cgit_print_repolist()
 	html("<table summary='repository list' class='list nowrap'>");
 	for (i=0; i<cgit_repolist.count; i++) {
 		ctx.repo = &cgit_repolist.repos[i];
-		if (!is_match(ctx.repo))
+		if (!(is_match(ctx.repo) && is_in_url(ctx.repo)))
 			continue;
 		hits++;
 		if (hits <= ctx.qry.ofs)
