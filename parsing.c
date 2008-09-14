@@ -62,6 +62,55 @@ char *substr(const char *head, const char *tail)
 	return buf;
 }
 
+char *parse_user(char *t, char **name, char **email, unsigned long *date)
+{
+	char *p = t;
+	int mode = 1;
+
+	while (p && *p) {
+		if (mode == 1 && *p == '<') {
+			*name = substr(t, p - 1);
+			t = p;
+			mode++;
+		} else if (mode == 1 && *p == '\n') {
+			*name = substr(t, p);
+			p++;
+			break;
+		} else if (mode == 2 && *p == '>') {
+			*email = substr(t, p + 1);
+			t = p;
+			mode++;
+		} else if (mode == 2 && *p == '\n') {
+			*email = substr(t, p);
+			p++;
+			break;
+		} else if (mode == 3 && isdigit(*p)) {
+			*date = atol(p);
+			mode++;
+		} else if (*p == '\n') {
+			p++;
+			break;
+		}
+		p++;
+	}
+	return p;
+}
+
+const char *reencode(char **txt, const char *src_enc, const char *dst_enc)
+{
+	char *tmp;
+
+	if (!txt || !*txt || !src_enc || !dst_enc)
+		return *txt;
+
+	tmp = reencode_string(*txt, src_enc, dst_enc);
+	if (tmp) {
+		free(*txt);
+		*txt = tmp;
+	}
+	return *txt;
+}
+
 struct commitinfo *cgit_parse_commit(struct commit *commit)
 {
 	struct commitinfo *ret;
@@ -88,70 +137,57 @@ struct commitinfo *cgit_parse_commit(struct commit *commit)
 	while (!strncmp(p, "parent ", 7))
 		p += 48; // "parent " + hex[40] + "\n"
 
-	if (!strncmp(p, "author ", 7)) {
-		p += 7;
-		t = strchr(p, '<') - 1;
-		ret->author = substr(p, t);
-		p = t;
-		t = strchr(t, '>') + 1;
-		ret->author_email = substr(p, t);
-		ret->author_date = atol(t+1);
-		p = strchr(t, '\n') + 1;
+	if (p && !strncmp(p, "author ", 7)) {
+		p = parse_user(p + 7, &ret->author, &ret->author_email,
+			&ret->author_date);
 	}
 
-	if (!strncmp(p, "committer ", 9)) {
-		p += 9;
-		t = strchr(p, '<') - 1;
-		ret->committer = substr(p, t);
-		p = t;
-		t = strchr(t, '>') + 1;
-		ret->committer_email = substr(p, t);
-		ret->committer_date = atol(t+1);
-		p = strchr(t, '\n') + 1;
+	if (p && !strncmp(p, "committer ", 9)) {
+		p = parse_user(p + 9, &ret->committer, &ret->committer_email,
+			&ret->committer_date);
 	}
 
-	if (!strncmp(p, "encoding ", 9)) {
+	if (p && !strncmp(p, "encoding ", 9)) {
 		p += 9;
-		t = strchr(p, '\n') + 1;
-		ret->msg_encoding = substr(p, t);
-		p = t;
-	} else
-		ret->msg_encoding = xstrdup(PAGE_ENCODING);
+		t = strchr(p, '\n');
+		if (t) {
+			ret->msg_encoding = substr(p, t + 1);
+			p = t + 1;
+		}
+	}
 
-	while (*p && (*p != '\n'))
-		p = strchr(p, '\n') + 1; // skip unknown header fields
+	// skip unknown header fields
+	while (p && *p && (*p != '\n')) {
+		p = strchr(p, '\n');
+		if (p)
+			p++;
+	}
 
-	while (*p == '\n')
-		p = strchr(p, '\n') + 1;
+	// skip empty lines between headers and message
+	while (p && *p == '\n')
+		p++;
+
+	if (!p)
+		return ret;
 
 	t = strchr(p, '\n');
 	if (t) {
-		if (*t == '\0')
-			ret->subject = "** empty **";
-		else
-			ret->subject = substr(p, t);
+		ret->subject = substr(p, t);
 		p = t + 1;
 
-		while (*p == '\n')
-			p = strchr(p, '\n') + 1;
-		ret->msg = xstrdup(p);
+		while (p && *p == '\n') {
+			p = strchr(p, '\n');
+			if (p)
+				p++;
+		}
+		if (p)
+			ret->msg = xstrdup(p);
 	} else
-		ret->subject = substr(p, p+strlen(p));
+		ret->subject = xstrdup(p);
 
-	if(strcmp(ret->msg_encoding, PAGE_ENCODING)) {
-		t = reencode_string(ret->subject, PAGE_ENCODING,
-				    ret->msg_encoding);
-		if(t) {
-			free(ret->subject);
-			ret->subject = t;
-		}
-
-		t = reencode_string(ret->msg, PAGE_ENCODING,
-				    ret->msg_encoding);
-		if(t) {
-			free(ret->msg);
-			ret->msg = t;
-		}
+	if (ret->msg_encoding) {
+		reencode(&ret->subject, PAGE_ENCODING, ret->msg_encoding);
+		reencode(&ret->msg, PAGE_ENCODING, ret->msg_encoding);
 	}
 
 	return ret;
@@ -163,7 +199,7 @@ struct taginfo *cgit_parse_tag(struct tag *tag)
 	void *data;
 	enum object_type type;
 	unsigned long size;
-	char *p, *t;
+	char *p;
 	struct taginfo *ret;
 
 	data = read_sha1_file(tag->object.sha1, &type, &size);
@@ -185,22 +221,19 @@ struct taginfo *cgit_parse_tag(struct tag *tag)
 			break;
 
 		if (!strncmp(p, "tagger ", 7)) {
-			p += 7;
-			t = strchr(p, '<') - 1;
-			ret->tagger = substr(p, t);
-			p = t;
-			t = strchr(t, '>') + 1;
-			ret->tagger_email = substr(p, t);
-			ret->tagger_date = atol(t+1);
+			p = parse_user(p + 7, &ret->tagger, &ret->tagger_email,
+				&ret->tagger_date);
+		} else {
+			p = strchr(p, '\n');
+			if (p)
+				p++;
 		}
-		p = strchr(p, '\n') + 1;
 	}
 
-	while (p && *p && (*p != '\n'))
-		p = strchr(p, '\n') + 1; // skip unknown tag fields
+	// skip empty lines between headers and message
+	while (p && *p == '\n')
+		p++;
 
-	while (p && (*p == '\n'))
-		p = strchr(p, '\n') + 1;
 	if (p && *p)
 		ret->msg = xstrdup(p);
 	free(data);
