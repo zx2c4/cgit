@@ -63,6 +63,10 @@ void cgit_print_tag(char *revname)
 		if (info->tagger) {
 			html("<tr><td>Tagged by</td><td>");
 			html_txt(info->tagger);
+			if (info->tagger_email) {
+				html(" ");
+				html_txt(info->tagger_email);
+			}
 			html("</td></tr>\n");
 		}
 		html("<tr><td>Tagged object</td><td>");

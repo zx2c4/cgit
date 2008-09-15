@@ -85,7 +85,7 @@ struct commitinfo {
 struct taginfo {
 	char *tagger;
 	char *tagger_email;
-	int tagger_date;
+	unsigned long tagger_date;
 	char *msg;
 };
 
