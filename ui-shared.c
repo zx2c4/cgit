@@ -38,14 +38,19 @@ char *cgit_hosturl()
 {
 	char *host, *port;
 
-	host = getenv("SERVER_NAME");
-	if (!host)
-		return NULL;
-	port = getenv("SERVER_PORT");
-	if (port && atoi(port) != 80)
-		host = xstrdup(fmt("%s:%d", host, atoi(port)));
-	else
+	host = getenv("HTTP_HOST");
+	if (host) {
 		host = xstrdup(host);
+	} else {
+		host = getenv("SERVER_NAME");
+		if (!host)
+			return NULL;
+		port = getenv("SERVER_PORT");
+		if (port && atoi(port) != 80)
+			host = xstrdup(fmt("%s:%d", host, atoi(port)));
+		else
+			host = xstrdup(host);
+	}
 	return host;
 }
 
