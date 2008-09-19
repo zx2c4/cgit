@@ -95,7 +95,7 @@ CFLAGS += -DCGIT_CACHE_ROOT='"$(CACHE_ROOT)"'
 
 
 cgit: $(OBJECTS) libgit
-	$(QUIET_CC)$(CC) $(CFLAGS) -o cgit $(OBJECTS) $(EXTLIBS)
+	$(QUIET_CC)$(CC) $(CFLAGS) $(LDFLAGS) -o cgit $(OBJECTS) $(EXTLIBS)
 
 cgit.o: VERSION
 
