@@ -16,7 +16,6 @@ unsigned char new_rev_sha1[20];
 static int files, slots;
 static int total_adds, total_rems, max_changes;
 static int lines_added, lines_removed;
-static char *curr_rev;
 
 static struct fileinfo {
 	char status;
@@ -80,8 +79,8 @@ static void print_fileinfo(struct fileinfo *info)
 		html("]</span>");
 	}
 	htmlf("</td><td class='%s'>", class);
-	cgit_diff_link(info->new_path, NULL, NULL, ctx.qry.head, curr_rev,
-		       NULL, info->new_path);
+	cgit_diff_link(info->new_path, NULL, NULL, ctx.qry.head, ctx.qry.sha1,
+		       ctx.qry.sha2, info->new_path);
 	if (info->status == DIFF_STATUS_COPIED || info->status == DIFF_STATUS_RENAMED)
 		htmlf(" (%s from %s)",
 		      info->status == DIFF_STATUS_COPIED ? "copied" : "renamed",
@@ -145,7 +144,6 @@ void cgit_print_diffstat(const unsigned char *old_sha1,
 	html("<div class='diffstat-header'>Diffstat</div>");
 	html("<table summary='diffstat' class='diffstat'>");
 	max_changes = 0;
-	curr_rev = xstrdup(sha1_to_hex(new_sha1));
 	cgit_diff_tree(old_sha1, new_sha1, inspect_filepair, NULL);
 	for(i = 0; i<files; i++)
 		print_fileinfo(&items[i]);
