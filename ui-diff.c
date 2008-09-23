@@ -141,7 +141,10 @@ void cgit_print_diffstat(const unsigned char *old_sha1,
 {
 	int i;
 
-	html("<div class='diffstat-header'>Diffstat</div>");
+	html("<div class='diffstat-header'>");
+	cgit_diff_link("Diffstat", NULL, NULL, ctx.qry.head, ctx.qry.sha1,
+		       ctx.qry.sha2, NULL);
+	html("</div>");
 	html("<table summary='diffstat' class='diffstat'>");
 	max_changes = 0;
 	cgit_diff_tree(old_sha1, new_sha1, inspect_filepair, NULL);
