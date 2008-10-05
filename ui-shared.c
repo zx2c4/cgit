@@ -359,29 +359,21 @@ void cgit_patch_link(char *name, char *title, char *class, char *head,
 
 void cgit_object_link(struct object *obj)
 {
-	char *page, *arg, *url;
+	char *page, *rev, *name;
 
 	if (obj->type == OBJ_COMMIT) {
                 cgit_commit_link(fmt("commit %s", sha1_to_hex(obj->sha1)), NULL, NULL,
 				 ctx.qry.head, sha1_to_hex(obj->sha1));
 		return;
-	} else if (obj->type == OBJ_TREE) {
+	} else if (obj->type == OBJ_TREE)
 		page = "tree";
-		arg = "id";
-	} else if (obj->type == OBJ_TAG) {
+	else if (obj->type == OBJ_TAG)
 		page = "tag";
-		arg = "id";
-	} else {
+	else
 		page = "blob";
-		arg = "id";
-	}
-
-	url = cgit_pageurl(ctx.qry.repo, page,
-			   fmt("%s=%s", arg, sha1_to_hex(obj->sha1)));
-	html_link_open(url, NULL, NULL);
-	htmlf("%s %s", typename(obj->type),
-	      sha1_to_hex(obj->sha1));
-	html_link_close();
+	rev = sha1_to_hex(obj->sha1);
+	name = fmt("%s %s", typename(obj->type), rev);
+	reporevlink(page, name, NULL, NULL, ctx.qry.head, rev, NULL);
 }
 
 void cgit_print_date(time_t secs, char *format, int local_time)
