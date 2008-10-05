@@ -221,21 +221,21 @@ static char *repolink(char *title, char *class, char *page, char *head,
 	} else {
 		html(ctx.cfg.script_name);
 		html("?url=");
-		html_attr(ctx.repo->url);
+		html_url_arg(ctx.repo->url);
 		if (ctx.repo->url[strlen(ctx.repo->url) - 1] != '/')
 			html("/");
 		if (page) {
-			html(page);
+			html_url_arg(page);
 			html("/");
 			if (path)
-				html_attr(path);
+				html_url_arg(path);
 		}
 		delim = "&amp;";
 	}
 	if (head && strcmp(head, ctx.repo->defbranch)) {
 		html(delim);
 		html("h=");
-		html_attr(head);
+		html_url_arg(head);
 		delim = "&amp;";
 	}
 	return fmt("%s", delim);
@@ -250,7 +250,7 @@ static void reporevlink(char *page, char *name, char *title, char *class,
 	if (rev && strcmp(rev, ctx.qry.head)) {
 		html(delim);
 		html("id=");
-		html_attr(rev);
+		html_url_arg(rev);
 	}
 	html("'>");
 	html_txt(name);
@@ -278,17 +278,17 @@ void cgit_log_link(char *name, char *title, char *class, char *head,
 	if (rev && strcmp(rev, ctx.qry.head)) {
 		html(delim);
 		html("id=");
-		html_attr(rev);
+		html_url_arg(rev);
 		delim = "&";
 	}
 	if (grep && pattern) {
 		html(delim);
 		html("qt=");
-		html_attr(grep);
+		html_url_arg(grep);
 		delim = "&";
 		html(delim);
 		html("q=");
-		html_attr(pattern);
+		html_url_arg(pattern);
 	}
 	if (ofs > 0) {
 		html(delim);
@@ -333,13 +333,13 @@ void cgit_diff_link(char *name, char *title, char *class, char *head,
 	if (new_rev && strcmp(new_rev, ctx.qry.head)) {
 		html(delim);
 		html("id=");
-		html_attr(new_rev);
+		html_url_arg(new_rev);
 		delim = "&amp;";
 	}
 	if (old_rev) {
 		html(delim);
 		html("id2=");
-		html_attr(old_rev);
+		html_url_arg(old_rev);
 	}
 	html("'>");
 	html_txt(name);

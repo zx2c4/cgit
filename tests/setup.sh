@@ -31,6 +31,13 @@ mkrepo() {
 		git add file-$n
 		git commit -m "commit $n"
 	done
+	if test "$3" = "testplus"
+	then
+		echo "hello" >a+b
+		git add a+b
+		git commit -m "add a+b"
+		git branch "1+2"
+	fi
 	cd $dir
 }
 
@@ -40,6 +47,7 @@ setup_repos()
 	mkdir -p trash/cache
 	mkrepo trash/repos/foo 5 >/dev/null
 	mkrepo trash/repos/bar 50 >/dev/null
+	mkrepo trash/repos/foo+bar 10 testplus >/dev/null
 	cat >trash/cgitrc <<EOF
 virtual-root=/
 cache-root=$PWD/trash/cache
@@ -61,6 +69,10 @@ repo.path=$PWD/trash/repos/foo/.git
 repo.url=bar
 repo.path=$PWD/trash/repos/bar/.git
 repo.desc=the bar repo
+
+repo.url=foo+bar
+repo.path=$PWD/trash/repos/foo+bar/.git
+repo.desc=the foo+bar repo
 EOF
 }
 
@@ -113,4 +125,3 @@ cgit_url()
 {
 	CGIT_CONFIG="$PWD/trash/cgitrc" QUERY_STRING="url=$1" "$PWD/../cgit"
 }
-

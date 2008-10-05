@@ -18,4 +18,16 @@ run_test 'no line 2' '
 	grep -e "<a id=.n2. name=.n2. href=.#n2.>2</a>" trash/tmp
 '
 
+run_test 'generate foo+bar/tree' 'cgit_url "foo%2bbar/tree" >trash/tmp'
+
+run_test 'verify a+b link' '
+	grep -e "/foo+bar/tree/a+b" trash/tmp
+'
+
+run_test 'generate foo+bar/tree?h=1+2' 'cgit_url "foo%2bbar/tree&h=1%2b2" >trash/tmp'
+
+run_test 'verify a+b?h=1+2 link' '
+	grep -e "/foo+bar/tree/a+b?h=1%2b2" trash/tmp
+'
+
 tests_done
