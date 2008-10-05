@@ -206,17 +206,17 @@ static char *repolink(char *title, char *class, char *page, char *head,
 	}
 	html(" href='");
 	if (ctx.cfg.virtual_root) {
-		html_attr(ctx.cfg.virtual_root);
+		html_url_path(ctx.cfg.virtual_root);
 		if (ctx.cfg.virtual_root[strlen(ctx.cfg.virtual_root) - 1] != '/')
 			html("/");
-		html_attr(ctx.repo->url);
+		html_url_path(ctx.repo->url);
 		if (ctx.repo->url[strlen(ctx.repo->url) - 1] != '/')
 			html("/");
 		if (page) {
-			html(page);
+			html_url_path(page);
 			html("/");
 			if (path)
-				html_attr(path);
+				html_url_path(path);
 		}
 	} else {
 		html(ctx.cfg.script_name);
