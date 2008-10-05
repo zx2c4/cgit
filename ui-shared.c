@@ -631,8 +631,7 @@ void cgit_print_pageheader(struct cgit_context *ctx)
 
 	html("<table class='tabs'><tr><td>\n");
 	if (ctx->repo) {
-		cgit_summary_link(ctx->repo->name, ctx->repo->name, NULL,
-			ctx->qry.head);
+		cgit_summary_link("summary", NULL, NULL, ctx->qry.head);
 		cgit_refs_link("refs", NULL, hc(cmd, "refs"), ctx->qry.head,
 			       ctx->qry.sha1, NULL);
 		cgit_log_link("log", NULL, hc(cmd, "log"), ctx->qry.head,
