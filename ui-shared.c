@@ -496,9 +496,9 @@ void cgit_print_docend()
 	if (ctx.cfg.footer)
 		html_include(ctx.cfg.footer);
 	else {
-		html("<div class='footer'>generated ");
+		htmlf("<div class='footer'>generated  by cgit %s at ",
+			cgit_version);
 		cgit_print_date(time(NULL), FMT_LONGDATE, ctx.cfg.local_time);
-		htmlf(" by cgit %s", cgit_version);
 		html("</div>\n");
 	}
 	html("</body>\n</html>\n");
