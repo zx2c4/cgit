@@ -206,17 +206,17 @@ static char *repolink(char *title, char *class, char *page, char *head,
 	}
 	html(" href='");
 	if (ctx.cfg.virtual_root) {
-		html_attr(ctx.cfg.virtual_root);
+		html_url_path(ctx.cfg.virtual_root);
 		if (ctx.cfg.virtual_root[strlen(ctx.cfg.virtual_root) - 1] != '/')
 			html("/");
-		html_attr(ctx.repo->url);
+		html_url_path(ctx.repo->url);
 		if (ctx.repo->url[strlen(ctx.repo->url) - 1] != '/')
 			html("/");
 		if (page) {
-			html(page);
+			html_url_path(page);
 			html("/");
 			if (path)
-				html_attr(path);
+				html_url_path(path);
 		}
 	} else {
 		html(ctx.cfg.script_name);
@@ -255,6 +255,11 @@ static void reporevlink(char *page, char *name, char *title, char *class,
 	html("'>");
 	html_txt(name);
 	html("</a>");
+}
+
+void cgit_summary_link(char *name, char *title, char *class, char *head)
+{
+	reporevlink(NULL, name, title, class, head, NULL, NULL);
 }
 
 void cgit_tree_link(char *name, char *title, char *class, char *head,
@@ -598,8 +603,7 @@ void cgit_print_pageheader(struct cgit_context *ctx)
 	if (ctx->repo) {
 		cgit_index_link("index", NULL, NULL, NULL, 0);
 		html(" : ");
-		reporevlink(NULL, ctx->repo->name, NULL, hc(cmd, "summary"),
-			    ctx->qry.head, NULL, NULL);
+		cgit_summary_link(ctx->repo->name, ctx->repo->name, NULL, NULL);
 		html("</td><td class='form'>");
 		html("<form method='get' action=''>\n");
 		add_hidden_formfields(0, 1, ctx->qry.page);
@@ -627,8 +631,8 @@ void cgit_print_pageheader(struct cgit_context *ctx)
 
 	html("<table class='tabs'><tr><td>\n");
 	if (ctx->repo) {
-		reporevlink(NULL, "summary", NULL, hc(cmd, "summary"),
-			    ctx->qry.head, NULL, NULL);
+		cgit_summary_link(ctx->repo->name, ctx->repo->name, NULL,
+			ctx->qry.head);
 		cgit_refs_link("refs", NULL, hc(cmd, "refs"), ctx->qry.head,
 			       ctx->qry.sha1, NULL);
 		cgit_log_link("log", NULL, hc(cmd, "log"), ctx->qry.head,
