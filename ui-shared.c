@@ -262,6 +262,12 @@ void cgit_summary_link(char *name, char *title, char *class, char *head)
 	reporevlink(NULL, name, title, class, head, NULL, NULL);
 }
 
+void cgit_tag_link(char *name, char *title, char *class, char *head,
+		   char *rev)
+{
+	reporevlink("tag", name, title, class, head, rev, NULL);
+}
+
 void cgit_tree_link(char *name, char *title, char *class, char *head,
 		    char *rev, char *path)
 {
