@@ -88,7 +88,7 @@ static int print_tag(struct refinfo *ref)
 {
 	struct tag *tag;
 	struct taginfo *info;
-	char *url, *name = (char *)ref->refname;
+	char *name = (char *)ref->refname;
 
 	if (ref->object->type == OBJ_TAG) {
 		tag = (struct tag *)ref->object;
@@ -96,11 +96,7 @@ static int print_tag(struct refinfo *ref)
 		if (!tag || !info)
 			return 1;
 		html("<tr><td>");
-		url = cgit_pageurl(ctx.qry.repo, "tag",
-				   fmt("id=%s", name));
-		html_link_open(url, NULL, NULL);
-		html_txt(name);
-		html_link_close();
+		cgit_tag_link(name, NULL, NULL, ctx.qry.head, name);
 		html("</td><td>");
 		cgit_object_link(tag->tagged);
 		html("</td><td>");
