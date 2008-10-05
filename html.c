@@ -128,6 +128,22 @@ void html_attr(char *txt)
 		html(txt);
 }
 
+void html_url_arg(char *txt)
+{
+	char *t = txt;
+	while(t && *t){
+		int c = *t;
+		if (c=='"' || c=='#' || c=='%' || c=='&' || c=='\'' || c=='+' || c=='?') {
+			write(htmlfd, txt, t - txt);
+			write(htmlfd, fmt("%%%2x", c), 3);
+			txt = t+1;
+		}
+		t++;
+	}
+	if (t!=txt)
+		html(txt);
+}
+
 void html_hidden(char *name, char *value)
 {
 	html("<input type='hidden' name='");
