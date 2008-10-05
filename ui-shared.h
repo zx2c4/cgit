@@ -10,6 +10,7 @@ extern char *cgit_pageurl(const char *reponame, const char *pagename,
 
 extern void cgit_index_link(char *name, char *title, char *class,
 			    char *pattern, int ofs);
+extern void cgit_summary_link(char *name, char *title, char *class, char *head);
 extern void cgit_tree_link(char *name, char *title, char *class, char *head,
 			   char *rev, char *path);
 extern void cgit_plain_link(char *name, char *title, char *class, char *head,

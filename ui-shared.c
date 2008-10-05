@@ -257,6 +257,11 @@ static void reporevlink(char *page, char *name, char *title, char *class,
 	html("</a>");
 }
 
+void cgit_summary_link(char *name, char *title, char *class, char *head)
+{
+	reporevlink(NULL, name, title, class, head, NULL, NULL);
+}
+
 void cgit_tree_link(char *name, char *title, char *class, char *head,
 		    char *rev, char *path)
 {
