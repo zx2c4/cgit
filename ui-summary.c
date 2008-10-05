@@ -24,7 +24,7 @@ static void print_url(char *base, char *suffix)
 	if (suffix && *suffix)
 		base = fmt("%s/%s", base, suffix);
 	html("<tr><td colspan='4'><a href='");
-	html_attr(base);
+	html_url_path(base);
 	html("'>");
 	html_txt(base);
 	html("</a></td></tr>\n");
