@@ -92,10 +92,8 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 	rev.verbose_header = 1;
 	rev.show_root_diff = 0;
 	setup_revisions(argc, argv, &rev, NULL);
-	if (rev.grep_filter) {
-		rev.grep_filter->regflags |= REG_ICASE;
-		compile_grep_patterns(rev.grep_filter);
-	}
+	rev.grep_filter.regflags |= REG_ICASE;
+	compile_grep_patterns(&rev.grep_filter);
 	prepare_revision_walk(&rev);
 
 	if (pager)
