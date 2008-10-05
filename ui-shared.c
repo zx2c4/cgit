@@ -649,8 +649,8 @@ void cgit_print_pageheader(struct cgit_context *ctx)
 		html("</td><td class='form'>");
 		html("<form class='right' method='get' action='");
 		if (ctx->cfg.virtual_root)
-			html_attr(cgit_fileurl(ctx->qry.repo, "log",
-					       ctx->qry.path, NULL));
+			html_url_path(cgit_fileurl(ctx->qry.repo, "log",
+						   ctx->qry.path, NULL));
 		html("'>\n");
 		add_hidden_formfields(1, 0, "log");
 		html("<select name='qt'>\n");
