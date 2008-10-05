@@ -603,8 +603,7 @@ void cgit_print_pageheader(struct cgit_context *ctx)
 	if (ctx->repo) {
 		cgit_index_link("index", NULL, NULL, NULL, 0);
 		html(" : ");
-		reporevlink(NULL, ctx->repo->name, NULL, hc(cmd, "summary"),
-			    ctx->qry.head, NULL, NULL);
+		cgit_summary_link(ctx->repo->name, ctx->repo->name, NULL, NULL);
 		html("</td><td class='form'>");
 		html("<form method='get' action=''>\n");
 		add_hidden_formfields(0, 1, ctx->qry.page);
@@ -632,8 +631,8 @@ void cgit_print_pageheader(struct cgit_context *ctx)
 
 	html("<table class='tabs'><tr><td>\n");
 	if (ctx->repo) {
-		reporevlink(NULL, "summary", NULL, hc(cmd, "summary"),
-			    ctx->qry.head, NULL, NULL);
+		cgit_summary_link(ctx->repo->name, ctx->repo->name, NULL,
+			ctx->qry.head);
 		cgit_refs_link("refs", NULL, hc(cmd, "refs"), ctx->qry.head,
 			       ctx->qry.sha1, NULL);
 		cgit_log_link("log", NULL, hc(cmd, "log"), ctx->qry.head,

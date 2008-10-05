@@ -131,9 +131,7 @@ void cgit_print_repolist()
 		}
 		htmlf("<tr><td class='%s'>",
 		      ctx.repo->group ? "sublevel-repo" : "toplevel-repo");
-		html_link_open(cgit_repourl(ctx.repo->url), NULL, NULL);
-		html_txt(ctx.repo->name);
-		html_link_close();
+		cgit_summary_link(ctx.repo->name, ctx.repo->name, NULL, NULL);
 		html("</td><td>");
 		html_link_open(cgit_repourl(ctx.repo->url), NULL, NULL);
 		html_ntxt(ctx.cfg.max_repodesc_len, ctx.repo->desc);
@@ -145,9 +143,7 @@ void cgit_print_repolist()
 		html("</td>");
 		if (ctx.cfg.enable_index_links) {
 			html("<td>");
-			html_link_open(cgit_repourl(ctx.repo->url),
-				       NULL, "button");
-			html("summary</a>");
+			cgit_summary_link("summary", NULL, "button", NULL);
 			cgit_log_link("log", NULL, "button", NULL, NULL, NULL,
 				      0, NULL, NULL);
 			cgit_tree_link("tree", NULL, "button", NULL, NULL, NULL);
