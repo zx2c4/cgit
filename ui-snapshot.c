@@ -82,7 +82,13 @@ static int make_snapshot(const struct cgit_snapshot_format *format,
 		return 1;
 	}
 	memset(&args, 0, sizeof(args));
-	args.base = fmt("%s/", prefix);
+	if (prefix) {
+		args.base = fmt("%s/", prefix);
+		args.baselen = strlen(prefix) + 1;
+	} else {
+		args.base = "";
+		args.baselen = 0;
+	}
 	args.tree = commit->tree;
 	args.time = commit->date;
 	ctx.page.mimetype = xstrdup(format->mimetype);

@@ -21,7 +21,10 @@ run_test 'strip off the header lines' '
 '
 
 run_test 'verify gzip format' 'gunzip --test trash/test.tar.gz'
-run_test 'untar' 'tar -xf trash/test.tar.gz -C trash'
+run_test 'untar' '
+	rm -rf trash/foo &&
+	tar -xf trash/test.tar.gz -C trash
+'
 
 run_test 'count files' '
 	c=$(ls -1 trash/foo/ | wc -l) &&
