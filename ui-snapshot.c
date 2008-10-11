@@ -64,6 +64,22 @@ const struct cgit_snapshot_format cgit_snapshot_formats[] = {
 	{}
 };
 
+static const struct cgit_snapshot_format *get_format(const char *filename)
+{
+	const struct cgit_snapshot_format *fmt;
+	int fl, sl;
+
+	fl = strlen(filename);
+	for(fmt = cgit_snapshot_formats; fmt->suffix; fmt++) {
+		sl = strlen(fmt->suffix);
+		if (sl >= fl)
+			continue;
+		if (!strcmp(fmt->suffix, filename + fl - sl))
+			return fmt;
+	}
+	return NULL;
+}
+
 static int make_snapshot(const struct cgit_snapshot_format *format,
 			 const char *hex, const char *prefix,
 			 const char *filename)
@@ -98,23 +114,75 @@ static int make_snapshot(const struct cgit_snapshot_format *format,
 	return 0;
 }
 
+char *dwim_filename = NULL;
+const char *dwim_refname = NULL;
+
+static int ref_cb(const char *refname, const unsigned char *sha1, int flags,
+		  void *cb_data)
+{
+	const char *r = refname;
+	while (r && *r) {
+		fprintf(stderr, "  cmp %s with %s:", dwim_filename, r);
+		if (!strcmp(dwim_filename, r)) {
+			fprintf(stderr, "MATCH!\n");
+			dwim_refname = refname;
+			return 1;
+		}
+		fprintf(stderr, "no match\n");
+		if (isdigit(*r))
+			break;
+		r++;
+	}
+	return 0;
+}
+
+/* Try to guess the requested revision by combining repo name and tag name
+ * and comparing this to the requested snapshot name. E.g. the requested
+ * snapshot is "cgit-0.7.2.tar.gz" while repo name is "cgit" and tag name
+ * is "v0.7.2". First, the reponame is stripped off, leaving "-0.7.2.tar.gz".
+ * Next, any '-' and '_' characters are stripped, leaving "0.7.2.tar.gz".
+ * Finally, the requested format suffix is removed and we end up with "0.7.2".
+ * Then we test each tag against this dwimmed filename, and for each tag
+ * we even try to remove any leading characters which are non-digits. I.e.
+ * we first compare with "v0.7.2", then with "0.7.2" and we've got a match.
+ */
+static const char *get_ref_from_filename(const char *url, const char *filename,
+					 const struct cgit_snapshot_format *fmt)
+{
+	const char *reponame = cgit_repobasename(url);
+	fprintf(stderr, "reponame=%s, filename=%s\n", reponame, filename);
+	if (prefixcmp(filename, reponame))
+		return NULL;
+	filename += strlen(reponame);
+	while (filename && (*filename == '-' || *filename == '_'))
+		filename++;
+	dwim_filename = xstrdup(filename);
+	dwim_filename[strlen(filename) - strlen(fmt->suffix)] = '\0';
+	for_each_tag_ref(ref_cb, NULL);
+	return dwim_refname;
+}
+
 void cgit_print_snapshot(const char *head, const char *hex, const char *prefix,
-			 const char *filename, int snapshots)
+			 const char *filename, int snapshots, int dwim)
 {
 	const struct cgit_snapshot_format* f;
-	int sl, fnl;
 
-	fnl = strlen(filename);
-	if (!hex)
-		hex = head;
-	for (f = cgit_snapshot_formats; f->suffix; f++) {
-		if (!(snapshots & f->bit))
-			continue;
-		sl = strlen(f->suffix);
-		if(fnl < sl || strcmp(&filename[fnl-sl], f->suffix))
-			continue;
-		make_snapshot(f, hex, prefix, filename);
+	f = get_format(filename);
+	if (!f) {
+		ctx.page.mimetype = "text/html";
+		cgit_print_http_headers(&ctx);
+		cgit_print_docstart(&ctx);
+		cgit_print_pageheader(&ctx);
+		cgit_print_error(fmt("Unsupported snapshot format: %s", filename));
+		cgit_print_docend();
 		return;
 	}
-	cgit_print_error(fmt("Unsupported snapshot format: %s", filename));
+
+	if (!hex && dwim)
+		hex = get_ref_from_filename(ctx.repo->url, filename, f);
+
+	if (!hex)
+		hex = head;
+
+	make_snapshot(f, hex, prefix, filename);
 }
