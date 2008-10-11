@@ -120,6 +120,7 @@ struct cgit_query {
 	char *mimetype;
 	char *url;
 	int   ofs;
+	int nohead;
 };
 
 struct cgit_config {

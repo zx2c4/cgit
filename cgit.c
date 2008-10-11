@@ -254,6 +254,7 @@ static int prepare_repo_cmd(struct cgit_context *ctx)
 	ctx->page.title = fmt("%s - %s", ctx->repo->name, ctx->repo->desc);
 
 	if (!ctx->qry.head) {
+		ctx->qry.nohead = 1;
 		ctx->qry.head = find_default_branch(ctx->repo);
 		ctx->repo->defbranch = ctx->qry.head;
 	}
