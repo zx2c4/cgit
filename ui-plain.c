@@ -18,7 +18,7 @@ static void print_object(const unsigned char *sha1, const char *path)
 {
 	enum object_type type;
 	char *buf;
-	size_t size;
+	unsigned long size;
 
 	type = sha1_object_info(sha1, &size);
 	if (type == OBJ_BAD) {
