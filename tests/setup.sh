@@ -25,11 +25,13 @@ mkrepo() {
 	mkdir -p $name
 	cd $name
 	git init
-	for ((n=1; n<=count; n++))
+	n=1
+	while test $n -le $count
 	do
 		echo $n >file-$n
 		git add file-$n
 		git commit -m "commit $n"
+		n=$(expr $n + 1)
 	done
 	if test "$3" = "testplus"
 	then
@@ -101,7 +103,7 @@ run_test()
 {
 	desc=$1
 	script=$2
-	((test_count++))
+	test_count=$(expr $test_count + 1)
 	printf "\ntest %d: name='%s'\n" $test_count "$desc" >>test-output.log
 	printf "test %d: eval='%s'\n" $test_count "$2" >>test-output.log
 	eval "$2" >>test-output.log 2>>test-output.log
