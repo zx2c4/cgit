@@ -114,8 +114,8 @@ test: all
 install: all
 	mkdir -p $(DESTDIR)$(CGIT_SCRIPT_PATH)
 	install cgit $(DESTDIR)$(CGIT_SCRIPT_PATH)/$(CGIT_SCRIPT_NAME)
-	install cgit.css $(DESTDIR)$(CGIT_SCRIPT_PATH)/cgit.css
-	install cgit.png $(DESTDIR)$(CGIT_SCRIPT_PATH)/cgit.png
+	install -m 0644 cgit.css $(DESTDIR)$(CGIT_SCRIPT_PATH)/cgit.css
+	install -m 0644 cgit.png $(DESTDIR)$(CGIT_SCRIPT_PATH)/cgit.png
 
 uninstall:
 	rm -f $(CGIT_SCRIPT_PATH)/$(CGIT_SCRIPT_NAME)
