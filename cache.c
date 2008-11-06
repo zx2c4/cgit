@@ -416,11 +416,11 @@ int cache_ls(const char *path)
 				  fullname, strerror(err), err);
 			continue;
 		}
-		printf("%s %s %10zd %s\n",
+		printf("%s %s %10"PRIuMAX" %s\n",
 		       name,
 		       sprintftime("%Y-%m-%d %H:%M:%S",
 				   slot.cache_st.st_mtime),
-		       slot.cache_st.st_size,
+		       (uintmax_t)slot.cache_st.st_size,
 		       slot.buf);
 		close_slot(&slot);
 	}
