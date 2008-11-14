@@ -19,7 +19,8 @@ time_t read_agefile(char *path)
 
 	if (!(f = fopen(path, "r")))
 		return -1;
-	fgets(buf, sizeof(buf), f);
+	if (fgets(buf, sizeof(buf), f) == NULL)
+		return -1;
 	fclose(f);
 	if (parse_date(buf, buf2, sizeof(buf2)))
 		return strtoul(buf2, NULL, 10);
