@@ -12,6 +12,26 @@ GIT_URL = http://www.kernel.org/pub/software/scm/git/git-$(GIT_VER).tar.bz2
 #
 -include cgit.conf
 
+# Define NO_STRCASESTR if you don't have strcasestr.
+#
+# Define NEEDS_LIBICONV if linking with libc is not enough (eg. Darwin).
+#
+
+#-include config.mak
+
+#
+# Platform specific tweaks
+#
+
+uname_S := $(shell sh -c 'uname -s 2>/dev/null || echo not')
+uname_O := $(shell sh -c 'uname -o 2>/dev/null || echo not')
+uname_R := $(shell sh -c 'uname -r 2>/dev/null || echo not')
+
+ifeq ($(uname_O),Cygwin)
+	NO_STRCASESTR = YesPlease
+	NEEDS_LIBICONV = YesPlease
+endif
+
 #
 # Define a way to invoke make in subdirs quietly, shamelessly ripped
 # from git.git
@@ -95,6 +115,9 @@ CFLAGS += -DCGIT_CACHE_ROOT='"$(CACHE_ROOT)"'
 
 ifdef NO_ICONV
 	CFLAGS += -DNO_ICONV
+endif
+ifdef NO_STRCASESTR
+	CFLAGS += -DNO_STRCASESTR
 endif
 
 cgit: $(OBJECTS) libgit
