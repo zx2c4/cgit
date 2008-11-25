@@ -121,6 +121,7 @@ struct cgit_query {
 	char *url;
 	int   ofs;
 	int nohead;
+	char *sort;
 };
 
 struct cgit_config {

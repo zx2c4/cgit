@@ -154,6 +154,8 @@ static void querystring_cb(const char *name, const char *value)
 		ctx.qry.name = xstrdup(value);
 	} else if (!strcmp(name, "mimetype")) {
 		ctx.qry.mimetype = xstrdup(value);
+	} else if (!strcmp(name, "s")){
+		ctx.qry.sort = xstrdup(value);
 	}
 }
 
