@@ -38,19 +38,17 @@ void print_commit(struct commit *commit)
 	int cols = 2;
 
 	info = cgit_parse_commit(commit);
-	html("<tr><td>");
+	htmlf("<tr%s><td>",
+		ctx.qry.showmsg ? " class='logheader'" : "");
 	tmp = fmt("id=%s", sha1_to_hex(commit->object.sha1));
 	tmp = cgit_pageurl(ctx.repo->url, "commit", tmp);
 	html_link_open(tmp, NULL, NULL);
 	cgit_print_age(commit->date, TM_WEEK * 2, FMT_SHORTDATE);
 	html_link_close();
-	html("</td><td>");
-	if (ctx.qry.showmsg)
-		html("<u>");
+	htmlf("</td><td%s>",
+		ctx.qry.showmsg ? " class='logsubject'" : "");
 	cgit_commit_link(info->subject, NULL, NULL, ctx.qry.head,
 			 sha1_to_hex(commit->object.sha1));
-	if (ctx.qry.showmsg)
-		html("</u>");
 	html("</td><td>");
 	html_txt(info->author);
 	if (ctx.repo->enable_log_filecount) {
@@ -72,10 +70,10 @@ void print_commit(struct commit *commit)
 			if (ctx.repo->enable_log_linecount)
 				cols++;
 		}
-		htmlf("<tr class='nohover'><td></td><td colspan='%d'><div class='commit-msg'>",
+		htmlf("<tr class='nohover'><td/><td colspan='%d' class='logmsg'>",
 			cols);
 		html_txt(info->msg);
-		html("</div><br/></td></tr>\n");
+		html("</td></tr>\n");
 	}
 	cgit_free_commitinfo(info);
 }
