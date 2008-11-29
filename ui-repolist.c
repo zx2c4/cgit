@@ -78,13 +78,23 @@ int is_in_url(struct cgit_repo *repo)
 	return 0;
 }
 
+void print_sort_header(const char *title, const char *sort)
+{
+	htmlf("<th class='left'><a href='./?s=%s", sort);
+	if (ctx.qry.search) {
+		html("&q=");
+		html_url_arg(ctx.qry.search);
+	}
+	htmlf("'>%s</a></th>", title);
+}
+
 void print_header(int columns)
 {
-	html("<tr class='nohover'>"
-	     "<th class='left'>Name</th>"
-	     "<th class='left'>Description</th>"
-	     "<th class='left'>Owner</th>"
-	     "<th class='left'><a href=\"?s=1\">Idle</a></th>");
+	html("<tr class='nohover'>");
+	print_sort_header("Name", "name");
+	print_sort_header("Description", "desc");
+	print_sort_header("Owner", "owner");
+	print_sort_header("Idle", "idle");
 	if (ctx.cfg.enable_index_links)
 		html("<th class='left'>Links</th>");
 	html("</tr>\n");
@@ -101,7 +111,42 @@ void print_pager(int items, int pagelen, char *search)
 	html("</div>");
 }
 
-static int cgit_reposort_modtime(const void *a, const void *b)
+static int cmp(const char *s1, const char *s2)
+{
+	if (s1 && s2)
+		return strcmp(s1, s2);
+	if (s1 && !s2)
+		return 1;
+	if (s2 && !s1)
+		return -1;
+	return 0;
+}
+
+static int sort_name(const void *a, const void *b)
+{
+	const struct cgit_repo *r1 = a;
+	const struct cgit_repo *r2 = b;
+
+	return cmp(r1->name, r2->name);
+}
+
+static int sort_desc(const void *a, const void *b)
+{
+	const struct cgit_repo *r1 = a;
+	const struct cgit_repo *r2 = b;
+
+	return cmp(r1->desc, r2->desc);
+}
+
+static int sort_owner(const void *a, const void *b)
+{
+	const struct cgit_repo *r1 = a;
+	const struct cgit_repo *r2 = b;
+
+	return cmp(r1->owner, r2->owner);
+}
+
+static int sort_idle(const void *a, const void *b)
 {
 	const struct cgit_repo *r1 = a;
 	const struct cgit_repo *r2 = b;
@@ -113,10 +158,39 @@ static int cgit_reposort_modtime(const void *a, const void *b)
 	return t2 - t1;
 }
 
+struct sortcolumn {
+	const char *name;
+	int (*fn)(const void *a, const void *b);
+};
+
+struct sortcolumn sortcolumn[] = {
+	{"name", sort_name},
+	{"desc", sort_desc},
+	{"owner", sort_owner},
+	{"idle", sort_idle},
+	{NULL, NULL}
+};
+
+int sort_repolist(char *field)
+{
+	struct sortcolumn *column;
+
+	for (column = &sortcolumn[0]; column->name; column++) {
+		if (strcmp(field, column->name))
+			continue;
+		qsort(cgit_repolist.repos, cgit_repolist.count,
+			sizeof(struct cgit_repo), column->fn);
+		return 1;
+	}
+	return 0;
+}
+
+
 void cgit_print_repolist()
 {
 	int i, columns = 4, hits = 0, header = 0;
 	char *last_group = NULL;
+	int sorted = 0;
 
 	if (ctx.cfg.enable_index_links)
 		columns++;
@@ -130,7 +204,7 @@ void cgit_print_repolist()
 		html_include(ctx.cfg.index_header);
 
 	if(ctx.qry.sort)
-		qsort(cgit_repolist.repos,cgit_repolist.count,sizeof(struct cgit_repo),cgit_reposort_modtime);
+		sorted = sort_repolist(ctx.qry.sort);
 
 	html("<table summary='repository list' class='list nowrap'>");
 	for (i=0; i<cgit_repolist.count; i++) {
@@ -144,7 +218,7 @@ void cgit_print_repolist()
 			continue;
 		if (!header++)
 			print_header(columns);
-		if (!ctx.qry.sort &&
+		if (!sorted &&
 		    ((last_group == NULL && ctx.repo->group != NULL) ||
 		    (last_group != NULL && ctx.repo->group == NULL) ||
 		    (last_group != NULL && ctx.repo->group != NULL &&
@@ -156,7 +230,7 @@ void cgit_print_repolist()
 			last_group = ctx.repo->group;
 		}
 		htmlf("<tr><td class='%s'>",
-		      ctx.repo->group ? "sublevel-repo" : "toplevel-repo");
+		      !sorted && ctx.repo->group ? "sublevel-repo" : "toplevel-repo");
 		cgit_summary_link(ctx.repo->name, ctx.repo->name, NULL, NULL);
 		html("</td><td>");
 		html_link_open(cgit_repourl(ctx.repo->url), NULL, NULL);
