@@ -61,6 +61,7 @@ struct cgit_repo {
 	int snapshots;
 	int enable_log_filecount;
 	int enable_log_linecount;
+	time_t mtime;
 };
 
 struct cgit_repolist {

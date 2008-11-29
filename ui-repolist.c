@@ -32,19 +32,27 @@ static int get_repo_modtime(const struct cgit_repo *repo, time_t *mtime)
 {
 	char *path;
 	struct stat s;
+	struct cgit_repo *r = (struct cgit_repo *)repo;
 
+	if (repo->mtime != -1) {
+		*mtime = repo->mtime;
+		return 1;
+	}
 	path = fmt("%s/%s", repo->path, ctx.cfg.agefile);
 	if (stat(path, &s) == 0) {
 		*mtime = read_agefile(path);
+		r->mtime = *mtime;
 		return 1;
 	}
 
 	path = fmt("%s/refs/heads/%s", repo->path, repo->defbranch);
-	if (stat(path, &s) == 0) {
+	if (stat(path, &s) == 0)
 		*mtime = s.st_mtime;
-		return 1;
-	}
-	return 0;
+	else
+		*mtime = 0;
+
+	r->mtime = *mtime;
+	return (r->mtime != 0);
 }
 
 static void print_modtime(struct cgit_repo *repo)
