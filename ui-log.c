@@ -44,8 +44,12 @@ void print_commit(struct commit *commit)
 	cgit_print_age(commit->date, TM_WEEK * 2, FMT_SHORTDATE);
 	html_link_close();
 	html("</td><td>");
+	if (ctx.qry.showmsg)
+		html("<u>");
 	cgit_commit_link(info->subject, NULL, NULL, ctx.qry.head,
 			 sha1_to_hex(commit->object.sha1));
+	if (ctx.qry.showmsg)
+		html("</u>");
 	html("</td><td>");
 	html_txt(info->author);
 	if (ctx.repo->enable_log_filecount) {
@@ -61,6 +65,17 @@ void print_commit(struct commit *commit)
 		}
 	}
 	html("</td></tr>\n");
+	if (ctx.qry.showmsg) {
+		html("<tr class='nohover'><td></td><td><div class='commit-msg'>");
+		html_txt(info->msg);
+		html("</div><br/></td><td></td>");
+		if (ctx.repo->enable_log_filecount) {
+			html("<td></td>");
+			if (ctx.repo->enable_log_linecount)
+				html("<td></td>");
+		}
+		html("</tr>\n");
+	}
 	cgit_free_commitinfo(info);
 }
 
@@ -100,8 +115,15 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 		html("<table class='list nowrap'>");
 
 	html("<tr class='nohover'><th class='left'>Age</th>"
-	     "<th class='left'>Commit message</th>"
-	     "<th class='left'>Author</th>");
+	      "<th class='left'>Commit message");
+	if (pager) {
+		html(" (");
+		cgit_log_link("toggle", NULL, NULL, ctx.qry.head, ctx.qry.sha1,
+			      ctx.qry.path, ctx.qry.ofs, ctx.qry.grep,
+			      ctx.qry.search, ctx.qry.showmsg ? 0 : 1);
+		html(")");
+	}
+	html("</th><th class='left'>Author</th>");
 	if (ctx.repo->enable_log_filecount) {
 		html("<th class='left'>Files</th>");
 		columns++;
@@ -136,20 +158,20 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 			cgit_log_link("[prev]", NULL, NULL, ctx.qry.head,
 				      ctx.qry.sha1, ctx.qry.path,
 				      ofs - cnt, ctx.qry.grep,
-				      ctx.qry.search);
+				      ctx.qry.search, ctx.qry.showmsg);
 			html("&nbsp;");
 		}
 		if ((commit = get_revision(&rev)) != NULL) {
 			cgit_log_link("[next]", NULL, NULL, ctx.qry.head,
 				      ctx.qry.sha1, ctx.qry.path,
 				      ofs + cnt, ctx.qry.grep,
-				      ctx.qry.search);
+				      ctx.qry.search, ctx.qry.showmsg);
 		}
 		html("</div>");
 	} else if ((commit = get_revision(&rev)) != NULL) {
 		html("<tr class='nohover'><td colspan='3'>");
 		cgit_log_link("[...]", NULL, NULL, ctx.qry.head, NULL, NULL, 0,
-			      NULL, NULL);
+			      NULL, NULL, ctx.qry.showmsg);
 		html("</td></tr>\n");
 	}
 }

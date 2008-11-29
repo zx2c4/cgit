@@ -281,7 +281,8 @@ void cgit_plain_link(char *name, char *title, char *class, char *head,
 }
 
 void cgit_log_link(char *name, char *title, char *class, char *head,
-		   char *rev, char *path, int ofs, char *grep, char *pattern)
+		   char *rev, char *path, int ofs, char *grep, char *pattern,
+		   int showmsg)
 {
 	char *delim;
 
@@ -305,6 +306,11 @@ void cgit_log_link(char *name, char *title, char *class, char *head,
 		html(delim);
 		html("ofs=");
 		htmlf("%d", ofs);
+		delim = "&";
+	}
+	if (showmsg) {
+		html(delim);
+		html("showmsg=1");
 	}
 	html("'>");
 	html_txt(name);
@@ -568,6 +574,8 @@ void add_hidden_formfields(int incl_head, int incl_search, char *page)
 		html_hidden("id", ctx.qry.sha1);
 	if (ctx.qry.sha2)
 		html_hidden("id2", ctx.qry.sha2);
+	if (ctx.qry.showmsg)
+		html_hidden("showmsg", "1");
 
 	if (incl_search) {
 		if (ctx.qry.grep)
@@ -634,7 +642,7 @@ void cgit_print_pageheader(struct cgit_context *ctx)
 		cgit_refs_link("refs", NULL, hc(cmd, "refs"), ctx->qry.head,
 			       ctx->qry.sha1, NULL);
 		cgit_log_link("log", NULL, hc(cmd, "log"), ctx->qry.head,
-			      NULL, NULL, 0, NULL, NULL);
+			      NULL, NULL, 0, NULL, NULL, ctx->qry.showmsg);
 		cgit_tree_link("tree", NULL, hc(cmd, "tree"), ctx->qry.head,
 			       ctx->qry.sha1, NULL);
 		cgit_commit_link("commit", NULL, hc(cmd, "commit"),
