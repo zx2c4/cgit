@@ -28,21 +28,30 @@ time_t read_agefile(char *path)
 		return 0;
 }
 
-static void print_modtime(struct cgit_repo *repo)
+static int get_repo_modtime(const struct cgit_repo *repo, time_t *mtime)
 {
 	char *path;
 	struct stat s;
 
 	path = fmt("%s/%s", repo->path, ctx.cfg.agefile);
 	if (stat(path, &s) == 0) {
-		cgit_print_age(read_agefile(path), -1, NULL);
-		return;
+		*mtime = read_agefile(path);
+		return 1;
 	}
 
 	path = fmt("%s/refs/heads/%s", repo->path, repo->defbranch);
-	if (stat(path, &s) != 0)
-		return;
-	cgit_print_age(s.st_mtime, -1, NULL);
+	if (stat(path, &s) == 0) {
+		*mtime = s.st_mtime;
+		return 1;
+	}
+	return 0;
+}
+
+static void print_modtime(struct cgit_repo *repo)
+{
+	time_t t;
+	if (get_repo_modtime(repo, &t))
+		cgit_print_age(t, -1, NULL);
 }
 
 int is_match(struct cgit_repo *repo)
@@ -96,29 +105,12 @@ static int cgit_reposort_modtime(const void *a, const void *b)
 {
 	const struct cgit_repo *r1 = a;
 	const struct cgit_repo *r2 = b;
-	char *path;
-	struct stat s;
 	time_t t1, t2;
-	path = fmt("%s/%s", r1->path, ctx.cfg.agefile);
-	if (stat(path, &s) == 0) {
-		t1 = read_agefile(path);
-	} else {
-		path = fmt("%s/refs/heads/%s", r1->path, r1->defbranch);
-		if (stat(path, &s) != 0)
-			return 0;
-		t1 =s.st_mtime;
-	}
 
-	path = fmt("%s/%s", r2->path, ctx.cfg.agefile);
-	if (stat(path, &s) == 0) {
-		t2 = read_agefile(path);
-	} else {
-		path = fmt("%s/refs/heads/%s", r2->path, r2->defbranch);
-		if (stat(path, &s) != 0)
-			return 0;
-		t2 =s.st_mtime;
-	}
-	return t2-t1;
+	t1 = t2 = 0;
+	get_repo_modtime(r1, &t1);
+	get_repo_modtime(r2, &t2);
+	return t2 - t1;
 }
 
 void cgit_print_repolist()
