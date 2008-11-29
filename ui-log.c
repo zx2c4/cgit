@@ -35,6 +35,7 @@ void print_commit(struct commit *commit)
 {
 	struct commitinfo *info;
 	char *tmp;
+	int cols = 2;
 
 	info = cgit_parse_commit(commit);
 	html("<tr><td>");
@@ -66,15 +67,15 @@ void print_commit(struct commit *commit)
 	}
 	html("</td></tr>\n");
 	if (ctx.qry.showmsg) {
-		html("<tr class='nohover'><td></td><td><div class='commit-msg'>");
-		html_txt(info->msg);
-		html("</div><br/></td><td></td>");
 		if (ctx.repo->enable_log_filecount) {
-			html("<td></td>");
+			cols++;
 			if (ctx.repo->enable_log_linecount)
-				html("<td></td>");
+				cols++;
 		}
-		html("</tr>\n");
+		htmlf("<tr class='nohover'><td></td><td colspan='%d'><div class='commit-msg'>",
+			cols);
+		html_txt(info->msg);
+		html("</div><br/></td></tr>\n");
 	}
 	cgit_free_commitinfo(info);
 }
