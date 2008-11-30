@@ -162,10 +162,11 @@ static const char *get_ref_from_filename(const char *url, const char *filename,
 	return dwim_refname;
 }
 
-void cgit_print_snapshot(const char *head, const char *hex, const char *prefix,
+void cgit_print_snapshot(const char *head, const char *hex,
 			 const char *filename, int snapshots, int dwim)
 {
 	const struct cgit_snapshot_format* f;
+	char *prefix = NULL;
 
 	f = get_format(filename);
 	if (!f) {
@@ -178,11 +179,20 @@ void cgit_print_snapshot(const char *head, const char *hex, const char *prefix,
 		return;
 	}
 
-	if (!hex && dwim)
+	if (!hex && dwim) {
 		hex = get_ref_from_filename(ctx.repo->url, filename, f);
+		if (hex != NULL) {
+			prefix = xstrdup(filename);
+			prefix[strlen(filename) - strlen(f->suffix)] = '\0';
+		}
+	}
 
 	if (!hex)
 		hex = head;
 
+	if (!prefix)
+		prefix = xstrdup(cgit_repobasename(ctx.repo->url));
+
 	make_snapshot(f, hex, prefix, filename);
+	free(prefix);
 }
