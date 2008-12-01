@@ -114,52 +114,46 @@ static int make_snapshot(const struct cgit_snapshot_format *format,
 	return 0;
 }
 
-char *dwim_filename = NULL;
-const char *dwim_refname = NULL;
-
-static int ref_cb(const char *refname, const unsigned char *sha1, int flags,
-		  void *cb_data)
-{
-	const char *r = refname;
-	while (r && *r) {
-		fprintf(stderr, "  cmp %s with %s:", dwim_filename, r);
-		if (!strcmp(dwim_filename, r)) {
-			fprintf(stderr, "MATCH!\n");
-			dwim_refname = refname;
-			return 1;
-		}
-		fprintf(stderr, "no match\n");
-		if (isdigit(*r))
-			break;
-		r++;
-	}
-	return 0;
-}
-
-/* Try to guess the requested revision by combining repo name and tag name
- * and comparing this to the requested snapshot name. E.g. the requested
- * snapshot is "cgit-0.7.2.tar.gz" while repo name is "cgit" and tag name
- * is "v0.7.2". First, the reponame is stripped off, leaving "-0.7.2.tar.gz".
- * Next, any '-' and '_' characters are stripped, leaving "0.7.2.tar.gz".
- * Finally, the requested format suffix is removed and we end up with "0.7.2".
- * Then we test each tag against this dwimmed filename, and for each tag
- * we even try to remove any leading characters which are non-digits. I.e.
- * we first compare with "v0.7.2", then with "0.7.2" and we've got a match.
+/* Try to guess the requested revision from the requested snapshot name.
+ * First the format extension is stripped, e.g. "cgit-0.7.2.tar.gz" become
+ * "cgit-0.7.2". If this is a valid commit object name we've got a winner.
+ * Otherwise, if the snapshot name has a prefix matching the result from
+ * repo_basename(), we strip the basename and any following '-' and '_'
+ * characters ("cgit-0.7.2" -> "0.7.2") and check the resulting name once
+ * more. If this still isn't a valid commit object name, we check if pre-
+ * pending a 'v' to the remaining snapshot name ("0.7.2" -> "v0.7.2") gives
+ * us something valid.
  */
 static const char *get_ref_from_filename(const char *url, const char *filename,
-					 const struct cgit_snapshot_format *fmt)
+					 const struct cgit_snapshot_format *format)
 {
-	const char *reponame = cgit_repobasename(url);
-	fprintf(stderr, "reponame=%s, filename=%s\n", reponame, filename);
-	if (prefixcmp(filename, reponame))
-		return NULL;
-	filename += strlen(reponame);
-	while (filename && (*filename == '-' || *filename == '_'))
-		filename++;
-	dwim_filename = xstrdup(filename);
-	dwim_filename[strlen(filename) - strlen(fmt->suffix)] = '\0';
-	for_each_tag_ref(ref_cb, NULL);
-	return dwim_refname;
+	const char *reponame;
+	unsigned char sha1[20];
+	char *snapshot;
+
+	snapshot = xstrdup(filename);
+	snapshot[strlen(snapshot) - strlen(format->suffix)] = '\0';
+	fprintf(stderr, "snapshot=%s\n", snapshot);
+
+	if (get_sha1(snapshot, sha1) == 0)
+		return snapshot;
+
+	reponame = cgit_repobasename(url);
+	fprintf(stderr, "reponame=%s\n", reponame);
+	if (prefixcmp(snapshot, reponame) == 0) {
+		snapshot += strlen(reponame);
+		while (snapshot && (*snapshot == '-' || *snapshot == '_'))
+			snapshot++;
+	}
+
+	if (get_sha1(snapshot, sha1) == 0)
+		return snapshot;
+
+	snapshot = fmt("v%s", snapshot);
+	if (get_sha1(snapshot, sha1) == 0)
+		return snapshot;
+
+	return NULL;
 }
 
 void cgit_print_snapshot(const char *head, const char *hex,
