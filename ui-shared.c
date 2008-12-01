@@ -707,8 +707,7 @@ void cgit_print_snapshot_links(const char *repo, const char *head,
 			continue;
 		filename = fmt("%s-%s%s", cgit_repobasename(repo), hex,
 			       f->suffix);
-		cgit_snapshot_link(filename, NULL, NULL, (char *)head,
-				   (char *)hex, filename);
+		cgit_snapshot_link(filename, NULL, NULL, NULL, NULL, filename);
 		html("<br/>");
 	}
 }
