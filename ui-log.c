@@ -64,18 +64,31 @@ void print_commit(struct commit *commit)
 	cgit_free_commitinfo(info);
 }
 
+static const char *disambiguate_ref(const char *ref)
+{
+	unsigned char sha1[20];
+	const char *longref;
+
+	longref = fmt("refs/heads/%s", ref);
+	if (get_sha1(longref, sha1) == 0)
+		return longref;
+
+	return ref;
+}
 
 void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern,
 		    char *path, int pager)
 {
 	struct rev_info rev;
 	struct commit *commit;
-	const char *argv[] = {NULL, tip, NULL, NULL, NULL};
+	const char *argv[] = {NULL, NULL, NULL, NULL, NULL};
 	int argc = 2;
 	int i, columns = 3;
 
 	if (!tip)
-		argv[1] = ctx.qry.head;
+		tip = ctx.qry.head;
+
+	argv[1] = disambiguate_ref(tip);
 
 	if (grep && pattern && (!strcmp(grep, "grep") ||
 				!strcmp(grep, "author") ||
