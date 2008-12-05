@@ -7,11 +7,6 @@ SHA1_HEADER = <openssl/sha.h>
 GIT_VER = 1.6.0.3
 GIT_URL = http://www.kernel.org/pub/software/scm/git/git-$(GIT_VER).tar.bz2
 
-#
-# Let the user override the above settings.
-#
--include cgit.conf
-
 # Define NO_STRCASESTR if you don't have strcasestr.
 #
 # Define NEEDS_LIBICONV if linking with libc is not enough (eg. Darwin).
@@ -31,6 +26,11 @@ ifeq ($(uname_O),Cygwin)
 	NO_STRCASESTR = YesPlease
 	NEEDS_LIBICONV = YesPlease
 endif
+
+#
+# Let the user override the above settings.
+#
+-include cgit.conf
 
 #
 # Define a way to invoke make in subdirs quietly, shamelessly ripped
