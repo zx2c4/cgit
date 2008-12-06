@@ -113,7 +113,7 @@ run_test()
 	then
 		printf " %2d) %-60s [ok]\n" $test_count "$desc"
 	else
-		((test_failed++))
+		test_failed=$(expr $test_failed + 1)
 		printf " %2d) %-60s [failed]\n" $test_count "$desc"
 	fi
 }
