@@ -60,6 +60,7 @@ struct cgit_repo *cgit_add_repo(const char *url)
 	ret->enable_log_linecount = ctx.cfg.enable_log_linecount;
 	ret->module_link = ctx.cfg.module_link;
 	ret->readme = NULL;
+	ret->mtime = -1;
 	return ret;
 }
 
