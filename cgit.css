@@ -456,3 +456,80 @@ div.footer {
 	font-size: 80%;
 	color: #ccc;
 }
+table.stats {
+	border: solid 1px black;
+	border-collapse: collapse;
+}
+
+table.stats th {
+	text-align: left;
+	padding: 1px 0.5em;
+	background-color: #eee;
+	border: solid 1px black;
+}
+
+table.stats td {
+	text-align: right;
+	padding: 1px 0.5em;
+	border: solid 1px black;
+}
+
+table.stats td.total {
+	font-weight: bold;
+	text-align: left;
+}
+
+table.stats td.sum {
+	color: #c00;
+	font-weight: bold;
+/*	background-color: #eee; */
+}
+
+table.stats td.left {
+	text-align: left;
+}
+
+table.vgraph {
+	border-collapse: separate;
+	border: solid 1px black;
+	height: 200px;
+}
+
+table.vgraph th {
+	background-color: #eee;
+	font-weight: bold;
+	border: solid 1px white;
+	padding: 1px 0.5em;
+}
+
+table.vgraph td {
+	vertical-align: bottom;
+	padding: 0px 10px;
+}
+
+table.vgraph div.bar {
+	background-color: #eee;
+}
+
+table.hgraph {
+	border: solid 1px black;
+	width: 800px;
+}
+
+table.hgraph th {
+	background-color: #eee;
+	font-weight: bold;
+	border: solid 1px black;
+	padding: 1px 0.5em;
+}
+
+table.hgraph td {
+	vertical-align: center;
+	padding: 2px 2px;
+}
+
+table.hgraph div.bar {
+	background-color: #eee;
+	height: 1em;
+}
+

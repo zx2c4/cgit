@@ -61,6 +61,7 @@ struct cgit_repo {
 	int snapshots;
 	int enable_log_filecount;
 	int enable_log_linecount;
+	int enable_stats;
 };
 
 struct cgit_repolist {
@@ -119,6 +120,7 @@ struct cgit_query {
 	char *name;
 	char *mimetype;
 	char *url;
+	char *period;
 	int   ofs;
 	int nohead;
 };
@@ -151,6 +153,7 @@ struct cgit_config {
 	int enable_index_links;
 	int enable_log_filecount;
 	int enable_log_linecount;
+	int enable_stats;
 	int local_time;
 	int max_repo_count;
 	int max_commit_count;

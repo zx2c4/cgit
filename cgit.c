@@ -54,6 +54,8 @@ void config_cb(const char *name, const char *value)
 		ctx.cfg.enable_log_filecount = atoi(value);
 	else if (!strcmp(name, "enable-log-linecount"))
 		ctx.cfg.enable_log_linecount = atoi(value);
+	else if (!strcmp(name, "enable-stats"))
+		ctx.cfg.enable_stats = atoi(value);
 	else if (!strcmp(name, "cache-size"))
 		ctx.cfg.cache_size = atoi(value);
 	else if (!strcmp(name, "cache-root"))
@@ -112,6 +114,8 @@ void config_cb(const char *name, const char *value)
 		ctx.repo->enable_log_filecount = ctx.cfg.enable_log_filecount * atoi(value);
 	else if (ctx.repo && !strcmp(name, "repo.enable-log-linecount"))
 		ctx.repo->enable_log_linecount = ctx.cfg.enable_log_linecount * atoi(value);
+	else if (ctx.repo && !strcmp(name, "repo.enable-stats"))
+		ctx.repo->enable_stats = ctx.cfg.enable_stats && atoi(value);
 	else if (ctx.repo && !strcmp(name, "repo.module-link"))
 		ctx.repo->module_link= xstrdup(value);
 	else if (ctx.repo && !strcmp(name, "repo.readme") && value != NULL) {
@@ -154,6 +158,8 @@ static void querystring_cb(const char *name, const char *value)
 		ctx.qry.name = xstrdup(value);
 	} else if (!strcmp(name, "mimetype")) {
 		ctx.qry.mimetype = xstrdup(value);
+	} else if (!strcmp(name, "period")) {
+		ctx.qry.period = xstrdup(value);
 	}
 }
 
