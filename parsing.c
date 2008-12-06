@@ -96,6 +96,9 @@ char *parse_user(char *t, char **name, char **email, unsigned long *date)
 	return p;
 }
 
+#ifdef NO_ICONV
+#define reencode(a, b, c)
+#else
 const char *reencode(char **txt, const char *src_enc, const char *dst_enc)
 {
 	char *tmp;
@@ -110,6 +113,7 @@ const char *reencode(char **txt, const char *src_enc, const char *dst_enc)
 	}
 	return *txt;
 }
+#endif
 
 struct commitinfo *cgit_parse_commit(struct commit *commit)
 {
