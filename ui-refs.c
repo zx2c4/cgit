@@ -58,7 +58,8 @@ static int print_branch(struct refinfo *ref)
 	if (!info)
 		return 1;
 	html("<tr><td>");
-	cgit_log_link(name, NULL, NULL, name, NULL, NULL, 0, NULL, NULL);
+	cgit_log_link(name, NULL, NULL, name, NULL, NULL, 0, NULL, NULL,
+		      ctx.qry.showmsg);
 	html("</td><td>");
 
 	if (ref->object->type == OBJ_COMMIT) {

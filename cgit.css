@@ -120,6 +120,10 @@ table.list tr {
 	background: white;
 }
 
+table.list tr.logheader {
+	background: #eee;
+}
+
 table.list tr:hover {
 	background: #eee;
 }
@@ -141,6 +145,17 @@ table.list th {
 table.list td {
 	border: none;
 	padding: 0.1em 0.5em 0.1em 0.5em;
+}
+
+table.list td.logsubject {
+	font-family: monospace;
+	font-weight: bold;
+}
+
+table.list td.logmsg {
+	font-family: monospace;
+	white-space: pre;
+	padding: 1em 0em 2em 0em;
 }
 
 table.list td a {

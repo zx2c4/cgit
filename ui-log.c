@@ -35,15 +35,18 @@ void print_commit(struct commit *commit)
 {
 	struct commitinfo *info;
 	char *tmp;
+	int cols = 2;
 
 	info = cgit_parse_commit(commit);
-	html("<tr><td>");
+	htmlf("<tr%s><td>",
+		ctx.qry.showmsg ? " class='logheader'" : "");
 	tmp = fmt("id=%s", sha1_to_hex(commit->object.sha1));
 	tmp = cgit_pageurl(ctx.repo->url, "commit", tmp);
 	html_link_open(tmp, NULL, NULL);
 	cgit_print_age(commit->date, TM_WEEK * 2, FMT_SHORTDATE);
 	html_link_close();
-	html("</td><td>");
+	htmlf("</td><td%s>",
+		ctx.qry.showmsg ? " class='logsubject'" : "");
 	cgit_commit_link(info->subject, NULL, NULL, ctx.qry.head,
 			 sha1_to_hex(commit->object.sha1));
 	html("</td><td>");
@@ -61,6 +64,17 @@ void print_commit(struct commit *commit)
 		}
 	}
 	html("</td></tr>\n");
+	if (ctx.qry.showmsg) {
+		if (ctx.repo->enable_log_filecount) {
+			cols++;
+			if (ctx.repo->enable_log_linecount)
+				cols++;
+		}
+		htmlf("<tr class='nohover'><td/><td colspan='%d' class='logmsg'>",
+			cols);
+		html_txt(info->msg);
+		html("</td></tr>\n");
+	}
 	cgit_free_commitinfo(info);
 }
 
@@ -113,8 +127,15 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 		html("<table class='list nowrap'>");
 
 	html("<tr class='nohover'><th class='left'>Age</th>"
-	     "<th class='left'>Commit message</th>"
-	     "<th class='left'>Author</th>");
+	      "<th class='left'>Commit message");
+	if (pager) {
+		html(" (");
+		cgit_log_link("toggle", NULL, NULL, ctx.qry.head, ctx.qry.sha1,
+			      ctx.qry.path, ctx.qry.ofs, ctx.qry.grep,
+			      ctx.qry.search, ctx.qry.showmsg ? 0 : 1);
+		html(")");
+	}
+	html("</th><th class='left'>Author</th>");
 	if (ctx.repo->enable_log_filecount) {
 		html("<th class='left'>Files</th>");
 		columns++;
@@ -149,20 +170,20 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 			cgit_log_link("[prev]", NULL, NULL, ctx.qry.head,
 				      ctx.qry.sha1, ctx.qry.path,
 				      ofs - cnt, ctx.qry.grep,
-				      ctx.qry.search);
+				      ctx.qry.search, ctx.qry.showmsg);
 			html("&nbsp;");
 		}
 		if ((commit = get_revision(&rev)) != NULL) {
 			cgit_log_link("[next]", NULL, NULL, ctx.qry.head,
 				      ctx.qry.sha1, ctx.qry.path,
 				      ofs + cnt, ctx.qry.grep,
-				      ctx.qry.search);
+				      ctx.qry.search, ctx.qry.showmsg);
 		}
 		html("</div>");
 	} else if ((commit = get_revision(&rev)) != NULL) {
 		html("<tr class='nohover'><td colspan='3'>");
 		cgit_log_link("[...]", NULL, NULL, ctx.qry.head, NULL, NULL, 0,
-			      NULL, NULL);
+			      NULL, NULL, ctx.qry.showmsg);
 		html("</td></tr>\n");
 	}
 }

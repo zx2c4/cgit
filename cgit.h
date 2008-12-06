@@ -123,6 +123,7 @@ struct cgit_query {
 	int   ofs;
 	int nohead;
 	char *sort;
+	int showmsg;
 };
 
 struct cgit_config {
