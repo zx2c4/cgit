@@ -78,12 +78,37 @@ static int print_branch(struct refinfo *ref)
 static void print_tag_header()
 {
 	html("<tr class='nohover'><th class='left'>Tag</th>"
-	     "<th class='left'>Reference</th>"
+	     "<th class='left'>Download</th>"
 	     "<th class='left'>Author</th>"
 	     "<th class='left' colspan='2'>Age</th></tr>\n");
 	header = 1;
 }
 
+static void print_tag_downloads(const struct cgit_repo *repo, const char *ref)
+{
+	const struct cgit_snapshot_format* f;
+    	char *filename;
+	const char *basename;
+
+	if (!ref || strlen(ref) < 2)
+		return;
+
+	basename = cgit_repobasename(repo->url);
+	if (prefixcmp(ref, basename) != 0) {
+		if ((ref[0] == 'v' || ref[0] == 'V') && isdigit(ref[1]))
+			ref++;
+		if (isdigit(ref[0]))
+			ref = xstrdup(fmt("%s-%s", basename, ref));
+	}
+
+	for (f = cgit_snapshot_formats; f->suffix; f++) {
+		if (!(repo->snapshots & f->bit))
+			continue;
+		filename = fmt("%s%s", ref, f->suffix);
+		cgit_snapshot_link(filename, NULL, NULL, NULL, NULL, filename);
+		html("&nbsp;&nbsp;");
+	}
+}
 static int print_tag(struct refinfo *ref)
 {
 	struct tag *tag;
@@ -98,7 +123,10 @@ static int print_tag(struct refinfo *ref)
 		html("<tr><td>");
 		cgit_tag_link(name, NULL, NULL, ctx.qry.head, name);
 		html("</td><td>");
-		cgit_object_link(tag->tagged);
+		if (ctx.repo->snapshots && (tag->tagged->type == OBJ_COMMIT))
+			print_tag_downloads(ctx.repo, name);
+		else
+			cgit_object_link(tag->tagged);
 		html("</td><td>");
 		if (info->tagger)
 			html(info->tagger);
@@ -112,7 +140,10 @@ static int print_tag(struct refinfo *ref)
 		html("<tr><td>");
 		html_txt(name);
 		html("</td><td>");
-		cgit_object_link(ref->object);
+		if (ctx.repo->snapshots && (tag->tagged->type == OBJ_COMMIT))
+			print_tag_downloads(ctx.repo, name);
+		else
+			cgit_object_link(ref->object);
 		html("</td></tr>\n");
 	}
 	return 0;

@@ -2,7 +2,6 @@
 #define UI_SNAPSHOT_H
 
 extern void cgit_print_snapshot(const char *head, const char *hex,
-				const char *prefix, const char *filename,
-				int snapshot, int dwim);
+				const char *filename, int snapshot, int dwim);
 
 #endif /* UI_SNAPSHOT_H */

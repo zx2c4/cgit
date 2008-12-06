@@ -365,11 +365,14 @@ void cgit_patch_link(char *name, char *title, char *class, char *head,
 
 void cgit_object_link(struct object *obj)
 {
-	char *page, *rev, *name;
+	char *page, *shortrev, *fullrev, *name;
 
+	fullrev = sha1_to_hex(obj->sha1);
+	shortrev = xstrdup(fullrev);
+	shortrev[10] = '\0';
 	if (obj->type == OBJ_COMMIT) {
-                cgit_commit_link(fmt("commit %s", sha1_to_hex(obj->sha1)), NULL, NULL,
-				 ctx.qry.head, sha1_to_hex(obj->sha1));
+                cgit_commit_link(fmt("commit %s...", shortrev), NULL, NULL,
+				 ctx.qry.head, fullrev);
 		return;
 	} else if (obj->type == OBJ_TREE)
 		page = "tree";
@@ -377,9 +380,8 @@ void cgit_object_link(struct object *obj)
 		page = "tag";
 	else
 		page = "blob";
-	rev = sha1_to_hex(obj->sha1);
-	name = fmt("%s %s", typename(obj->type), rev);
-	reporevlink(page, name, NULL, NULL, ctx.qry.head, rev, NULL);
+	name = fmt("%s %s...", typename(obj->type), shortrev);
+	reporevlink(page, name, NULL, NULL, ctx.qry.head, fullrev, NULL);
 }
 
 void cgit_print_date(time_t secs, char *format, int local_time)
@@ -707,8 +709,7 @@ void cgit_print_snapshot_links(const char *repo, const char *head,
 			continue;
 		filename = fmt("%s-%s%s", cgit_repobasename(repo), hex,
 			       f->suffix);
-		cgit_snapshot_link(filename, NULL, NULL, (char *)head,
-				   (char *)hex, filename);
+		cgit_snapshot_link(filename, NULL, NULL, NULL, NULL, filename);
 		html("<br/>");
 	}
 }
