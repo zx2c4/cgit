@@ -44,5 +44,6 @@ extern void cgit_print_pageheader(struct cgit_context *ctx);
 extern void cgit_print_filemode(unsigned short mode);
 extern void cgit_print_snapshot_links(const char *repo, const char *head,
 				      const char *hex, int snapshots);
-
+extern void cgit_add_hidden_formfields(int incl_head, int incl_search,
+				       char *page);
 #endif /* UI_SHARED_H */

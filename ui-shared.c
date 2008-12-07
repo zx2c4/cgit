@@ -555,7 +555,7 @@ int print_archive_ref(const char *refname, const unsigned char *sha1,
 	return 0;
 }
 
-void add_hidden_formfields(int incl_head, int incl_search, char *page)
+void cgit_add_hidden_formfields(int incl_head, int incl_search, char *page)
 {
 	char *url;
 
@@ -610,7 +610,7 @@ void cgit_print_pageheader(struct cgit_context *ctx)
 		cgit_summary_link(ctx->repo->name, ctx->repo->name, NULL, NULL);
 		html("</td><td class='form'>");
 		html("<form method='get' action=''>\n");
-		add_hidden_formfields(0, 1, ctx->qry.page);
+		cgit_add_hidden_formfields(0, 1, ctx->qry.page);
 		html("<select name='h' onchange='this.form.submit();'>\n");
 		for_each_branch_ref(print_branch_option, ctx->qry.head);
 		html("</select> ");
@@ -660,7 +660,7 @@ void cgit_print_pageheader(struct cgit_context *ctx)
 			html_url_path(cgit_fileurl(ctx->qry.repo, "log",
 						   ctx->qry.path, NULL));
 		html("'>\n");
-		add_hidden_formfields(1, 0, "log");
+		cgit_add_hidden_formfields(1, 0, "log");
 		html("<select name='qt'>\n");
 		html_option("grep", "log msg", ctx->qry.grep);
 		html_option("author", "author", ctx->qry.grep);
