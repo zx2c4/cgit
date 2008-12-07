@@ -195,7 +195,8 @@ struct string_list collect_stats(struct cgit_context *ctx,
 	struct string_list authors;
 	struct rev_info rev;
 	struct commit *commit;
-	const char *argv[] = {NULL, ctx->qry.head, NULL, NULL};
+	const char *argv[] = {NULL, ctx->qry.head, NULL, NULL, NULL, NULL};
+	int argc = 3;
 	time_t now;
 	long i;
 	struct tm *tm;
@@ -208,13 +209,18 @@ struct string_list collect_stats(struct cgit_context *ctx,
 		period->dec(tm);
 	strftime(tmp, sizeof(tmp), "%Y-%m-%d", tm);
 	argv[2] = xstrdup(fmt("--since=%s", tmp));
+	if (ctx->qry.path) {
+		argv[3] = "--";
+		argv[4] = ctx->qry.path;
+		argc += 2;
+	}
 	init_revisions(&rev, NULL);
 	rev.abbrev = DEFAULT_ABBREV;
 	rev.commit_format = CMIT_FMT_DEFAULT;
 	rev.no_merges = 1;
 	rev.verbose_header = 1;
 	rev.show_root_diff = 0;
-	setup_revisions(3, argv, &rev, NULL);
+	setup_revisions(argc, argv, &rev, NULL);
 	prepare_revision_walk(&rev);
 	memset(&authors, 0, sizeof(authors));
 	while ((commit = get_revision(&rev)) != NULL) {
@@ -351,7 +357,13 @@ void cgit_show_stats(struct cgit_context *ctx)
 	top = ctx->qry.ofs;
 	if (!top)
 		top = 10;
-	htmlf("<h2>Commits per author per %s</h2>", period->name);
+	htmlf("<h2>Commits per author per %s", period->name);
+	if (ctx->qry.path) {
+		html(" (path '");
+		html_txt(ctx->qry.path);
+		html("')");
+	}
+	html("</h2>");
 
 	html("<form method='get' action='.' style='float: right; text-align: right;'>");
 	if (strcmp(ctx->qry.head, ctx->repo->defbranch))
