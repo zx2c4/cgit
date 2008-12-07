@@ -382,9 +382,8 @@ void cgit_show_stats(struct cgit_context *ctx)
 	}
 	html("</h2>");
 
-	html("<form method='get' action='.' style='float: right; text-align: right;'>");
-	if (strcmp(ctx->qry.head, ctx->repo->defbranch))
-		htmlf("<input type='hidden' name='h' value='%s'/>", ctx->qry.head);
+	html("<form method='get' action='' style='float: right; text-align: right;'>");
+	cgit_add_hidden_formfields(1, 0, "stats");
 	if (ctx->repo->max_stats > 1) {
 		html("Period: ");
 		html("<select name='period' onchange='this.form.submit();'>");
