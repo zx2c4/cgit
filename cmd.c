@@ -112,10 +112,7 @@ static void snapshot_fn(struct cgit_context *ctx)
 
 static void stats_fn(struct cgit_context *ctx)
 {
-	if (ctx->repo->enable_stats)
-		cgit_show_stats(ctx);
-	else
-		cgit_print_error("Stats disabled for this repo");
+	cgit_show_stats(ctx);
 }
 
 static void summary_fn(struct cgit_context *ctx)

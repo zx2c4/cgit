@@ -1,25 +1,11 @@
-#include "cgit.h"
-#include "html.h"
 #include <string-list.h>
 
+#include "cgit.h"
+#include "html.h"
+#include "ui-shared.h"
+#include "ui-stats.h"
+
 #define MONTHS 6
-
-struct Period {
-	const char code;
-	const char *name;
-	int max_periods;
-	int count;
-
-	/* Convert a tm value to the first day in the period */
-	void (*trunc)(struct tm *tm);
-
-	/* Update tm value to start of next/previous period */
-	void (*dec)(struct tm *tm);
-	void (*inc)(struct tm *tm);
-
-	/* Pretty-print a tm value */
-	char *(*pretty)(struct tm *tm);
-};
 
 struct authorstat {
 	long total;
@@ -137,15 +123,39 @@ static char *pretty_year(struct tm *tm)
 	return fmt("%d", tm->tm_year + 1900);
 }
 
-struct Period periods[] = {
+struct cgit_period periods[] = {
 	{'w', "week", 12, 4, trunc_week, dec_week, inc_week, pretty_week},
 	{'m', "month", 12, 4, trunc_month, dec_month, inc_month, pretty_month},
 	{'q', "quarter", 12, 4, trunc_quarter, dec_quarter, inc_quarter, pretty_quarter},
 	{'y', "year", 12, 4, trunc_year, dec_year, inc_year, pretty_year},
 };
 
+/* Given a period code or name, return a period index (1, 2, 3 or 4)
+ * and update the period pointer to the correcsponding struct.
+ * If no matching code is found, return 0.
+ */
+int cgit_find_stats_period(const char *expr, struct cgit_period **period)
+{
+	int i;
+	char code = '\0';
+
+	if (!expr)
+		return 0;
+
+	if (strlen(expr) == 1)
+		code = expr[0];
+
+	for (i = 0; i < sizeof(periods) / sizeof(periods[0]); i++)
+		if (periods[i].code == code || !strcmp(periods[i].name, expr)) {
+			if (period)
+				*period = &periods[i];
+			return i+1;
+		}
+	return 0;
+}
+
 static void add_commit(struct string_list *authors, struct commit *commit,
-	struct Period *period)
+	struct cgit_period *period)
 {
 	struct commitinfo *info;
 	struct string_list_item *author, *item;
@@ -190,7 +200,7 @@ static int cmp_total_commits(const void *a1, const void *a2)
  * timeperiod into a nested string_list collection.
  */
 struct string_list collect_stats(struct cgit_context *ctx,
-	struct Period *period)
+	struct cgit_period *period)
 {
 	struct string_list authors;
 	struct rev_info rev;
@@ -233,7 +243,7 @@ struct string_list collect_stats(struct cgit_context *ctx,
 
 void print_combined_authorrow(struct string_list *authors, int from, int to,
 	const char *name, const char *leftclass, const char *centerclass,
-	const char *rightclass, struct Period *period)
+	const char *rightclass, struct cgit_period *period)
 {
 	struct string_list_item *author;
 	struct authorstat *authorstat;
@@ -271,7 +281,8 @@ void print_combined_authorrow(struct string_list *authors, int from, int to,
 	htmlf("<td class='%s'>%d</td></tr>", rightclass, total);
 }
 
-void print_authors(struct string_list *authors, int top, struct Period *period)
+void print_authors(struct string_list *authors, int top,
+		   struct cgit_period *period)
 {
 	struct string_list_item *author;
 	struct authorstat *authorstat;
@@ -339,16 +350,22 @@ void print_authors(struct string_list *authors, int top, struct Period *period)
 void cgit_show_stats(struct cgit_context *ctx)
 {
 	struct string_list authors;
-	struct Period *period;
+	struct cgit_period *period;
 	int top, i;
+	const char *code = "w";
 
-	period = &periods[0];
-	if (ctx->qry.period) {
-		for (i = 0; i < sizeof(periods) / sizeof(periods[0]); i++)
-			if (periods[i].code == ctx->qry.period[0]) {
-				period = &periods[i];
-				break;
-			}
+	if (ctx->qry.period)
+		code = ctx->qry.period;
+
+	i = cgit_find_stats_period(code, &period);
+	if (!i) {
+		cgit_print_error(fmt("Unknown statistics type: %c", code));
+		return;
+	}
+	if (i > ctx->repo->max_stats) {
+		cgit_print_error(fmt("Statistics type disabled: %s",
+				     period->name));
+		return;
 	}
 	authors = collect_stats(ctx, period);
 	qsort(authors.items, authors.nr, sizeof(struct string_list_item),
@@ -368,14 +385,16 @@ void cgit_show_stats(struct cgit_context *ctx)
 	html("<form method='get' action='.' style='float: right; text-align: right;'>");
 	if (strcmp(ctx->qry.head, ctx->repo->defbranch))
 		htmlf("<input type='hidden' name='h' value='%s'/>", ctx->qry.head);
-	html("Period: ");
-	html("<select name='period' onchange='this.form.submit();'>");
-	for (i = 0; i < sizeof(periods) / sizeof(periods[0]); i++)
-		htmlf("<option value='%c'%s>%s</option>",
-			periods[i].code,
-			period == &periods[i] ? " selected" : "",
-			periods[i].name);
-	html("</select><br/><br/>");
+	if (ctx->repo->max_stats > 1) {
+		html("Period: ");
+		html("<select name='period' onchange='this.form.submit();'>");
+		for (i = 0; i < ctx->repo->max_stats; i++)
+			htmlf("<option value='%c'%s>%s</option>",
+				periods[i].code,
+				period == &periods[i] ? " selected" : "",
+				periods[i].name);
+		html("</select><br/><br/>");
+	}
 	html("Authors: ");
 	html("");
 	html("<select name='ofs' onchange='this.form.submit();'>");

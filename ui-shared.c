@@ -641,7 +641,7 @@ void cgit_print_pageheader(struct cgit_context *ctx)
 				 ctx->qry.head, ctx->qry.sha1);
 		cgit_diff_link("diff", NULL, hc(cmd, "diff"), ctx->qry.head,
 			       ctx->qry.sha1, ctx->qry.sha2, NULL);
-		if (ctx->repo->enable_stats)
+		if (ctx->repo->max_stats)
 			reporevlink("stats", "stats", NULL, hc(cmd, "stats"),
 				    ctx->qry.head, NULL, NULL);
 		if (ctx->repo->readme)
