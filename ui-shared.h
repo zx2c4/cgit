@@ -30,6 +30,8 @@ extern void cgit_snapshot_link(char *name, char *title, char *class,
 			       char *head, char *rev, char *archivename);
 extern void cgit_diff_link(char *name, char *title, char *class, char *head,
 			   char *new_rev, char *old_rev, char *path);
+extern void cgit_stats_link(char *name, char *title, char *class, char *head,
+			    char *path);
 extern void cgit_object_link(struct object *obj);
 
 extern void cgit_print_error(char *msg);

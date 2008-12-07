@@ -363,6 +363,12 @@ void cgit_patch_link(char *name, char *title, char *class, char *head,
 	reporevlink("patch", name, title, class, head, rev, NULL);
 }
 
+void cgit_stats_link(char *name, char *title, char *class, char *head,
+		     char *path)
+{
+	reporevlink("stats", name, title, class, head, NULL, path);
+}
+
 void cgit_object_link(struct object *obj)
 {
 	char *page, *rev, *name;
@@ -642,8 +648,8 @@ void cgit_print_pageheader(struct cgit_context *ctx)
 		cgit_diff_link("diff", NULL, hc(cmd, "diff"), ctx->qry.head,
 			       ctx->qry.sha1, ctx->qry.sha2, NULL);
 		if (ctx->repo->max_stats)
-			reporevlink("stats", "stats", NULL, hc(cmd, "stats"),
-				    ctx->qry.head, NULL, NULL);
+			cgit_stats_link("stats", NULL, hc(cmd, "stats"),
+					ctx->qry.head, NULL);
 		if (ctx->repo->readme)
 			reporevlink("about", "about", NULL,
 				    hc(cmd, "about"), ctx->qry.head, NULL,
