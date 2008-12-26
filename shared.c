@@ -267,10 +267,12 @@ int cgit_diff_files(const unsigned char *old_sha1,
 	if (!load_mmfile(&file1, old_sha1) || !load_mmfile(&file2, new_sha1))
 		return 1;
 
+	memset(&diff_params, 0, sizeof(diff_params));
+	memset(&emit_params, 0, sizeof(emit_params));
+	memset(&emit_cb, 0, sizeof(emit_cb));
 	diff_params.flags = XDF_NEED_MINIMAL;
 	emit_params.ctxlen = 3;
 	emit_params.flags = XDL_EMIT_FUNCNAMES;
-	emit_params.find_func = NULL;
 	emit_cb.outf = filediff_cb;
 	emit_cb.priv = fn;
 	xdl_diff(&file1, &file2, &diff_params, &emit_params, &emit_cb);
