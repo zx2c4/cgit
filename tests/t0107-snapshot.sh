@@ -10,7 +10,7 @@ run_test 'get foo/snapshot/test.tar.gz' '
 
 run_test 'check html headers' '
 	head -n 1 trash/tmp |
-	     grep -e "Content-Type: application/x-tar" &&
+	     grep -e "Content-Type: application/x-gzip" &&
 
 	head -n 2 trash/tmp |
 	     grep -e "Content-Disposition: inline; filename=.test.tar.gz."

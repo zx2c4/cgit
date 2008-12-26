@@ -58,8 +58,8 @@ static int write_tar_bzip2_archive(struct archiver_args *args)
 
 const struct cgit_snapshot_format cgit_snapshot_formats[] = {
 	{ ".zip", "application/x-zip", write_zip_archive, 0x1 },
-	{ ".tar.gz", "application/x-tar", write_tar_gzip_archive, 0x2 },
-	{ ".tar.bz2", "application/x-tar", write_tar_bzip2_archive, 0x4 },
+	{ ".tar.gz", "application/x-gzip", write_tar_gzip_archive, 0x2 },
+	{ ".tar.bz2", "application/x-bzip2", write_tar_bzip2_archive, 0x4 },
 	{ ".tar", "application/x-tar", write_tar_archive, 0x8 },
 	{}
 };
