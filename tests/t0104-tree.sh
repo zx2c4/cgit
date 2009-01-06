@@ -15,7 +15,7 @@ run_test 'find line 1' '
 '
 
 run_test 'no line 2' '
-	grep -e "<a id=.n2. name=.n2. href=.#n2.>2</a>" trash/tmp
+	! grep -e "<a id=.n2. name=.n2. href=.#n2.>2</a>" trash/tmp
 '
 
 run_test 'generate foo+bar/tree' 'cgit_url "foo%2bbar/tree" >trash/tmp'

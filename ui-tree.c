@@ -54,8 +54,10 @@ static void print_object(const unsigned char *sha1, char *path)
 		}
 		idx++;
 	}
-	htmlf(linefmt, ++lineno);
-	html_txt(buf + start);
+	if (start < idx) {
+		htmlf(linefmt, ++lineno);
+		html_txt(buf + start);
+	}
 	html("</td></tr>\n");
 	html("</table>\n");
 }
