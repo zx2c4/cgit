@@ -18,8 +18,8 @@ static void print_object(const unsigned char *sha1, char *path)
 {
 	enum object_type type;
 	char *buf;
-	unsigned long size, lineno, start, idx;
-	const char *linefmt = "<tr><td class='no'><a id='n%1$d' name='n%1$d' href='#n%1$d'>%1$d</a></td><td class='txt'>";
+	unsigned long size, lineno, idx;
+	const char *numberfmt = "<a class='no' id='n%1$d' name='n%1$d' href='#n%1$d'>%1$d</a>\n";
 
 	type = sha1_object_info(sha1, &size);
 	if (type == OBJ_BAD) {
@@ -38,27 +38,28 @@ static void print_object(const unsigned char *sha1, char *path)
 	html(" (");
 	cgit_plain_link("plain", NULL, NULL, ctx.qry.head,
 		        curr_rev, path);
-	htmlf(")<br/>blob: %s", sha1_to_hex(sha1));
+	htmlf(")<br/>blob: %s\n", sha1_to_hex(sha1));
 
 	html("<table summary='blob content' class='blob'>\n");
+	html("<tr>\n");
+
+	html("<td class='linenumbers'><pre>");
 	idx = 0;
-	start = 0;
 	lineno = 0;
-	while(idx < size) {
+	htmlf(numberfmt, ++lineno);
+	while(idx < size - 1) { // skip absolute last newline
 		if (buf[idx] == '\n') {
-			buf[idx] = '\0';
-			htmlf(linefmt, ++lineno);
-			html_txt(buf + start);
-			html("</td></tr>\n");
-			start = idx + 1;
+			htmlf(numberfmt, ++lineno);
 		}
 		idx++;
 	}
-	if (start < idx) {
-		htmlf(linefmt, ++lineno);
-		html_txt(buf + start);
-	}
-	html("</td></tr>\n");
+	html("</pre></td>\n");
+
+	html("<td class='lines'><pre><code>");
+	html_txt(buf);
+	html("</code></pre></td>\n");
+
+	html("</tr>\n");
 	html("</table>\n");
 }
 

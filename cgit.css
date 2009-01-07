@@ -236,26 +236,31 @@ table.blob {
 	border-top: solid 1px black;
 }
 
-table.blob td.no {
-	border-right: solid 1px black;
+table.blob td.lines {
+	margin: 0; padding: 0;
+	vertical-align: top;
 	color: black;
+}
+
+table.blob td.linenumbers {
+	margin: 0; padding: 0;
+	vertical-align: top;
+	border-right: 1px solid gray;
 	background-color: #eee;
+}
+
+table.blob pre {
+	padding: 0; margin: 0;
+}
+
+table.blob a.no {
+	color: gray;
 	text-align: right;
-}
-
-table.blob td.no a {
-	color: black;
-}
-
-table.blob td.no a:hover {
-	color: black;
 	text-decoration: none;
 }
 
-table.blob td.txt {
-	white-space: pre;
-	font-family: monospace;
-	padding-left: 0.5em;
+table.blob a.no a:hover {
+	color: black;
 }
 
 table.nowrap td {
