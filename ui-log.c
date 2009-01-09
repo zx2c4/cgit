@@ -165,7 +165,8 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 	      "<th class='left'>Commit message");
 	if (pager) {
 		html(" (");
-		cgit_log_link("toggle", NULL, NULL, ctx.qry.head, ctx.qry.sha1,
+		cgit_log_link(ctx.qry.showmsg ? "Collapse" : "Expand", NULL,
+			      NULL, ctx.qry.head, ctx.qry.sha1,
 			      ctx.qry.path, ctx.qry.ofs, ctx.qry.grep,
 			      ctx.qry.search, ctx.qry.showmsg ? 0 : 1);
 		html(")");
