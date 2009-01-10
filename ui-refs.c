@@ -141,7 +141,7 @@ static int print_tag(struct refinfo *ref)
 		html("<tr><td>");
 		html_txt(name);
 		html("</td><td>");
-		if (ctx.repo->snapshots && (tag->tagged->type == OBJ_COMMIT))
+		if (ctx.repo->snapshots && (ref->object->type == OBJ_COMMIT))
 			print_tag_downloads(ctx.repo, name);
 		else
 			cgit_object_link(ref->object);
