@@ -31,6 +31,38 @@ void inspect_files(struct diff_filepair *pair)
 		cgit_diff_files(pair->one->sha1, pair->two->sha1, count_lines);
 }
 
+void show_commit_decorations(struct commit *commit)
+{
+	struct name_decoration *deco;
+	static char buf[1024];
+
+	buf[sizeof(buf) - 1] = 0;
+	deco = lookup_decoration(&name_decoration, &commit->object);
+	while (deco) {
+		if (!prefixcmp(deco->name, "refs/heads/")) {
+			strncpy(buf, deco->name + 11, sizeof(buf) - 1);
+			cgit_log_link(buf, NULL, "branch-deco", buf, NULL, NULL,
+				0, NULL, NULL, ctx.qry.showmsg);
+		}
+		else if (!prefixcmp(deco->name, "tag: refs/tags/")) {
+			strncpy(buf, deco->name + 15, sizeof(buf) - 1);
+			cgit_tag_link(buf, NULL, "tag-deco", ctx.qry.head, buf);
+		}
+		else if (!prefixcmp(deco->name, "refs/remotes/")) {
+			strncpy(buf, deco->name + 13, sizeof(buf) - 1);
+			cgit_log_link(buf, NULL, "remote-deco", NULL,
+				sha1_to_hex(commit->object.sha1), NULL,
+				0, NULL, NULL, ctx.qry.showmsg);
+		}
+		else {
+			strncpy(buf, deco->name, sizeof(buf) - 1);
+			cgit_commit_link(buf, NULL, "deco", ctx.qry.head,
+				sha1_to_hex(commit->object.sha1));
+		}
+		deco = deco->next;
+	}
+}
+
 void print_commit(struct commit *commit)
 {
 	struct commitinfo *info;
@@ -49,6 +81,7 @@ void print_commit(struct commit *commit)
 		ctx.qry.showmsg ? " class='logsubject'" : "");
 	cgit_commit_link(info->subject, NULL, NULL, ctx.qry.head,
 			 sha1_to_hex(commit->object.sha1));
+	show_commit_decorations(commit);
 	html("</td><td>");
 	html_txt(info->author);
 	if (ctx.repo->enable_log_filecount) {
@@ -119,6 +152,8 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 	rev.verbose_header = 1;
 	rev.show_root_diff = 0;
 	setup_revisions(argc, argv, &rev, NULL);
+	load_ref_decorations();
+	rev.show_decorations = 1;
 	rev.grep_filter.regflags |= REG_ICASE;
 	compile_grep_patterns(&rev.grep_filter);
 	prepare_revision_walk(&rev);

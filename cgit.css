@@ -471,3 +471,27 @@ div.footer {
 	font-size: 80%;
 	color: #ccc;
 }
+a.branch-deco {
+	margin: 0px 0.5em;
+	padding: 0px 0.25em;
+	background-color: #88ff88;
+	border: solid 1px #007700;
+}
+a.tag-deco {
+	margin: 0px 0.5em;
+	padding: 0px 0.25em;
+	background-color: #ffff88;
+	border: solid 1px #777700;
+}
+a.remote-deco {
+	margin: 0px 0.5em;
+	padding: 0px 0.25em;
+	background-color: #ccccff;
+	border: solid 1px #000077;
+}
+a.deco {
+	margin: 0px 0.5em;
+	padding: 0px 0.25em;
+	background-color: #ff8888;
+	border: solid 1px #770000;
+}
