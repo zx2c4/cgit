@@ -439,28 +439,29 @@ int main(int argc, const char **argv)
 	ctx.repo = NULL;
 	http_parse_querystring(ctx.qry.raw, querystring_cb);
 
-	/* If virtual-root isn't specified in cgitrc and no url
-	 * parameter is specified on the querystring, lets pretend
-	 * that virtualroot equals SCRIPT_NAME and use PATH_INFO as
-	 * url. This allows cgit to work with virtual urls without
-	 * the need for rewriterules in the webserver (as long as
-	 * PATH_INFO is included in the cache lookup key).
+	/* If virtual-root isn't specified in cgitrc, lets pretend
+	 * that virtual-root equals SCRIPT_NAME.
 	 */
-	if (!ctx.cfg.virtual_root && !ctx.qry.url) {
+	if (!ctx.cfg.virtual_root)
 		ctx.cfg.virtual_root = ctx.cfg.script_name;
-		path = getenv("PATH_INFO");
-		if (path) {
-			if (path[0] == '/')
-				path++;
-			ctx.qry.url = xstrdup(path);
-			if (ctx.qry.raw) {
-				qry = ctx.qry.raw;
-				ctx.qry.raw = xstrdup(fmt("%s?%s", path, qry));
-				free(qry);
-			} else
-				ctx.qry.raw = ctx.qry.url;
-			cgit_parse_url(ctx.qry.url);
-		}
+
+	/* If no url parameter is specified on the querystring, lets
+	 * use PATH_INFO as url. This allows cgit to work with virtual
+	 * urls without the need for rewriterules in the webserver (as
+	 * long as PATH_INFO is included in the cache lookup key).
+	 */
+	path = getenv("PATH_INFO");
+	if (!ctx.qry.url && path) {
+		if (path[0] == '/')
+			path++;
+		ctx.qry.url = xstrdup(path);
+		if (ctx.qry.raw) {
+			qry = ctx.qry.raw;
+			ctx.qry.raw = xstrdup(fmt("%s?%s", path, qry));
+			free(qry);
+		} else
+			ctx.qry.raw = ctx.qry.url;
+		cgit_parse_url(ctx.qry.url);
 	}
 
 	ttl = calc_ttl();
