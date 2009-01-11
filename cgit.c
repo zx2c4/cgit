@@ -293,7 +293,6 @@ static void process_request(void *cbdata)
 	cmd = cgit_get_cmd(ctx);
 	if (!cmd) {
 		ctx->page.title = "cgit error";
-		ctx->repo = NULL;
 		cgit_print_http_headers(ctx);
 		cgit_print_docstart(ctx);
 		cgit_print_pageheader(ctx);

@@ -587,14 +587,19 @@ void add_hidden_formfields(int incl_head, int incl_search, char *page)
 	}
 }
 
+const char *fallback_cmd = "repolist";
+
 char *hc(struct cgit_cmd *cmd, const char *page)
 {
-	return (strcmp(cmd->name, page) ? NULL : "active");
+	return (strcmp(cmd ? cmd->name : fallback_cmd, page) ? NULL : "active");
 }
 
 void cgit_print_pageheader(struct cgit_context *ctx)
 {
 	struct cgit_cmd *cmd = cgit_get_cmd(ctx);
+
+	if (!cmd && ctx->repo)
+		fallback_cmd = "summary";
 
 	html("<table id='header'>\n");
 	html("<tr>\n");
