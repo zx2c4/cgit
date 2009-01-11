@@ -288,8 +288,8 @@ root-desc=tracking the foobar development
 root-readme=/var/www/htdocs/about.html
 
 
-# Allow download of tar.gz, tar.bz and zip-files
-snapshots=tar.gz tar.bz zip
+# Allow download of tar.gz, tar.bz2 and zip-files
+snapshots=tar.gz tar.bz2 zip
 
 
 ##
