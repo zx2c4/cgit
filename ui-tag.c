@@ -75,6 +75,15 @@ void cgit_print_tag(char *revname)
 		html("</td></tr>\n");
 		html("</table>\n");
 		print_tag_content(info->msg);
-	}
+	} else {
+		html("<table class='commit-info'>\n");
+		htmlf("<tr><td>Tag name</td><td>");
+		html_txt(revname);
+		html("</td></tr>\n");
+		html("<tr><td>Tagged object</td><td>");
+		cgit_object_link(obj);
+		html("</td></tr>\n");
+		html("</table>\n");
+        }
 	return;
 }
