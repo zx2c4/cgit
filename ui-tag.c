@@ -53,8 +53,9 @@ void cgit_print_tag(char *revname)
 			return;
 		}
 		html("<table class='commit-info'>\n");
-		htmlf("<tr><td>Tag name</td><td>%s (%s)</td></tr>\n",
-		      revname, sha1_to_hex(sha1));
+		htmlf("<tr><td>Tag name</td><td>");
+		html_txt(revname);
+		htmlf(" (%s)</td></tr>\n", sha1_to_hex(sha1));
 		if (info->tagger_date > 0) {
 			html("<tr><td>Tag date</td><td>");
 			cgit_print_date(info->tagger_date, FMT_LONGDATE, ctx.cfg.local_time);
