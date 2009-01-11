@@ -6,6 +6,7 @@ CACHE_ROOT = /var/cache/cgit
 SHA1_HEADER = <openssl/sha.h>
 GIT_VER = 1.6.0.3
 GIT_URL = http://www.kernel.org/pub/software/scm/git/git-$(GIT_VER).tar.bz2
+INSTALL = install
 
 # Define NO_STRCASESTR if you don't have strcasestr.
 #
@@ -135,10 +136,10 @@ test: all
 	$(QUIET_SUBDIR0)tests $(QUIET_SUBDIR1) all
 
 install: all
-	mkdir -p $(DESTDIR)$(CGIT_SCRIPT_PATH)
-	install cgit $(DESTDIR)$(CGIT_SCRIPT_PATH)/$(CGIT_SCRIPT_NAME)
-	install -m 0644 cgit.css $(DESTDIR)$(CGIT_SCRIPT_PATH)/cgit.css
-	install -m 0644 cgit.png $(DESTDIR)$(CGIT_SCRIPT_PATH)/cgit.png
+	$(INSTALL) -m 0755 -d $(DESTDIR)$(CGIT_SCRIPT_PATH)
+	$(INSTALL) -m 0755 cgit $(DESTDIR)$(CGIT_SCRIPT_PATH)/$(CGIT_SCRIPT_NAME)
+	$(INSTALL) -m 0644 cgit.css $(DESTDIR)$(CGIT_SCRIPT_PATH)/cgit.css
+	$(INSTALL) -m 0644 cgit.png $(DESTDIR)$(CGIT_SCRIPT_PATH)/cgit.png
 
 uninstall:
 	rm -f $(CGIT_SCRIPT_PATH)/$(CGIT_SCRIPT_NAME)
