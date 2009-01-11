@@ -128,8 +128,8 @@ cgit.o: VERSION
 -include $(OBJECTS:.o=.d)
 
 libgit:
-	$(QUIET_SUBDIR0)git $(QUIET_SUBDIR1) libgit.a
-	$(QUIET_SUBDIR0)git $(QUIET_SUBDIR1) xdiff/lib.a
+	$(QUIET_SUBDIR0)git $(QUIET_SUBDIR1) NO_CURL=1 libgit.a
+	$(QUIET_SUBDIR0)git $(QUIET_SUBDIR1) NO_CURL=1 xdiff/lib.a
 
 test: all
 	$(QUIET_SUBDIR0)tests $(QUIET_SUBDIR1) all
