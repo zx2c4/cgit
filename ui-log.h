@@ -3,5 +3,6 @@
 
 extern void cgit_print_log(const char *tip, int ofs, int cnt, char *grep,
 			   char *pattern, char *path, int pager);
+extern void show_commit_decorations(struct commit *commit);
 
 #endif /* UI_LOG_H */

@@ -10,6 +10,7 @@
 #include "html.h"
 #include "ui-shared.h"
 #include "ui-diff.h"
+#include "ui-log.h"
 
 void cgit_print_commit(char *hex)
 {
@@ -33,6 +34,8 @@ void cgit_print_commit(char *hex)
 		return;
 	}
 	info = cgit_parse_commit(commit);
+
+	load_ref_decorations();
 
 	html("<table summary='commit info' class='commit-info'>\n");
 	html("<tr><th>author</th><td>");
@@ -87,6 +90,7 @@ void cgit_print_commit(char *hex)
 	html("</table>\n");
 	html("<div class='commit-subject'>");
 	html_txt(info->subject);
+	show_commit_decorations(commit);
 	html("</div>");
 	html("<div class='commit-msg'>");
 	html_txt(info->msg);
