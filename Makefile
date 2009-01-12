@@ -1,11 +1,13 @@
 CGIT_VERSION = v0.8.1
 CGIT_SCRIPT_NAME = cgit.cgi
 CGIT_SCRIPT_PATH = /var/www/htdocs/cgit
+CGIT_DATA_PATH = $(CGIT_SCRIPT_PATH)
 CGIT_CONFIG = /etc/cgitrc
 CACHE_ROOT = /var/cache/cgit
 SHA1_HEADER = <openssl/sha.h>
 GIT_VER = 1.6.1
 GIT_URL = http://www.kernel.org/pub/software/scm/git/git-$(GIT_VER).tar.bz2
+INSTALL = install
 
 # Define NO_STRCASESTR if you don't have strcasestr.
 #
@@ -135,15 +137,16 @@ test: all
 	$(QUIET_SUBDIR0)tests $(QUIET_SUBDIR1) all
 
 install: all
-	mkdir -p $(DESTDIR)$(CGIT_SCRIPT_PATH)
-	install cgit $(DESTDIR)$(CGIT_SCRIPT_PATH)/$(CGIT_SCRIPT_NAME)
-	install -m 0644 cgit.css $(DESTDIR)$(CGIT_SCRIPT_PATH)/cgit.css
-	install -m 0644 cgit.png $(DESTDIR)$(CGIT_SCRIPT_PATH)/cgit.png
+	$(INSTALL) -m 0755 -d $(DESTDIR)$(CGIT_SCRIPT_PATH)
+	$(INSTALL) -m 0755 cgit $(DESTDIR)$(CGIT_SCRIPT_PATH)/$(CGIT_SCRIPT_NAME)
+	$(INSTALL) -m 0755 -d $(DESTDIR)$(CGIT_DATA_PATH)
+	$(INSTALL) -m 0644 cgit.css $(DESTDIR)$(CGIT_DATA_PATH)/cgit.css
+	$(INSTALL) -m 0644 cgit.png $(DESTDIR)$(CGIT_DATA_PATH)/cgit.png
 
 uninstall:
 	rm -f $(CGIT_SCRIPT_PATH)/$(CGIT_SCRIPT_NAME)
-	rm -f $(CGIT_SCRIPT_PATH)/cgit.css
-	rm -f $(CGIT_SCRIPT_PATH)/cgit.png
+	rm -f $(CGIT_DATA_PATH)/cgit.css
+	rm -f $(CGIT_DATA_PATH)/cgit.png
 
 clean:
 	rm -f cgit VERSION *.o *.d
