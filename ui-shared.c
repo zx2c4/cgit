@@ -456,6 +456,9 @@ void cgit_print_age(time_t t, time_t max_relative, char *format)
 
 void cgit_print_http_headers(struct cgit_context *ctx)
 {
+	if (ctx->cfg.embedded)
+		return;
+
 	if (ctx->page.mimetype && ctx->page.charset)
 		htmlf("Content-Type: %s; charset=%s\n", ctx->page.mimetype,
 		      ctx->page.charset);
@@ -473,6 +476,9 @@ void cgit_print_http_headers(struct cgit_context *ctx)
 
 void cgit_print_docstart(struct cgit_context *ctx)
 {
+	if (ctx->cfg.embedded)
+		return;
+
 	char *host = cgit_hosturl();
 	html(cgit_doctype);
 	html("<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='en' lang='en'>\n");
@@ -515,6 +521,9 @@ void cgit_print_docend()
 		cgit_print_date(time(NULL), FMT_LONGDATE, ctx.cfg.local_time);
 		html("</div>\n");
 	}
+	html("</div>");
+	if (ctx.cfg.embedded)
+		return;
 	html("</body>\n</html>\n");
 }
 
@@ -609,6 +618,7 @@ void cgit_print_pageheader(struct cgit_context *ctx)
 	if (!cmd && ctx->repo)
 		fallback_cmd = "summary";
 
+	html("<div id='cgit'>");
 	html("<table id='header'>\n");
 	html("<tr>\n");
 	html("<td class='logo' rowspan='2'><a href='");
