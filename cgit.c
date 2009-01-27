@@ -12,6 +12,7 @@
 #include "configfile.h"
 #include "html.h"
 #include "ui-shared.h"
+#include "ui-stats.h"
 #include "scan-tree.h"
 
 const char *cgit_version = CGIT_VERSION;
@@ -54,6 +55,8 @@ void config_cb(const char *name, const char *value)
 		ctx.cfg.enable_log_filecount = atoi(value);
 	else if (!strcmp(name, "enable-log-linecount"))
 		ctx.cfg.enable_log_linecount = atoi(value);
+	else if (!strcmp(name, "max-stats"))
+		ctx.cfg.max_stats = cgit_find_stats_period(value, NULL);
 	else if (!strcmp(name, "cache-size"))
 		ctx.cfg.cache_size = atoi(value);
 	else if (!strcmp(name, "cache-root"))
@@ -112,6 +115,8 @@ void config_cb(const char *name, const char *value)
 		ctx.repo->enable_log_filecount = ctx.cfg.enable_log_filecount * atoi(value);
 	else if (ctx.repo && !strcmp(name, "repo.enable-log-linecount"))
 		ctx.repo->enable_log_linecount = ctx.cfg.enable_log_linecount * atoi(value);
+	else if (ctx.repo && !strcmp(name, "repo.max-stats"))
+		ctx.repo->max_stats = cgit_find_stats_period(value, NULL);
 	else if (ctx.repo && !strcmp(name, "repo.module-link"))
 		ctx.repo->module_link= xstrdup(value);
 	else if (ctx.repo && !strcmp(name, "repo.readme") && value != NULL) {
@@ -158,6 +163,8 @@ static void querystring_cb(const char *name, const char *value)
 		ctx.qry.sort = xstrdup(value);
 	} else if (!strcmp(name, "showmsg")) {
 		ctx.qry.showmsg = atoi(value);
+	} else if (!strcmp(name, "period")) {
+		ctx.qry.period = xstrdup(value);
 	}
 }
 
@@ -181,6 +188,7 @@ static void prepare_context(struct cgit_context *ctx)
 	ctx->cfg.max_lock_attempts = 5;
 	ctx->cfg.max_msg_len = 80;
 	ctx->cfg.max_repodesc_len = 80;
+	ctx->cfg.max_stats = 0;
 	ctx->cfg.module_link = "./?repo=%s&page=commit&id=%s";
 	ctx->cfg.renamelimit = -1;
 	ctx->cfg.robots = "index, nofollow";

@@ -58,6 +58,7 @@ struct cgit_repo *cgit_add_repo(const char *url)
 	ret->snapshots = ctx.cfg.snapshots;
 	ret->enable_log_filecount = ctx.cfg.enable_log_filecount;
 	ret->enable_log_linecount = ctx.cfg.enable_log_linecount;
+	ret->max_stats = ctx.cfg.max_stats;
 	ret->module_link = ctx.cfg.module_link;
 	ret->readme = NULL;
 	ret->mtime = -1;

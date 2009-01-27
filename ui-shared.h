@@ -30,6 +30,8 @@ extern void cgit_snapshot_link(char *name, char *title, char *class,
 			       char *head, char *rev, char *archivename);
 extern void cgit_diff_link(char *name, char *title, char *class, char *head,
 			   char *new_rev, char *old_rev, char *path);
+extern void cgit_stats_link(char *name, char *title, char *class, char *head,
+			    char *path);
 extern void cgit_object_link(struct object *obj);
 
 extern void cgit_print_error(char *msg);
@@ -42,5 +44,6 @@ extern void cgit_print_pageheader(struct cgit_context *ctx);
 extern void cgit_print_filemode(unsigned short mode);
 extern void cgit_print_snapshot_links(const char *repo, const char *head,
 				      const char *hex, int snapshots);
-
+extern void cgit_add_hidden_formfields(int incl_head, int incl_search,
+				       char *page);
 #endif /* UI_SHARED_H */

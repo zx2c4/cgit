@@ -21,6 +21,7 @@
 #include "ui-refs.h"
 #include "ui-repolist.h"
 #include "ui-snapshot.h"
+#include "ui-stats.h"
 #include "ui-summary.h"
 #include "ui-tag.h"
 #include "ui-tree.h"
@@ -108,6 +109,11 @@ static void snapshot_fn(struct cgit_context *ctx)
 			    ctx->repo->snapshots, ctx->qry.nohead);
 }
 
+static void stats_fn(struct cgit_context *ctx)
+{
+	cgit_show_stats(ctx);
+}
+
 static void summary_fn(struct cgit_context *ctx)
 {
 	cgit_print_summary();
@@ -144,6 +150,7 @@ struct cgit_cmd *cgit_get_cmd(struct cgit_context *ctx)
 		def_cmd(refs, 1, 1),
 		def_cmd(repolist, 0, 0),
 		def_cmd(snapshot, 1, 0),
+		def_cmd(stats, 1, 1),
 		def_cmd(summary, 1, 1),
 		def_cmd(tag, 1, 1),
 		def_cmd(tree, 1, 1),

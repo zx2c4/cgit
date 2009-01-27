@@ -369,6 +369,12 @@ void cgit_patch_link(char *name, char *title, char *class, char *head,
 	reporevlink("patch", name, title, class, head, rev, NULL);
 }
 
+void cgit_stats_link(char *name, char *title, char *class, char *head,
+		     char *path)
+{
+	reporevlink("stats", name, title, class, head, NULL, path);
+}
+
 void cgit_object_link(struct object *obj)
 {
 	char *page, *shortrev, *fullrev, *name;
@@ -557,7 +563,7 @@ int print_archive_ref(const char *refname, const unsigned char *sha1,
 	return 0;
 }
 
-void add_hidden_formfields(int incl_head, int incl_search, char *page)
+void cgit_add_hidden_formfields(int incl_head, int incl_search, char *page)
 {
 	char *url;
 
@@ -619,7 +625,7 @@ void cgit_print_pageheader(struct cgit_context *ctx)
 		cgit_summary_link(ctx->repo->name, ctx->repo->name, NULL, NULL);
 		html("</td><td class='form'>");
 		html("<form method='get' action=''>\n");
-		add_hidden_formfields(0, 1, ctx->qry.page);
+		cgit_add_hidden_formfields(0, 1, ctx->qry.page);
 		html("<select name='h' onchange='this.form.submit();'>\n");
 		for_each_branch_ref(print_branch_option, ctx->qry.head);
 		html("</select> ");
@@ -656,6 +662,9 @@ void cgit_print_pageheader(struct cgit_context *ctx)
 				 ctx->qry.head, ctx->qry.sha1);
 		cgit_diff_link("diff", NULL, hc(cmd, "diff"), ctx->qry.head,
 			       ctx->qry.sha1, ctx->qry.sha2, NULL);
+		if (ctx->repo->max_stats)
+			cgit_stats_link("stats", NULL, hc(cmd, "stats"),
+					ctx->qry.head, NULL);
 		if (ctx->repo->readme)
 			reporevlink("about", "about", NULL,
 				    hc(cmd, "about"), ctx->qry.head, NULL,
@@ -666,7 +675,7 @@ void cgit_print_pageheader(struct cgit_context *ctx)
 			html_url_path(cgit_fileurl(ctx->qry.repo, "log",
 						   ctx->qry.path, NULL));
 		html("'>\n");
-		add_hidden_formfields(1, 0, "log");
+		cgit_add_hidden_formfields(1, 0, "log");
 		html("<select name='qt'>\n");
 		html_option("grep", "log msg", ctx->qry.grep);
 		html_option("author", "author", ctx->qry.grep);

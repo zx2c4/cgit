@@ -129,6 +129,11 @@ max-repodesc-length
 	Specifies the maximum number of repo description characters to display
 	on the repository index page. Default value: "80".
 
+max-stats
+	Set the default maximum statistics period. Valid values are "week",
+	"month", "quarter" and "year". If unspecified, statistics are
+	disabled. Default value: none. See also: "repo.max-stats".
+
 module-link
 	Text which will be used as the formatstring for a hyperlink when a
 	submodule is printed in a directory listing. The arguments for the
@@ -218,6 +223,11 @@ repo.enable-log-linecount
 	A flag which can be used to disable the global setting
 	`enable-log-linecount'. Default value: none.
 
+repo.max-stats
+	Override the default maximum statistics period. Valid values are equal
+	to the values specified for the global "max-stats" setting. Default
+	value: none.
+
 repo.name
 	The value to show as repository name. Default value: <repo.url>.
 
@@ -274,6 +284,10 @@ favicon=/favicon.ico
 
 # Use a custom logo
 logo=/img/mylogo.png
+
+
+# Enable statistics per week, month and quarter
+max-stats=quarter
 
 
 # Set the title and heading of the repository index page
@@ -347,6 +361,9 @@ repo.snapshots=0
 
 # Disable line-counts for this repo
 repo.enable-log-linecount=0
+
+# Restrict the max statistics period for this repo
+repo.max-stats=month
 
 
 BUGS
