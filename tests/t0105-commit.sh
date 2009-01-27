@@ -9,7 +9,7 @@ run_test 'find tree link' 'grep -e "<a href=./foo/tree/.>" trash/tmp'
 run_test 'find parent link' 'grep -E "<a href=./foo/commit/\?id=.+>" trash/tmp'
 
 run_test 'find commit subject' '
-	grep -e "<div class=.commit-subject.>commit 5</div>" trash/tmp
+	grep -e "<div class=.commit-subject.>commit 5<" trash/tmp
 '
 
 run_test 'find commit msg' 'grep -e "<div class=.commit-msg.></div>" trash/tmp'
