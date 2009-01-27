@@ -495,3 +495,8 @@ a.deco {
 	background-color: #ff8888;
 	border: solid 1px #770000;
 }
+
+div.commit-subject a {
+	margin-left: 1em;
+	font-size: 75%;
+}
