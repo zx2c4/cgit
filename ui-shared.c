@@ -500,6 +500,8 @@ void cgit_print_docstart(struct cgit_context *ctx)
 	}
 	html("</head>\n");
 	html("<body>\n");
+	if (ctx->cfg.header)
+		html_include(ctx->cfg.header);
 }
 
 void cgit_print_docend()
