@@ -112,14 +112,16 @@ void html_attr(char *txt)
 	char *t = txt;
 	while(t && *t){
 		int c = *t;
-		if (c=='<' || c=='>' || c=='\'') {
+		if (c=='<' || c=='>' || c=='\'' || c=='\"') {
 			write(htmlfd, txt, t - txt);
 			if (c=='>')
 				html("&gt;");
 			else if (c=='<')
 				html("&lt;");
 			else if (c=='\'')
-				html("&quote;");
+				html("&#x27;");
+			else if (c=='"')
+				html("&quot;");
 			txt = t+1;
 		}
 		t++;
