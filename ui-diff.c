@@ -27,6 +27,9 @@ static struct fileinfo {
 	char *new_path;
 	unsigned int added;
 	unsigned int removed;
+	unsigned long old_size;
+	unsigned long new_size;
+	int binary:1;
 } *items;
 
 
@@ -86,6 +89,11 @@ static void print_fileinfo(struct fileinfo *info)
 		      info->status == DIFF_STATUS_COPIED ? "copied" : "renamed",
 		      info->old_path);
 	html("</td><td class='right'>");
+	if (info->binary) {
+		htmlf("bin</td><td class='graph'>%d -> %d bytes",
+		      info->old_size, info->new_size);
+		return;
+	}
 	htmlf("%d", info->added + info->removed);
 	html("</td><td class='graph'>");
 	htmlf("<table summary='file diffstat' width='%d%%'><tr>", (max_changes > 100 ? 100 : max_changes));
@@ -110,10 +118,14 @@ static void count_diff_lines(char *line, int len)
 
 static void inspect_filepair(struct diff_filepair *pair)
 {
+	int binary = 0;
+	unsigned long old_size = 0;
+	unsigned long new_size = 0;
 	files++;
 	lines_added = 0;
 	lines_removed = 0;
-	cgit_diff_files(pair->one->sha1, pair->two->sha1, count_diff_lines);
+	cgit_diff_files(pair->one->sha1, pair->two->sha1, &old_size, &new_size,
+			&binary, count_diff_lines);
 	if (files >= slots) {
 		if (slots == 0)
 			slots = 4;
@@ -130,6 +142,9 @@ static void inspect_filepair(struct diff_filepair *pair)
 	items[files-1].new_path = xstrdup(pair->two->path);
 	items[files-1].added = lines_added;
 	items[files-1].removed = lines_removed;
+	items[files-1].old_size = old_size;
+	items[files-1].new_size = new_size;
+	items[files-1].binary = binary;
 	if (lines_added + lines_removed > max_changes)
 		max_changes = lines_added + lines_removed;
 	total_adds += lines_added;
@@ -233,6 +248,10 @@ static void header(unsigned char *sha1, char *path1, int mode1,
 
 static void filepair_cb(struct diff_filepair *pair)
 {
+	unsigned long old_size = 0;
+	unsigned long new_size = 0;
+	int binary = 0;
+
 	header(pair->one->sha1, pair->one->path, pair->one->mode,
 	       pair->two->sha1, pair->two->path, pair->two->mode);
 	if (S_ISGITLINK(pair->one->mode) || S_ISGITLINK(pair->two->mode)) {
@@ -242,8 +261,11 @@ static void filepair_cb(struct diff_filepair *pair)
 			print_line(fmt("+Subproject %s", sha1_to_hex(pair->two->sha1)), 52);
 		return;
 	}
-	if (cgit_diff_files(pair->one->sha1, pair->two->sha1, print_line))
+	if (cgit_diff_files(pair->one->sha1, pair->two->sha1, &old_size, 
+			    &new_size, &binary, print_line))
 		cgit_print_error("Error running diff");
+	if (binary)
+		html("Binary files differ");
 }
 
 void cgit_print_diff(const char *new_rev, const char *old_rev, const char *prefix)
