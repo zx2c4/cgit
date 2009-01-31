@@ -263,6 +263,25 @@ table.blob a.no a:hover {
 	color: black;
 }
 
+table.bin-blob {
+	margin-top: 0.5em;
+	border: solid 1px black;
+}
+
+table.bin-blob th {
+	font-family: monospace;
+	white-space: pre;
+	border: solid 1px #777;
+	padding: 0.5em 1em;
+}
+
+table.bin-blob td {
+	font-family: monospace;
+	white-space: pre;
+	border-left: solid 1px #777;
+	padding: 0em 1em;
+}
+
 table.nowrap td {
 	white-space: nowrap;
 }

@@ -6,6 +6,7 @@
  *   (see COPYING for full license text)
  */
 
+#include <ctype.h>
 #include "cgit.h"
 #include "html.h"
 #include "ui-shared.h"
@@ -14,12 +15,53 @@ char *curr_rev;
 char *match_path;
 int header = 0;
 
+static void print_text_buffer(char *buf, unsigned long size)
+{
+	unsigned long lineno, idx;
+	const char *numberfmt =
+		"<a class='no' id='n%1$d' name='n%1$d' href='#n%1$d'>%1$d</a>\n";
+
+	html("<table summary='blob content' class='blob'>\n");
+	html("<tr><td class='linenumbers'><pre>");
+	idx = 0;
+	lineno = 0;
+	htmlf(numberfmt, ++lineno);
+	while(idx < size - 1) { // skip absolute last newline
+		if (buf[idx] == '\n')
+			htmlf(numberfmt, ++lineno);
+		idx++;
+	}
+	html("</pre></td>\n");
+	html("<td class='lines'><pre><code>");
+	html_txt(buf);
+	html("</code></pre></td></tr></table>\n");
+}
+
+static void print_binary_buffer(char *buf, unsigned long size)
+{
+	unsigned long ofs, idx;
+
+	html("<table summary='blob content' class='bin-blob'>\n");
+	html("<tr><th>ofs</th><th>hex dump</th><th>ascii</th></tr>");
+	for (ofs = 0; ofs < size; ofs += 32, buf += 32) {
+		htmlf("<tr><td class='right'>%04x</td><td class='hex'>", ofs);
+		for (idx = 0; idx < 32 && ofs + idx < size; idx++)
+			htmlf("%*s%02x",
+			      idx == 16 ? 4 : 1, "",
+			      buf[idx] & 0xff);
+		html(" </td><td class='hex'>");
+		for (idx = 0; idx < 32 && ofs + idx < size; idx++)
+			htmlf("%c", isgraph(buf[idx]) ? buf[idx] : '.');
+		html("</td></tr>\n");
+	}
+	html("</table>\n");
+}
+
 static void print_object(const unsigned char *sha1, char *path)
 {
 	enum object_type type;
 	char *buf;
-	unsigned long size, lineno, idx;
-	const char *numberfmt = "<a class='no' id='n%1$d' name='n%1$d' href='#n%1$d'>%1$d</a>\n";
+	unsigned long size;
 
 	type = sha1_object_info(sha1, &size);
 	if (type == OBJ_BAD) {
@@ -40,27 +82,10 @@ static void print_object(const unsigned char *sha1, char *path)
 		        curr_rev, path);
 	htmlf(")<br/>blob: %s\n", sha1_to_hex(sha1));
 
-	html("<table summary='blob content' class='blob'>\n");
-	html("<tr>\n");
-
-	html("<td class='linenumbers'><pre>");
-	idx = 0;
-	lineno = 0;
-	htmlf(numberfmt, ++lineno);
-	while(idx < size - 1) { // skip absolute last newline
-		if (buf[idx] == '\n') {
-			htmlf(numberfmt, ++lineno);
-		}
-		idx++;
-	}
-	html("</pre></td>\n");
-
-	html("<td class='lines'><pre><code>");
-	html_txt(buf);
-	html("</code></pre></td>\n");
-
-	html("</tr>\n");
-	html("</table>\n");
+	if (buffer_is_binary(buf, size))
+		print_binary_buffer(buf, size);
+	else
+		print_text_buffer(buf, size);
 }
 
 
