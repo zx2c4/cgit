@@ -15,6 +15,7 @@
 #include <revision.h>
 #include <log-tree.h>
 #include <archive.h>
+#include <xdiff-interface.h>
 #include <xdiff/xdiff.h>
 #include <utf8.h>
 
@@ -222,7 +223,8 @@ extern void *cgit_free_commitinfo(struct commitinfo *info);
 
 extern int cgit_diff_files(const unsigned char *old_sha1,
 			   const unsigned char *new_sha1,
-			   linediff_fn fn);
+			   unsigned long *old_size, unsigned long *new_size,
+			   int *binary, linediff_fn fn);
 
 extern void cgit_diff_tree(const unsigned char *old_sha1,
 			   const unsigned char *new_sha1,

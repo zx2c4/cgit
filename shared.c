@@ -257,8 +257,8 @@ int filediff_cb(void *priv, mmbuffer_t *mb, int nbuf)
 }
 
 int cgit_diff_files(const unsigned char *old_sha1,
-		     const unsigned char *new_sha1,
-		     linediff_fn fn)
+		    const unsigned char *new_sha1, unsigned long *old_size,
+		    unsigned long *new_size, int *binary, linediff_fn fn)
 {
 	mmfile_t file1, file2;
 	xpparam_t diff_params;
@@ -267,6 +267,15 @@ int cgit_diff_files(const unsigned char *old_sha1,
 
 	if (!load_mmfile(&file1, old_sha1) || !load_mmfile(&file2, new_sha1))
 		return 1;
+
+	*old_size = file1.size;
+	*new_size = file2.size;
+
+	if ((file1.ptr && buffer_is_binary(file1.ptr, file1.size)) ||
+	    (file2.ptr && buffer_is_binary(file2.ptr, file2.size))) {
+		*binary = 1;
+		return 0;
+	}
 
 	memset(&diff_params, 0, sizeof(diff_params));
 	memset(&emit_params, 0, sizeof(emit_params));

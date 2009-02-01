@@ -26,9 +26,14 @@ void count_lines(char *line, int size)
 
 void inspect_files(struct diff_filepair *pair)
 {
+	unsigned long old_size = 0;
+	unsigned long new_size = 0;
+	int binary = 0;
+
 	files++;
 	if (ctx.repo->enable_log_linecount)
-		cgit_diff_files(pair->one->sha1, pair->two->sha1, count_lines);
+		cgit_diff_files(pair->one->sha1, pair->two->sha1, &old_size,
+				&new_size, &binary, count_lines);
 }
 
 void show_commit_decorations(struct commit *commit)

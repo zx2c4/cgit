@@ -57,6 +57,10 @@ static void header(unsigned char *sha1, char *path1, int mode1,
 
 static void filepair_cb(struct diff_filepair *pair)
 {
+	unsigned long old_size = 0;
+	unsigned long new_size = 0;
+	int binary = 0;
+
 	header(pair->one->sha1, pair->one->path, pair->one->mode,
 	       pair->two->sha1, pair->two->path, pair->two->mode);
 	if (S_ISGITLINK(pair->one->mode) || S_ISGITLINK(pair->two->mode)) {
@@ -66,8 +70,11 @@ static void filepair_cb(struct diff_filepair *pair)
 			print_line(fmt("+Subproject %s", sha1_to_hex(pair->two->sha1)), 52);
 		return;
 	}
-	if (cgit_diff_files(pair->one->sha1, pair->two->sha1, print_line))
+	if (cgit_diff_files(pair->one->sha1, pair->two->sha1, &old_size,
+			    &new_size, &binary, print_line))
 		html("Error running diff");
+	if (binary)
+		html("Binary files differ\n");
 }
 
 void cgit_print_patch(char *hex)
