@@ -271,8 +271,8 @@ int cgit_diff_files(const unsigned char *old_sha1,
 	*old_size = file1.size;
 	*new_size = file2.size;
 
-	if (buffer_is_binary(file1.ptr, file1.size) ||
-	    buffer_is_binary(file2.ptr, file2.size)) {
+	if ((file1.ptr && buffer_is_binary(file1.ptr, file1.size)) ||
+	    (file2.ptr && buffer_is_binary(file2.ptr, file2.size))) {
 		*binary = 1;
 		return 0;
 	}
