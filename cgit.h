@@ -135,6 +135,7 @@ struct cgit_config {
 	char *css;
 	char *favicon;
 	char *footer;
+	char *header;
 	char *index_header;
 	char *index_info;
 	char *logo;
