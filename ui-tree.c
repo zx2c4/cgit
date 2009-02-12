@@ -37,21 +37,26 @@ static void print_text_buffer(char *buf, unsigned long size)
 	html("</code></pre></td></tr></table>\n");
 }
 
+#define ROWLEN 32
+
 static void print_binary_buffer(char *buf, unsigned long size)
 {
 	unsigned long ofs, idx;
+	static char ascii[ROWLEN + 1];
 
 	html("<table summary='blob content' class='bin-blob'>\n");
 	html("<tr><th>ofs</th><th>hex dump</th><th>ascii</th></tr>");
-	for (ofs = 0; ofs < size; ofs += 32, buf += 32) {
+	for (ofs = 0; ofs < size; ofs += ROWLEN, buf += ROWLEN) {
 		htmlf("<tr><td class='right'>%04x</td><td class='hex'>", ofs);
-		for (idx = 0; idx < 32 && ofs + idx < size; idx++)
+		for (idx = 0; idx < ROWLEN && ofs + idx < size; idx++)
 			htmlf("%*s%02x",
 			      idx == 16 ? 4 : 1, "",
 			      buf[idx] & 0xff);
 		html(" </td><td class='hex'>");
-		for (idx = 0; idx < 32 && ofs + idx < size; idx++)
-			htmlf("%c", isgraph(buf[idx]) ? buf[idx] : '.');
+		for (idx = 0; idx < ROWLEN && ofs + idx < size; idx++)
+			ascii[idx] = isgraph(buf[idx]) ? buf[idx] : '.';
+		ascii[idx] = '\0';
+		html_txt(ascii);
 		html("</td></tr>\n");
 	}
 	html("</table>\n");
