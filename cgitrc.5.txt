@@ -1,5 +1,5 @@
-CGITRC
-======
+CGITRC(5)
+========
 
 
 NAME
@@ -7,8 +7,8 @@ NAME
 	cgitrc - runtime configuration for cgit
 
 
-DESCRIPTION
------------
+SYNOPSIS
+--------
 Cgitrc contains all runtime settings for cgit, including the list of git
 repositories, formatted as a line-separated list of NAME=VALUE pairs. Blank
 lines, and lines starting with '#', are ignored.
