@@ -259,6 +259,7 @@ repo.url::
 EXAMPLE CGITRC FILE
 -------------------
 
+....
 # Enable caching of up to 1000 output entriess
 cache-size=1000
 
@@ -368,6 +369,7 @@ repo.enable-log-linecount=0
 
 # Restrict the max statistics period for this repo
 repo.max-stats=month
+....
 
 
 BUGS
