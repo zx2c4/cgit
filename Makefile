@@ -100,7 +100,8 @@ ifdef NEEDS_LIBICONV
 endif
 
 
-.PHONY: all libgit test install uninstall clean force-version get-git
+.PHONY: all libgit test install uninstall clean force-version get-git \
+	doc man-doc html-doc clean-doc
 
 all: cgit
 
@@ -149,8 +150,22 @@ uninstall:
 	rm -f $(CGIT_DATA_PATH)/cgit.css
 	rm -f $(CGIT_DATA_PATH)/cgit.png
 
-clean:
+doc: man-doc html-doc pdf-doc
+
+man-doc: cgitrc.5.txt
+	a2x -f manpage cgitrc.5.txt
+
+html-doc: cgitrc.5.txt
+	a2x -f xhtml --stylesheet=cgit-doc.css cgitrc.5.txt
+
+pdf-doc: cgitrc.5.txt
+	a2x -f pdf cgitrc.5.txt
+
+clean: clean-doc
 	rm -f cgit VERSION *.o *.d
+
+clean-doc:
+	rm -f cgitrc.5 cgitrc.5.xhtml cgitrc.5.pdf
 
 get-git:
 	curl $(GIT_URL) | tar -xj && rm -rf git && mv git-$(GIT_VER) git
