@@ -4,7 +4,7 @@ CGITRC(5)
 
 NAME
 ----
-	cgitrc - runtime configuration for cgit
+cgitrc - runtime configuration for cgit
 
 
 SYNOPSIS
