@@ -206,6 +206,7 @@ static void prepare_context(struct cgit_context *ctx)
 	ctx->page.size = 0;
 	ctx->page.modified = time(NULL);
 	ctx->page.expires = ctx->page.modified;
+	ctx->page.etag = NULL;
 }
 
 struct refmatch {

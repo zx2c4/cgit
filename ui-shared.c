@@ -468,6 +468,8 @@ void cgit_print_http_headers(struct cgit_context *ctx)
 		      ctx->page.filename);
 	htmlf("Last-Modified: %s\n", http_date(ctx->page.modified));
 	htmlf("Expires: %s\n", http_date(ctx->page.expires));
+	if (ctx->page.etag)
+		htmlf("ETag: \"%s\"\n", ctx->page.etag);
 	html("\n");
 }
 
