@@ -430,6 +430,7 @@ static int calc_ttl()
 int main(int argc, const char **argv)
 {
 	const char *cgit_config_env = getenv("CGIT_CONFIG");
+	const char *method = getenv("REQUEST_METHOD");
 	const char *path;
 	char *qry;
 	int err, ttl;
@@ -476,6 +477,8 @@ int main(int argc, const char **argv)
 
 	ttl = calc_ttl();
 	ctx.page.expires += ttl*60;
+	if (method && !strcmp(method, "HEAD"))
+		ctx.cfg.nocache = 1;
 	if (ctx.cfg.nocache)
 		ctx.cfg.cache_size = 0;
 	err = cache_process(ctx.cfg.cache_size, ctx.cfg.cache_root,
