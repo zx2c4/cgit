@@ -42,6 +42,7 @@ char *readfile(const char *path)
 
 	if (!(f = fopen(path, "r")))
 		return NULL;
+	buf[0] = 0;
 	fgets(buf, MAX_PATH, f);
 	fclose(f);
 	return buf;
