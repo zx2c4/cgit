@@ -156,20 +156,31 @@ static const char *get_ref_from_filename(const char *url, const char *filename,
 	return NULL;
 }
 
+void show_error(char *msg)
+{
+	ctx.page.mimetype = "text/html";
+	cgit_print_http_headers(&ctx);
+	cgit_print_docstart(&ctx);
+	cgit_print_pageheader(&ctx);
+	cgit_print_error(msg);
+	cgit_print_docend();
+}
+
 void cgit_print_snapshot(const char *head, const char *hex,
 			 const char *filename, int snapshots, int dwim)
 {
 	const struct cgit_snapshot_format* f;
 	char *prefix = NULL;
 
+	if (!filename) {
+		show_error("No snapshot name specified");
+		return;
+	}
+
 	f = get_format(filename);
 	if (!f) {
-		ctx.page.mimetype = "text/html";
-		cgit_print_http_headers(&ctx);
-		cgit_print_docstart(&ctx);
-		cgit_print_pageheader(&ctx);
-		cgit_print_error(fmt("Unsupported snapshot format: %s", filename));
-		cgit_print_docend();
+		show_error(xstrdup(fmt("Unsupported snapshot format: %s",
+				       filename)));
 		return;
 	}
 
