@@ -31,6 +31,8 @@ void config_cb(const char *name, const char *value)
 		ctx.cfg.favicon = xstrdup(value);
 	else if (!strcmp(name, "footer"))
 		ctx.cfg.footer = xstrdup(value);
+	else if (!strcmp(name, "head-include"))
+		ctx.cfg.head_include = xstrdup(value);
 	else if (!strcmp(name, "header"))
 		ctx.cfg.header = xstrdup(value);
 	else if (!strcmp(name, "logo"))

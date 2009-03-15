@@ -496,8 +496,10 @@ void cgit_print_docstart(struct cgit_context *ctx)
 		html_attr(cgit_hosturl());
 		html_attr(cgit_fileurl(ctx->repo->url, "atom", ctx->qry.path,
 				       fmt("h=%s", ctx->qry.head)));
-		html("' type='application/atom+xml'/>");
+		html("' type='application/atom+xml'/>\n");
 	}
+	if (ctx->cfg.head_include)
+		html_include(ctx->cfg.head_include);
 	html("</head>\n");
 	html("<body>\n");
 	if (ctx->cfg.header)
