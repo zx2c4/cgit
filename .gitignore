@@ -2,5 +2,10 @@
 cgit
 cgit.conf
 VERSION
+cgitrc.5
+cgitrc.5.fo
+cgitrc.5.html
+cgitrc.5.pdf
+cgitrc.5.xml
 *.o
 *.d
