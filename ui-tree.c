@@ -25,11 +25,14 @@ static void print_text_buffer(char *buf, unsigned long size)
 	html("<tr><td class='linenumbers'><pre>");
 	idx = 0;
 	lineno = 0;
-	htmlf(numberfmt, ++lineno);
-	while(idx < size - 1) { // skip absolute last newline
-		if (buf[idx] == '\n')
-			htmlf(numberfmt, ++lineno);
-		idx++;
+
+	if (size) {
+		htmlf(numberfmt, ++lineno);
+		while(idx < size - 1) { // skip absolute last newline
+			if (buf[idx] == '\n')
+				htmlf(numberfmt, ++lineno);
+			idx++;
+		}
 	}
 	html("</pre></td>\n");
 	html("<td class='lines'><pre><code>");
