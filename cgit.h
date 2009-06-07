@@ -181,6 +181,8 @@ struct cgit_page {
 	char *charset;
 	char *filename;
 	char *title;
+	int status;
+	char *statusmsg;
 };
 
 struct cgit_context {

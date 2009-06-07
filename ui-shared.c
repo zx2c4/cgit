@@ -456,6 +456,8 @@ void cgit_print_age(time_t t, time_t max_relative, char *format)
 
 void cgit_print_http_headers(struct cgit_context *ctx)
 {
+	if (ctx->page.status)
+		htmlf("Status: %d %s\n", ctx->page.status, ctx->page.statusmsg);
 	if (ctx->page.mimetype && ctx->page.charset)
 		htmlf("Content-Type: %s; charset=%s\n", ctx->page.mimetype,
 		      ctx->page.charset);

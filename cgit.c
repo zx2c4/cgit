@@ -285,6 +285,8 @@ static int prepare_repo_cmd(struct cgit_context *ctx)
 	if (get_sha1(ctx->qry.head, sha1)) {
 		tmp = xstrdup(ctx->qry.head);
 		ctx->qry.head = ctx->repo->defbranch;
+		ctx->page.status = 404;
+		ctx->page.statusmsg = "not found";
 		cgit_print_http_headers(ctx);
 		cgit_print_docstart(ctx);
 		cgit_print_pageheader(ctx);
