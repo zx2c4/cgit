@@ -52,7 +52,8 @@ void add_entry(struct commit *commit, char *host)
 	cgit_print_date(info->author_date, FMT_ATOMDATE, ctx.cfg.local_time);
 	html("</published>\n");
 	if (host) {
-		html("<link rel='alternate' type='text/html' href='http://");
+		html("<link rel='alternate' type='text/html' href='");
+		html(cgit_httpscheme());
 		html_attr(host);
 		html_attr(cgit_pageurl(ctx.repo->url, "commit", NULL));
 		if (ctx.cfg.virtual_root)
@@ -113,7 +114,8 @@ void cgit_print_atom(char *tip, char *path, int max_count)
 	html_txt(ctx.repo->desc);
 	html("</subtitle>\n");
 	if (host) {
-		html("<link rel='alternate' type='text/html' href='http://");
+		html("<link rel='alternate' type='text/html' href='");
+		html(cgit_httpscheme());
 		html_attr(host);
 		html_attr(cgit_repourl(ctx.repo->url));
 		html("'/>\n");

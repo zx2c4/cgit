@@ -503,7 +503,8 @@ void cgit_print_docstart(struct cgit_context *ctx)
 		html("'/>\n");
 	}
 	if (host && ctx->repo) {
-		html("<link rel='alternate' title='Atom feed' href='http://");
+		html("<link rel='alternate' title='Atom feed' href='");
+		html(cgit_httpscheme());
 		html_attr(cgit_hosturl());
 		html_attr(cgit_fileurl(ctx->repo->url, "atom", ctx->qry.path,
 				       fmt("h=%s", ctx->qry.head)));
