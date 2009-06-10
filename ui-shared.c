@@ -34,6 +34,17 @@ void cgit_print_error(char *msg)
 	html("</div>\n");
 }
 
+char *cgit_httpscheme()
+{
+	char *https;
+
+	https = getenv("HTTPS");
+	if (https != NULL && strcmp(https, "on") == 0)
+		return "https://";
+	else
+		return "http://";
+}
+
 char *cgit_hosturl()
 {
 	char *host, *port;
