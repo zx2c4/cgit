@@ -611,14 +611,17 @@ void cgit_print_pageheader(struct cgit_context *ctx)
 
 	html("<table id='header'>\n");
 	html("<tr>\n");
-	html("<td class='logo' rowspan='2'><a href='");
-	if (ctx->cfg.logo_link)
-		html_attr(ctx->cfg.logo_link);
-	else
-		html_attr(cgit_rooturl());
-	html("'><img src='");
-	html_attr(ctx->cfg.logo);
-	html("' alt='cgit logo'/></a></td>\n");
+
+	if (ctx->cfg.logo && ctx->cfg.logo[0] != 0) {
+		html("<td class='logo' rowspan='2'><a href='");
+		if (ctx->cfg.logo_link)
+			html_attr(ctx->cfg.logo_link);
+		else
+			html_attr(cgit_rooturl());
+		html("'><img src='");
+		html_attr(ctx->cfg.logo);
+		html("' alt='cgit logo'/></a></td>\n");
+	}
 
 	html("<td class='main'>");
 	if (ctx->repo) {
