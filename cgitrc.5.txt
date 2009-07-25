@@ -59,6 +59,11 @@ css::
 	Url which specifies the css document to include in all cgit pages.
 	Default value: "/cgit.css".
 
+embedded::
+	Flag which, when set to "1", will make cgit generate a html fragment
+	suitable for embedding in other html pages. Default value: none. See
+	also: "noheader".
+	
 enable-index-links::
 	Flag which, when set to "1", will make cgit generate extra links for
 	each repo in the repository index (specifically, to the "summary",
@@ -152,6 +157,10 @@ nocache::
 	If set to the value "1" caching will be disabled. This settings is
 	deprecated, and will not be honored starting with cgit-1.0. Default
 	value: "0".
+
+noheader::
+	Flag which, when set to "1", will make cgit omit the standard header
+	on all pages. Default value: none. See also: "embedded".
 
 renamelimit::
 	Maximum number of files to consider when detecting renames. The value

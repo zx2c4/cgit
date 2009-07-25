@@ -469,6 +469,9 @@ void cgit_print_http_headers(struct cgit_context *ctx)
 {
 	const char *method = getenv("REQUEST_METHOD");
 
+	if (ctx->cfg.embedded)
+		return;
+
 	if (ctx->page.status)
 		htmlf("Status: %d %s\n", ctx->page.status, ctx->page.statusmsg);
 	if (ctx->page.mimetype && ctx->page.charset)
@@ -492,6 +495,9 @@ void cgit_print_http_headers(struct cgit_context *ctx)
 
 void cgit_print_docstart(struct cgit_context *ctx)
 {
+	if (ctx->cfg.embedded)
+		return;
+
 	char *host = cgit_hosturl();
 	html(cgit_doctype);
 	html("<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='en' lang='en'>\n");
@@ -537,6 +543,9 @@ void cgit_print_docend()
 		cgit_print_date(time(NULL), FMT_LONGDATE, ctx.cfg.local_time);
 		html("</div>\n");
 	}
+	html("</div>");
+	if (ctx.cfg.embedded)
+		return;
 	html("</body>\n</html>\n");
 }
 
@@ -624,13 +633,8 @@ char *hc(struct cgit_cmd *cmd, const char *page)
 	return (strcmp(cmd ? cmd->name : fallback_cmd, page) ? NULL : "active");
 }
 
-void cgit_print_pageheader(struct cgit_context *ctx)
+static void print_header(struct cgit_context *ctx)
 {
-	struct cgit_cmd *cmd = cgit_get_cmd(ctx);
-
-	if (!cmd && ctx->repo)
-		fallback_cmd = "summary";
-
 	html("<table id='header'>\n");
 	html("<tr>\n");
 	html("<td class='logo' rowspan='2'><a href='");
@@ -671,6 +675,18 @@ void cgit_print_pageheader(struct cgit_context *ctx)
 			html_include(ctx->cfg.index_info);
 	}
 	html("</td></tr></table>\n");
+}
+
+void cgit_print_pageheader(struct cgit_context *ctx)
+{
+	struct cgit_cmd *cmd = cgit_get_cmd(ctx);
+
+	if (!cmd && ctx->repo)
+		fallback_cmd = "summary";
+
+	html("<div id='cgit'>");
+	if (!ctx->cfg.noheader)
+		print_header(ctx);
 
 	html("<table class='tabs'><tr><td>\n");
 	if (ctx->repo) {

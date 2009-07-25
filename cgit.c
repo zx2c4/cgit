@@ -51,6 +51,8 @@ void config_cb(const char *name, const char *value)
 			ctx.cfg.virtual_root = "";
 	} else if (!strcmp(name, "nocache"))
 		ctx.cfg.nocache = atoi(value);
+	else if (!strcmp(name, "noheader"))
+		ctx.cfg.noheader = atoi(value);
 	else if (!strcmp(name, "snapshots"))
 		ctx.cfg.snapshots = cgit_parse_snapshots_mask(value);
 	else if (!strcmp(name, "enable-index-links"))
@@ -73,6 +75,8 @@ void config_cb(const char *name, const char *value)
 		ctx.cfg.cache_static_ttl = atoi(value);
 	else if (!strcmp(name, "cache-dynamic-ttl"))
 		ctx.cfg.cache_dynamic_ttl = atoi(value);
+	else if (!strcmp(name, "embedded"))
+		ctx.cfg.embedded = atoi(value);
 	else if (!strcmp(name, "max-message-length"))
 		ctx.cfg.max_msg_len = atoi(value);
 	else if (!strcmp(name, "max-repodesc-length"))

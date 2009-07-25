@@ -156,6 +156,7 @@ struct cgit_config {
 	int cache_repo_ttl;
 	int cache_root_ttl;
 	int cache_static_ttl;
+	int embedded;
 	int enable_index_links;
 	int enable_log_filecount;
 	int enable_log_linecount;
@@ -167,6 +168,7 @@ struct cgit_config {
 	int max_repodesc_len;
 	int max_stats;
 	int nocache;
+	int noheader;
 	int renamelimit;
 	int snapshots;
 	int summary_branches;
