@@ -180,6 +180,7 @@ struct cgit_page {
 	char *mimetype;
 	char *charset;
 	char *filename;
+	char *etag;
 	char *title;
 	int status;
 	char *statusmsg;

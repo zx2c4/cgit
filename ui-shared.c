@@ -467,6 +467,8 @@ void cgit_print_age(time_t t, time_t max_relative, char *format)
 
 void cgit_print_http_headers(struct cgit_context *ctx)
 {
+	const char *method = getenv("REQUEST_METHOD");
+
 	if (ctx->page.status)
 		htmlf("Status: %d %s\n", ctx->page.status, ctx->page.statusmsg);
 	if (ctx->page.mimetype && ctx->page.charset)
@@ -481,7 +483,11 @@ void cgit_print_http_headers(struct cgit_context *ctx)
 		      ctx->page.filename);
 	htmlf("Last-Modified: %s\n", http_date(ctx->page.modified));
 	htmlf("Expires: %s\n", http_date(ctx->page.expires));
+	if (ctx->page.etag)
+		htmlf("ETag: \"%s\"\n", ctx->page.etag);
 	html("\n");
+	if (method && !strcmp(method, "HEAD"))
+		exit(0);
 }
 
 void cgit_print_docstart(struct cgit_context *ctx)
