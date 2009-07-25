@@ -49,6 +49,8 @@ void config_cb(const char *name, const char *value)
 			ctx.cfg.virtual_root = "";
 	} else if (!strcmp(name, "nocache"))
 		ctx.cfg.nocache = atoi(value);
+	else if (!strcmp(name, "noheader"))
+		ctx.cfg.noheader = atoi(value);
 	else if (!strcmp(name, "snapshots"))
 		ctx.cfg.snapshots = cgit_parse_snapshots_mask(value);
 	else if (!strcmp(name, "enable-index-links"))

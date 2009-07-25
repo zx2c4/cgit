@@ -611,14 +611,8 @@ char *hc(struct cgit_cmd *cmd, const char *page)
 	return (strcmp(cmd ? cmd->name : fallback_cmd, page) ? NULL : "active");
 }
 
-void cgit_print_pageheader(struct cgit_context *ctx)
+static void print_header(struct cgit_context *ctx)
 {
-	struct cgit_cmd *cmd = cgit_get_cmd(ctx);
-
-	if (!cmd && ctx->repo)
-		fallback_cmd = "summary";
-
-	html("<div id='cgit'>");
 	html("<table id='header'>\n");
 	html("<tr>\n");
 	html("<td class='logo' rowspan='2'><a href='");
@@ -659,6 +653,18 @@ void cgit_print_pageheader(struct cgit_context *ctx)
 			html_include(ctx->cfg.index_info);
 	}
 	html("</td></tr></table>\n");
+}
+
+void cgit_print_pageheader(struct cgit_context *ctx)
+{
+	struct cgit_cmd *cmd = cgit_get_cmd(ctx);
+
+	if (!cmd && ctx->repo)
+		fallback_cmd = "summary";
+
+	html("<div id='cgit'>");
+	if (!ctx->cfg.noheader)
+		print_header(ctx);
 
 	html("<table class='tabs'><tr><td>\n");
 	if (ctx->repo) {

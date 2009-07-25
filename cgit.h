@@ -172,6 +172,7 @@ struct cgit_config {
 	int summary_log;
 	int summary_tags;
 	int embedded;
+	int noheader;
 };
 
 struct cgit_page {
