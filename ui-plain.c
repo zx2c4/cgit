@@ -31,7 +31,10 @@ static void print_object(const unsigned char *sha1, const char *path)
 		html_status(404, "Not found", 0);
 		return;
 	}
-	ctx.page.mimetype = "text/plain";
+	if (buffer_is_binary(buf, size))
+		ctx.page.mimetype = "application/octet-stream";
+	else
+		ctx.page.mimetype = "text/plain";
 	ctx.page.filename = fmt("%s", path);
 	ctx.page.size = size;
 	cgit_print_http_headers(&ctx);
