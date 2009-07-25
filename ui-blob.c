@@ -27,7 +27,7 @@ void cgit_print_blob(const char *hex, char *path, const char *head)
 
 	unsigned char sha1[20];
 	enum object_type type;
-	unsigned char *buf;
+	char *buf;
 	unsigned long size;
 	struct commit *commit;
 	const char *paths[] = {path, NULL};
@@ -67,6 +67,12 @@ void cgit_print_blob(const char *hex, char *path, const char *head)
 
 	buf[size] = '\0';
 	ctx.page.mimetype = ctx.qry.mimetype;
+	if (!ctx.page.mimetype) {
+		if (buffer_is_binary(buf, size))
+			ctx.page.mimetype = "application/octet-stream";
+		else
+			ctx.page.mimetype = "text/plain";
+	}
 	ctx.page.filename = path;
 	cgit_print_http_headers(&ctx);
 	write(htmlfd, buf, size);
