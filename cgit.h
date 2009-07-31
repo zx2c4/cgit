@@ -183,6 +183,7 @@ struct cgit_config {
 	int summary_branches;
 	int summary_log;
 	int summary_tags;
+	struct cgit_filter *commit_filter;
 	struct cgit_filter *source_filter;
 };
 

@@ -90,6 +90,8 @@ void config_cb(const char *name, const char *value)
 		ctx.cfg.cache_static_ttl = atoi(value);
 	else if (!strcmp(name, "cache-dynamic-ttl"))
 		ctx.cfg.cache_dynamic_ttl = atoi(value);
+	else if (!strcmp(name, "commit-filter"))
+		ctx.cfg.commit_filter = new_filter(value, 0);
 	else if (!strcmp(name, "embedded"))
 		ctx.cfg.embedded = atoi(value);
 	else if (!strcmp(name, "max-message-length"))
