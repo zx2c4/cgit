@@ -198,6 +198,14 @@ snapshots::
 		"zip"		zip-file
 	Default value: none.
 
+source-filter::
+	Specifies a command which will be invoked to format plaintext blobs
+	in the tree view. The command will get the blob content on its STDIN
+	and the name of the blob as its only command line argument. The STDOUT
+	from the command will be included verbatim as the blob contents, i.e.
+	this can be used to implement e.g. syntax highlighting. Default value:
+	none.
+
 summary-branches::
 	Specifies the number of branches to display in the repository "summary"
 	view. Default value: "10".
