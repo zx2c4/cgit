@@ -12,37 +12,16 @@
 
 static int write_compressed_tar_archive(struct archiver_args *args,const char *filter)
 {
-	int rw[2];
-	pid_t gzpid;
-	int stdout2;
-	int status;
 	int rv;
+	struct cgit_filter f;
 
-	stdout2 = chk_non_negative(dup(STDIN_FILENO), "Preserving STDOUT before compressing");
-	chk_zero(pipe(rw), "Opening pipe from compressor subprocess");
-	gzpid = chk_non_negative(fork(), "Forking compressor subprocess");
-	if(gzpid==0) {
-		/* child */
-		chk_zero(close(rw[1]), "Closing write end of pipe in child");
-		chk_zero(close(STDIN_FILENO), "Closing STDIN");
-		chk_non_negative(dup2(rw[0],STDIN_FILENO), "Redirecting compressor input to stdin");
-		execlp(filter,filter,NULL);
-		_exit(-1);
-	}
-	/* parent */
-	chk_zero(close(rw[0]), "Closing read end of pipe");
-	chk_non_negative(dup2(rw[1],STDOUT_FILENO), "Redirecting output to compressor");
-
+	f.cmd = xstrdup(filter);
+	f.argv = malloc(2 * sizeof(char *));
+	f.argv[0] = f.cmd;
+	f.argv[1] = NULL;
+	cgit_open_filter(&f);
 	rv = write_tar_archive(args);
-
-	chk_zero(close(STDOUT_FILENO), "Closing STDOUT redirected to compressor");
-	chk_non_negative(dup2(stdout2,STDOUT_FILENO), "Restoring uncompressed STDOUT");
-	chk_zero(close(stdout2), "Closing uncompressed STDOUT");
-	chk_zero(close(rw[1]), "Closing write end of pipe in parent");
-	chk_positive(waitpid(gzpid,&status,0), "Waiting on compressor process");
-	if(! ( WIFEXITED(status) && WEXITSTATUS(status)==0 ) )
-		cgit_print_error("Failed to compress archive");
-
+	cgit_close_filter(&f);
 	return rv;
 }
 
