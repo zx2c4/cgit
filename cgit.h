@@ -129,6 +129,15 @@ struct cgit_query {
 	int showmsg;
 };
 
+struct cgit_filter {
+	char *cmd;
+	char **argv;
+	int old_stdout;
+	int pipe_fh[2];
+	int pid;
+	int exitstatus;
+};
+
 struct cgit_config {
 	char *agefile;
 	char *cache_root;
@@ -247,6 +256,9 @@ extern void cgit_parse_url(const char *url);
 extern const char *cgit_repobasename(const char *reponame);
 
 extern int cgit_parse_snapshots_mask(const char *str);
+
+extern int cgit_open_filter(struct cgit_filter *filter);
+extern int cgit_close_filter(struct cgit_filter *filter);
 
 
 #endif /* CGIT_H */

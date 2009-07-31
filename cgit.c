@@ -17,6 +17,21 @@
 
 const char *cgit_version = CGIT_VERSION;
 
+struct cgit_filter *new_filter(const char *cmd, int extra_args)
+{
+	struct cgit_filter *f;
+
+	if (!cmd)
+		return NULL;
+
+	f = xmalloc(sizeof(struct cgit_filter));
+	f->cmd = xstrdup(cmd);
+	f->argv = xmalloc((2 + extra_args) * sizeof(char *));
+	f->argv[0] = f->cmd;
+	f->argv[1] = NULL;
+	return f;
+}
+
 void config_cb(const char *name, const char *value)
 {
 	if (!strcmp(name, "root-title"))
