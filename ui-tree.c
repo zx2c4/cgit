@@ -103,6 +103,7 @@ static int ls_item(const unsigned char *sha1, const char *base, int baselen,
 {
 	char *name;
 	char *fullpath;
+	char *class;
 	enum object_type type;
 	unsigned long size = 0;
 
@@ -135,7 +136,12 @@ static int ls_item(const unsigned char *sha1, const char *base, int baselen,
 		cgit_tree_link(name, NULL, "ls-dir", ctx.qry.head,
 			       curr_rev, fullpath);
 	} else {
-		cgit_tree_link(name, NULL, "ls-blob", ctx.qry.head,
+		class = strrchr(name, '.');
+		if (class != NULL) {
+			class = fmt("ls-blob %s", class + 1);
+		} else
+			class = "ls-blob";
+		cgit_tree_link(name, NULL, class, ctx.qry.head,
 			       curr_rev, fullpath);
 	}
 	htmlf("</td><td class='ls-size'>%li</td>", size);
