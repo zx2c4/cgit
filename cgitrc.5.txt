@@ -158,6 +158,10 @@ nocache::
 	deprecated, and will not be honored starting with cgit-1.0. Default
 	value: "0".
 
+noplainemail::
+	If set to "1" showing full author email adresses will be disabled.
+	Default value: "0".
+
 noheader::
 	Flag which, when set to "1", will make cgit omit the standard header
 	on all pages. Default value: none. See also: "embedded".

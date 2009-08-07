@@ -40,15 +40,19 @@ void cgit_print_commit(char *hex)
 	html("<table summary='commit info' class='commit-info'>\n");
 	html("<tr><th>author</th><td>");
 	html_txt(info->author);
-	html(" ");
-	html_txt(info->author_email);
+	if (!ctx.cfg.noplainemail) {
+		html(" ");
+		html_txt(info->author_email);
+	}
 	html("</td><td class='right'>");
 	cgit_print_date(info->author_date, FMT_LONGDATE, ctx.cfg.local_time);
 	html("</td></tr>\n");
 	html("<tr><th>committer</th><td>");
 	html_txt(info->committer);
-	html(" ");
-	html_txt(info->committer_email);
+	if (!ctx.cfg.noplainemail) {
+		html(" ");
+		html_txt(info->committer_email);
+	}
 	html("</td><td class='right'>");
 	cgit_print_date(info->committer_date, FMT_LONGDATE, ctx.cfg.local_time);
 	html("</td></tr>\n");

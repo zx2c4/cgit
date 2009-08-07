@@ -64,7 +64,7 @@ void cgit_print_tag(char *revname)
 		if (info->tagger) {
 			html("<tr><td>Tagged by</td><td>");
 			html_txt(info->tagger);
-			if (info->tagger_email) {
+			if (info->tagger_email && !ctx.cfg.noplainemail) {
 				html(" ");
 				html_txt(info->tagger_email);
 			}

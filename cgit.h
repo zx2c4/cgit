@@ -168,6 +168,7 @@ struct cgit_config {
 	int max_repodesc_len;
 	int max_stats;
 	int nocache;
+	int noplainemail;
 	int noheader;
 	int renamelimit;
 	int snapshots;

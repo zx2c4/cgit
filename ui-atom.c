@@ -32,7 +32,7 @@ void add_entry(struct commit *commit, char *host)
 		html_txt(info->author);
 		html("</name>\n");
 	}
-	if (info->author_email) {
+	if (info->author_email && !ctx.cfg.noplainemail) {
 		mail = xstrdup(info->author_email);
 		t = strchr(mail, '<');
 		if (t)

@@ -51,6 +51,8 @@ void config_cb(const char *name, const char *value)
 			ctx.cfg.virtual_root = "";
 	} else if (!strcmp(name, "nocache"))
 		ctx.cfg.nocache = atoi(value);
+	else if (!strcmp(name, "noplainemail"))
+		ctx.cfg.noplainemail = atoi(value);
 	else if (!strcmp(name, "noheader"))
 		ctx.cfg.noheader = atoi(value);
 	else if (!strcmp(name, "snapshots"))

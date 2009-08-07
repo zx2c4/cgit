@@ -108,7 +108,11 @@ void cgit_print_patch(char *hex)
 	ctx.page.filename = patchname;
 	cgit_print_http_headers(&ctx);
 	htmlf("From %s Mon Sep 17 00:00:00 2001\n", sha1_to_hex(sha1));
-	htmlf("From: %s %s\n", info->author, info->author_email);
+	htmlf("From: %s", info->author);
+	if (!ctx.cfg.noplainemail) {
+		htmlf(" %s", info->author_email);
+	}
+	html("\n");
 	html("Date: ");
 	cgit_print_date(info->author_date, "%a, %d %b %Y %H:%M:%S %z%n", ctx.cfg.local_time);
 	htmlf("Subject: %s\n\n", info->subject);
