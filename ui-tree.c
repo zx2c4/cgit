@@ -23,19 +23,24 @@ static void print_text_buffer(const char *name, char *buf, unsigned long size)
 
 	html("<table summary='blob content' class='blob'>\n");
 
-	html("<tr><td class='linenumbers'><pre>");
-	idx = 0;
-	lineno = 0;
-
-	if (size) {
-		htmlf(numberfmt, ++lineno);
-		while(idx < size - 1) { // skip absolute last newline
-			if (buf[idx] == '\n')
-				htmlf(numberfmt, ++lineno);
-			idx++;
+	if (ctx.cfg.linenumbers) {
+		html("<tr><td class='linenumbers'><pre>");
+		idx = 0;
+		lineno = 0;
+	
+		if (size) {
+			htmlf(numberfmt, ++lineno);
+			while(idx < size - 1) { // skip absolute last newline
+				if (buf[idx] == '\n')
+					htmlf(numberfmt, ++lineno);
+				idx++;
+			}
 		}
+		html("</pre></td>\n");
 	}
-	html("</pre></td>\n");
+	else {
+		html("<tr>\n");
+	}
 
 	if (ctx.repo->source_filter) {
 		html("<td class='lines'><pre><code>");

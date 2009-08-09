@@ -146,6 +146,10 @@ logo-link::
 	calculated url of the repository index page will be used. Default
 	value: none.
 
+linenumbers::
+	If set to "1" lines in tree view will have numbers.
+	Default value: "0".
+
 max-commit-count::
 	Specifies the number of entries to list per page in "log" view. Default
 	value: "50".

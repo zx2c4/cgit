@@ -66,6 +66,8 @@ void config_cb(const char *name, const char *value)
 		ctx.cfg.index_info = xstrdup(value);
 	else if (!strcmp(name, "logo-link"))
 		ctx.cfg.logo_link = xstrdup(value);
+	else if (!strcmp(name, "linenumbers"))
+		ctx.cfg.linenumbers = atoi(value);
 	else if (!strcmp(name, "module-link"))
 		ctx.cfg.module_link = xstrdup(value);
 	else if (!strcmp(name, "virtual-root")) {
