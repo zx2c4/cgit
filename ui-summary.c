@@ -83,6 +83,10 @@ void cgit_print_repo_readme(char *path)
 	} else
 		tmp = ctx.repo->readme;
 	html("<div id='summary'>");
+	if (ctx.repo->about_filter)
+		cgit_open_filter(ctx.repo->about_filter);
 	html_include(tmp);
+	if (ctx.repo->about_filter)
+		cgit_close_filter(ctx.repo->about_filter);
 	html("</div>");
 }

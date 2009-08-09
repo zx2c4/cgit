@@ -62,6 +62,7 @@ struct cgit_repo *cgit_add_repo(const char *url)
 	ret->module_link = ctx.cfg.module_link;
 	ret->readme = NULL;
 	ret->mtime = -1;
+	ret->about_filter = ctx.cfg.about_filter;
 	ret->commit_filter = ctx.cfg.commit_filter;
 	ret->source_filter = ctx.cfg.source_filter;
 	return ret;

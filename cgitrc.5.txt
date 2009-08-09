@@ -16,6 +16,13 @@ lines, and lines starting with '#', are ignored.
 
 GLOBAL SETTINGS
 ---------------
+about-filter::
+	Specifies a command which will be invoked to format the content of
+	about pages (both top-level and for each repository). The command will
+	get the content of the about-file on its STDIN, and the STDOUT from the
+	command will be included verbatim on the about page. Default value:
+	none.
+
 agefile::
 	Specifies a path, relative to each repository path, which can be used
 	to specify the date and time of the youngest commit in the repository.
@@ -234,6 +241,9 @@ virtual-root::
 
 REPOSITORY SETTINGS
 -------------------
+repo.about-filter::
+	Override the default about-filter. Default value: <about-filter>.
+
 repo.clone-url::
 	A list of space-separated urls which can be used to clone this repo.
 	Default value: none.
