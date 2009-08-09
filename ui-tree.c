@@ -22,15 +22,6 @@ static void print_text_buffer(const char *name, char *buf, unsigned long size)
 		"<a class='no' id='n%1$d' name='n%1$d' href='#n%1$d'>%1$d</a>\n";
 
 	html("<table summary='blob content' class='blob'>\n");
-	if (ctx.repo->source_filter) {
-		html("<tr><td class='lines'><pre><code>");
-		ctx.repo->source_filter->argv[1] = xstrdup(name);
-		cgit_open_filter(ctx.repo->source_filter);
-		write(STDOUT_FILENO, buf, size);
-		cgit_close_filter(ctx.repo->source_filter);
-		html("</code></pre></td></tr></table>\n");
-		return;
-	}
 
 	html("<tr><td class='linenumbers'><pre>");
 	idx = 0;
@@ -45,6 +36,17 @@ static void print_text_buffer(const char *name, char *buf, unsigned long size)
 		}
 	}
 	html("</pre></td>\n");
+
+	if (ctx.repo->source_filter) {
+		html("<td class='lines'><pre><code>");
+		ctx.repo->source_filter->argv[1] = xstrdup(name);
+		cgit_open_filter(ctx.repo->source_filter);
+		write(STDOUT_FILENO, buf, size);
+		cgit_close_filter(ctx.repo->source_filter);
+		html("</code></pre></td></tr></table>\n");
+		return;
+	}
+
 	html("<td class='lines'><pre><code>");
 	html_txt(buf);
 	html("</code></pre></td></tr></table>\n");
