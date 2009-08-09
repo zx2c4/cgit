@@ -238,6 +238,9 @@ repo.clone-url::
 	A list of space-separated urls which can be used to clone this repo.
 	Default value: none.
 
+repo.commit-filter::
+	Override the default commit-filter. Default value: <commit-filter>.
+
 repo.defbranch::
 	The name of the default branch for this repository. If no such branch
 	exists in the repository, the first branch name (when sorted) is used
@@ -277,6 +280,9 @@ repo.readme::
 repo.snapshots::
 	A mask of allowed snapshot-formats for this repo, restricted by the
 	"snapshots" global setting. Default value: <snapshots>.
+
+repo.source-filter::
+	Override the default source-filter. Default value: <source-filter>.
 
 repo.url::
 	The relative url used to access the repository. This must be the first

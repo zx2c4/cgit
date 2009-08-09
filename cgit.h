@@ -48,6 +48,15 @@ typedef void (*configfn)(const char *name, const char *value);
 typedef void (*filepair_fn)(struct diff_filepair *pair);
 typedef void (*linediff_fn)(char *line, int len);
 
+struct cgit_filter {
+	char *cmd;
+	char **argv;
+	int old_stdout;
+	int pipe_fh[2];
+	int pid;
+	int exitstatus;
+};
+
 struct cgit_repo {
 	char *url;
 	char *name;
@@ -64,6 +73,8 @@ struct cgit_repo {
 	int enable_log_linecount;
 	int max_stats;
 	time_t mtime;
+	struct cgit_filter *commit_filter;
+	struct cgit_filter *source_filter;
 };
 
 struct cgit_repolist {
@@ -127,15 +138,6 @@ struct cgit_query {
 	int nohead;
 	char *sort;
 	int showmsg;
-};
-
-struct cgit_filter {
-	char *cmd;
-	char **argv;
-	int old_stdout;
-	int pipe_fh[2];
-	int pid;
-	int exitstatus;
 };
 
 struct cgit_config {
