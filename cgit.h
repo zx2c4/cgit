@@ -74,6 +74,7 @@ struct cgit_repo {
 	int enable_log_linecount;
 	int max_stats;
 	time_t mtime;
+	struct cgit_filter *about_filter;
 	struct cgit_filter *commit_filter;
 	struct cgit_filter *source_filter;
 };
@@ -188,6 +189,7 @@ struct cgit_config {
 	int summary_log;
 	int summary_tags;
 	struct string_list mimetypes;
+	struct cgit_filter *about_filter;
 	struct cgit_filter *commit_filter;
 	struct cgit_filter *source_filter;
 };
