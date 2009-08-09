@@ -2,6 +2,6 @@
 #define UI_SUMMARY_H
 
 extern void cgit_print_summary();
-extern void cgit_print_repo_readme();
+extern void cgit_print_repo_readme(char *path);
 
 #endif /* UI_SUMMARY_H */

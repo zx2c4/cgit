@@ -66,11 +66,23 @@ void cgit_print_summary()
 	html("</table>");
 }
 
-void cgit_print_repo_readme()
+void cgit_print_repo_readme(char *path)
 {
-	if (ctx.repo->readme) {
-		html("<div id='summary'>");
-		html_include(ctx.repo->readme);
-		html("</div>");
-	}
+	char *slash, *tmp;
+
+	if (!ctx.repo->readme)
+		return;
+
+	if (path) {
+		slash = strrchr(ctx.repo->readme, '/');
+		if (!slash)
+			return;
+		tmp = xmalloc(slash - ctx.repo->readme + 1 + strlen(path) + 1);
+		strncpy(tmp, ctx.repo->readme, slash - ctx.repo->readme + 1);
+		strcpy(tmp + (slash - ctx.repo->readme + 1), path);
+	} else
+		tmp = ctx.repo->readme;
+	html("<div id='summary'>");
+	html_include(tmp);
+	html("</div>");
 }

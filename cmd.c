@@ -39,7 +39,7 @@ static void atom_fn(struct cgit_context *ctx)
 static void about_fn(struct cgit_context *ctx)
 {
 	if (ctx->repo)
-		cgit_print_repo_readme();
+		cgit_print_repo_readme(ctx->qry.path);
 	else
 		cgit_print_site_readme();
 }
