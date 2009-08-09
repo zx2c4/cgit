@@ -21,7 +21,7 @@ struct cgit_filter *new_filter(const char *cmd, int extra_args)
 {
 	struct cgit_filter *f;
 
-	if (!cmd)
+	if (!cmd || !cmd[0])
 		return NULL;
 
 	f = xmalloc(sizeof(struct cgit_filter));
