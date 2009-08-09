@@ -15,6 +15,7 @@
 #include <revision.h>
 #include <log-tree.h>
 #include <archive.h>
+#include <string-list.h>
 #include <xdiff-interface.h>
 #include <xdiff/xdiff.h>
 #include <utf8.h>
@@ -175,6 +176,7 @@ struct cgit_config {
 	int summary_branches;
 	int summary_log;
 	int summary_tags;
+	struct string_list mimetypes;
 };
 
 struct cgit_page {

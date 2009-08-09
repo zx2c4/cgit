@@ -147,6 +147,10 @@ max-stats::
 	"month", "quarter" and "year". If unspecified, statistics are
 	disabled. Default value: none. See also: "repo.max-stats".
 
+mimetype.<ext>::
+	Set the mimetype for the specified filename extension. This is used
+	by the `plain` command when returning blob content.
+
 module-link::
 	Text which will be used as the formatstring for a hyperlink when a
 	submodule is printed in a directory listing. The arguments for the
@@ -326,6 +330,19 @@ root-readme=/var/www/htdocs/about.html
 
 # Allow download of tar.gz, tar.bz2 and zip-files
 snapshots=tar.gz tar.bz2 zip
+
+
+##
+## List of common mimetypes
+##
+
+mimetype.git=image/git
+mimetype.html=text/html
+mimetype.jpg=image/jpeg
+mimetype.jpeg=image/jpeg
+mimetype.pdf=application/pdf
+mimetype.png=image/png
+mimetype.svg=image/svg+xml
 
 
 ##

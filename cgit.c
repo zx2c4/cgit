@@ -17,6 +17,14 @@
 
 const char *cgit_version = CGIT_VERSION;
 
+void add_mimetype(const char *name, const char *value)
+{
+	struct string_list_item *item;
+
+	item = string_list_insert(xstrdup(name), &ctx.cfg.mimetypes);
+	item->util = xstrdup(value);
+}
+
 void config_cb(const char *name, const char *value)
 {
 	if (!strcmp(name, "root-title"))
@@ -103,6 +111,8 @@ void config_cb(const char *name, const char *value)
 		ctx.cfg.clone_prefix = xstrdup(value);
 	else if (!strcmp(name, "local-time"))
 		ctx.cfg.local_time = atoi(value);
+	else if (!prefixcmp(name, "mimetype."))
+		add_mimetype(name + 9, value);
 	else if (!strcmp(name, "repo.group"))
 		ctx.cfg.repo_group = xstrdup(value);
 	else if (!strcmp(name, "repo.url"))
@@ -215,6 +225,7 @@ static void prepare_context(struct cgit_context *ctx)
 	ctx->page.modified = time(NULL);
 	ctx->page.expires = ctx->page.modified;
 	ctx->page.etag = NULL;
+	memset(&ctx->cfg.mimetypes, 0, sizeof(struct string_list));
 }
 
 struct refmatch {

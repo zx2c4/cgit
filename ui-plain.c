@@ -17,8 +17,9 @@ int match;
 static void print_object(const unsigned char *sha1, const char *path)
 {
 	enum object_type type;
-	char *buf;
+	char *buf, *ext;
 	unsigned long size;
+	struct string_list_item *mime;
 
 	type = sha1_object_info(sha1, &size);
 	if (type == OBJ_BAD) {
@@ -31,10 +32,19 @@ static void print_object(const unsigned char *sha1, const char *path)
 		html_status(404, "Not found", 0);
 		return;
 	}
-	if (buffer_is_binary(buf, size))
-		ctx.page.mimetype = "application/octet-stream";
-	else
-		ctx.page.mimetype = "text/plain";
+	ctx.page.mimetype = NULL;
+	ext = strrchr(path, '.');
+	if (ext && *(++ext)) {
+		mime = string_list_lookup(ext, &ctx.cfg.mimetypes);
+		if (mime)
+			ctx.page.mimetype = (char *)mime->util;
+	}
+	if (!ctx.page.mimetype) {
+		if (buffer_is_binary(buf, size))
+			ctx.page.mimetype = "application/octet-stream";
+		else
+			ctx.page.mimetype = "text/plain";
+	}
 	ctx.page.filename = fmt("%s", path);
 	ctx.page.size = size;
 	ctx.page.etag = sha1_to_hex(sha1);
