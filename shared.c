@@ -62,6 +62,8 @@ struct cgit_repo *cgit_add_repo(const char *url)
 	ret->module_link = ctx.cfg.module_link;
 	ret->readme = NULL;
 	ret->mtime = -1;
+	ret->commit_filter = ctx.cfg.commit_filter;
+	ret->source_filter = ctx.cfg.source_filter;
 	return ret;
 }
 
@@ -354,4 +356,39 @@ int cgit_parse_snapshots_mask(const char *str)
 		str += tl;
 	}
 	return rv;
+}
+
+int cgit_open_filter(struct cgit_filter *filter)
+{
+
+	filter->old_stdout = chk_positive(dup(STDOUT_FILENO),
+		"Unable to duplicate STDOUT");
+	chk_zero(pipe(filter->pipe_fh), "Unable to create pipe to subprocess");
+	filter->pid = chk_non_negative(fork(), "Unable to create subprocess");
+	if (filter->pid == 0) {
+		close(filter->pipe_fh[1]);
+		chk_non_negative(dup2(filter->pipe_fh[0], STDIN_FILENO),
+			"Unable to use pipe as STDIN");
+		execvp(filter->cmd, filter->argv);
+		die("Unable to exec subprocess %s: %s (%d)", filter->cmd,
+			strerror(errno), errno);
+	}
+	close(filter->pipe_fh[0]);
+	chk_non_negative(dup2(filter->pipe_fh[1], STDOUT_FILENO),
+		"Unable to use pipe as STDOUT");
+	close(filter->pipe_fh[1]);
+	return 0;
+}
+
+int cgit_close_filter(struct cgit_filter *filter)
+{
+	chk_non_negative(dup2(filter->old_stdout, STDOUT_FILENO),
+		"Unable to restore STDOUT");
+	close(filter->old_stdout);
+	if (filter->pid < 0)
+		return 0;
+	waitpid(filter->pid, &filter->exitstatus, 0);
+	if (WIFEXITED(filter->exitstatus) && !WEXITSTATUS(filter->exitstatus))
+		return 0;
+	die("Subprocess %s exited abnormally", filter->cmd);
 }

@@ -93,11 +93,19 @@ void cgit_print_commit(char *hex)
 	}
 	html("</table>\n");
 	html("<div class='commit-subject'>");
+	if (ctx.repo->commit_filter)
+		cgit_open_filter(ctx.repo->commit_filter);
 	html_txt(info->subject);
+	if (ctx.repo->commit_filter)
+		cgit_close_filter(ctx.repo->commit_filter);
 	show_commit_decorations(commit);
 	html("</div>");
 	html("<div class='commit-msg'>");
+	if (ctx.repo->commit_filter)
+		cgit_open_filter(ctx.repo->commit_filter);
 	html_txt(info->msg);
+	if (ctx.repo->commit_filter)
+		cgit_close_filter(ctx.repo->commit_filter);
 	html("</div>");
 	if (parents < 3) {
 		if (parents)

@@ -25,6 +25,21 @@ void add_mimetype(const char *name, const char *value)
 	item->util = xstrdup(value);
 }
 
+struct cgit_filter *new_filter(const char *cmd, int extra_args)
+{
+	struct cgit_filter *f;
+
+	if (!cmd || !cmd[0])
+		return NULL;
+
+	f = xmalloc(sizeof(struct cgit_filter));
+	f->cmd = xstrdup(cmd);
+	f->argv = xmalloc((2 + extra_args) * sizeof(char *));
+	f->argv[0] = f->cmd;
+	f->argv[1] = NULL;
+	return f;
+}
+
 void config_cb(const char *name, const char *value)
 {
 	if (!strcmp(name, "root-title"))
@@ -85,6 +100,8 @@ void config_cb(const char *name, const char *value)
 		ctx.cfg.cache_static_ttl = atoi(value);
 	else if (!strcmp(name, "cache-dynamic-ttl"))
 		ctx.cfg.cache_dynamic_ttl = atoi(value);
+	else if (!strcmp(name, "commit-filter"))
+		ctx.cfg.commit_filter = new_filter(value, 0);
 	else if (!strcmp(name, "embedded"))
 		ctx.cfg.embedded = atoi(value);
 	else if (!strcmp(name, "max-message-length"))
@@ -95,6 +112,8 @@ void config_cb(const char *name, const char *value)
 		ctx.cfg.max_repo_count = atoi(value);
 	else if (!strcmp(name, "max-commit-count"))
 		ctx.cfg.max_commit_count = atoi(value);
+	else if (!strcmp(name, "source-filter"))
+		ctx.cfg.source_filter = new_filter(value, 1);
 	else if (!strcmp(name, "summary-log"))
 		ctx.cfg.summary_log = atoi(value);
 	else if (!strcmp(name, "summary-branches"))
@@ -139,6 +158,10 @@ void config_cb(const char *name, const char *value)
 		ctx.repo->max_stats = cgit_find_stats_period(value, NULL);
 	else if (ctx.repo && !strcmp(name, "repo.module-link"))
 		ctx.repo->module_link= xstrdup(value);
+	else if (ctx.repo && !strcmp(name, "repo.commit-filter"))
+		ctx.repo->commit_filter = new_filter(value, 0);
+	else if (ctx.repo && !strcmp(name, "repo.source-filter"))
+		ctx.repo->source_filter = new_filter(value, 1);
 	else if (ctx.repo && !strcmp(name, "repo.readme") && value != NULL) {
 		if (*value == '/')
 			ctx.repo->readme = xstrdup(value);

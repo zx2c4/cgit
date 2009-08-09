@@ -55,6 +55,12 @@ clone-prefix::
 	setting is only used if `repo.clone-url` is unspecified. Default value:
 	none.
 
+commit-filter::
+	Specifies a command which will be invoked to format commit messages.
+	The command will get the message on its STDIN, and the STDOUT from the
+	command will be included verbatim as the commit message, i.e. this can
+	be used to implement bugtracker integration. Default value: none.
+
 css::
 	Url which specifies the css document to include in all cgit pages.
 	Default value: "/cgit.css".
@@ -206,6 +212,14 @@ snapshots::
 		"zip"		zip-file
 	Default value: none.
 
+source-filter::
+	Specifies a command which will be invoked to format plaintext blobs
+	in the tree view. The command will get the blob content on its STDIN
+	and the name of the blob as its only command line argument. The STDOUT
+	from the command will be included verbatim as the blob contents, i.e.
+	this can be used to implement e.g. syntax highlighting. Default value:
+	none.
+
 summary-branches::
 	Specifies the number of branches to display in the repository "summary"
 	view. Default value: "10".
@@ -231,6 +245,9 @@ REPOSITORY SETTINGS
 repo.clone-url::
 	A list of space-separated urls which can be used to clone this repo.
 	Default value: none.
+
+repo.commit-filter::
+	Override the default commit-filter. Default value: <commit-filter>.
 
 repo.defbranch::
 	The name of the default branch for this repository. If no such branch
@@ -271,6 +288,9 @@ repo.readme::
 repo.snapshots::
 	A mask of allowed snapshot-formats for this repo, restricted by the
 	"snapshots" global setting. Default value: <snapshots>.
+
+repo.source-filter::
+	Override the default source-filter. Default value: <source-filter>.
 
 repo.url::
 	The relative url used to access the repository. This must be the first

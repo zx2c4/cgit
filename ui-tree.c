@@ -15,13 +15,23 @@ char *curr_rev;
 char *match_path;
 int header = 0;
 
-static void print_text_buffer(char *buf, unsigned long size)
+static void print_text_buffer(const char *name, char *buf, unsigned long size)
 {
 	unsigned long lineno, idx;
 	const char *numberfmt =
 		"<a class='no' id='n%1$d' name='n%1$d' href='#n%1$d'>%1$d</a>\n";
 
 	html("<table summary='blob content' class='blob'>\n");
+	if (ctx.repo->source_filter) {
+		html("<tr><td class='lines'><pre><code>");
+		ctx.repo->source_filter->argv[1] = xstrdup(name);
+		cgit_open_filter(ctx.repo->source_filter);
+		write(STDOUT_FILENO, buf, size);
+		cgit_close_filter(ctx.repo->source_filter);
+		html("</code></pre></td></tr></table>\n");
+		return;
+	}
+
 	html("<tr><td class='linenumbers'><pre>");
 	idx = 0;
 	lineno = 0;
@@ -65,7 +75,7 @@ static void print_binary_buffer(char *buf, unsigned long size)
 	html("</table>\n");
 }
 
-static void print_object(const unsigned char *sha1, char *path)
+static void print_object(const unsigned char *sha1, char *path, const char *basename)
 {
 	enum object_type type;
 	char *buf;
@@ -93,7 +103,7 @@ static void print_object(const unsigned char *sha1, char *path)
 	if (buffer_is_binary(buf, size))
 		print_binary_buffer(buf, size);
 	else
-		print_text_buffer(buf, size);
+		print_text_buffer(basename, buf, size);
 }
 
 
@@ -219,7 +229,7 @@ static int walk_tree(const unsigned char *sha1, const char *base, int baselen,
 			ls_head();
 			return READ_TREE_RECURSIVE;
 		} else {
-			print_object(sha1, buffer);
+			print_object(sha1, buffer, pathname);
 			return 0;
 		}
 	}
