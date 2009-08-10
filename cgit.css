@@ -155,7 +155,7 @@ table.list td.logsubject {
 table.list td.logmsg {
 	font-family: monospace;
 	white-space: pre;
-	padding: 1em 0em 2em 0em;
+	padding: 1em 0.5em 2em 0.5em;
 }
 
 table.list td a {
