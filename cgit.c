@@ -253,6 +253,7 @@ static void prepare_context(struct cgit_context *ctx)
 	ctx->env.cgit_config = xstrdupn(getenv("CGIT_CONFIG"));
 	ctx->env.http_host = xstrdupn(getenv("HTTP_HOST"));
 	ctx->env.https = xstrdupn(getenv("HTTPS"));
+	ctx->env.no_http = xstrdupn(getenv("NO_HTTP"));
 	ctx->env.path_info = xstrdupn(getenv("PATH_INFO"));
 	ctx->env.query_string = xstrdupn(getenv("QUERY_STRING"));
 	ctx->env.request_method = xstrdupn(getenv("REQUEST_METHOD"));
@@ -444,6 +445,9 @@ static void cgit_parse_args(int argc, const char **argv)
 		}
 		if (!strcmp(argv[i], "--nocache")) {
 			ctx.cfg.nocache = 1;
+		}
+		if (!strcmp(argv[i], "--nohttp")) {
+			ctx.env.no_http = "1";
 		}
 		if (!strncmp(argv[i], "--query=", 8)) {
 			ctx.qry.raw = xstrdup(argv[i]+8);

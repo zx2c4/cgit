@@ -211,6 +211,7 @@ struct cgit_environment {
 	char *cgit_config;
 	char *http_host;
 	char *https;
+	char *no_http;
 	char *path_info;
 	char *query_string;
 	char *request_method;

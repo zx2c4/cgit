@@ -455,7 +455,7 @@ void cgit_print_age(time_t t, time_t max_relative, char *format)
 
 void cgit_print_http_headers(struct cgit_context *ctx)
 {
-	if (ctx->cfg.embedded)
+	if (ctx->env.no_http && !strcmp(ctx->env.no_http, "1"))
 		return;
 
 	if (ctx->page.status)
