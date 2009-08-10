@@ -36,10 +36,7 @@ void cgit_print_error(char *msg)
 
 char *cgit_httpscheme()
 {
-	char *https;
-
-	https = getenv("HTTPS");
-	if (https != NULL && strcmp(https, "on") == 0)
+	if (ctx.env.https && !strcmp(ctx.env.https, "on"))
 		return "https://";
 	else
 		return "http://";
@@ -47,22 +44,13 @@ char *cgit_httpscheme()
 
 char *cgit_hosturl()
 {
-	char *host, *port;
-
-	host = getenv("HTTP_HOST");
-	if (host) {
-		host = xstrdup(host);
-	} else {
-		host = getenv("SERVER_NAME");
-		if (!host)
-			return NULL;
-		port = getenv("SERVER_PORT");
-		if (port && atoi(port) != 80)
-			host = xstrdup(fmt("%s:%d", host, atoi(port)));
-		else
-			host = xstrdup(host);
-	}
-	return host;
+	if (ctx.env.http_host)
+		return ctx.env.http_host;
+	if (!ctx.env.server_name)
+		return NULL;
+	if (!ctx.env.server_port || atoi(ctx.env.server_port) == 80)
+		return ctx.env.server_name;
+	return xstrdup(fmt("%s:%s", ctx.env.server_name, ctx.env.server_port));
 }
 
 char *cgit_rooturl()
@@ -467,8 +455,6 @@ void cgit_print_age(time_t t, time_t max_relative, char *format)
 
 void cgit_print_http_headers(struct cgit_context *ctx)
 {
-	const char *method = getenv("REQUEST_METHOD");
-
 	if (ctx->cfg.embedded)
 		return;
 
@@ -489,7 +475,7 @@ void cgit_print_http_headers(struct cgit_context *ctx)
 	if (ctx->page.etag)
 		htmlf("ETag: \"%s\"\n", ctx->page.etag);
 	html("\n");
-	if (method && !strcmp(method, "HEAD"))
+	if (ctx->env.request_method && !strcmp(ctx->env.request_method, "HEAD"))
 		exit(0);
 }
 

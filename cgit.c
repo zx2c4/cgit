@@ -215,6 +215,11 @@ static void querystring_cb(const char *name, const char *value)
 	}
 }
 
+char *xstrdupn(const char *str)
+{
+	return (str ? xstrdup(str) : NULL);
+}
+
 static void prepare_context(struct cgit_context *ctx)
 {
 	memset(ctx, 0, sizeof(ctx));
@@ -245,6 +250,15 @@ static void prepare_context(struct cgit_context *ctx)
 	ctx->cfg.summary_branches = 10;
 	ctx->cfg.summary_log = 10;
 	ctx->cfg.summary_tags = 10;
+	ctx->env.cgit_config = xstrdupn(getenv("CGIT_CONFIG"));
+	ctx->env.http_host = xstrdupn(getenv("HTTP_HOST"));
+	ctx->env.https = xstrdupn(getenv("HTTPS"));
+	ctx->env.path_info = xstrdupn(getenv("PATH_INFO"));
+	ctx->env.query_string = xstrdupn(getenv("QUERY_STRING"));
+	ctx->env.request_method = xstrdupn(getenv("REQUEST_METHOD"));
+	ctx->env.script_name = xstrdupn(getenv("SCRIPT_NAME"));
+	ctx->env.server_name = xstrdupn(getenv("SERVER_NAME"));
+	ctx->env.server_port = xstrdupn(getenv("SERVER_PORT"));
 	ctx->page.mimetype = "text/html";
 	ctx->page.charset = PAGE_ENCODING;
 	ctx->page.filename = NULL;
@@ -253,6 +267,12 @@ static void prepare_context(struct cgit_context *ctx)
 	ctx->page.expires = ctx->page.modified;
 	ctx->page.etag = NULL;
 	memset(&ctx->cfg.mimetypes, 0, sizeof(struct string_list));
+	if (ctx->env.script_name)
+		ctx->cfg.script_name = ctx->env.script_name;
+	if (ctx->env.query_string)
+		ctx->qry.raw = ctx->env.query_string;
+	if (!ctx->env.cgit_config)
+		ctx->env.cgit_config = CGIT_CONFIG;
 }
 
 struct refmatch {
@@ -477,8 +497,6 @@ static int calc_ttl()
 
 int main(int argc, const char **argv)
 {
-	const char *cgit_config_env = getenv("CGIT_CONFIG");
-	const char *method = getenv("REQUEST_METHOD");
 	const char *path;
 	char *qry;
 	int err, ttl;
@@ -488,13 +506,8 @@ int main(int argc, const char **argv)
 	cgit_repolist.count = 0;
 	cgit_repolist.repos = NULL;
 
-	if (getenv("SCRIPT_NAME"))
-		ctx.cfg.script_name = xstrdup(getenv("SCRIPT_NAME"));
-	if (getenv("QUERY_STRING"))
-		ctx.qry.raw = xstrdup(getenv("QUERY_STRING"));
 	cgit_parse_args(argc, argv);
-	parse_configfile(cgit_config_env ? cgit_config_env : CGIT_CONFIG,
-			 config_cb);
+	parse_configfile(ctx.env.cgit_config, config_cb);
 	ctx.repo = NULL;
 	http_parse_querystring(ctx.qry.raw, querystring_cb);
 
@@ -509,7 +522,7 @@ int main(int argc, const char **argv)
 	 * urls without the need for rewriterules in the webserver (as
 	 * long as PATH_INFO is included in the cache lookup key).
 	 */
-	path = getenv("PATH_INFO");
+	path = ctx.env.path_info;
 	if (!ctx.qry.url && path) {
 		if (path[0] == '/')
 			path++;
@@ -525,7 +538,7 @@ int main(int argc, const char **argv)
 
 	ttl = calc_ttl();
 	ctx.page.expires += ttl*60;
-	if (method && !strcmp(method, "HEAD"))
+	if (ctx.env.request_method && !strcmp(ctx.env.request_method, "HEAD"))
 		ctx.cfg.nocache = 1;
 	if (ctx.cfg.nocache)
 		ctx.cfg.cache_size = 0;
