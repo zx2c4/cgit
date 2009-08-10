@@ -132,7 +132,7 @@ local-time::
 
 logo::
 	Url which specifies the source of an image which will be used as a logo
-	on all cgit pages.
+	on all cgit pages. Default value: "/cgit.png".
 
 logo-link::
 	Url loaded when clicking on the cgit logo image. If unspecified the

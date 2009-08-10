@@ -228,7 +228,7 @@ static void prepare_context(struct cgit_context *ctx)
 	ctx->cfg.cache_root_ttl = 5;
 	ctx->cfg.cache_static_ttl = -1;
 	ctx->cfg.css = "/cgit.css";
-	ctx->cfg.logo = "/git-logo.png";
+	ctx->cfg.logo = "/cgit.png";
 	ctx->cfg.local_time = 0;
 	ctx->cfg.max_repo_count = 50;
 	ctx->cfg.max_commit_count = 50;
