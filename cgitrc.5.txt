@@ -14,6 +14,13 @@ repositories, formatted as a line-separated list of NAME=VALUE pairs. Blank
 lines, and lines starting with '#', are ignored.
 
 
+LOCATION
+--------
+The default location of cgitrc, defined at compile time, is /etc/cgitrc. At
+runtime, cgit will consult the environment variable CGIT_CONFIG and, if
+defined, use its value instead.
+
+
 GLOBAL SETTINGS
 ---------------
 about-filter::
