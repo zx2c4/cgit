@@ -136,6 +136,8 @@ void config_cb(const char *name, const char *value)
 		add_mimetype(name + 9, value);
 	else if (!strcmp(name, "repo.group"))
 		ctx.cfg.repo_group = xstrdup(value);
+	else if (!strcmp(name, "repo.scan"))
+		scan_tree(value);
 	else if (!strcmp(name, "repo.url"))
 		ctx.repo = cgit_add_repo(value);
 	else if (!strcmp(name, "repo.name"))
