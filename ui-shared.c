@@ -481,8 +481,11 @@ void cgit_print_http_headers(struct cgit_context *ctx)
 
 void cgit_print_docstart(struct cgit_context *ctx)
 {
-	if (ctx->cfg.embedded)
+	if (ctx->cfg.embedded) {
+		if (ctx->cfg.header)
+			html_include(ctx->cfg.header);
 		return;
+	}
 
 	char *host = cgit_hosturl();
 	html(cgit_doctype);
@@ -520,7 +523,13 @@ void cgit_print_docstart(struct cgit_context *ctx)
 
 void cgit_print_docend()
 {
-	html("</div>");
+	html("</div> <!-- class=content -->\n");
+	if (ctx.cfg.embedded) {
+		html("</div> <!-- id=cgit -->\n");
+		if (ctx.cfg.footer)
+			html_include(ctx.cfg.footer);
+		return;
+	}
 	if (ctx.cfg.footer)
 		html_include(ctx.cfg.footer);
 	else {
@@ -529,9 +538,7 @@ void cgit_print_docend()
 		cgit_print_date(time(NULL), FMT_LONGDATE, ctx.cfg.local_time);
 		html("</div>\n");
 	}
-	html("</div>");
-	if (ctx.cfg.embedded)
-		return;
+	html("</div> <!-- id=cgit -->\n");
 	html("</body>\n</html>\n");
 }
 
