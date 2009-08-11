@@ -207,7 +207,21 @@ struct cgit_page {
 	char *statusmsg;
 };
 
+struct cgit_environment {
+	char *cgit_config;
+	char *http_host;
+	char *https;
+	char *no_http;
+	char *path_info;
+	char *query_string;
+	char *request_method;
+	char *script_name;
+	char *server_name;
+	char *server_port;
+};
+
 struct cgit_context {
+	struct cgit_environment env;
 	struct cgit_query qry;
 	struct cgit_config cfg;
 	struct cgit_repo *repo;
