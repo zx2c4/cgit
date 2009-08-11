@@ -89,6 +89,10 @@ static void scan_path(const char *base, const char *path)
 		add_repo(base, path);
 		return;
 	}
+	if (is_git_dir(fmt("%s/.git", path))) {
+		add_repo(base, fmt("%s/.git", path));
+		return;
+	}
 	dir = opendir(path);
 	if (!dir) {
 		fprintf(stderr, "Error opening directory %s: %s (%d)\n",
