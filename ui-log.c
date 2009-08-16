@@ -53,6 +53,10 @@ void show_commit_decorations(struct commit *commit)
 			strncpy(buf, deco->name + 15, sizeof(buf) - 1);
 			cgit_tag_link(buf, NULL, "tag-deco", ctx.qry.head, buf);
 		}
+		else if (!prefixcmp(deco->name, "refs/tags/")) {
+			strncpy(buf, deco->name + 10, sizeof(buf) - 1);
+			cgit_tag_link(buf, NULL, "tag-deco", ctx.qry.head, buf);
+		}
 		else if (!prefixcmp(deco->name, "refs/remotes/")) {
 			strncpy(buf, deco->name + 13, sizeof(buf) - 1);
 			cgit_log_link(buf, NULL, "remote-deco", NULL,
