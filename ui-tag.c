@@ -37,7 +37,10 @@ void cgit_print_tag(char *revname)
 	struct tag *tag;
 	struct taginfo *info;
 
-	if (get_sha1(revname, sha1)) {
+	if (!revname)
+		revname = ctx.qry.head;
+
+	if (get_sha1(fmt("refs/tags/%s", revname), sha1)) {
 		cgit_print_error(fmt("Bad tag reference: %s", revname));
 		return;
 	}
