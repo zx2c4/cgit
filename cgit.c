@@ -177,6 +177,9 @@ void config_cb(const char *name, const char *value)
 
 static void querystring_cb(const char *name, const char *value)
 {
+	if (!value)
+		value = "";
+
 	if (!strcmp(name,"r")) {
 		ctx.qry.repo = xstrdup(value);
 		ctx.repo = cgit_get_repoinfo(value);
