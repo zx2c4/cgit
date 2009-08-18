@@ -23,6 +23,7 @@ time_t read_agefile(char *path)
 
 	if (!(f = fopen(path, "r")))
 		return -1;
+	buf[0] = 0;
 	if (fgets(buf, sizeof(buf), f) == NULL)
 		return -1;
 	fclose(f);
