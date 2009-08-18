@@ -18,19 +18,20 @@
 
 time_t read_agefile(char *path)
 {
-	FILE *f;
-	static char buf[64], buf2[64];
+	time_t result;
+	size_t size;
+	char *buf;
+	static char buf2[64];
 
-	if (!(f = fopen(path, "r")))
+	if (readfile(path, &buf, &size))
 		return -1;
-	buf[0] = 0;
-	if (fgets(buf, sizeof(buf), f) == NULL)
-		return -1;
-	fclose(f);
+
 	if (parse_date(buf, buf2, sizeof(buf2)))
-		return strtoul(buf2, NULL, 10);
+		result = strtoul(buf2, NULL, 10);
 	else
-		return 0;
+		result = 0;
+	free(buf);
+	return result;
 }
 
 static int get_repo_modtime(const struct cgit_repo *repo, time_t *mtime)

@@ -35,25 +35,13 @@ static int is_git_dir(const char *path)
 	return 1;
 }
 
-char *readfile(const char *path)
-{
-	FILE *f;
-	static char buf[MAX_PATH];
-
-	if (!(f = fopen(path, "r")))
-		return NULL;
-	buf[0] = 0;
-	fgets(buf, MAX_PATH, f);
-	fclose(f);
-	return buf;
-}
-
 static void add_repo(const char *base, const char *path)
 {
 	struct cgit_repo *repo;
 	struct stat st;
 	struct passwd *pwd;
 	char *p;
+	size_t size;
 
 	if (stat(path, &st)) {
 		fprintf(stderr, "Error accessing %s: %s (%d)\n",
@@ -80,7 +68,7 @@ static void add_repo(const char *base, const char *path)
 
 	p = fmt("%s/description", path);
 	if (!stat(p, &st))
-		repo->desc = xstrdup(readfile(p));
+		readfile(p, &repo->desc, &size);
 
 	p = fmt("%s/README.html", path);
 	if (!stat(p, &st))

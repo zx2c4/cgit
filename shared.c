@@ -393,3 +393,24 @@ int cgit_close_filter(struct cgit_filter *filter)
 		return 0;
 	die("Subprocess %s exited abnormally", filter->cmd);
 }
+
+/* Read the content of the specified file into a newly allocated buffer,
+ * zeroterminate the buffer and return 0 on success, errno otherwise.
+ */
+int readfile(const char *path, char **buf, size_t *size)
+{
+	int fd;
+	struct stat st;
+
+	fd = open(path, O_RDONLY);
+	if (fd == -1)
+		return errno;
+	if (fstat(fd, &st))
+		return errno;
+	if (!S_ISREG(st.st_mode))
+		return EISDIR;
+	*buf = xmalloc(st.st_size + 1);
+	*size = read_in_full(fd, *buf, st.st_size);
+	(*buf)[*size] = '\0';
+	return (*size == st.st_size ? 0 : errno);
+}
