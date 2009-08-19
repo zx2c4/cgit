@@ -32,4 +32,6 @@ extern int cache_ls(const char *path);
 /* Print a message to stdout */
 extern void cache_log(const char *format, ...);
 
+extern unsigned long hash_str(const char *str);
+
 #endif /* CGIT_CACHE_H */
