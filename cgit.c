@@ -416,26 +416,26 @@ int cmp_repos(const void *a, const void *b)
 	return strcmp(ra->url, rb->url);
 }
 
-void print_repo(struct cgit_repo *repo)
+void print_repo(FILE *f, struct cgit_repo *repo)
 {
-	printf("repo.url=%s\n", repo->url);
-	printf("repo.name=%s\n", repo->name);
-	printf("repo.path=%s\n", repo->path);
+	fprintf(f, "repo.url=%s\n", repo->url);
+	fprintf(f, "repo.name=%s\n", repo->name);
+	fprintf(f, "repo.path=%s\n", repo->path);
 	if (repo->owner)
-		printf("repo.owner=%s\n", repo->owner);
+		fprintf(f, "repo.owner=%s\n", repo->owner);
 	if (repo->desc)
-		printf("repo.desc=%s\n", repo->desc);
+		fprintf(f, "repo.desc=%s\n", repo->desc);
 	if (repo->readme)
-		printf("repo.readme=%s\n", repo->readme);
-	printf("\n");
+		fprintf(f, "repo.readme=%s\n", repo->readme);
+	fprintf(f, "\n");
 }
 
-void print_repolist(struct cgit_repolist *list)
+void print_repolist(FILE *f, struct cgit_repolist *list, int start)
 {
 	int i;
 
-	for(i = 0; i < list->count; i++)
-		print_repo(&list->repos[i]);
+	for(i = start; i < list->count; i++)
+		print_repo(f, &list->repos[i]);
 }
 
 
@@ -482,7 +482,7 @@ static void cgit_parse_args(int argc, const char **argv)
 	if (scan) {
 		qsort(cgit_repolist.repos, cgit_repolist.count,
 			sizeof(struct cgit_repo), cmp_repos);
-		print_repolist(&cgit_repolist);
+		print_repolist(stdout, &cgit_repolist, 0);
 		exit(0);
 	}
 }
