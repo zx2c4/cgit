@@ -539,7 +539,7 @@ int main(int argc, const char **argv)
 			ctx.qry.raw = xstrdup(fmt("%s?%s", path, qry));
 			free(qry);
 		} else
-			ctx.qry.raw = ctx.qry.url;
+			ctx.qry.raw = xstrdup(ctx.qry.url);
 		cgit_parse_url(ctx.qry.url);
 	}
 
