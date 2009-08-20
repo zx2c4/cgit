@@ -64,6 +64,9 @@ static void add_repo(const char *base, const char *path)
 	repo = cgit_add_repo(xstrdup(p));
 	repo->name = repo->url;
 	repo->path = xstrdup(path);
+	p = (pwd && pwd->pw_gecos) ? strchr(pwd->pw_gecos, ',') : NULL;
+	if (p)
+		*p = '\0';
 	repo->owner = (pwd ? xstrdup(pwd->pw_gecos ? pwd->pw_gecos : pwd->pw_name) : "");
 
 	p = fmt("%s/description", path);
