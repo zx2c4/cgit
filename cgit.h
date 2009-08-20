@@ -168,6 +168,7 @@ struct cgit_config {
 	int cache_max_create_time;
 	int cache_repo_ttl;
 	int cache_root_ttl;
+	int cache_scanrc_ttl;
 	int cache_static_ttl;
 	int embedded;
 	int enable_index_links;

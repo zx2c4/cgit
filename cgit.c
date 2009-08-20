@@ -40,6 +40,8 @@ struct cgit_filter *new_filter(const char *cmd, int extra_args)
 	return f;
 }
 
+static void process_cached_repolist(const char *path);
+
 void config_cb(const char *name, const char *value)
 {
 	if (!strcmp(name, "root-title"))
@@ -96,6 +98,8 @@ void config_cb(const char *name, const char *value)
 		ctx.cfg.cache_root_ttl = atoi(value);
 	else if (!strcmp(name, "cache-repo-ttl"))
 		ctx.cfg.cache_repo_ttl = atoi(value);
+	else if (!strcmp(name, "cache-scanrc-ttl"))
+		ctx.cfg.cache_scanrc_ttl = atoi(value);
 	else if (!strcmp(name, "cache-static-ttl"))
 		ctx.cfg.cache_static_ttl = atoi(value);
 	else if (!strcmp(name, "cache-dynamic-ttl"))
@@ -137,7 +141,10 @@ void config_cb(const char *name, const char *value)
 	else if (!strcmp(name, "repo.group"))
 		ctx.cfg.repo_group = xstrdup(value);
 	else if (!strcmp(name, "repo.scan"))
-		scan_tree(value);
+		if (!ctx.cfg.nocache && ctx.cfg.cache_size)
+			process_cached_repolist(value);
+		else
+			scan_tree(value);
 	else if (!strcmp(name, "repo.url"))
 		ctx.repo = cgit_add_repo(value);
 	else if (!strcmp(name, "repo.name"))
@@ -236,6 +243,7 @@ static void prepare_context(struct cgit_context *ctx)
 	ctx->cfg.cache_repo_ttl = 5;
 	ctx->cfg.cache_root = CGIT_CACHE_ROOT;
 	ctx->cfg.cache_root_ttl = 5;
+	ctx->cfg.cache_scanrc_ttl = 15;
 	ctx->cfg.cache_static_ttl = -1;
 	ctx->cfg.css = "/cgit.css";
 	ctx->cfg.logo = "/cgit.png";
@@ -438,6 +446,71 @@ void print_repolist(FILE *f, struct cgit_repolist *list, int start)
 		print_repo(f, &list->repos[i]);
 }
 
+/* Scan 'path' for git repositories, save the resulting repolist in 'cached_rc'
+ * and return 0 on success.
+ */
+static int generate_cached_repolist(const char *path, const char *cached_rc)
+{
+	char *locked_rc;
+	int idx;
+	FILE *f;
+
+	locked_rc = xstrdup(fmt("%s.lock", cached_rc));
+	f = fopen(locked_rc, "wx");
+	if (!f) {
+		/* Inform about the error unless the lockfile already existed,
+		 * since that only means we've got concurrent requests.
+		 */
+		if (errno != EEXIST)
+			fprintf(stderr, "[cgit] Error opening %s: %s (%d)\n",
+				locked_rc, strerror(errno), errno);
+		return errno;
+	}
+	idx = cgit_repolist.count;
+	scan_tree(path);
+	print_repolist(f, &cgit_repolist, idx);
+	if (rename(locked_rc, cached_rc))
+		fprintf(stderr, "[cgit] Error renaming %s to %s: %s (%d)\n",
+			locked_rc, cached_rc, strerror(errno), errno);
+	fclose(f);
+	return 0;
+}
+
+static void process_cached_repolist(const char *path)
+{
+	struct stat st;
+	char *cached_rc;
+	time_t age;
+
+	cached_rc = xstrdup(fmt("%s/rc-%8x", ctx.cfg.cache_root,
+		hash_str(path)));
+
+	if (stat(cached_rc, &st)) {
+		/* Nothing is cached, we need to scan without forking. And
+		 * if we fail to generate a cached repolist, we need to
+		 * invoke scan_tree manually.
+		 */
+		if (generate_cached_repolist(path, cached_rc))
+			scan_tree(path);
+		return;
+	}
+
+	parse_configfile(cached_rc, config_cb);
+
+	/* If the cached configfile hasn't expired, lets exit now */
+	age = time(NULL) - st.st_mtime;
+	if (age <= (ctx.cfg.cache_scanrc_ttl * 60))
+		return;
+
+	/* The cached repolist has been parsed, but it was old. So lets
+	 * rescan the specified path and generate a new cached repolist
+	 * in a child-process to avoid latency for the current request.
+	 */
+	if (fork())
+		return;
+
+	exit(generate_cached_repolist(path, cached_rc));
+}
 
 static void cgit_parse_args(int argc, const char **argv)
 {
