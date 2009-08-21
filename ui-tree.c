@@ -23,7 +23,7 @@ static void print_text_buffer(const char *name, char *buf, unsigned long size)
 
 	html("<table summary='blob content' class='blob'>\n");
 
-	if (ctx.cfg.linenumbers) {
+	if (ctx.cfg.enable_tree_linenumbers) {
 		html("<tr><td class='linenumbers'><pre>");
 		idx = 0;
 		lineno = 0;

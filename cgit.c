@@ -66,8 +66,6 @@ void config_cb(const char *name, const char *value)
 		ctx.cfg.index_info = xstrdup(value);
 	else if (!strcmp(name, "logo-link"))
 		ctx.cfg.logo_link = xstrdup(value);
-	else if (!strcmp(name, "linenumbers"))
-		ctx.cfg.linenumbers = atoi(value);
 	else if (!strcmp(name, "module-link"))
 		ctx.cfg.module_link = xstrdup(value);
 	else if (!strcmp(name, "virtual-root")) {
@@ -88,6 +86,8 @@ void config_cb(const char *name, const char *value)
 		ctx.cfg.enable_log_filecount = atoi(value);
 	else if (!strcmp(name, "enable-log-linecount"))
 		ctx.cfg.enable_log_linecount = atoi(value);
+	else if (!strcmp(name, "enable-tree-linenumbers"))
+		ctx.cfg.enable_tree_linenumbers = atoi(value);
 	else if (!strcmp(name, "max-stats"))
 		ctx.cfg.max_stats = cgit_find_stats_period(value, NULL);
 	else if (!strcmp(name, "cache-size"))
@@ -240,6 +240,7 @@ static void prepare_context(struct cgit_context *ctx)
 	ctx->cfg.css = "/cgit.css";
 	ctx->cfg.logo = "/cgit.png";
 	ctx->cfg.local_time = 0;
+	ctx->cfg.enable_tree_linenumbers = 1;
 	ctx->cfg.max_repo_count = 50;
 	ctx->cfg.max_commit_count = 50;
 	ctx->cfg.max_lock_attempts = 5;
