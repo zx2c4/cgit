@@ -315,6 +315,9 @@ repo.snapshots::
 	A mask of allowed snapshot-formats for this repo, restricted by the
 	"snapshots" global setting. Default value: <snapshots>.
 
+repo.section::
+	Override the current section for this repository. Default value: none.
+
 repo.source-filter::
 	Override the default source-filter. Default value: <source-filter>.
 

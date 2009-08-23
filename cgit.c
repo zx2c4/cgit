@@ -169,6 +169,8 @@ void config_cb(const char *name, const char *value)
 		ctx.repo->max_stats = cgit_find_stats_period(value, NULL);
 	else if (ctx.repo && !strcmp(name, "repo.module-link"))
 		ctx.repo->module_link= xstrdup(value);
+	else if (ctx.repo && !strcmp(name, "repo.section"))
+		ctx.repo->section = xstrdup(value);
 	else if (ctx.repo && !strcmp(name, "repo.about-filter"))
 		ctx.repo->about_filter = new_filter(value, 0);
 	else if (ctx.repo && !strcmp(name, "repo.commit-filter"))
