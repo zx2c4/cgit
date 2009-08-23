@@ -168,7 +168,7 @@ void config_cb(const char *name, const char *value)
 		if (!ctx.cfg.nocache && ctx.cfg.cache_size)
 			process_cached_repolist(value);
 		else
-			scan_tree(value);
+			scan_tree(value, repo_config);
 	else if (!strcmp(name, "source-filter"))
 		ctx.cfg.source_filter = new_filter(value, 1);
 	else if (!strcmp(name, "summary-log"))
@@ -476,7 +476,7 @@ static int generate_cached_repolist(const char *path, const char *cached_rc)
 		return errno;
 	}
 	idx = cgit_repolist.count;
-	scan_tree(path);
+	scan_tree(path, repo_config);
 	print_repolist(f, &cgit_repolist, idx);
 	if (rename(locked_rc, cached_rc))
 		fprintf(stderr, "[cgit] Error renaming %s to %s: %s (%d)\n",
@@ -500,7 +500,7 @@ static void process_cached_repolist(const char *path)
 		 * invoke scan_tree manually.
 		 */
 		if (generate_cached_repolist(path, cached_rc))
-			scan_tree(path);
+			scan_tree(path, repo_config);
 		return;
 	}
 
@@ -559,7 +559,7 @@ static void cgit_parse_args(int argc, const char **argv)
 		if (!strncmp(argv[i], "--scan-tree=", 12) ||
 		    !strncmp(argv[i], "--scan-path=", 12)) {
 			scan++;
-			scan_tree(argv[i] + 12);
+			scan_tree(argv[i] + 12, repo_config);
 		}
 	}
 	if (scan) {

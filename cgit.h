@@ -79,6 +79,9 @@ struct cgit_repo {
 	struct cgit_filter *source_filter;
 };
 
+typedef void (*repo_config_fn)(struct cgit_repo *repo, const char *name,
+	      const char *value);
+
 struct cgit_repolist {
 	int length;
 	int count;

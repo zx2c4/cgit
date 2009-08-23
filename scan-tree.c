@@ -1,4 +1,5 @@
 #include "cgit.h"
+#include "configfile.h"
 #include "html.h"
 
 #define MAX_PATH 4096
@@ -35,9 +36,16 @@ static int is_git_dir(const char *path)
 	return 1;
 }
 
-static void add_repo(const char *base, const char *path)
+struct cgit_repo *repo;
+repo_config_fn config_fn;
+
+static void repo_config(const char *name, const char *value)
 {
-	struct cgit_repo *repo;
+	config_fn(repo, name, value);
+}
+
+static void add_repo(const char *base, const char *path, repo_config_fn fn)
+{
 	struct stat st;
 	struct passwd *pwd;
 	char *p;
@@ -76,9 +84,15 @@ static void add_repo(const char *base, const char *path)
 	p = fmt("%s/README.html", path);
 	if (!stat(p, &st))
 		repo->readme = "README.html";
+
+	p = fmt("%s/cgitrc", path);
+	if (!stat(p, &st)) {
+		config_fn = fn;
+		parse_configfile(xstrdup(p), &repo_config);
+	}
 }
 
-static void scan_path(const char *base, const char *path)
+static void scan_path(const char *base, const char *path, repo_config_fn fn)
 {
 	DIR *dir;
 	struct dirent *ent;
@@ -86,11 +100,11 @@ static void scan_path(const char *base, const char *path)
 	struct stat st;
 
 	if (is_git_dir(path)) {
-		add_repo(base, path);
+		add_repo(base, path, fn);
 		return;
 	}
 	if (is_git_dir(fmt("%s/.git", path))) {
-		add_repo(base, fmt("%s/.git", path));
+		add_repo(base, fmt("%s/.git", path), fn);
 		return;
 	}
 	dir = opendir(path);
@@ -120,13 +134,13 @@ static void scan_path(const char *base, const char *path)
 			continue;
 		}
 		if (S_ISDIR(st.st_mode))
-			scan_path(base, buf);
+			scan_path(base, buf, fn);
 		free(buf);
 	}
 	closedir(dir);
 }
 
-void scan_tree(const char *path)
+void scan_tree(const char *path, repo_config_fn fn)
 {
-	scan_path(path, path);
+	scan_path(path, path, fn);
 }

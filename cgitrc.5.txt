@@ -326,6 +326,15 @@ repo.url::
 	setting specified for each repo. Default value: none.
 
 
+REPOSITORY-SPECIFIC CGITRC FILE
+-------------------------------
+When the option 'scan-path' is used to auto-discover git repositories, cgit
+will try to parse the file 'cgitrc' within any found repository. Such a repo-
+specific config file may contain any of the repo-specific options described
+above, except 'repo.url' and 'repo.path'. Also, in a repo-specific config
+file, the 'repo.' prefix is dropped from the config option names.
+
+
 EXAMPLE CGITRC FILE
 -------------------
 
