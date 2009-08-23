@@ -118,6 +118,11 @@ void config_cb(const char *name, const char *value)
 		ctx.cfg.max_repo_count = atoi(value);
 	else if (!strcmp(name, "max-commit-count"))
 		ctx.cfg.max_commit_count = atoi(value);
+	else if (!strcmp(name, "scan-path"))
+		if (!ctx.cfg.nocache && ctx.cfg.cache_size)
+			process_cached_repolist(value);
+		else
+			scan_tree(value);
 	else if (!strcmp(name, "source-filter"))
 		ctx.cfg.source_filter = new_filter(value, 1);
 	else if (!strcmp(name, "summary-log"))
@@ -140,11 +145,6 @@ void config_cb(const char *name, const char *value)
 		add_mimetype(name + 9, value);
 	else if (!strcmp(name, "repo.group"))
 		ctx.cfg.repo_group = xstrdup(value);
-	else if (!strcmp(name, "repo.scan"))
-		if (!ctx.cfg.nocache && ctx.cfg.cache_size)
-			process_cached_repolist(value);
-		else
-			scan_tree(value);
 	else if (!strcmp(name, "repo.url"))
 		ctx.repo = cgit_add_repo(value);
 	else if (!strcmp(name, "repo.name"))
