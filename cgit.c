@@ -42,9 +42,55 @@ struct cgit_filter *new_filter(const char *cmd, int extra_args)
 
 static void process_cached_repolist(const char *path);
 
+void repo_config(struct cgit_repo *repo, const char *name, const char *value)
+{
+	if (!strcmp(name, "name"))
+		repo->name = xstrdup(value);
+	else if (!strcmp(name, "clone-url"))
+		repo->clone_url = xstrdup(value);
+	else if (!strcmp(name, "desc"))
+		repo->desc = xstrdup(value);
+	else if (!strcmp(name, "owner"))
+		repo->owner = xstrdup(value);
+	else if (!strcmp(name, "defbranch"))
+		repo->defbranch = xstrdup(value);
+	else if (!strcmp(name, "snapshots"))
+		repo->snapshots = ctx.cfg.snapshots & cgit_parse_snapshots_mask(value);
+	else if (!strcmp(name, "enable-log-filecount"))
+		repo->enable_log_filecount = ctx.cfg.enable_log_filecount * atoi(value);
+	else if (!strcmp(name, "enable-log-linecount"))
+		repo->enable_log_linecount = ctx.cfg.enable_log_linecount * atoi(value);
+	else if (!strcmp(name, "max-stats"))
+		repo->max_stats = cgit_find_stats_period(value, NULL);
+	else if (!strcmp(name, "module-link"))
+		repo->module_link= xstrdup(value);
+	else if (!strcmp(name, "section"))
+		repo->section = xstrdup(value);
+	else if (!strcmp(name, "about-filter"))
+		repo->about_filter = new_filter(value, 0);
+	else if (!strcmp(name, "commit-filter"))
+		repo->commit_filter = new_filter(value, 0);
+	else if (!strcmp(name, "source-filter"))
+		repo->source_filter = new_filter(value, 1);
+	else if (!strcmp(name, "readme") && value != NULL) {
+		if (*value == '/')
+			ctx.repo->readme = xstrdup(value);
+		else
+			ctx.repo->readme = xstrdup(fmt("%s/%s", ctx.repo->path, value));
+	}
+}
+
 void config_cb(const char *name, const char *value)
 {
-	if (!strcmp(name, "root-title"))
+	if (!strcmp(name, "section") || !strcmp(name, "repo.group"))
+		ctx.cfg.section = xstrdup(value);
+	else if (!strcmp(name, "repo.url"))
+		ctx.repo = cgit_add_repo(value);
+	else if (ctx.repo && !strcmp(name, "repo.path"))
+		ctx.repo->path = trim_end(value, '/');
+	else if (ctx.repo && !prefixcmp(name, "repo."))
+		repo_config(ctx.repo, name + 5, value);
+	else if (!strcmp(name, "root-title"))
 		ctx.cfg.root_title = xstrdup(value);
 	else if (!strcmp(name, "root-desc"))
 		ctx.cfg.root_desc = xstrdup(value);
@@ -143,46 +189,7 @@ void config_cb(const char *name, const char *value)
 		ctx.cfg.local_time = atoi(value);
 	else if (!prefixcmp(name, "mimetype."))
 		add_mimetype(name + 9, value);
-	else if (!strcmp(name, "section") || !strcmp(name, "repo.group"))
-		ctx.cfg.section = xstrdup(value);
-	else if (!strcmp(name, "repo.url"))
-		ctx.repo = cgit_add_repo(value);
-	else if (!strcmp(name, "repo.name"))
-		ctx.repo->name = xstrdup(value);
-	else if (ctx.repo && !strcmp(name, "repo.path"))
-		ctx.repo->path = trim_end(value, '/');
-	else if (ctx.repo && !strcmp(name, "repo.clone-url"))
-		ctx.repo->clone_url = xstrdup(value);
-	else if (ctx.repo && !strcmp(name, "repo.desc"))
-		ctx.repo->desc = xstrdup(value);
-	else if (ctx.repo && !strcmp(name, "repo.owner"))
-		ctx.repo->owner = xstrdup(value);
-	else if (ctx.repo && !strcmp(name, "repo.defbranch"))
-		ctx.repo->defbranch = xstrdup(value);
-	else if (ctx.repo && !strcmp(name, "repo.snapshots"))
-		ctx.repo->snapshots = ctx.cfg.snapshots & cgit_parse_snapshots_mask(value); /* XXX: &? */
-	else if (ctx.repo && !strcmp(name, "repo.enable-log-filecount"))
-		ctx.repo->enable_log_filecount = ctx.cfg.enable_log_filecount * atoi(value);
-	else if (ctx.repo && !strcmp(name, "repo.enable-log-linecount"))
-		ctx.repo->enable_log_linecount = ctx.cfg.enable_log_linecount * atoi(value);
-	else if (ctx.repo && !strcmp(name, "repo.max-stats"))
-		ctx.repo->max_stats = cgit_find_stats_period(value, NULL);
-	else if (ctx.repo && !strcmp(name, "repo.module-link"))
-		ctx.repo->module_link= xstrdup(value);
-	else if (ctx.repo && !strcmp(name, "repo.section"))
-		ctx.repo->section = xstrdup(value);
-	else if (ctx.repo && !strcmp(name, "repo.about-filter"))
-		ctx.repo->about_filter = new_filter(value, 0);
-	else if (ctx.repo && !strcmp(name, "repo.commit-filter"))
-		ctx.repo->commit_filter = new_filter(value, 0);
-	else if (ctx.repo && !strcmp(name, "repo.source-filter"))
-		ctx.repo->source_filter = new_filter(value, 1);
-	else if (ctx.repo && !strcmp(name, "repo.readme") && value != NULL) {
-		if (*value == '/')
-			ctx.repo->readme = xstrdup(value);
-		else
-			ctx.repo->readme = xstrdup(fmt("%s/%s", ctx.repo->path, value));
-	} else if (!strcmp(name, "include"))
+	else if (!strcmp(name, "include"))
 		parse_configfile(value, config_cb);
 }
 
