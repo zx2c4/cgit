@@ -136,6 +136,18 @@ static int cmp(const char *s1, const char *s2)
 	return 0;
 }
 
+static int sort_section(const void *a, const void *b)
+{
+	const struct cgit_repo *r1 = a;
+	const struct cgit_repo *r2 = b;
+	int result;
+
+	result = cmp(r1->section, r2->section);
+	if (!result)
+		result = cmp(r1->name, r2->name);
+	return result;
+}
+
 static int sort_name(const void *a, const void *b)
 {
 	const struct cgit_repo *r1 = a;
@@ -178,6 +190,7 @@ struct sortcolumn {
 };
 
 struct sortcolumn sortcolumn[] = {
+	{"section", sort_section},
 	{"name", sort_name},
 	{"desc", sort_desc},
 	{"owner", sort_owner},
@@ -219,6 +232,8 @@ void cgit_print_repolist()
 
 	if(ctx.qry.sort)
 		sorted = sort_repolist(ctx.qry.sort);
+	else
+		sort_repolist("section");
 
 	html("<table summary='repository list' class='list nowrap'>");
 	for (i=0; i<cgit_repolist.count; i++) {
