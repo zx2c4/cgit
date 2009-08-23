@@ -65,9 +65,9 @@ struct cgit_repo {
 	char *desc;
 	char *owner;
 	char *defbranch;
-	char *group;
 	char *module_link;
 	char *readme;
+	char *section;
 	char *clone_url;
 	int snapshots;
 	int enable_log_filecount;
@@ -156,12 +156,12 @@ struct cgit_config {
 	char *logo;
 	char *logo_link;
 	char *module_link;
-	char *repo_group;
 	char *robots;
 	char *root_title;
 	char *root_desc;
 	char *root_readme;
 	char *script_name;
+	char *section;
 	char *virtual_root;
 	int cache_size;
 	int cache_dynamic_ttl;

@@ -429,7 +429,7 @@ table.diff td div.del {
 	text-align: right;
 }
 
-table.list td.repogroup {
+table.list td.reposection {
 	font-style: italic;
 	color: #888;
 }

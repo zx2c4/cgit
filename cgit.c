@@ -143,8 +143,8 @@ void config_cb(const char *name, const char *value)
 		ctx.cfg.local_time = atoi(value);
 	else if (!prefixcmp(name, "mimetype."))
 		add_mimetype(name + 9, value);
-	else if (!strcmp(name, "repo.group"))
-		ctx.cfg.repo_group = xstrdup(value);
+	else if (!strcmp(name, "section") || !strcmp(name, "repo.group"))
+		ctx.cfg.section = xstrdup(value);
 	else if (!strcmp(name, "repo.url"))
 		ctx.repo = cgit_add_repo(value);
 	else if (!strcmp(name, "repo.name"))
