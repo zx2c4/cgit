@@ -547,7 +547,8 @@ static void cgit_parse_args(int argc, const char **argv)
 		if (!strncmp(argv[i], "--ofs=", 6)) {
 			ctx.qry.ofs = atoi(argv[i]+6);
 		}
-		if (!strncmp(argv[i], "--scan-tree=", 12)) {
+		if (!strncmp(argv[i], "--scan-tree=", 12) ||
+		    !strncmp(argv[i], "--scan-path=", 12)) {
 			scan++;
 			scan_tree(argv[i] + 12);
 		}
