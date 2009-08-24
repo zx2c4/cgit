@@ -48,6 +48,7 @@ struct cgit_repo *cgit_add_repo(const char *url)
 	}
 
 	ret = &cgit_repolist.repos[cgit_repolist.count-1];
+	memset(ret, 0, sizeof(struct cgit_repo));
 	ret->url = trim_end(url, '/');
 	ret->name = ret->url;
 	ret->path = NULL;
