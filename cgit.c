@@ -448,6 +448,24 @@ void print_repo(FILE *f, struct cgit_repo *repo)
 		fprintf(f, "repo.desc=%s\n", repo->desc);
 	if (repo->readme)
 		fprintf(f, "repo.readme=%s\n", repo->readme);
+	if (repo->defbranch)
+		fprintf(f, "repo.defbranch=%s\n", repo->defbranch);
+	if (repo->module_link)
+		fprintf(f, "repo.module-link=%s\n", repo->module_link);
+	if (repo->section)
+		fprintf(f, "repo.section=%s\n", repo->section);
+	if (repo->clone_url)
+		fprintf(f, "repo.clone-url=%s\n", repo->clone_url);
+	fprintf(f, "repo.enable-log-filecount=%d\n",
+	        repo->enable_log_filecount);
+	fprintf(f, "repo.enable-log-linecount=%d\n",
+	        repo->enable_log_linecount);
+	if (repo->about_filter && repo->about_filter != ctx.cfg.about_filter)
+		fprintf(f, "repo.about-filter=%s\n", repo->about_filter->cmd);
+	if (repo->commit_filter && repo->commit_filter != ctx.cfg.commit_filter)
+		fprintf(f, "repo.commit-filter=%s\n", repo->commit_filter->cmd);
+	if (repo->source_filter && repo->source_filter != ctx.cfg.source_filter)
+		fprintf(f, "repo.source-filter=%s\n", repo->source_filter->cmd);
 	fprintf(f, "\n");
 }
 
