@@ -200,8 +200,8 @@ renamelimit::
 	  `man git-diff`). Default value: "-1".
 
 repo.group::
-	Legacy alias for 'section' which will be deprecated starting with
-	cgit-1.0.
+	Legacy alias for "section". This option is deprecated and will not be
+	supported in cgit-1.0.
 
 robots::
 	Text used as content for the "robots" meta-tag. Default value:
@@ -225,7 +225,7 @@ scan-path::
 	the result will be cached as a cgitrc include-file in the cache
 	directory. Default value: none. See also: cache-scanrc-ttl.
 
-section:
+section::
 	The name of the current repository section - all repositories defined
 	after this option will inherit the current section name. Default value:
 	none.
@@ -316,7 +316,8 @@ repo.snapshots::
 	"snapshots" global setting. Default value: <snapshots>.
 
 repo.section::
-	Override the current section for this repository. Default value: none.
+	Override the current section name for this repository. Default value:
+	none.
 
 repo.source-filter::
 	Override the default source-filter. Default value: <source-filter>.
@@ -328,11 +329,11 @@ repo.url::
 
 REPOSITORY-SPECIFIC CGITRC FILE
 -------------------------------
-When the option 'scan-path' is used to auto-discover git repositories, cgit
-will try to parse the file 'cgitrc' within any found repository. Such a repo-
-specific config file may contain any of the repo-specific options described
-above, except 'repo.url' and 'repo.path'. Also, in a repo-specific config
-file, the 'repo.' prefix is dropped from the config option names.
+When the option "scan-path" is used to auto-discover git repositories, cgit
+will try to parse the file "cgitrc" within any found repository. Such a
+repo-specific config file may contain any of the repo-specific options
+described above, except "repo.url" and "repo.path". Also, in a repo-specific
+config file, the "repo." prefix is dropped from the config option names.
 
 
 EXAMPLE CGITRC FILE
