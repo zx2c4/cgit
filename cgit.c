@@ -66,17 +66,18 @@ void repo_config(struct cgit_repo *repo, const char *name, const char *value)
 		repo->module_link= xstrdup(value);
 	else if (!strcmp(name, "section"))
 		repo->section = xstrdup(value);
-	else if (!strcmp(name, "about-filter"))
-		repo->about_filter = new_filter(value, 0);
-	else if (!strcmp(name, "commit-filter"))
-		repo->commit_filter = new_filter(value, 0);
-	else if (!strcmp(name, "source-filter"))
-		repo->source_filter = new_filter(value, 1);
 	else if (!strcmp(name, "readme") && value != NULL) {
 		if (*value == '/')
 			ctx.repo->readme = xstrdup(value);
 		else
 			ctx.repo->readme = xstrdup(fmt("%s/%s", ctx.repo->path, value));
+	} else if (ctx.cfg.enable_filter_overrides) {
+		if (!strcmp(name, "about-filter"))
+			repo->about_filter = new_filter(value, 0);
+		else if (!strcmp(name, "commit-filter"))
+			repo->commit_filter = new_filter(value, 0);
+		else if (!strcmp(name, "source-filter"))
+			repo->source_filter = new_filter(value, 1);
 	}
 }
 
@@ -128,6 +129,8 @@ void config_cb(const char *name, const char *value)
 		ctx.cfg.noheader = atoi(value);
 	else if (!strcmp(name, "snapshots"))
 		ctx.cfg.snapshots = cgit_parse_snapshots_mask(value);
+	else if (!strcmp(name, "enable-filter-overrides"))
+		ctx.cfg.enable_filter_overrides = atoi(value);
 	else if (!strcmp(name, "enable-index-links"))
 		ctx.cfg.enable_index_links = atoi(value);
 	else if (!strcmp(name, "enable-log-filecount"))

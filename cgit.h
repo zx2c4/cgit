@@ -174,6 +174,7 @@ struct cgit_config {
 	int cache_scanrc_ttl;
 	int cache_static_ttl;
 	int embedded;
+	int enable_filter_overrides;
 	int enable_index_links;
 	int enable_log_filecount;
 	int enable_log_linecount;
