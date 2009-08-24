@@ -437,6 +437,26 @@ int cmp_repos(const void *a, const void *b)
 	return strcmp(ra->url, rb->url);
 }
 
+char *build_snapshot_setting(int bitmap)
+{
+	const struct cgit_snapshot_format *f;
+	char *result = xstrdup("");
+	char *tmp;
+	int len;
+
+	for (f = cgit_snapshot_formats; f->suffix; f++) {
+		if (f->bit & bitmap) {
+			tmp = result;
+			result = xstrdup(fmt("%s%s ", tmp, f->suffix));
+			free(tmp);
+		}
+	}
+	len = strlen(result);
+	if (len)
+		result[len - 1] = '\0';
+	return result;
+}
+
 void print_repo(FILE *f, struct cgit_repo *repo)
 {
 	fprintf(f, "repo.url=%s\n", repo->url);
@@ -466,6 +486,11 @@ void print_repo(FILE *f, struct cgit_repo *repo)
 		fprintf(f, "repo.commit-filter=%s\n", repo->commit_filter->cmd);
 	if (repo->source_filter && repo->source_filter != ctx.cfg.source_filter)
 		fprintf(f, "repo.source-filter=%s\n", repo->source_filter->cmd);
+	if (repo->snapshots != ctx.cfg.snapshots) {
+		char *tmp = build_snapshot_setting(repo->snapshots);
+		fprintf(f, "repo.snapshots=%s\n", tmp);
+		free(tmp);
+	}
 	fprintf(f, "\n");
 }
 
