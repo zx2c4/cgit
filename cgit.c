@@ -269,6 +269,7 @@ static void prepare_context(struct cgit_context *ctx)
 	ctx->cfg.root_title = "Git repository browser";
 	ctx->cfg.root_desc = "a fast webinterface for the git dscm";
 	ctx->cfg.script_name = CGIT_SCRIPT_NAME;
+	ctx->cfg.section = "";
 	ctx->cfg.summary_branches = 10;
 	ctx->cfg.summary_log = 10;
 	ctx->cfg.summary_tags = 10;

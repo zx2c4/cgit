@@ -217,6 +217,7 @@ void cgit_print_repolist()
 {
 	int i, columns = 4, hits = 0, header = 0;
 	char *last_section = NULL;
+	char *section;
 	int sorted = 0;
 
 	if (ctx.cfg.enable_index_links)
@@ -247,19 +248,22 @@ void cgit_print_repolist()
 			continue;
 		if (!header++)
 			print_header(columns);
+		section = ctx.repo->section;
+		if (section && !strcmp(section, ""))
+			section = NULL;
 		if (!sorted &&
-		    ((last_section == NULL && ctx.repo->section != NULL) ||
-		    (last_section != NULL && ctx.repo->section == NULL) ||
-		    (last_section != NULL && ctx.repo->section != NULL &&
-		     strcmp(ctx.repo->section, last_section)))) {
+		    ((last_section == NULL && section != NULL) ||
+		    (last_section != NULL && section == NULL) ||
+		    (last_section != NULL && section != NULL &&
+		     strcmp(section, last_section)))) {
 			htmlf("<tr class='nohover'><td colspan='%d' class='reposection'>",
 			      columns);
-			html_txt(ctx.repo->section);
+			html_txt(section);
 			html("</td></tr>");
-			last_section = ctx.repo->section;
+			last_section = section;
 		}
 		htmlf("<tr><td class='%s'>",
-		      !sorted && ctx.repo->section ? "sublevel-repo" : "toplevel-repo");
+		      !sorted && section ? "sublevel-repo" : "toplevel-repo");
 		cgit_summary_link(ctx.repo->name, ctx.repo->name, NULL, NULL);
 		html("</td><td>");
 		html_link_open(cgit_repourl(ctx.repo->url), NULL, NULL);
