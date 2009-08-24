@@ -457,6 +457,15 @@ char *build_snapshot_setting(int bitmap)
 	return result;
 }
 
+char *get_first_line(char *txt)
+{
+	char *t = xstrdup(txt);
+	char *p = strchr(t, '\n');
+	if (p)
+		*p = '\0';
+	return t;
+}
+
 void print_repo(FILE *f, struct cgit_repo *repo)
 {
 	fprintf(f, "repo.url=%s\n", repo->url);
@@ -464,8 +473,11 @@ void print_repo(FILE *f, struct cgit_repo *repo)
 	fprintf(f, "repo.path=%s\n", repo->path);
 	if (repo->owner)
 		fprintf(f, "repo.owner=%s\n", repo->owner);
-	if (repo->desc)
-		fprintf(f, "repo.desc=%s\n", repo->desc);
+	if (repo->desc) {
+		char *tmp = get_first_line(repo->desc);
+		fprintf(f, "repo.desc=%s\n", tmp);
+		free(tmp);
+	}
 	if (repo->readme)
 		fprintf(f, "repo.readme=%s\n", repo->readme);
 	if (repo->defbranch)
