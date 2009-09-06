@@ -60,7 +60,8 @@ static int walk_tree(const unsigned char *sha1, const char *base, int baselen,
 	if (S_ISDIR(mode))
 		return READ_TREE_RECURSIVE;
 
-	if (S_ISREG(mode))
+	if (S_ISREG(mode) && !strncmp(base, match_path, baselen) &&
+	    !strcmp(pathname, match_path + baselen))
 		print_object(sha1, pathname);
 
 	return 0;
