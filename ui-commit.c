@@ -35,7 +35,7 @@ void cgit_print_commit(char *hex)
 	}
 	info = cgit_parse_commit(commit);
 
-	load_ref_decorations();
+	load_ref_decorations(DECORATE_FULL_REFS);
 
 	html("<table summary='commit info' class='commit-info'>\n");
 	html("<tr><th>author</th><td>");
