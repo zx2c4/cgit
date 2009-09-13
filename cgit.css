@@ -601,3 +601,38 @@ table.hgraph div.bar {
 	background-color: #eee;
 	height: 1em;
 }
+
+table.ssdiff td.add {
+	color: black;
+	background: #afa;
+}
+
+table.ssdiff td.add_dark {
+	color: black;
+	background: #9c9;
+}
+
+table.ssdiff td.del {
+	color: black;
+	background: #faa;
+}
+
+table.ssdiff td.del_dark {
+	color: black;
+	background: #c99;
+}
+
+table.ssdiff td.changed {
+	color: black;
+	background: #ffa;
+}
+
+table.ssdiff td.changed_dark {
+	color: black;
+	background: #cc9;
+}
+
+table.ssdiff td.hunk {
+	color: #black;
+	background: #ccf;
+}

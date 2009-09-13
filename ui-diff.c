@@ -9,6 +9,7 @@
 #include "cgit.h"
 #include "html.h"
 #include "ui-shared.h"
+#include "ui-ssdiff.h"
 
 unsigned char old_rev_sha1[20];
 unsigned char new_rev_sha1[20];
@@ -32,6 +33,7 @@ static struct fileinfo {
 	int binary:1;
 } *items;
 
+static int use_ssdiff = 0;
 
 static void print_fileinfo(struct fileinfo *info)
 {
@@ -244,6 +246,8 @@ static void header(unsigned char *sha1, char *path1, int mode1,
 			html_txt(path2);
 	}
 	html("</div>");
+	if (use_ssdiff)
+		cgit_ssdiff_header();
 }
 
 static void filepair_cb(struct diff_filepair *pair)
@@ -251,9 +255,14 @@ static void filepair_cb(struct diff_filepair *pair)
 	unsigned long old_size = 0;
 	unsigned long new_size = 0;
 	int binary = 0;
+	linediff_fn print_line_fn = print_line;
 
 	header(pair->one->sha1, pair->one->path, pair->one->mode,
 	       pair->two->sha1, pair->two->path, pair->two->mode);
+	if (use_ssdiff) {
+		cgit_ssdiff_header();
+		print_line_fn = cgit_ssdiff_line_cb;
+	}
 	if (S_ISGITLINK(pair->one->mode) || S_ISGITLINK(pair->two->mode)) {
 		if (S_ISGITLINK(pair->one->mode))
 			print_line(fmt("-Subproject %s", sha1_to_hex(pair->one->sha1)), 52);
@@ -261,11 +270,13 @@ static void filepair_cb(struct diff_filepair *pair)
 			print_line(fmt("+Subproject %s", sha1_to_hex(pair->two->sha1)), 52);
 		return;
 	}
-	if (cgit_diff_files(pair->one->sha1, pair->two->sha1, &old_size, 
-			    &new_size, &binary, print_line))
+	if (cgit_diff_files(pair->one->sha1, pair->two->sha1, &old_size,
+			    &new_size, &binary, print_line_fn))
 		cgit_print_error("Error running diff");
 	if (binary)
 		html("Binary files differ");
+	if (use_ssdiff)
+		cgit_ssdiff_footer();
 }
 
 void cgit_print_diff(const char *new_rev, const char *old_rev, const char *prefix)

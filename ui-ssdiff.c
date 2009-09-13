@@ -1,0 +1,264 @@
+#include "cgit.h"
+#include "html.h"
+#include "ui-shared.h"
+
+extern int use_ssdiff;
+
+static int current_old_line, current_new_line;
+
+struct deferred_lines {
+	int line_no;
+	char *line;
+	struct deferred_lines *next;
+};
+
+static struct deferred_lines *deferred_old, *deferred_old_last;
+static struct deferred_lines *deferred_new, *deferred_new_last;
+
+static int line_from_hunk(char *line, char type)
+{
+	char *buf1, *buf2;
+	int len;
+
+	buf1 = strchr(line, type);
+	if (buf1 == NULL)
+		return 0;
+	buf1 += 1;
+	buf2 = strchr(buf1, ',');
+	if (buf2 == NULL)
+		return 0;
+	len = buf2 - buf1;
+	buf2 = xmalloc(len + 1);
+	strncpy(buf2, buf1, len);
+	buf2[len] = '\0';
+	int res = atoi(buf2);
+	free(buf2);
+	return res;
+}
+
+static char *replace_tabs(char *line)
+{
+	char *prev_buf = line;
+	char *cur_buf;
+        int linelen = strlen(line);
+	int n_tabs = 0;
+        int i;
+	char *result;
+	char *spaces = "        ";
+
+	if (linelen == 0) {
+		result = xmalloc(1);
+		result[0] = '\0';
+		return result;
+	}
+
+        for (i = 0; i < linelen; i++)
+		if (line[i] == '\t')
+			n_tabs += 1;
+        result = xmalloc(linelen + n_tabs * 8 + 1);
+	result[0] = '\0';
+
+	while (1) {
+		cur_buf = strchr(prev_buf, '\t');
+		if (!cur_buf) {
+			strcat(result, prev_buf);
+			break;
+		} else {
+			strcat(result, " ");
+			strncat(result, spaces, 8 - (strlen(result) % 8));
+			strncat(result, prev_buf, cur_buf - prev_buf);
+		}
+		prev_buf = cur_buf + 1;
+	}
+	return result;
+}
+
+static void deferred_old_add(char *line, int line_no)
+{
+	struct deferred_lines *item = xmalloc(sizeof(struct deferred_lines));
+	item->line = xstrdup(line);
+	item->line_no = line_no;
+	item->next = NULL;
+	if (deferred_old) {
+		deferred_old_last->next = item;
+		deferred_old_last = item;
+	} else {
+		deferred_old = deferred_old_last = item;
+	}
+}
+
+static void deferred_new_add(char *line, int line_no)
+{
+	struct deferred_lines *item = xmalloc(sizeof(struct deferred_lines));
+	item->line = xstrdup(line);
+	item->line_no = line_no;
+	item->next = NULL;
+	if (deferred_new) {
+		deferred_new_last->next = item;
+		deferred_new_last = item;
+	} else {
+		deferred_new = deferred_new_last = item;
+	}
+}
+
+static void print_ssdiff_line(char *class, int old_line_no, char *old_line,
+			      int new_line_no, char *new_line)
+{
+	html("<tr>");
+	if (old_line_no > 0)
+		htmlf("<td class='%s'>%d </td><td class='%s'>", class,
+		      old_line_no, class);
+	else
+		htmlf("<td class='%s_dark'>  </td><td class='%s_dark'>", class, class);
+
+	if (old_line) {
+		old_line = replace_tabs(old_line + 1);
+		html_txt(old_line);
+		free(old_line);
+	}
+
+	html("  </td>");
+
+	if (new_line_no > 0)
+		htmlf("<td class='%s'>  %d </td><td class='%s'>", class,
+		      new_line_no, class);
+	else
+		htmlf("<td class='%s_dark'>  </td><td class='%s_dark'>", class, class);
+
+	if (new_line) {
+		new_line = replace_tabs(new_line + 1);
+		html_txt(new_line);
+		free(new_line);
+	}
+
+	html("</td></tr>");
+}
+
+static void print_deferred_old_lines()
+{
+	struct deferred_lines *iter_old, *tmp;
+
+	iter_old = deferred_old;
+	while (iter_old) {
+		print_ssdiff_line("del", iter_old->line_no,
+				  iter_old->line, -1, NULL);
+		tmp = iter_old->next;
+		free(iter_old);
+		iter_old = tmp;
+	}
+}
+
+static void print_deferred_new_lines()
+{
+	struct deferred_lines *iter_new, *tmp;
+
+	iter_new = deferred_new;
+	while (iter_new) {
+		print_ssdiff_line("add", -1, NULL, iter_new->line_no,
+				  iter_new->line);
+		tmp = iter_new->next;
+		free(iter_new);
+		iter_new = tmp;
+	}
+}
+
+static void print_deferred_changed_lines()
+{
+	struct deferred_lines *iter_old, *iter_new, *tmp;
+
+	iter_old = deferred_old;
+	iter_new = deferred_new;
+	while (iter_old || iter_new) {
+		if (iter_old && iter_new)
+			print_ssdiff_line("changed", iter_old->line_no,
+					  iter_old->line,
+					  iter_new->line_no, iter_new->line);
+		else if (iter_old)
+			print_ssdiff_line("changed", iter_old->line_no,
+					  iter_old->line, -1, NULL);
+		else if (iter_new)
+			print_ssdiff_line("changed", -1, NULL,
+					  iter_new->line_no, iter_new->line);
+
+		if (iter_old) {
+			tmp = iter_old->next;
+			free(iter_old);
+			iter_old = tmp;
+		}
+
+		if (iter_new) {
+			tmp = iter_new->next;
+			free(iter_new);
+			iter_new = tmp;
+		}
+	}
+}
+
+void cgit_ssdiff_print_deferred_lines()
+{
+	if (!deferred_old && !deferred_new)
+		return;
+
+	if (deferred_old && !deferred_new)
+		print_deferred_old_lines();
+	else if (!deferred_old && deferred_new)
+		print_deferred_new_lines();
+	else
+		print_deferred_changed_lines();
+
+	deferred_old = deferred_old_last = NULL;
+	deferred_new = deferred_new_last = NULL;
+}
+
+/*
+ * print a single line returned from xdiff
+ */
+void cgit_ssdiff_line_cb(char *line, int len)
+{
+	char c = line[len - 1];
+
+	line[len - 1] = '\0';
+
+	if (line[0] == '@') {
+		current_old_line = line_from_hunk(line, '-');
+		current_new_line = line_from_hunk(line, '+');
+	}
+
+	if (line[0] == ' ') {
+		if (deferred_old || deferred_new)
+			cgit_ssdiff_print_deferred_lines();
+		print_ssdiff_line("ctx", current_old_line, line,
+				  current_new_line, line);
+		current_old_line += 1;
+		current_new_line += 1;
+	} else if (line[0] == '+') {
+		deferred_new_add(line, current_new_line);
+		current_new_line += 1;
+	} else if (line[0] == '-') {
+		deferred_old_add(line, current_old_line);
+		current_old_line += 1;
+	} else if (line[0] == '@') {
+		html("<tr><td colspan='4' class='hunk'>");
+		html_txt(line);
+		html("</td></tr>");
+	} else {
+		html("<tr><td colspan='4' class='ctx'>");
+		html_txt(line);
+		html("</td></tr>");
+	}
+	line[len - 1] = c;
+}
+
+void cgit_ssdiff_header()
+{
+	current_old_line = 0;
+	current_new_line = 0;
+	html("<table class='ssdiff'>");
+}
+
+void cgit_ssdiff_footer()
+{
+	if (deferred_old || deferred_new)
+		cgit_ssdiff_print_deferred_lines();
+	html("</table>");
+}
