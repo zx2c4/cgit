@@ -48,12 +48,13 @@ struct cgit_repo *cgit_add_repo(const char *url)
 	}
 
 	ret = &cgit_repolist.repos[cgit_repolist.count-1];
+	memset(ret, 0, sizeof(struct cgit_repo));
 	ret->url = trim_end(url, '/');
 	ret->name = ret->url;
 	ret->path = NULL;
 	ret->desc = "[no description]";
 	ret->owner = NULL;
-	ret->group = ctx.cfg.repo_group;
+	ret->section = ctx.cfg.section;
 	ret->defbranch = "master";
 	ret->snapshots = ctx.cfg.snapshots;
 	ret->enable_log_filecount = ctx.cfg.enable_log_filecount;

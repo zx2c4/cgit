@@ -65,9 +65,9 @@ struct cgit_repo {
 	char *desc;
 	char *owner;
 	char *defbranch;
-	char *group;
 	char *module_link;
 	char *readme;
+	char *section;
 	char *clone_url;
 	int snapshots;
 	int enable_log_filecount;
@@ -78,6 +78,9 @@ struct cgit_repo {
 	struct cgit_filter *commit_filter;
 	struct cgit_filter *source_filter;
 };
+
+typedef void (*repo_config_fn)(struct cgit_repo *repo, const char *name,
+	      const char *value);
 
 struct cgit_repolist {
 	int length;
@@ -156,20 +159,22 @@ struct cgit_config {
 	char *logo;
 	char *logo_link;
 	char *module_link;
-	char *repo_group;
 	char *robots;
 	char *root_title;
 	char *root_desc;
 	char *root_readme;
 	char *script_name;
+	char *section;
 	char *virtual_root;
 	int cache_size;
 	int cache_dynamic_ttl;
 	int cache_max_create_time;
 	int cache_repo_ttl;
 	int cache_root_ttl;
+	int cache_scanrc_ttl;
 	int cache_static_ttl;
 	int embedded;
+	int enable_filter_overrides;
 	int enable_index_links;
 	int enable_log_filecount;
 	int enable_log_linecount;

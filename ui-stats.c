@@ -154,6 +154,14 @@ int cgit_find_stats_period(const char *expr, struct cgit_period **period)
 	return 0;
 }
 
+const char *cgit_find_stats_periodname(int idx)
+{
+	if (idx > 0 && idx < 4)
+		return periods[idx - 1].name;
+	else
+		return "";
+}
+
 static void add_commit(struct string_list *authors, struct commit *commit,
 	struct cgit_period *period)
 {

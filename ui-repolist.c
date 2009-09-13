@@ -136,6 +136,18 @@ static int cmp(const char *s1, const char *s2)
 	return 0;
 }
 
+static int sort_section(const void *a, const void *b)
+{
+	const struct cgit_repo *r1 = a;
+	const struct cgit_repo *r2 = b;
+	int result;
+
+	result = cmp(r1->section, r2->section);
+	if (!result)
+		result = cmp(r1->name, r2->name);
+	return result;
+}
+
 static int sort_name(const void *a, const void *b)
 {
 	const struct cgit_repo *r1 = a;
@@ -178,6 +190,7 @@ struct sortcolumn {
 };
 
 struct sortcolumn sortcolumn[] = {
+	{"section", sort_section},
 	{"name", sort_name},
 	{"desc", sort_desc},
 	{"owner", sort_owner},
@@ -203,7 +216,8 @@ int sort_repolist(char *field)
 void cgit_print_repolist()
 {
 	int i, columns = 4, hits = 0, header = 0;
-	char *last_group = NULL;
+	char *last_section = NULL;
+	char *section;
 	int sorted = 0;
 
 	if (ctx.cfg.enable_index_links)
@@ -219,6 +233,8 @@ void cgit_print_repolist()
 
 	if(ctx.qry.sort)
 		sorted = sort_repolist(ctx.qry.sort);
+	else
+		sort_repolist("section");
 
 	html("<table summary='repository list' class='list nowrap'>");
 	for (i=0; i<cgit_repolist.count; i++) {
@@ -232,19 +248,22 @@ void cgit_print_repolist()
 			continue;
 		if (!header++)
 			print_header(columns);
+		section = ctx.repo->section;
+		if (section && !strcmp(section, ""))
+			section = NULL;
 		if (!sorted &&
-		    ((last_group == NULL && ctx.repo->group != NULL) ||
-		    (last_group != NULL && ctx.repo->group == NULL) ||
-		    (last_group != NULL && ctx.repo->group != NULL &&
-		     strcmp(ctx.repo->group, last_group)))) {
-			htmlf("<tr class='nohover'><td colspan='%d' class='repogroup'>",
+		    ((last_section == NULL && section != NULL) ||
+		    (last_section != NULL && section == NULL) ||
+		    (last_section != NULL && section != NULL &&
+		     strcmp(section, last_section)))) {
+			htmlf("<tr class='nohover'><td colspan='%d' class='reposection'>",
 			      columns);
-			html_txt(ctx.repo->group);
+			html_txt(section);
 			html("</td></tr>");
-			last_group = ctx.repo->group;
+			last_section = section;
 		}
 		htmlf("<tr><td class='%s'>",
-		      !sorted && ctx.repo->group ? "sublevel-repo" : "toplevel-repo");
+		      !sorted && section ? "sublevel-repo" : "toplevel-repo");
 		cgit_summary_link(ctx.repo->name, ctx.repo->name, NULL, NULL);
 		html("</td><td>");
 		html_link_open(cgit_repourl(ctx.repo->url), NULL, NULL);

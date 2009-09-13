@@ -40,9 +40,58 @@ struct cgit_filter *new_filter(const char *cmd, int extra_args)
 	return f;
 }
 
+static void process_cached_repolist(const char *path);
+
+void repo_config(struct cgit_repo *repo, const char *name, const char *value)
+{
+	if (!strcmp(name, "name"))
+		repo->name = xstrdup(value);
+	else if (!strcmp(name, "clone-url"))
+		repo->clone_url = xstrdup(value);
+	else if (!strcmp(name, "desc"))
+		repo->desc = xstrdup(value);
+	else if (!strcmp(name, "owner"))
+		repo->owner = xstrdup(value);
+	else if (!strcmp(name, "defbranch"))
+		repo->defbranch = xstrdup(value);
+	else if (!strcmp(name, "snapshots"))
+		repo->snapshots = ctx.cfg.snapshots & cgit_parse_snapshots_mask(value);
+	else if (!strcmp(name, "enable-log-filecount"))
+		repo->enable_log_filecount = ctx.cfg.enable_log_filecount * atoi(value);
+	else if (!strcmp(name, "enable-log-linecount"))
+		repo->enable_log_linecount = ctx.cfg.enable_log_linecount * atoi(value);
+	else if (!strcmp(name, "max-stats"))
+		repo->max_stats = cgit_find_stats_period(value, NULL);
+	else if (!strcmp(name, "module-link"))
+		repo->module_link= xstrdup(value);
+	else if (!strcmp(name, "section"))
+		repo->section = xstrdup(value);
+	else if (!strcmp(name, "readme") && value != NULL) {
+		if (*value == '/')
+			ctx.repo->readme = xstrdup(value);
+		else
+			ctx.repo->readme = xstrdup(fmt("%s/%s", ctx.repo->path, value));
+	} else if (ctx.cfg.enable_filter_overrides) {
+		if (!strcmp(name, "about-filter"))
+			repo->about_filter = new_filter(value, 0);
+		else if (!strcmp(name, "commit-filter"))
+			repo->commit_filter = new_filter(value, 0);
+		else if (!strcmp(name, "source-filter"))
+			repo->source_filter = new_filter(value, 1);
+	}
+}
+
 void config_cb(const char *name, const char *value)
 {
-	if (!strcmp(name, "root-title"))
+	if (!strcmp(name, "section") || !strcmp(name, "repo.group"))
+		ctx.cfg.section = xstrdup(value);
+	else if (!strcmp(name, "repo.url"))
+		ctx.repo = cgit_add_repo(value);
+	else if (ctx.repo && !strcmp(name, "repo.path"))
+		ctx.repo->path = trim_end(value, '/');
+	else if (ctx.repo && !prefixcmp(name, "repo."))
+		repo_config(ctx.repo, name + 5, value);
+	else if (!strcmp(name, "root-title"))
 		ctx.cfg.root_title = xstrdup(value);
 	else if (!strcmp(name, "root-desc"))
 		ctx.cfg.root_desc = xstrdup(value);
@@ -80,6 +129,8 @@ void config_cb(const char *name, const char *value)
 		ctx.cfg.noheader = atoi(value);
 	else if (!strcmp(name, "snapshots"))
 		ctx.cfg.snapshots = cgit_parse_snapshots_mask(value);
+	else if (!strcmp(name, "enable-filter-overrides"))
+		ctx.cfg.enable_filter_overrides = atoi(value);
 	else if (!strcmp(name, "enable-index-links"))
 		ctx.cfg.enable_index_links = atoi(value);
 	else if (!strcmp(name, "enable-log-filecount"))
@@ -98,6 +149,8 @@ void config_cb(const char *name, const char *value)
 		ctx.cfg.cache_root_ttl = atoi(value);
 	else if (!strcmp(name, "cache-repo-ttl"))
 		ctx.cfg.cache_repo_ttl = atoi(value);
+	else if (!strcmp(name, "cache-scanrc-ttl"))
+		ctx.cfg.cache_scanrc_ttl = atoi(value);
 	else if (!strcmp(name, "cache-static-ttl"))
 		ctx.cfg.cache_static_ttl = atoi(value);
 	else if (!strcmp(name, "cache-dynamic-ttl"))
@@ -116,6 +169,11 @@ void config_cb(const char *name, const char *value)
 		ctx.cfg.max_repo_count = atoi(value);
 	else if (!strcmp(name, "max-commit-count"))
 		ctx.cfg.max_commit_count = atoi(value);
+	else if (!strcmp(name, "scan-path"))
+		if (!ctx.cfg.nocache && ctx.cfg.cache_size)
+			process_cached_repolist(value);
+		else
+			scan_tree(value, repo_config);
 	else if (!strcmp(name, "source-filter"))
 		ctx.cfg.source_filter = new_filter(value, 1);
 	else if (!strcmp(name, "summary-log"))
@@ -136,44 +194,7 @@ void config_cb(const char *name, const char *value)
 		ctx.cfg.local_time = atoi(value);
 	else if (!prefixcmp(name, "mimetype."))
 		add_mimetype(name + 9, value);
-	else if (!strcmp(name, "repo.group"))
-		ctx.cfg.repo_group = xstrdup(value);
-	else if (!strcmp(name, "repo.url"))
-		ctx.repo = cgit_add_repo(value);
-	else if (!strcmp(name, "repo.name"))
-		ctx.repo->name = xstrdup(value);
-	else if (ctx.repo && !strcmp(name, "repo.path"))
-		ctx.repo->path = trim_end(value, '/');
-	else if (ctx.repo && !strcmp(name, "repo.clone-url"))
-		ctx.repo->clone_url = xstrdup(value);
-	else if (ctx.repo && !strcmp(name, "repo.desc"))
-		ctx.repo->desc = xstrdup(value);
-	else if (ctx.repo && !strcmp(name, "repo.owner"))
-		ctx.repo->owner = xstrdup(value);
-	else if (ctx.repo && !strcmp(name, "repo.defbranch"))
-		ctx.repo->defbranch = xstrdup(value);
-	else if (ctx.repo && !strcmp(name, "repo.snapshots"))
-		ctx.repo->snapshots = ctx.cfg.snapshots & cgit_parse_snapshots_mask(value); /* XXX: &? */
-	else if (ctx.repo && !strcmp(name, "repo.enable-log-filecount"))
-		ctx.repo->enable_log_filecount = ctx.cfg.enable_log_filecount * atoi(value);
-	else if (ctx.repo && !strcmp(name, "repo.enable-log-linecount"))
-		ctx.repo->enable_log_linecount = ctx.cfg.enable_log_linecount * atoi(value);
-	else if (ctx.repo && !strcmp(name, "repo.max-stats"))
-		ctx.repo->max_stats = cgit_find_stats_period(value, NULL);
-	else if (ctx.repo && !strcmp(name, "repo.module-link"))
-		ctx.repo->module_link= xstrdup(value);
-	else if (ctx.repo && !strcmp(name, "repo.about-filter"))
-		ctx.repo->about_filter = new_filter(value, 0);
-	else if (ctx.repo && !strcmp(name, "repo.commit-filter"))
-		ctx.repo->commit_filter = new_filter(value, 0);
-	else if (ctx.repo && !strcmp(name, "repo.source-filter"))
-		ctx.repo->source_filter = new_filter(value, 1);
-	else if (ctx.repo && !strcmp(name, "repo.readme") && value != NULL) {
-		if (*value == '/')
-			ctx.repo->readme = xstrdup(value);
-		else
-			ctx.repo->readme = xstrdup(fmt("%s/%s", ctx.repo->path, value));
-	} else if (!strcmp(name, "include"))
+	else if (!strcmp(name, "include"))
 		parse_configfile(value, config_cb);
 }
 
@@ -236,6 +257,7 @@ static void prepare_context(struct cgit_context *ctx)
 	ctx->cfg.cache_repo_ttl = 5;
 	ctx->cfg.cache_root = CGIT_CACHE_ROOT;
 	ctx->cfg.cache_root_ttl = 5;
+	ctx->cfg.cache_scanrc_ttl = 15;
 	ctx->cfg.cache_static_ttl = -1;
 	ctx->cfg.css = "/cgit.css";
 	ctx->cfg.logo = "/cgit.png";
@@ -253,6 +275,7 @@ static void prepare_context(struct cgit_context *ctx)
 	ctx->cfg.root_title = "Git repository browser";
 	ctx->cfg.root_desc = "a fast webinterface for the git dscm";
 	ctx->cfg.script_name = CGIT_SCRIPT_NAME;
+	ctx->cfg.section = "";
 	ctx->cfg.summary_branches = 10;
 	ctx->cfg.summary_log = 10;
 	ctx->cfg.summary_tags = 10;
@@ -417,28 +440,151 @@ int cmp_repos(const void *a, const void *b)
 	return strcmp(ra->url, rb->url);
 }
 
-void print_repo(struct cgit_repo *repo)
+char *build_snapshot_setting(int bitmap)
 {
-	printf("repo.url=%s\n", repo->url);
-	printf("repo.name=%s\n", repo->name);
-	printf("repo.path=%s\n", repo->path);
-	if (repo->owner)
-		printf("repo.owner=%s\n", repo->owner);
-	if (repo->desc)
-		printf("repo.desc=%s\n", repo->desc);
-	if (repo->readme)
-		printf("repo.readme=%s\n", repo->readme);
-	printf("\n");
+	const struct cgit_snapshot_format *f;
+	char *result = xstrdup("");
+	char *tmp;
+	int len;
+
+	for (f = cgit_snapshot_formats; f->suffix; f++) {
+		if (f->bit & bitmap) {
+			tmp = result;
+			result = xstrdup(fmt("%s%s ", tmp, f->suffix));
+			free(tmp);
+		}
+	}
+	len = strlen(result);
+	if (len)
+		result[len - 1] = '\0';
+	return result;
 }
 
-void print_repolist(struct cgit_repolist *list)
+char *get_first_line(char *txt)
+{
+	char *t = xstrdup(txt);
+	char *p = strchr(t, '\n');
+	if (p)
+		*p = '\0';
+	return t;
+}
+
+void print_repo(FILE *f, struct cgit_repo *repo)
+{
+	fprintf(f, "repo.url=%s\n", repo->url);
+	fprintf(f, "repo.name=%s\n", repo->name);
+	fprintf(f, "repo.path=%s\n", repo->path);
+	if (repo->owner)
+		fprintf(f, "repo.owner=%s\n", repo->owner);
+	if (repo->desc) {
+		char *tmp = get_first_line(repo->desc);
+		fprintf(f, "repo.desc=%s\n", tmp);
+		free(tmp);
+	}
+	if (repo->readme)
+		fprintf(f, "repo.readme=%s\n", repo->readme);
+	if (repo->defbranch)
+		fprintf(f, "repo.defbranch=%s\n", repo->defbranch);
+	if (repo->module_link)
+		fprintf(f, "repo.module-link=%s\n", repo->module_link);
+	if (repo->section)
+		fprintf(f, "repo.section=%s\n", repo->section);
+	if (repo->clone_url)
+		fprintf(f, "repo.clone-url=%s\n", repo->clone_url);
+	fprintf(f, "repo.enable-log-filecount=%d\n",
+	        repo->enable_log_filecount);
+	fprintf(f, "repo.enable-log-linecount=%d\n",
+	        repo->enable_log_linecount);
+	if (repo->about_filter && repo->about_filter != ctx.cfg.about_filter)
+		fprintf(f, "repo.about-filter=%s\n", repo->about_filter->cmd);
+	if (repo->commit_filter && repo->commit_filter != ctx.cfg.commit_filter)
+		fprintf(f, "repo.commit-filter=%s\n", repo->commit_filter->cmd);
+	if (repo->source_filter && repo->source_filter != ctx.cfg.source_filter)
+		fprintf(f, "repo.source-filter=%s\n", repo->source_filter->cmd);
+	if (repo->snapshots != ctx.cfg.snapshots) {
+		char *tmp = build_snapshot_setting(repo->snapshots);
+		fprintf(f, "repo.snapshots=%s\n", tmp);
+		free(tmp);
+	}
+	if (repo->max_stats != ctx.cfg.max_stats)
+		fprintf(f, "repo.max-stats=%s\n",
+		        cgit_find_stats_periodname(repo->max_stats));
+	fprintf(f, "\n");
+}
+
+void print_repolist(FILE *f, struct cgit_repolist *list, int start)
 {
 	int i;
 
-	for(i = 0; i < list->count; i++)
-		print_repo(&list->repos[i]);
+	for(i = start; i < list->count; i++)
+		print_repo(f, &list->repos[i]);
 }
 
+/* Scan 'path' for git repositories, save the resulting repolist in 'cached_rc'
+ * and return 0 on success.
+ */
+static int generate_cached_repolist(const char *path, const char *cached_rc)
+{
+	char *locked_rc;
+	int idx;
+	FILE *f;
+
+	locked_rc = xstrdup(fmt("%s.lock", cached_rc));
+	f = fopen(locked_rc, "wx");
+	if (!f) {
+		/* Inform about the error unless the lockfile already existed,
+		 * since that only means we've got concurrent requests.
+		 */
+		if (errno != EEXIST)
+			fprintf(stderr, "[cgit] Error opening %s: %s (%d)\n",
+				locked_rc, strerror(errno), errno);
+		return errno;
+	}
+	idx = cgit_repolist.count;
+	scan_tree(path, repo_config);
+	print_repolist(f, &cgit_repolist, idx);
+	if (rename(locked_rc, cached_rc))
+		fprintf(stderr, "[cgit] Error renaming %s to %s: %s (%d)\n",
+			locked_rc, cached_rc, strerror(errno), errno);
+	fclose(f);
+	return 0;
+}
+
+static void process_cached_repolist(const char *path)
+{
+	struct stat st;
+	char *cached_rc;
+	time_t age;
+
+	cached_rc = xstrdup(fmt("%s/rc-%8x", ctx.cfg.cache_root,
+		hash_str(path)));
+
+	if (stat(cached_rc, &st)) {
+		/* Nothing is cached, we need to scan without forking. And
+		 * if we fail to generate a cached repolist, we need to
+		 * invoke scan_tree manually.
+		 */
+		if (generate_cached_repolist(path, cached_rc))
+			scan_tree(path, repo_config);
+		return;
+	}
+
+	parse_configfile(cached_rc, config_cb);
+
+	/* If the cached configfile hasn't expired, lets exit now */
+	age = time(NULL) - st.st_mtime;
+	if (age <= (ctx.cfg.cache_scanrc_ttl * 60))
+		return;
+
+	/* The cached repolist has been parsed, but it was old. So lets
+	 * rescan the specified path and generate a new cached repolist
+	 * in a child-process to avoid latency for the current request.
+	 */
+	if (fork())
+		return;
+
+	exit(generate_cached_repolist(path, cached_rc));
+}
 
 static void cgit_parse_args(int argc, const char **argv)
 {
@@ -475,15 +621,26 @@ static void cgit_parse_args(int argc, const char **argv)
 		if (!strncmp(argv[i], "--ofs=", 6)) {
 			ctx.qry.ofs = atoi(argv[i]+6);
 		}
-		if (!strncmp(argv[i], "--scan-tree=", 12)) {
+		if (!strncmp(argv[i], "--scan-tree=", 12) ||
+		    !strncmp(argv[i], "--scan-path=", 12)) {
+			/* HACK: the global snapshot bitmask defines the
+			 * set of allowed snapshot formats, but the config
+			 * file hasn't been parsed yet so the mask is
+			 * currently 0. By setting all bits high before
+			 * scanning we make sure that any in-repo cgitrc
+			 * snapshot setting is respected by scan_tree().
+			 * BTW: we assume that there'll never be more than
+			 * 255 different snapshot formats supported by cgit...
+			 */
+			ctx.cfg.snapshots = 0xFF;
 			scan++;
-			scan_tree(argv[i] + 12);
+			scan_tree(argv[i] + 12, repo_config);
 		}
 	}
 	if (scan) {
 		qsort(cgit_repolist.repos, cgit_repolist.count,
 			sizeof(struct cgit_repo), cmp_repos);
-		print_repolist(&cgit_repolist);
+		print_repolist(stdout, &cgit_repolist, 0);
 		exit(0);
 	}
 }
