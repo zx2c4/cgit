@@ -173,6 +173,7 @@ struct cgit_config {
 	int enable_index_links;
 	int enable_log_filecount;
 	int enable_log_linecount;
+	int enable_tree_linenumbers;
 	int local_time;
 	int max_repo_count;
 	int max_commit_count;

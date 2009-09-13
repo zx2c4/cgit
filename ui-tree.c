@@ -22,8 +22,28 @@ static void print_text_buffer(const char *name, char *buf, unsigned long size)
 		"<a class='no' id='n%1$d' name='n%1$d' href='#n%1$d'>%1$d</a>\n";
 
 	html("<table summary='blob content' class='blob'>\n");
+
+	if (ctx.cfg.enable_tree_linenumbers) {
+		html("<tr><td class='linenumbers'><pre>");
+		idx = 0;
+		lineno = 0;
+	
+		if (size) {
+			htmlf(numberfmt, ++lineno);
+			while(idx < size - 1) { // skip absolute last newline
+				if (buf[idx] == '\n')
+					htmlf(numberfmt, ++lineno);
+				idx++;
+			}
+		}
+		html("</pre></td>\n");
+	}
+	else {
+		html("<tr>\n");
+	}
+
 	if (ctx.repo->source_filter) {
-		html("<tr><td class='lines'><pre><code>");
+		html("<td class='lines'><pre><code>");
 		ctx.repo->source_filter->argv[1] = xstrdup(name);
 		cgit_open_filter(ctx.repo->source_filter);
 		write(STDOUT_FILENO, buf, size);
@@ -32,19 +52,6 @@ static void print_text_buffer(const char *name, char *buf, unsigned long size)
 		return;
 	}
 
-	html("<tr><td class='linenumbers'><pre>");
-	idx = 0;
-	lineno = 0;
-
-	if (size) {
-		htmlf(numberfmt, ++lineno);
-		while(idx < size - 1) { // skip absolute last newline
-			if (buf[idx] == '\n')
-				htmlf(numberfmt, ++lineno);
-			idx++;
-		}
-	}
-	html("</pre></td>\n");
 	html("<td class='lines'><pre><code>");
 	html_txt(buf);
 	html("</code></pre></td></tr></table>\n");
