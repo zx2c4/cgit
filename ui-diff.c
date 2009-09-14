@@ -85,7 +85,7 @@ static void print_fileinfo(struct fileinfo *info)
 	}
 	htmlf("</td><td class='%s'>", class);
 	cgit_diff_link(info->new_path, NULL, NULL, ctx.qry.head, ctx.qry.sha1,
-		       ctx.qry.sha2, info->new_path);
+		       ctx.qry.sha2, info->new_path, 0);
 	if (info->status == DIFF_STATUS_COPIED || info->status == DIFF_STATUS_RENAMED)
 		htmlf(" (%s from %s)",
 		      info->status == DIFF_STATUS_COPIED ? "copied" : "renamed",
@@ -160,7 +160,7 @@ void cgit_print_diffstat(const unsigned char *old_sha1,
 
 	html("<div class='diffstat-header'>");
 	cgit_diff_link("Diffstat", NULL, NULL, ctx.qry.head, ctx.qry.sha1,
-		       ctx.qry.sha2, NULL);
+		       ctx.qry.sha2, NULL, 0);
 	html("</div>");
 	html("<table summary='diffstat' class='diffstat'>");
 	max_changes = 0;
@@ -250,6 +250,19 @@ static void header(unsigned char *sha1, char *path1, int mode1,
 		cgit_ssdiff_header();
 }
 
+static void print_ssdiff_link()
+{
+	if (!strcmp(ctx.qry.page, "diff")) {
+		if (use_ssdiff)
+			cgit_diff_link("Unidiff", NULL, NULL, ctx.qry.head,
+				       ctx.qry.sha1, ctx.qry.sha2, NULL, 1);
+		else
+			cgit_diff_link("Side-by-side diff", NULL, NULL,
+				       ctx.qry.head, ctx.qry.sha1,
+				       ctx.qry.sha2, NULL, 1);
+	}
+}
+
 static void filepair_cb(struct diff_filepair *pair)
 {
 	unsigned long old_size = 0;
@@ -314,6 +327,11 @@ void cgit_print_diff(const char *new_rev, const char *old_rev, const char *prefi
 		if (!commit2 || parse_commit(commit2))
 			cgit_print_error(fmt("Bad commit: %s", sha1_to_hex(old_rev_sha1)));
 	}
+
+	if ((ctx.qry.ssdiff && !ctx.cfg.ssdiff) || (!ctx.qry.ssdiff && ctx.cfg.ssdiff))
+		use_ssdiff = 1;
+
+	print_ssdiff_link();
 	cgit_print_diffstat(old_rev_sha1, new_rev_sha1);
 
 	html("<table summary='diff' class='diff'>");

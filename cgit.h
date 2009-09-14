@@ -143,6 +143,7 @@ struct cgit_query {
 	int nohead;
 	char *sort;
 	int showmsg;
+	int ssdiff;
 };
 
 struct cgit_config {
@@ -194,6 +195,7 @@ struct cgit_config {
 	int summary_branches;
 	int summary_log;
 	int summary_tags;
+	int ssdiff;
 	struct string_list mimetypes;
 	struct cgit_filter *about_filter;
 	struct cgit_filter *commit_filter;

@@ -66,7 +66,7 @@ void show_commit_decorations(struct commit *commit)
 		else {
 			strncpy(buf, deco->name, sizeof(buf) - 1);
 			cgit_commit_link(buf, NULL, "deco", ctx.qry.head,
-				sha1_to_hex(commit->object.sha1));
+				sha1_to_hex(commit->object.sha1), 0);
 		}
 		deco = deco->next;
 	}
@@ -89,7 +89,7 @@ void print_commit(struct commit *commit)
 	htmlf("</td><td%s>",
 		ctx.qry.showmsg ? " class='logsubject'" : "");
 	cgit_commit_link(info->subject, NULL, NULL, ctx.qry.head,
-			 sha1_to_hex(commit->object.sha1));
+			 sha1_to_hex(commit->object.sha1), 0);
 	show_commit_decorations(commit);
 	html("</td><td>");
 	html_txt(info->author);
