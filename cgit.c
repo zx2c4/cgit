@@ -209,6 +209,8 @@ static void querystring_cb(const char *name, const char *value)
 	} else if (!strcmp(name, "p")) {
 		ctx.qry.page = xstrdup(value);
 	} else if (!strcmp(name, "url")) {
+		if (*value == '/')
+			value++;
 		ctx.qry.url = xstrdup(value);
 		cgit_parse_url(value);
 	} else if (!strcmp(name, "qt")) {
