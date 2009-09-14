@@ -424,8 +424,8 @@ mimetype.svg=image/svg+xml
 
 ##
 ## List of repositories.
-## PS: Any repositories listed when repo.group is unset will not be
-##     displayed under a group heading
+## PS: Any repositories listed when section is unset will not be
+##     displayed under a section heading
 ## PPS: This list could be kept in a different file (e.g. '/etc/cgitrepos')
 ##      and included like this:
 ##        include=/etc/cgitrepos
@@ -447,7 +447,7 @@ repo.readme=info/web/about.html
 
 
 # The next repositories will be displayed under the 'extras' heading
-repo.group=extras
+section=extras
 
 
 repo.url=baz
@@ -460,7 +460,7 @@ repo.desc=the wizard of foo
 
 
 # Add some mirrored repositories
-repo.group=mirrors
+section=mirrors
 
 
 repo.url=git
