@@ -40,9 +40,9 @@ static char *replace_tabs(char *line)
 {
 	char *prev_buf = line;
 	char *cur_buf;
-        int linelen = strlen(line);
+	int linelen = strlen(line);
 	int n_tabs = 0;
-        int i;
+	int i;
 	char *result;
 	char *spaces = "        ";
 
@@ -52,10 +52,10 @@ static char *replace_tabs(char *line)
 		return result;
 	}
 
-        for (i = 0; i < linelen; i++)
+	for (i = 0; i < linelen; i++)
 		if (line[i] == '\t')
 			n_tabs += 1;
-        result = xmalloc(linelen + n_tabs * 8 + 1);
+	result = xmalloc(linelen + n_tabs * 8 + 1);
 	result[0] = '\0';
 
 	while (1) {
@@ -106,10 +106,10 @@ static void print_ssdiff_line(char *class, int old_line_no, char *old_line,
 {
 	html("<tr>");
 	if (old_line_no > 0)
-		htmlf("<td class='%s'>%d </td><td class='%s'>", class,
+		htmlf("<td class='lineno'>%d</td><td class='%s'>",
 		      old_line_no, class);
 	else
-		htmlf("<td class='%s_dark'>  </td><td class='%s_dark'>", class, class);
+		htmlf("<td class='lineno'></td><td class='%s_dark'>", class);
 
 	if (old_line) {
 		old_line = replace_tabs(old_line + 1);
@@ -117,13 +117,13 @@ static void print_ssdiff_line(char *class, int old_line_no, char *old_line,
 		free(old_line);
 	}
 
-	html("  </td>");
+	html("</td>");
 
 	if (new_line_no > 0)
-		htmlf("<td class='%s'>  %d </td><td class='%s'>", class,
+		htmlf("<td class='lineno'>%d</td><td class='%s'>",
 		      new_line_no, class);
 	else
-		htmlf("<td class='%s_dark'>  </td><td class='%s_dark'>", class, class);
+		htmlf("<td class='lineno'></td><td class='%s_dark'>", class);
 
 	if (new_line) {
 		new_line = replace_tabs(new_line + 1);
@@ -249,16 +249,22 @@ void cgit_ssdiff_line_cb(char *line, int len)
 	line[len - 1] = c;
 }
 
-void cgit_ssdiff_header()
+void cgit_ssdiff_header_begin()
 {
 	current_old_line = 0;
 	current_new_line = 0;
-	html("<table class='ssdiff'>");
+	html("<tr><td class='space' colspan='4'><div></div></td></tr>");
+	html("<tr><td class='head' colspan='4'>");
+}
+
+void cgit_ssdiff_header_end()
+{
+	html("</td><tr>");
 }
 
 void cgit_ssdiff_footer()
 {
 	if (deferred_old || deferred_new)
 		cgit_ssdiff_print_deferred_lines();
-	html("</table>");
+	html("<tr><td class='foot' colspan='4'></td></tr>");
 }

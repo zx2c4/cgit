@@ -246,8 +246,6 @@ static void header(unsigned char *sha1, char *path1, int mode1,
 			html_txt(path2);
 	}
 	html("</div>");
-	if (use_ssdiff)
-		cgit_ssdiff_header();
 }
 
 static void print_ssdiff_link()
@@ -270,24 +268,26 @@ static void filepair_cb(struct diff_filepair *pair)
 	int binary = 0;
 	linediff_fn print_line_fn = print_line;
 
-	header(pair->one->sha1, pair->one->path, pair->one->mode,
-	       pair->two->sha1, pair->two->path, pair->two->mode);
 	if (use_ssdiff) {
-		cgit_ssdiff_header();
+		cgit_ssdiff_header_begin();
 		print_line_fn = cgit_ssdiff_line_cb;
 	}
+	header(pair->one->sha1, pair->one->path, pair->one->mode,
+	       pair->two->sha1, pair->two->path, pair->two->mode);
+	if (use_ssdiff)
+		cgit_ssdiff_header_end();
 	if (S_ISGITLINK(pair->one->mode) || S_ISGITLINK(pair->two->mode)) {
 		if (S_ISGITLINK(pair->one->mode))
-			print_line(fmt("-Subproject %s", sha1_to_hex(pair->one->sha1)), 52);
+			print_line_fn(fmt("-Subproject %s", sha1_to_hex(pair->one->sha1)), 52);
 		if (S_ISGITLINK(pair->two->mode))
-			print_line(fmt("+Subproject %s", sha1_to_hex(pair->two->sha1)), 52);
+			print_line_fn(fmt("+Subproject %s", sha1_to_hex(pair->two->sha1)), 52);
 		return;
 	}
 	if (cgit_diff_files(pair->one->sha1, pair->two->sha1, &old_size,
 			    &new_size, &binary, print_line_fn))
 		cgit_print_error("Error running diff");
 	if (binary)
-		html("Binary files differ");
+		print_line_fn(" Binary files differ", 20);
 	if (use_ssdiff)
 		cgit_ssdiff_footer();
 }
@@ -334,9 +334,14 @@ void cgit_print_diff(const char *new_rev, const char *old_rev, const char *prefi
 	print_ssdiff_link();
 	cgit_print_diffstat(old_rev_sha1, new_rev_sha1);
 
-	html("<table summary='diff' class='diff'>");
-	html("<tr><td>");
+	if (use_ssdiff) {
+		html("<table summary='ssdiff' class='ssdiff'>");
+	} else {
+		html("<table summary='diff' class='diff'>");
+		html("<tr><td>");
+	}
 	cgit_diff_tree(old_rev_sha1, new_rev_sha1, filepair_cb, prefix);
-	html("</td></tr>");
+	if (!use_ssdiff)
+		html("</td></tr>");
 	html("</table>");
 }
