@@ -108,6 +108,8 @@ static void print_ssdiff_line(char *class, int old_line_no, char *old_line,
 	if (old_line_no > 0)
 		htmlf("<td class='lineno'>%d</td><td class='%s'>",
 		      old_line_no, class);
+	else if (old_line)
+		htmlf("<td class='lineno'></td><td class='%s'>", class);
 	else
 		htmlf("<td class='lineno'></td><td class='%s_dark'>", class);
 
@@ -122,6 +124,8 @@ static void print_ssdiff_line(char *class, int old_line_no, char *old_line,
 	if (new_line_no > 0)
 		htmlf("<td class='lineno'>%d</td><td class='%s'>",
 		      new_line_no, class);
+	else if (new_line)
+		htmlf("<td class='lineno'></td><td class='%s'>", class);
 	else
 		htmlf("<td class='lineno'></td><td class='%s_dark'>", class);
 
@@ -251,8 +255,8 @@ void cgit_ssdiff_line_cb(char *line, int len)
 
 void cgit_ssdiff_header_begin()
 {
-	current_old_line = 0;
-	current_new_line = 0;
+	current_old_line = -1;
+	current_new_line = -1;
 	html("<tr><td class='space' colspan='4'><div></div></td></tr>");
 	html("<tr><td class='head' colspan='4'>");
 }

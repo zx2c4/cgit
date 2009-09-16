@@ -253,11 +253,11 @@ static void print_ssdiff_link()
 	if (!strcmp(ctx.qry.page, "diff")) {
 		if (use_ssdiff)
 			cgit_diff_link("Unidiff", NULL, NULL, ctx.qry.head,
-				       ctx.qry.sha1, ctx.qry.sha2, NULL, 1);
+				       ctx.qry.sha1, ctx.qry.sha2, ctx.qry.path, 1);
 		else
 			cgit_diff_link("Side-by-side diff", NULL, NULL,
 				       ctx.qry.head, ctx.qry.sha1,
-				       ctx.qry.sha2, NULL, 1);
+				       ctx.qry.sha2, ctx.qry.path, 1);
 	}
 }
 
@@ -281,13 +281,19 @@ static void filepair_cb(struct diff_filepair *pair)
 			print_line_fn(fmt("-Subproject %s", sha1_to_hex(pair->one->sha1)), 52);
 		if (S_ISGITLINK(pair->two->mode))
 			print_line_fn(fmt("+Subproject %s", sha1_to_hex(pair->two->sha1)), 52);
+		if (use_ssdiff)
+			cgit_ssdiff_footer();
 		return;
 	}
 	if (cgit_diff_files(pair->one->sha1, pair->two->sha1, &old_size,
 			    &new_size, &binary, print_line_fn))
 		cgit_print_error("Error running diff");
-	if (binary)
-		print_line_fn(" Binary files differ", 20);
+	if (binary) {
+		if (use_ssdiff)
+			html("<tr><td colspan='4'>Binary files differ</td></tr>");
+		else
+			html("Binary files differ");
+	}
 	if (use_ssdiff)
 		cgit_ssdiff_footer();
 }
