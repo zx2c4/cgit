@@ -94,7 +94,7 @@ int is_in_url(struct cgit_repo *repo)
 
 void print_sort_header(const char *title, const char *sort)
 {
-	htmlf("<th class='left'><a href='./?s=%s", sort);
+	htmlf("<th class='left'><a href='%s?s=%s", cgit_rooturl(), sort);
 	if (ctx.qry.search) {
 		html("&q=");
 		html_url_arg(ctx.qry.search);
