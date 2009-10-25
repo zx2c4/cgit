@@ -627,6 +627,11 @@ table.ssdiff td.add_dark {
 	min-width: 50%;
 }
 
+table.ssdiff span.add {
+	background: #cfc;
+	font-weight: bold;
+}
+
 table.ssdiff td.del {
 	color: black;
 	background: #fcc;
@@ -637,6 +642,11 @@ table.ssdiff td.del_dark {
 	color: black;
 	background: #caa;
 	min-width: 50%;
+}
+
+table.ssdiff span.del {
+	background: #fcc;
+	font-weight: bold;
 }
 
 table.ssdiff td.changed {
