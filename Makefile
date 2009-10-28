@@ -11,6 +11,9 @@ INSTALL = install
 
 # Define NO_STRCASESTR if you don't have strcasestr.
 #
+# Define NO_OPENSSL to disable linking with OpenSSL and use bundled SHA1
+# implementation (slower).
+#
 # Define NEEDS_LIBICONV if linking with libc is not enough (eg. Darwin).
 #
 
@@ -68,7 +71,7 @@ endif
 	$(QUIET_CC)$(CC) -o $*.o -c $(CFLAGS) $<
 
 
-EXTLIBS = git/libgit.a git/xdiff/lib.a -lz -lcrypto
+EXTLIBS = git/libgit.a git/xdiff/lib.a -lz
 OBJECTS =
 OBJECTS += cache.o
 OBJECTS += cgit.o
@@ -123,6 +126,12 @@ endif
 ifdef NO_STRCASESTR
 	CFLAGS += -DNO_STRCASESTR
 endif
+ifdef NO_OPENSSL
+	CFLAGS += -DNO_OPENSSL
+	GIT_OPTIONS += NO_OPENSSL=1
+else
+	EXTLIBS += -lcrypto
+endif
 
 cgit: $(OBJECTS) libgit
 	$(QUIET_CC)$(CC) $(CFLAGS) $(LDFLAGS) -o cgit $(OBJECTS) $(EXTLIBS)
@@ -132,8 +141,8 @@ cgit.o: VERSION
 -include $(OBJECTS:.o=.d)
 
 libgit:
-	$(QUIET_SUBDIR0)git $(QUIET_SUBDIR1) NO_CURL=1 libgit.a
-	$(QUIET_SUBDIR0)git $(QUIET_SUBDIR1) NO_CURL=1 xdiff/lib.a
+	$(QUIET_SUBDIR0)git $(QUIET_SUBDIR1) NO_CURL=1 $(GIT_OPTIONS) libgit.a
+	$(QUIET_SUBDIR0)git $(QUIET_SUBDIR1) NO_CURL=1 $(GIT_OPTIONS) xdiff/lib.a
 
 test: all
 	$(QUIET_SUBDIR0)tests $(QUIET_SUBDIR1) all
