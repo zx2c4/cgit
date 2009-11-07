@@ -400,15 +400,16 @@ int cgit_close_filter(struct cgit_filter *filter)
  */
 int readfile(const char *path, char **buf, size_t *size)
 {
-	int fd;
+	int fd, e;
 	struct stat st;
 
 	fd = open(path, O_RDONLY);
 	if (fd == -1)
 		return errno;
 	if (fstat(fd, &st)) {
+		e = errno;
 		close(fd);
-		return errno;
+		return e;
 	}
 	if (!S_ISREG(st.st_mode)) {
 		close(fd);
@@ -416,7 +417,8 @@ int readfile(const char *path, char **buf, size_t *size)
 	}
 	*buf = xmalloc(st.st_size + 1);
 	*size = read_in_full(fd, *buf, st.st_size);
+	e = errno;
 	(*buf)[*size] = '\0';
 	close(fd);
-	return (*size == st.st_size ? 0 : errno);
+	return (*size == st.st_size ? 0 : e);
 }
