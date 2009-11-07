@@ -406,12 +406,17 @@ int readfile(const char *path, char **buf, size_t *size)
 	fd = open(path, O_RDONLY);
 	if (fd == -1)
 		return errno;
-	if (fstat(fd, &st))
+	if (fstat(fd, &st)) {
+		close(fd);
 		return errno;
-	if (!S_ISREG(st.st_mode))
+	}
+	if (!S_ISREG(st.st_mode)) {
+		close(fd);
 		return EISDIR;
+	}
 	*buf = xmalloc(st.st_size + 1);
 	*size = read_in_full(fd, *buf, st.st_size);
 	(*buf)[*size] = '\0';
+	close(fd);
 	return (*size == st.st_size ? 0 : errno);
 }
