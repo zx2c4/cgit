@@ -72,6 +72,7 @@ struct cgit_repo {
 	int snapshots;
 	int enable_log_filecount;
 	int enable_log_linecount;
+	int enable_remote_branches;
 	int max_stats;
 	time_t mtime;
 	struct cgit_filter *about_filter;
@@ -178,6 +179,7 @@ struct cgit_config {
 	int enable_index_links;
 	int enable_log_filecount;
 	int enable_log_linecount;
+	int enable_remote_branches;
 	int enable_tree_linenumbers;
 	int local_time;
 	int max_repo_count;

@@ -110,6 +110,11 @@ enable-log-linecount::
 	and removed lines for each commit on the repository log page. Default
 	value: "0".
 
+enable-remote-branches::
+	Flag which, when set to "1", will make cgit display remote branches
+	in the summary and refs views. Default value: "0". See also:
+	"repo.enable-remote-branches".
+
 enable-tree-linenumbers::
 	Flag which, when set to "1", will make cgit generate linenumber links
 	for plaintext blobs printed in the tree view. Default value: "1".
@@ -303,6 +308,10 @@ repo.enable-log-filecount::
 repo.enable-log-linecount::
 	A flag which can be used to disable the global setting
 	`enable-log-linecount'. Default value: none.
+
+repo.enable-remote-branches::
+	Flag which, when set to "1", will make cgit display remote branches
+	in the summary and refs views. Default value: <enable-remote-branches>.
 
 repo.max-stats::
 	Override the default maximum statistics period. Valid values are equal
