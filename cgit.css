@@ -162,6 +162,11 @@ table.list td a {
 	color: black;
 }
 
+table.list td a.ls-dir {
+	font-weight: bold;
+	color: #00f;
+}
+
 table.list td a:hover {
 	color: #00f;
 }
