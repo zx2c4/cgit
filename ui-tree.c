@@ -107,6 +107,12 @@ static void print_object(const unsigned char *sha1, char *path, const char *base
 		        curr_rev, path);
 	htmlf(")<br/>blob: %s\n", sha1_to_hex(sha1));
 
+	if (ctx.cfg.max_blob_size && size / 1024 > ctx.cfg.max_blob_size) {
+		htmlf("<div class='error'>blob size (%dKB) exceeds display size limit (%dKB).</div>",
+				size / 1024, ctx.cfg.max_blob_size);
+		return;
+	}
+
 	if (buffer_is_binary(buf, size))
 		print_binary_buffer(buf, size);
 	else
