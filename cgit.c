@@ -68,9 +68,9 @@ void repo_config(struct cgit_repo *repo, const char *name, const char *value)
 		repo->section = xstrdup(value);
 	else if (!strcmp(name, "readme") && value != NULL) {
 		if (*value == '/')
-			ctx.repo->readme = xstrdup(value);
+			repo->readme = xstrdup(value);
 		else
-			ctx.repo->readme = xstrdup(fmt("%s/%s", ctx.repo->path, value));
+			repo->readme = xstrdup(fmt("%s/%s", repo->path, value));
 	} else if (ctx.cfg.enable_filter_overrides) {
 		if (!strcmp(name, "about-filter"))
 			repo->about_filter = new_filter(value, 0);
