@@ -187,6 +187,8 @@ void cgit_print_branches(int maxcount)
 	list.refs = NULL;
 	list.alloc = list.count = 0;
 	for_each_branch_ref(cgit_refs_cb, &list);
+	if (ctx.repo->enable_remote_branches)
+		for_each_remote_ref(cgit_refs_cb, &list);
 
 	if (maxcount == 0 || maxcount > list.count)
 		maxcount = list.count;
