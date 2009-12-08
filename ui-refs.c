@@ -74,7 +74,7 @@ static int print_branch(struct refinfo *ref)
 	html("</td><td>");
 
 	if (ref->object->type == OBJ_COMMIT) {
-		cgit_commit_link(info->subject, NULL, NULL, name, NULL);
+		cgit_commit_link(info->subject, NULL, NULL, name, NULL, 0);
 		html("</td><td>");
 		html_txt(info->author);
 		html("</td><td colspan='2'>");

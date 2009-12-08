@@ -23,7 +23,7 @@ extern void cgit_log_link(char *name, char *title, char *class, char *head,
 			  char *rev, char *path, int ofs, char *grep,
 			  char *pattern, int showmsg);
 extern void cgit_commit_link(char *name, char *title, char *class, char *head,
-			     char *rev);
+			     char *rev, int toggle_ssdiff);
 extern void cgit_patch_link(char *name, char *title, char *class, char *head,
 			    char *rev);
 extern void cgit_refs_link(char *name, char *title, char *class, char *head,
@@ -31,7 +31,8 @@ extern void cgit_refs_link(char *name, char *title, char *class, char *head,
 extern void cgit_snapshot_link(char *name, char *title, char *class,
 			       char *head, char *rev, char *archivename);
 extern void cgit_diff_link(char *name, char *title, char *class, char *head,
-			   char *new_rev, char *old_rev, char *path);
+			   char *new_rev, char *old_rev, char *path,
+			   int toggle_ssdiff);
 extern void cgit_stats_link(char *name, char *title, char *class, char *head,
 			    char *path);
 extern void cgit_object_link(struct object *obj);

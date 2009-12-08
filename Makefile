@@ -93,6 +93,7 @@ OBJECTS += ui-refs.o
 OBJECTS += ui-repolist.o
 OBJECTS += ui-shared.o
 OBJECTS += ui-snapshot.o
+OBJECTS += ui-ssdiff.o
 OBJECTS += ui-stats.o
 OBJECTS += ui-summary.o
 OBJECTS += ui-tag.o

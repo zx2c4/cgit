@@ -184,6 +184,8 @@ void config_cb(const char *name, const char *value)
 		ctx.cfg.summary_branches = atoi(value);
 	else if (!strcmp(name, "summary-tags"))
 		ctx.cfg.summary_tags = atoi(value);
+	else if (!strcmp(name, "side-by-side-diffs"))
+		ctx.cfg.ssdiff = atoi(value);
 	else if (!strcmp(name, "agefile"))
 		ctx.cfg.agefile = xstrdup(value);
 	else if (!strcmp(name, "renamelimit"))
@@ -242,6 +244,8 @@ static void querystring_cb(const char *name, const char *value)
 		ctx.qry.showmsg = atoi(value);
 	} else if (!strcmp(name, "period")) {
 		ctx.qry.period = xstrdup(value);
+	} else if (!strcmp(name, "ss")) {
+		ctx.qry.ssdiff = atoi(value);
 	}
 }
 
@@ -284,6 +288,7 @@ static void prepare_context(struct cgit_context *ctx)
 	ctx->cfg.summary_branches = 10;
 	ctx->cfg.summary_log = 10;
 	ctx->cfg.summary_tags = 10;
+	ctx->cfg.ssdiff = 0;
 	ctx->env.cgit_config = xstrdupn(getenv("CGIT_CONFIG"));
 	ctx->env.http_host = xstrdupn(getenv("HTTP_HOST"));
 	ctx->env.https = xstrdupn(getenv("HTTPS"));

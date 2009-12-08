@@ -317,7 +317,7 @@ void cgit_log_link(char *name, char *title, char *class, char *head,
 }
 
 void cgit_commit_link(char *name, char *title, char *class, char *head,
-		      char *rev)
+		      char *rev, int toggle_ssdiff)
 {
 	if (strlen(name) > ctx.cfg.max_msg_len && ctx.cfg.max_msg_len >= 15) {
 		name[ctx.cfg.max_msg_len] = '\0';
@@ -325,7 +325,23 @@ void cgit_commit_link(char *name, char *title, char *class, char *head,
 		name[ctx.cfg.max_msg_len - 2] = '.';
 		name[ctx.cfg.max_msg_len - 3] = '.';
 	}
-	reporevlink("commit", name, title, class, head, rev, NULL);
+
+	char *delim;
+
+	delim = repolink(title, class, "commit", head, NULL);
+	if (rev && strcmp(rev, ctx.qry.head)) {
+		html(delim);
+		html("id=");
+		html_url_arg(rev);
+		delim = "&amp;";
+	}
+	if ((ctx.qry.ssdiff && !toggle_ssdiff) || (!ctx.qry.ssdiff && toggle_ssdiff)) {
+		html(delim);
+		html("ss=1");
+	}
+	html("'>");
+	html_txt(name);
+	html("</a>");
 }
 
 void cgit_refs_link(char *name, char *title, char *class, char *head,
@@ -341,7 +357,8 @@ void cgit_snapshot_link(char *name, char *title, char *class, char *head,
 }
 
 void cgit_diff_link(char *name, char *title, char *class, char *head,
-		    char *new_rev, char *old_rev, char *path)
+		    char *new_rev, char *old_rev, char *path,
+		    int toggle_ssdiff)
 {
 	char *delim;
 
@@ -356,6 +373,11 @@ void cgit_diff_link(char *name, char *title, char *class, char *head,
 		html(delim);
 		html("id2=");
 		html_url_arg(old_rev);
+		delim = "&amp;";
+	}
+	if ((ctx.qry.ssdiff && !toggle_ssdiff) || (!ctx.qry.ssdiff && toggle_ssdiff)) {
+		html(delim);
+		html("ss=1");
 	}
 	html("'>");
 	html_txt(name);
@@ -383,7 +405,7 @@ void cgit_object_link(struct object *obj)
 	shortrev[10] = '\0';
 	if (obj->type == OBJ_COMMIT) {
                 cgit_commit_link(fmt("commit %s...", shortrev), NULL, NULL,
-				 ctx.qry.head, fullrev);
+				 ctx.qry.head, fullrev, 0);
 		return;
 	} else if (obj->type == OBJ_TREE)
 		page = "tree";
@@ -695,9 +717,9 @@ void cgit_print_pageheader(struct cgit_context *ctx)
 		cgit_tree_link("tree", NULL, hc(cmd, "tree"), ctx->qry.head,
 			       ctx->qry.sha1, NULL);
 		cgit_commit_link("commit", NULL, hc(cmd, "commit"),
-				 ctx->qry.head, ctx->qry.sha1);
+				 ctx->qry.head, ctx->qry.sha1, 0);
 		cgit_diff_link("diff", NULL, hc(cmd, "diff"), ctx->qry.head,
-			       ctx->qry.sha1, ctx->qry.sha2, NULL);
+			       ctx->qry.sha1, ctx->qry.sha2, NULL, 0);
 		if (ctx->repo->max_stats)
 			cgit_stats_link("stats", NULL, hc(cmd, "stats"),
 					ctx->qry.head, NULL);

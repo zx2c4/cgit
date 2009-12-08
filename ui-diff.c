@@ -9,6 +9,7 @@
 #include "cgit.h"
 #include "html.h"
 #include "ui-shared.h"
+#include "ui-ssdiff.h"
 
 unsigned char old_rev_sha1[20];
 unsigned char new_rev_sha1[20];
@@ -32,6 +33,7 @@ static struct fileinfo {
 	int binary:1;
 } *items;
 
+static int use_ssdiff = 0;
 
 static void print_fileinfo(struct fileinfo *info)
 {
@@ -83,7 +85,7 @@ static void print_fileinfo(struct fileinfo *info)
 	}
 	htmlf("</td><td class='%s'>", class);
 	cgit_diff_link(info->new_path, NULL, NULL, ctx.qry.head, ctx.qry.sha1,
-		       ctx.qry.sha2, info->new_path);
+		       ctx.qry.sha2, info->new_path, 0);
 	if (info->status == DIFF_STATUS_COPIED || info->status == DIFF_STATUS_RENAMED)
 		htmlf(" (%s from %s)",
 		      info->status == DIFF_STATUS_COPIED ? "copied" : "renamed",
@@ -158,7 +160,7 @@ void cgit_print_diffstat(const unsigned char *old_sha1,
 
 	html("<div class='diffstat-header'>");
 	cgit_diff_link("Diffstat", NULL, NULL, ctx.qry.head, ctx.qry.sha1,
-		       ctx.qry.sha2, NULL);
+		       ctx.qry.sha2, NULL, 0);
 	html("</div>");
 	html("<table summary='diffstat' class='diffstat'>");
 	max_changes = 0;
@@ -246,26 +248,54 @@ static void header(unsigned char *sha1, char *path1, int mode1,
 	html("</div>");
 }
 
+static void print_ssdiff_link()
+{
+	if (!strcmp(ctx.qry.page, "diff")) {
+		if (use_ssdiff)
+			cgit_diff_link("Unidiff", NULL, NULL, ctx.qry.head,
+				       ctx.qry.sha1, ctx.qry.sha2, ctx.qry.path, 1);
+		else
+			cgit_diff_link("Side-by-side diff", NULL, NULL,
+				       ctx.qry.head, ctx.qry.sha1,
+				       ctx.qry.sha2, ctx.qry.path, 1);
+	}
+}
+
 static void filepair_cb(struct diff_filepair *pair)
 {
 	unsigned long old_size = 0;
 	unsigned long new_size = 0;
 	int binary = 0;
+	linediff_fn print_line_fn = print_line;
 
+	if (use_ssdiff) {
+		cgit_ssdiff_header_begin();
+		print_line_fn = cgit_ssdiff_line_cb;
+	}
 	header(pair->one->sha1, pair->one->path, pair->one->mode,
 	       pair->two->sha1, pair->two->path, pair->two->mode);
+	if (use_ssdiff)
+		cgit_ssdiff_header_end();
 	if (S_ISGITLINK(pair->one->mode) || S_ISGITLINK(pair->two->mode)) {
 		if (S_ISGITLINK(pair->one->mode))
-			print_line(fmt("-Subproject %s", sha1_to_hex(pair->one->sha1)), 52);
+			print_line_fn(fmt("-Subproject %s", sha1_to_hex(pair->one->sha1)), 52);
 		if (S_ISGITLINK(pair->two->mode))
-			print_line(fmt("+Subproject %s", sha1_to_hex(pair->two->sha1)), 52);
+			print_line_fn(fmt("+Subproject %s", sha1_to_hex(pair->two->sha1)), 52);
+		if (use_ssdiff)
+			cgit_ssdiff_footer();
 		return;
 	}
-	if (cgit_diff_files(pair->one->sha1, pair->two->sha1, &old_size, 
-			    &new_size, &binary, print_line))
+	if (cgit_diff_files(pair->one->sha1, pair->two->sha1, &old_size,
+			    &new_size, &binary, print_line_fn))
 		cgit_print_error("Error running diff");
-	if (binary)
-		html("Binary files differ");
+	if (binary) {
+		if (use_ssdiff)
+			html("<tr><td colspan='4'>Binary files differ</td></tr>");
+		else
+			html("Binary files differ");
+	}
+	if (use_ssdiff)
+		cgit_ssdiff_footer();
 }
 
 void cgit_print_diff(const char *new_rev, const char *old_rev, const char *prefix)
@@ -303,11 +333,21 @@ void cgit_print_diff(const char *new_rev, const char *old_rev, const char *prefi
 		if (!commit2 || parse_commit(commit2))
 			cgit_print_error(fmt("Bad commit: %s", sha1_to_hex(old_rev_sha1)));
 	}
+
+	if ((ctx.qry.ssdiff && !ctx.cfg.ssdiff) || (!ctx.qry.ssdiff && ctx.cfg.ssdiff))
+		use_ssdiff = 1;
+
+	print_ssdiff_link();
 	cgit_print_diffstat(old_rev_sha1, new_rev_sha1);
 
-	html("<table summary='diff' class='diff'>");
-	html("<tr><td>");
+	if (use_ssdiff) {
+		html("<table summary='ssdiff' class='ssdiff'>");
+	} else {
+		html("<table summary='diff' class='diff'>");
+		html("<tr><td>");
+	}
 	cgit_diff_tree(old_rev_sha1, new_rev_sha1, filepair_cb, prefix);
-	html("</td></tr>");
+	if (!use_ssdiff)
+		html("</td></tr>");
 	html("</table>");
 }

@@ -606,3 +606,102 @@ table.hgraph div.bar {
 	background-color: #eee;
 	height: 1em;
 }
+
+table.ssdiff {
+	width: 100%;
+}
+
+table.ssdiff td {
+	font-size: 75%;
+	font-family: monospace;
+	white-space: pre;
+	padding: 1px 4px 1px 4px;
+	border-left: solid 1px #aaa;
+	border-right: solid 1px #aaa;
+}
+
+table.ssdiff td.add {
+	color: black;
+	background: #cfc;
+	min-width: 50%;
+}
+
+table.ssdiff td.add_dark {
+	color: black;
+	background: #aca;
+	min-width: 50%;
+}
+
+table.ssdiff span.add {
+	background: #cfc;
+	font-weight: bold;
+}
+
+table.ssdiff td.del {
+	color: black;
+	background: #fcc;
+	min-width: 50%;
+}
+
+table.ssdiff td.del_dark {
+	color: black;
+	background: #caa;
+	min-width: 50%;
+}
+
+table.ssdiff span.del {
+	background: #fcc;
+	font-weight: bold;
+}
+
+table.ssdiff td.changed {
+	color: black;
+	background: #ffc;
+	min-width: 50%;
+}
+
+table.ssdiff td.changed_dark {
+	color: black;
+	background: #cca;
+	min-width: 50%;
+}
+
+table.ssdiff td.lineno {
+	color: black;
+	background: #eee;
+	text-align: right;
+	width: 3em;
+	min-width: 3em;
+}
+
+table.ssdiff td.hunk {
+	color: #black;
+	background: #ccf;
+	border-top: solid 1px #aaa;
+	border-bottom: solid 1px #aaa;
+}
+
+table.ssdiff td.head {
+	border-top: solid 1px #aaa;
+	border-bottom: solid 1px #aaa;
+}
+
+table.ssdiff td.head div.head {
+	font-weight: bold;
+	color: black;
+}
+
+table.ssdiff td.foot {
+	border-top: solid 1px #aaa;
+        border-left: none;
+        border-right: none;
+        border-bottom: none;
+}
+
+table.ssdiff td.space {
+	border: none;
+}
+
+table.ssdiff td.space div {
+	min-height: 3em;
+}
