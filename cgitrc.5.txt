@@ -177,6 +177,10 @@ max-repodesc-length::
 	Specifies the maximum number of repo description characters to display
 	on the repository index page. Default value: "80".
 
+max-blob-size::
+	Specifies the maximum size of a blob to display HTML for in KBytes.
+	Default value: "0" (limit disabled).
+
 max-stats::
 	Set the default maximum statistics period. Valid values are "week",
 	"month", "quarter" and "year". If unspecified, statistics are

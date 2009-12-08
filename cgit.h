@@ -185,6 +185,7 @@ struct cgit_config {
 	int max_lock_attempts;
 	int max_msg_len;
 	int max_repodesc_len;
+	int max_blob_size;
 	int max_stats;
 	int nocache;
 	int noplainemail;
