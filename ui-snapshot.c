@@ -35,11 +35,17 @@ static int write_tar_bzip2_archive(struct archiver_args *args)
 	return write_compressed_tar_archive(args,"bzip2");
 }
 
+static int write_tar_xz_archive(struct archiver_args *args)
+{
+	return write_compressed_tar_archive(args,"xz");
+}
+
 const struct cgit_snapshot_format cgit_snapshot_formats[] = {
-	{ ".zip", "application/x-zip", write_zip_archive, 0x1 },
-	{ ".tar.gz", "application/x-gzip", write_tar_gzip_archive, 0x2 },
-	{ ".tar.bz2", "application/x-bzip2", write_tar_bzip2_archive, 0x4 },
-	{ ".tar", "application/x-tar", write_tar_archive, 0x8 },
+	{ ".zip", "application/x-zip", write_zip_archive, 0x01 },
+	{ ".tar.gz", "application/x-gzip", write_tar_gzip_archive, 0x02 },
+	{ ".tar.bz2", "application/x-bzip2", write_tar_bzip2_archive, 0x04 },
+	{ ".tar", "application/x-tar", write_tar_archive, 0x08 },
+	{ ".tar.xz", "application/x-xz", write_tar_xz_archive, 0x10 },
 	{}
 };
 
