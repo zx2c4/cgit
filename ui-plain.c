@@ -88,7 +88,7 @@ void cgit_print_plain(struct cgit_context *ctx)
 		return;
 	}
 	match_path = ctx->qry.path;
-	read_tree_recursive(commit->tree, NULL, 0, 0, paths, walk_tree, NULL);
+	read_tree_recursive(commit->tree, "", 0, 0, paths, walk_tree, NULL);
 	if (!match)
 		html_status(404, "Not found", 0);
 }

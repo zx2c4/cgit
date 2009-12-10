@@ -280,6 +280,6 @@ void cgit_print_tree(const char *rev, char *path)
 	}
 
 	match_path = path;
-	read_tree_recursive(commit->tree, NULL, 0, 0, paths, walk_tree, NULL);
+	read_tree_recursive(commit->tree, "", 0, 0, paths, walk_tree, NULL);
 	ls_tail();
 }
