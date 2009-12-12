@@ -50,7 +50,7 @@ void cgit_print_blob(const char *hex, char *path, const char *head)
 		commit = lookup_commit_reference(sha1);
 		match_path = path;
 		matched_sha1 = sha1;
-		read_tree_recursive(commit->tree, NULL, 0, 0, paths, walk_tree, NULL);
+		read_tree_recursive(commit->tree, "", 0, 0, paths, walk_tree, NULL);
 		type = sha1_object_info(sha1,&size);
 	}
 
