@@ -10,7 +10,6 @@
 #include "html.h"
 #include "ui-shared.h"
 
-char *curr_rev;
 char *match_path;
 int match;
 
@@ -77,7 +76,6 @@ void cgit_print_plain(struct cgit_context *ctx)
 	if (!rev)
 		rev = ctx->qry.head;
 
-	curr_rev = xstrdup(rev);
 	if (get_sha1(rev, sha1)) {
 		html_status(404, "Not found", 0);
 		return;
