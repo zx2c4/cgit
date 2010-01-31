@@ -10,7 +10,7 @@
 #include "html.h"
 #include "ui-shared.h"
 
-char *match_path;
+int match_baselen;
 int match;
 
 static void print_object(const unsigned char *sha1, const char *path)
@@ -56,13 +56,21 @@ static int walk_tree(const unsigned char *sha1, const char *base, int baselen,
 		     const char *pathname, unsigned mode, int stage,
 		     void *cbdata)
 {
-	if (S_ISDIR(mode))
+	if (baselen == match_baselen) {
+		if (S_ISREG(mode))
+			print_object(sha1, pathname);
+	}
+	else if (S_ISDIR(mode))
 		return READ_TREE_RECURSIVE;
 
-	if (S_ISREG(mode) && !strncmp(base, match_path, baselen) &&
-	    !strcmp(pathname, match_path + baselen))
-		print_object(sha1, pathname);
+	return 0;
+}
 
+static int basedir_len(const char *path)
+{
+	char *p = strrchr(path, '/');
+	if (p)
+		return p - path + 1;
 	return 0;
 }
 
@@ -85,7 +93,7 @@ void cgit_print_plain(struct cgit_context *ctx)
 		html_status(404, "Not found", 0);
 		return;
 	}
-	match_path = ctx->qry.path;
+	match_baselen = basedir_len(paths[0]);
 	read_tree_recursive(commit->tree, "", 0, 0, paths, walk_tree, NULL);
 	if (!match)
 		html_status(404, "Not found", 0);
