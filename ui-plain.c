@@ -52,6 +52,38 @@ static void print_object(const unsigned char *sha1, const char *path)
 	match = 1;
 }
 
+static void print_dir(const unsigned char *sha1, const char *path,
+		      const char *base)
+{
+	char *fullpath;
+	if (path[0] || base[0])
+		fullpath = fmt("/%s%s/", base, path);
+	else
+		fullpath = "/";
+	ctx.page.etag = sha1_to_hex(sha1);
+	cgit_print_http_headers(&ctx);
+	htmlf("<html><head><title>%s</title></head>\n<body>\n"
+	      " <h2>%s</h2>\n <ul>\n", fullpath, fullpath);
+	if (path[0] || base[0])
+	      html("  <li><a href=\"../\">../</a></li>\n");
+	match = 2;
+}
+
+static void print_dir_entry(const unsigned char *sha1, const char *path,
+			    unsigned mode)
+{
+	const char *sep = "";
+	if (S_ISDIR(mode))
+		sep = "/";
+	htmlf("  <li><a href=\"%s%s\">%s%s</a></li>\n", path, sep, path, sep);
+	match = 2;
+}
+
+static void print_dir_tail(void)
+{
+	html(" </ul>\n</body></html>\n");
+}
+
 static int walk_tree(const unsigned char *sha1, const char *base, int baselen,
 		     const char *pathname, unsigned mode, int stage,
 		     void *cbdata)
@@ -59,7 +91,13 @@ static int walk_tree(const unsigned char *sha1, const char *base, int baselen,
 	if (baselen == match_baselen) {
 		if (S_ISREG(mode))
 			print_object(sha1, pathname);
+		else if (S_ISDIR(mode)) {
+			print_dir(sha1, pathname, base);
+			return READ_TREE_RECURSIVE;
+		}
 	}
+	else if (baselen > match_baselen)
+		print_dir_entry(sha1, pathname, mode);
 	else if (S_ISDIR(mode))
 		return READ_TREE_RECURSIVE;
 
@@ -93,8 +131,16 @@ void cgit_print_plain(struct cgit_context *ctx)
 		html_status(404, "Not found", 0);
 		return;
 	}
-	match_baselen = basedir_len(paths[0]);
+	if (!paths[0]) {
+		paths[0] = "";
+		match_baselen = -1;
+		print_dir(commit->tree->object.sha1, "", "");
+	}
+	else
+		match_baselen = basedir_len(paths[0]);
 	read_tree_recursive(commit->tree, "", 0, 0, paths, walk_tree, NULL);
 	if (!match)
 		html_status(404, "Not found", 0);
+	else if (match == 2)
+		print_dir_tail();
 }
