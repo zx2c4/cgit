@@ -246,7 +246,7 @@ static void reporevlink(char *page, char *name, char *title, char *class,
 	char *delim;
 
 	delim = repolink(title, class, page, head, path);
-	if (rev && strcmp(rev, ctx.qry.head)) {
+	if (rev && ctx.qry.head != NULL && strcmp(rev, ctx.qry.head)) {
 		html(delim);
 		html("id=");
 		html_url_arg(rev);
@@ -346,7 +346,7 @@ void cgit_diff_link(char *name, char *title, char *class, char *head,
 	char *delim;
 
 	delim = repolink(title, class, "diff", head, path);
-	if (new_rev && strcmp(new_rev, ctx.qry.head)) {
+	if (new_rev && ctx.qry.head != NULL && strcmp(new_rev, ctx.qry.head)) {
 		html(delim);
 		html("id=");
 		html_url_arg(new_rev);
