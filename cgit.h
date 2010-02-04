@@ -145,6 +145,7 @@ struct cgit_query {
 	char *sort;
 	int showmsg;
 	int ssdiff;
+	int show_all;
 };
 
 struct cgit_config {

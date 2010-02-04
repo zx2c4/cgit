@@ -85,7 +85,9 @@ void cgit_print_atom(char *tip, char *path, int max_count)
 	struct rev_info rev;
 	int argc = 2;
 
-	if (!tip)
+	if (ctx.qry.show_all)
+		argv[1] = "--all";
+	else if (!tip)
 		argv[1] = ctx.qry.head;
 
 	if (path) {
