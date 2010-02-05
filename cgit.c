@@ -165,6 +165,8 @@ void config_cb(const char *name, const char *value)
 		ctx.cfg.commit_filter = new_filter(value, 0);
 	else if (!strcmp(name, "embedded"))
 		ctx.cfg.embedded = atoi(value);
+	else if (!strcmp(name, "max-atom-items"))
+		ctx.cfg.max_atom_items = atoi(value);
 	else if (!strcmp(name, "max-message-length"))
 		ctx.cfg.max_msg_len = atoi(value);
 	else if (!strcmp(name, "max-repodesc-length"))
@@ -294,6 +296,7 @@ static void prepare_context(struct cgit_context *ctx)
 	ctx->cfg.summary_branches = 10;
 	ctx->cfg.summary_log = 10;
 	ctx->cfg.summary_tags = 10;
+	ctx->cfg.max_atom_items = 10;
 	ctx->cfg.ssdiff = 0;
 	ctx->env.cgit_config = xstrdupn(getenv("CGIT_CONFIG"));
 	ctx->env.http_host = xstrdupn(getenv("HTTP_HOST"));

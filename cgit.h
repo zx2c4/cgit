@@ -184,6 +184,7 @@ struct cgit_config {
 	int enable_remote_branches;
 	int enable_tree_linenumbers;
 	int local_time;
+	int max_atom_items;
 	int max_repo_count;
 	int max_commit_count;
 	int max_lock_attempts;
