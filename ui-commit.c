@@ -15,7 +15,7 @@
 void cgit_print_commit(char *hex)
 {
 	struct commit *commit, *parent;
-	struct commitinfo *info;
+	struct commitinfo *info, *parent_info;
 	struct commit_list *p;
 	unsigned char sha1[20];
 	char *tmp;
@@ -82,8 +82,10 @@ void cgit_print_commit(char *hex)
 		}
 		html("<tr><th>parent</th>"
 		     "<td colspan='2' class='sha1'>");
-		cgit_commit_link(sha1_to_hex(p->item->object.sha1), NULL, NULL,
-				 ctx.qry.head, sha1_to_hex(p->item->object.sha1), 0);
+		parent_info = cgit_parse_commit(parent);
+		tmp = sha1_to_hex(p->item->object.sha1);
+		cgit_commit_link(parent_info->subject, NULL, NULL,
+				 ctx.qry.head, tmp, 0);
 		html(" (");
 		cgit_diff_link("diff", NULL, NULL, ctx.qry.head, hex,
 			       sha1_to_hex(p->item->object.sha1), NULL, 0);
