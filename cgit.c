@@ -260,7 +260,7 @@ char *xstrdupn(const char *str)
 
 static void prepare_context(struct cgit_context *ctx)
 {
-	memset(ctx, 0, sizeof(ctx));
+	memset(ctx, 0, sizeof(*ctx));
 	ctx->cfg.agefile = "info/web/last-modified";
 	ctx->cfg.nocache = 0;
 	ctx->cfg.cache_size = 0;
