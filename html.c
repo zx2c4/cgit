@@ -13,6 +13,32 @@
 #include <string.h>
 #include <errno.h>
 
+/* Percent-encoding of each character, except: a-zA-Z0-9!$()*,./:;@- */
+static const char* url_escape_table[256] = {
+	"%00", "%01", "%02", "%03", "%04", "%05", "%06", "%07", "%08", "%09",
+	"%0a", "%0b", "%0c", "%0d", "%0e", "%0f", "%10", "%11", "%12", "%13",
+	"%14", "%15", "%16", "%17", "%18", "%19", "%1a", "%1b", "%1c", "%1d",
+	"%1e", "%1f", "%20", 0, "%22", "%23", 0, "%25", "%26", "%27", 0, 0, 0,
+	"%2b", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "%3c", "%3d",
+	"%3e", "%3f", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, "%5c", 0, "%5e", 0, "%60", 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "%7b",
+	"%7c", "%7d", 0, "%7f", "%80", "%81", "%82", "%83", "%84", "%85",
+	"%86", "%87", "%88", "%89", "%8a", "%8b", "%8c", "%8d", "%8e", "%8f",
+	"%90", "%91", "%92", "%93", "%94", "%95", "%96", "%97", "%98", "%99",
+	"%9a", "%9b", "%9c", "%9d", "%9e", "%9f", "%a0", "%a1", "%a2", "%a3",
+	"%a4", "%a5", "%a6", "%a7", "%a8", "%a9", "%aa", "%ab", "%ac", "%ad",
+	"%ae", "%af", "%b0", "%b1", "%b2", "%b3", "%b4", "%b5", "%b6", "%b7",
+	"%b8", "%b9", "%ba", "%bb", "%bc", "%bd", "%be", "%bf", "%c0", "%c1",
+	"%c2", "%c3", "%c4", "%c5", "%c6", "%c7", "%c8", "%c9", "%ca", "%cb",
+	"%cc", "%cd", "%ce", "%cf", "%d0", "%d1", "%d2", "%d3", "%d4", "%d5",
+	"%d6", "%d7", "%d8", "%d9", "%da", "%db", "%dc", "%dd", "%de", "%df",
+	"%e0", "%e1", "%e2", "%e3", "%e4", "%e5", "%e6", "%e7", "%e8", "%e9",
+	"%ea", "%eb", "%ec", "%ed", "%ee", "%ef", "%f0", "%f1", "%f2", "%f3",
+	"%f4", "%f5", "%f6", "%f7", "%f8", "%f9", "%fa", "%fb", "%fc", "%fd",
+	"%fe", "%ff"
+};
+
 int htmlfd = STDOUT_FILENO;
 
 char *fmt(const char *format, ...)
@@ -63,9 +89,9 @@ void html_status(int code, const char *msg, int more_headers)
 		html("\n");
 }
 
-void html_txt(char *txt)
+void html_txt(const char *txt)
 {
-	char *t = txt;
+	const char *t = txt;
 	while(t && *t){
 		int c = *t;
 		if (c=='<' || c=='>' || c=='&') {
@@ -84,9 +110,9 @@ void html_txt(char *txt)
 		html(txt);
 }
 
-void html_ntxt(int len, char *txt)
+void html_ntxt(int len, const char *txt)
 {
-	char *t = txt;
+	const char *t = txt;
 	while(t && *t && len--){
 		int c = *t;
 		if (c=='<' || c=='>' || c=='&') {
@@ -107,9 +133,9 @@ void html_ntxt(int len, char *txt)
 		html("...");
 }
 
-void html_attr(char *txt)
+void html_attr(const char *txt)
 {
-	char *t = txt;
+	const char *t = txt;
 	while(t && *t){
 		int c = *t;
 		if (c=='<' || c=='>' || c=='\'' || c=='\"') {
@@ -130,14 +156,15 @@ void html_attr(char *txt)
 		html(txt);
 }
 
-void html_url_path(char *txt)
+void html_url_path(const char *txt)
 {
-	char *t = txt;
+	const char *t = txt;
 	while(t && *t){
 		int c = *t;
-		if (c=='"' || c=='#' || c=='\'' || c=='?') {
+		const char *e = url_escape_table[c];
+		if (e && c!='+' && c!='&' && c!='+') {
 			write(htmlfd, txt, t - txt);
-			write(htmlfd, fmt("%%%2x", c), 3);
+			write(htmlfd, e, 3);
 			txt = t+1;
 		}
 		t++;
@@ -146,14 +173,15 @@ void html_url_path(char *txt)
 		html(txt);
 }
 
-void html_url_arg(char *txt)
+void html_url_arg(const char *txt)
 {
-	char *t = txt;
+	const char *t = txt;
 	while(t && *t){
 		int c = *t;
-		if (c=='"' || c=='#' || c=='%' || c=='&' || c=='\'' || c=='+' || c=='?') {
+		const char *e = url_escape_table[c];
+		if (e) {
 			write(htmlfd, txt, t - txt);
-			write(htmlfd, fmt("%%%2x", c), 3);
+			write(htmlfd, e, 3);
 			txt = t+1;
 		}
 		t++;
@@ -162,7 +190,7 @@ void html_url_arg(char *txt)
 		html(txt);
 }
 
-void html_hidden(char *name, char *value)
+void html_hidden(const char *name, const char *value)
 {
 	html("<input type='hidden' name='");
 	html_attr(name);
@@ -171,7 +199,7 @@ void html_hidden(char *name, char *value)
 	html("'/>");
 }
 
-void html_option(char *value, char *text, char *selected_value)
+void html_option(const char *value, const char *text, const char *selected_value)
 {
 	html("<option value='");
 	html_attr(value);
@@ -183,7 +211,7 @@ void html_option(char *value, char *text, char *selected_value)
 	html("</option>\n");
 }
 
-void html_link_open(char *url, char *title, char *class)
+void html_link_open(const char *url, const char *title, const char *class)
 {
 	html("<a href='");
 	html_attr(url);
@@ -257,14 +285,14 @@ char *convert_query_hexchar(char *txt)
 	}
 }
 
-int http_parse_querystring(char *txt, void (*fn)(const char *name, const char *value))
+int http_parse_querystring(const char *txt_, void (*fn)(const char *name, const char *value))
 {
-	char *t, *value = NULL, c;
+	char *t, *txt, *value = NULL, c;
 
-	if (!txt)
+	if (!txt_)
 		return 0;
 
-	t = txt = strdup(txt);
+	t = txt = strdup(txt_);
 	if (t == NULL) {
 		printf("Out of memory\n");
 		exit(1);
