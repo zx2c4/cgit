@@ -56,6 +56,8 @@ static void add_repo(const char *base, const char *path, repo_config_fn fn)
 			path, strerror(errno), errno);
 		return;
 	}
+	if (!stat(fmt("%s/noweb", path), &st))
+		return;
 	if ((pwd = getpwuid(st.st_uid)) == NULL) {
 		fprintf(stderr, "Error reading owner-info for %s: %s (%d)\n",
 			path, strerror(errno), errno);
