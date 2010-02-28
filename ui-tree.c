@@ -175,6 +175,8 @@ static int ls_item(const unsigned char *sha1, const char *base, int baselen,
 	if (ctx.repo->max_stats)
 		cgit_stats_link("stats", NULL, "button", ctx.qry.head,
 				fullpath);
+	cgit_plain_link("plain", NULL, "button", ctx.qry.head, curr_rev,
+			fullpath);
 	html("</td></tr>\n");
 	free(name);
 	return 0;
