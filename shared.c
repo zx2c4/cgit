@@ -278,6 +278,10 @@ int cgit_diff_files(const unsigned char *old_sha1,
 	if ((file1.ptr && buffer_is_binary(file1.ptr, file1.size)) ||
 	    (file2.ptr && buffer_is_binary(file2.ptr, file2.size))) {
 		*binary = 1;
+		if (file1.size)
+			free(file1.ptr);
+		if (file2.size)
+			free(file2.ptr);
 		return 0;
 	}
 
@@ -290,6 +294,10 @@ int cgit_diff_files(const unsigned char *old_sha1,
 	emit_cb.outf = filediff_cb;
 	emit_cb.priv = fn;
 	xdl_diff(&file1, &file2, &diff_params, &emit_params, &emit_cb);
+	if (file1.size)
+		free(file1.ptr);
+	if (file2.size)
+		free(file2.ptr);
 	return 0;
 }
 
