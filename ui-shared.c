@@ -645,11 +645,9 @@ void cgit_add_hidden_formfields(int incl_head, int incl_search,
 	}
 }
 
-const char *fallback_cmd = "repolist";
-
-char *hc(struct cgit_cmd *cmd, const char *page)
+static const char *hc(struct cgit_context *ctx, const char *page)
 {
-	return (strcmp(cmd ? cmd->name : fallback_cmd, page) ? NULL : "active");
+	return strcmp(ctx->qry.page, page) ? NULL : "active";
 }
 
 static void print_header(struct cgit_context *ctx)
@@ -701,35 +699,30 @@ static void print_header(struct cgit_context *ctx)
 
 void cgit_print_pageheader(struct cgit_context *ctx)
 {
-	struct cgit_cmd *cmd = cgit_get_cmd(ctx);
-
-	if (!cmd && ctx->repo)
-		fallback_cmd = "summary";
-
 	html("<div id='cgit'>");
 	if (!ctx->cfg.noheader)
 		print_header(ctx);
 
 	html("<table class='tabs'><tr><td>\n");
 	if (ctx->repo) {
-		cgit_summary_link("summary", NULL, hc(cmd, "summary"),
+		cgit_summary_link("summary", NULL, hc(ctx, "summary"),
 				  ctx->qry.head);
-		cgit_refs_link("refs", NULL, hc(cmd, "refs"), ctx->qry.head,
+		cgit_refs_link("refs", NULL, hc(ctx, "refs"), ctx->qry.head,
 			       ctx->qry.sha1, NULL);
-		cgit_log_link("log", NULL, hc(cmd, "log"), ctx->qry.head,
+		cgit_log_link("log", NULL, hc(ctx, "log"), ctx->qry.head,
 			      NULL, NULL, 0, NULL, NULL, ctx->qry.showmsg);
-		cgit_tree_link("tree", NULL, hc(cmd, "tree"), ctx->qry.head,
+		cgit_tree_link("tree", NULL, hc(ctx, "tree"), ctx->qry.head,
 			       ctx->qry.sha1, NULL);
-		cgit_commit_link("commit", NULL, hc(cmd, "commit"),
+		cgit_commit_link("commit", NULL, hc(ctx, "commit"),
 				 ctx->qry.head, ctx->qry.sha1, 0);
-		cgit_diff_link("diff", NULL, hc(cmd, "diff"), ctx->qry.head,
+		cgit_diff_link("diff", NULL, hc(ctx, "diff"), ctx->qry.head,
 			       ctx->qry.sha1, ctx->qry.sha2, NULL, 0);
 		if (ctx->repo->max_stats)
-			cgit_stats_link("stats", NULL, hc(cmd, "stats"),
+			cgit_stats_link("stats", NULL, hc(ctx, "stats"),
 					ctx->qry.head, NULL);
 		if (ctx->repo->readme)
 			reporevlink("about", "about", NULL,
-				    hc(cmd, "about"), ctx->qry.head, NULL,
+				    hc(ctx, "about"), ctx->qry.head, NULL,
 				    NULL);
 		html("</td><td class='form'>");
 		html("<form class='right' method='get' action='");
@@ -749,9 +742,9 @@ void cgit_print_pageheader(struct cgit_context *ctx)
 		html("<input type='submit' value='search'/>\n");
 		html("</form>\n");
 	} else {
-		site_link(NULL, "index", NULL, hc(cmd, "repolist"), NULL, 0);
+		site_link(NULL, "index", NULL, hc(ctx, "repolist"), NULL, 0);
 		if (ctx->cfg.root_readme)
-			site_link("about", "about", NULL, hc(cmd, "about"),
+			site_link("about", "about", NULL, hc(ctx, "about"),
 				  NULL, 0);
 		html("</td><td class='form'>");
 		html("<form method='get' action='");
