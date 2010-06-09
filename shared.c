@@ -10,7 +10,6 @@
 
 struct cgit_repolist cgit_repolist;
 struct cgit_context ctx;
-int cgit_cmd;
 
 int chk_zero(int result, char *msg)
 {
