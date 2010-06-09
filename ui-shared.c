@@ -27,7 +27,7 @@ static char *http_date(time_t t)
 		   tm->tm_hour, tm->tm_min, tm->tm_sec);
 }
 
-void cgit_print_error(char *msg)
+void cgit_print_error(const char *msg)
 {
 	html("<div class='error'>");
 	html_txt(msg);
@@ -133,7 +133,7 @@ char *cgit_currurl()
 		return fmt("%s/", ctx.cfg.virtual_root);
 }
 
-static void site_url(char *page, char *search, int ofs)
+static void site_url(const char *page, const char *search, int ofs)
 {
 	char *delim = "?";
 
@@ -160,8 +160,8 @@ static void site_url(char *page, char *search, int ofs)
 	}
 }
 
-static void site_link(char *page, char *name, char *title, char *class,
-		      char *search, int ofs)
+static void site_link(const char *page, const char *name, const char *title,
+		      const char *class, const char *search, int ofs)
 {
 	html("<a");
 	if (title) {
@@ -181,14 +181,14 @@ static void site_link(char *page, char *name, char *title, char *class,
 	html("</a>");
 }
 
-void cgit_index_link(char *name, char *title, char *class, char *pattern,
-		     int ofs)
+void cgit_index_link(const char *name, const char *title, const char *class,
+		     const char *pattern, int ofs)
 {
 	site_link(NULL, name, title, class, pattern, ofs);
 }
 
-static char *repolink(char *title, char *class, char *page, char *head,
-		      char *path)
+static char *repolink(const char *title, const char *class, const char *page,
+		      const char *head, const char *path)
 {
 	char *delim = "?";
 
@@ -240,8 +240,9 @@ static char *repolink(char *title, char *class, char *page, char *head,
 	return fmt("%s", delim);
 }
 
-static void reporevlink(char *page, char *name, char *title, char *class,
-			char *head, char *rev, char *path)
+static void reporevlink(const char *page, const char *name, const char *title,
+			const char *class, const char *head, const char *rev,
+			const char *path)
 {
 	char *delim;
 
@@ -256,32 +257,33 @@ static void reporevlink(char *page, char *name, char *title, char *class,
 	html("</a>");
 }
 
-void cgit_summary_link(char *name, char *title, char *class, char *head)
+void cgit_summary_link(const char *name, const char *title, const char *class,
+		       const char *head)
 {
 	reporevlink(NULL, name, title, class, head, NULL, NULL);
 }
 
-void cgit_tag_link(char *name, char *title, char *class, char *head,
-		   char *rev)
+void cgit_tag_link(const char *name, const char *title, const char *class,
+		   const char *head, const char *rev)
 {
 	reporevlink("tag", name, title, class, head, rev, NULL);
 }
 
-void cgit_tree_link(char *name, char *title, char *class, char *head,
-		    char *rev, char *path)
+void cgit_tree_link(const char *name, const char *title, const char *class,
+		    const char *head, const char *rev, const char *path)
 {
 	reporevlink("tree", name, title, class, head, rev, path);
 }
 
-void cgit_plain_link(char *name, char *title, char *class, char *head,
-		     char *rev, char *path)
+void cgit_plain_link(const char *name, const char *title, const char *class,
+		     const char *head, const char *rev, const char *path)
 {
 	reporevlink("plain", name, title, class, head, rev, path);
 }
 
-void cgit_log_link(char *name, char *title, char *class, char *head,
-		   char *rev, char *path, int ofs, char *grep, char *pattern,
-		   int showmsg)
+void cgit_log_link(const char *name, const char *title, const char *class,
+		   const char *head, const char *rev, const char *path,
+		   int ofs, const char *grep, const char *pattern, int showmsg)
 {
 	char *delim;
 
@@ -316,8 +318,8 @@ void cgit_log_link(char *name, char *title, char *class, char *head,
 	html("</a>");
 }
 
-void cgit_commit_link(char *name, char *title, char *class, char *head,
-		      char *rev, int toggle_ssdiff)
+void cgit_commit_link(char *name, const char *title, const char *class,
+		      const char *head, const char *rev, int toggle_ssdiff)
 {
 	if (strlen(name) > ctx.cfg.max_msg_len && ctx.cfg.max_msg_len >= 15) {
 		name[ctx.cfg.max_msg_len] = '\0';
@@ -344,21 +346,22 @@ void cgit_commit_link(char *name, char *title, char *class, char *head,
 	html("</a>");
 }
 
-void cgit_refs_link(char *name, char *title, char *class, char *head,
-		    char *rev, char *path)
+void cgit_refs_link(const char *name, const char *title, const char *class,
+		    const char *head, const char *rev, const char *path)
 {
 	reporevlink("refs", name, title, class, head, rev, path);
 }
 
-void cgit_snapshot_link(char *name, char *title, char *class, char *head,
-			char *rev, char *archivename)
+void cgit_snapshot_link(const char *name, const char *title, const char *class,
+			const char *head, const char *rev,
+			const char *archivename)
 {
 	reporevlink("snapshot", name, title, class, head, rev, archivename);
 }
 
-void cgit_diff_link(char *name, char *title, char *class, char *head,
-		    char *new_rev, char *old_rev, char *path,
-		    int toggle_ssdiff)
+void cgit_diff_link(const char *name, const char *title, const char *class,
+		    const char *head, const char *new_rev, const char *old_rev,
+		    const char *path, int toggle_ssdiff)
 {
 	char *delim;
 
@@ -384,14 +387,14 @@ void cgit_diff_link(char *name, char *title, char *class, char *head,
 	html("</a>");
 }
 
-void cgit_patch_link(char *name, char *title, char *class, char *head,
-		     char *rev)
+void cgit_patch_link(const char *name, const char *title, const char *class,
+		     const char *head, const char *rev)
 {
 	reporevlink("patch", name, title, class, head, rev, NULL);
 }
 
-void cgit_stats_link(char *name, char *title, char *class, char *head,
-		     char *path)
+void cgit_stats_link(const char *name, const char *title, const char *class,
+		     const char *head, const char *path)
 {
 	reporevlink("stats", name, title, class, head, NULL, path);
 }
@@ -417,7 +420,7 @@ void cgit_object_link(struct object *obj)
 	reporevlink(page, name, NULL, NULL, ctx.qry.head, fullrev, NULL);
 }
 
-void cgit_print_date(time_t secs, char *format, int local_time)
+void cgit_print_date(time_t secs, const char *format, int local_time)
 {
 	char buf[64];
 	struct tm *time;
@@ -432,7 +435,7 @@ void cgit_print_date(time_t secs, char *format, int local_time)
 	html_txt(buf);
 }
 
-void cgit_print_age(time_t t, time_t max_relative, char *format)
+void cgit_print_age(time_t t, time_t max_relative, const char *format)
 {
 	time_t now, secs;
 
@@ -611,7 +614,8 @@ int print_archive_ref(const char *refname, const unsigned char *sha1,
 	return 0;
 }
 
-void cgit_add_hidden_formfields(int incl_head, int incl_search, char *page)
+void cgit_add_hidden_formfields(int incl_head, int incl_search,
+				const char *page)
 {
 	char *url;
 
