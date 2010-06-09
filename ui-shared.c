@@ -790,16 +790,17 @@ void cgit_print_pageheader(struct cgit_context *ctx)
 		cgit_refs_link("refs", NULL, hc(ctx, "refs"), ctx->qry.head,
 			       ctx->qry.sha1, NULL);
 		cgit_log_link("log", NULL, hc(ctx, "log"), ctx->qry.head,
-			      NULL, NULL, 0, NULL, NULL, ctx->qry.showmsg);
+			      NULL, ctx->qry.vpath, 0, NULL, NULL,
+			      ctx->qry.showmsg);
 		cgit_tree_link("tree", NULL, hc(ctx, "tree"), ctx->qry.head,
-			       ctx->qry.sha1, NULL);
+			       ctx->qry.sha1, ctx->qry.vpath);
 		cgit_commit_link("commit", NULL, hc(ctx, "commit"),
-				 ctx->qry.head, ctx->qry.sha1, NULL, 0);
+				 ctx->qry.head, ctx->qry.sha1, ctx->qry.vpath, 0);
 		cgit_diff_link("diff", NULL, hc(ctx, "diff"), ctx->qry.head,
-			       ctx->qry.sha1, ctx->qry.sha2, NULL, 0);
+			       ctx->qry.sha1, ctx->qry.sha2, ctx->qry.vpath, 0);
 		if (ctx->repo->max_stats)
 			cgit_stats_link("stats", NULL, hc(ctx, "stats"),
-					ctx->qry.head, NULL);
+					ctx->qry.head, ctx->qry.vpath);
 		if (ctx->repo->readme)
 			reporevlink("about", "about", NULL,
 				    hc(ctx, "about"), ctx->qry.head, NULL,
