@@ -60,7 +60,7 @@ void cgit_print_commit(char *hex, const char *prefix)
 	tmp = sha1_to_hex(commit->object.sha1);
 	cgit_commit_link(tmp, NULL, NULL, ctx.qry.head, tmp, 0);
 	html(" (");
-	cgit_patch_link("patch", NULL, NULL, NULL, tmp);
+	cgit_patch_link("patch", NULL, NULL, NULL, tmp, prefix);
 	html(") (");
 	if ((ctx.qry.ssdiff && !ctx.cfg.ssdiff) || (!ctx.qry.ssdiff && ctx.cfg.ssdiff))
 		cgit_commit_link("unidiff", NULL, NULL, ctx.qry.head, tmp, 1);

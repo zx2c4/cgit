@@ -77,7 +77,7 @@ static void filepair_cb(struct diff_filepair *pair)
 		html("Binary files differ\n");
 }
 
-void cgit_print_patch(char *hex)
+void cgit_print_patch(char *hex, const char *prefix)
 {
 	struct commit *commit;
 	struct commitinfo *info;
@@ -122,7 +122,9 @@ void cgit_print_patch(char *hex)
 			html("\n");
 	}
 	html("---\n");
-	cgit_diff_tree(old_sha1, sha1, filepair_cb, NULL);
+	if (prefix)
+		htmlf("(limited to '%s')\n\n", prefix);
+	cgit_diff_tree(old_sha1, sha1, filepair_cb, prefix);
 	html("--\n");
 	htmlf("cgit %s\n", CGIT_VERSION);
 	cgit_free_commitinfo(info);

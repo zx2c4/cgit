@@ -388,9 +388,9 @@ void cgit_diff_link(const char *name, const char *title, const char *class,
 }
 
 void cgit_patch_link(const char *name, const char *title, const char *class,
-		     const char *head, const char *rev)
+		     const char *head, const char *rev, const char *path)
 {
-	reporevlink("patch", name, title, class, head, rev, NULL);
+	reporevlink("patch", name, title, class, head, rev, path);
 }
 
 void cgit_stats_link(const char *name, const char *title, const char *class,
