@@ -399,6 +399,64 @@ void cgit_stats_link(const char *name, const char *title, const char *class,
 	reporevlink("stats", name, title, class, head, NULL, path);
 }
 
+void cgit_self_link(char *name, const char *title, const char *class,
+		    struct cgit_context *ctx)
+{
+	if (!strcmp(ctx->qry.page, "repolist"))
+		return cgit_index_link(name, title, class, ctx->qry.search,
+				       ctx->qry.ofs);
+	else if (!strcmp(ctx->qry.page, "summary"))
+		return cgit_summary_link(name, title, class, ctx->qry.head);
+	else if (!strcmp(ctx->qry.page, "tag"))
+		return cgit_tag_link(name, title, class, ctx->qry.head,
+				     ctx->qry.has_sha1 ? ctx->qry.sha1 : NULL);
+	else if (!strcmp(ctx->qry.page, "tree"))
+		return cgit_tree_link(name, title, class, ctx->qry.head,
+				      ctx->qry.has_sha1 ? ctx->qry.sha1 : NULL,
+				      ctx->qry.path);
+	else if (!strcmp(ctx->qry.page, "plain"))
+		return cgit_plain_link(name, title, class, ctx->qry.head,
+				      ctx->qry.has_sha1 ? ctx->qry.sha1 : NULL,
+				      ctx->qry.path);
+	else if (!strcmp(ctx->qry.page, "log"))
+		return cgit_log_link(name, title, class, ctx->qry.head,
+				      ctx->qry.has_sha1 ? ctx->qry.sha1 : NULL,
+				      ctx->qry.path, ctx->qry.ofs,
+				      ctx->qry.grep, ctx->qry.search,
+				      ctx->qry.showmsg);
+	else if (!strcmp(ctx->qry.page, "commit"))
+		return cgit_commit_link(name, title, class, ctx->qry.head,
+				      ctx->qry.has_sha1 ? ctx->qry.sha1 : NULL,
+				      ctx->qry.path, 0);
+	else if (!strcmp(ctx->qry.page, "patch"))
+		return cgit_patch_link(name, title, class, ctx->qry.head,
+				      ctx->qry.has_sha1 ? ctx->qry.sha1 : NULL,
+				      ctx->qry.path);
+	else if (!strcmp(ctx->qry.page, "refs"))
+		return cgit_refs_link(name, title, class, ctx->qry.head,
+				      ctx->qry.has_sha1 ? ctx->qry.sha1 : NULL,
+				      ctx->qry.path);
+	else if (!strcmp(ctx->qry.page, "snapshot"))
+		return cgit_snapshot_link(name, title, class, ctx->qry.head,
+				      ctx->qry.has_sha1 ? ctx->qry.sha1 : NULL,
+				      ctx->qry.path);
+	else if (!strcmp(ctx->qry.page, "diff"))
+		return cgit_diff_link(name, title, class, ctx->qry.head,
+				      ctx->qry.sha1, ctx->qry.sha2,
+				      ctx->qry.path, 0);
+	else if (!strcmp(ctx->qry.page, "stats"))
+		return cgit_stats_link(name, title, class, ctx->qry.head,
+				      ctx->qry.path);
+
+	/* Don't known how to make link for this page */
+	repolink(title, class, ctx->qry.page, ctx->qry.head, ctx->qry.path);
+	html("><!-- cgit_self_link() doesn't know how to make link for page '");
+	html_txt(ctx->qry.page);
+	html("' -->");
+	html_txt(name);
+	html("</a>");
+}
+
 void cgit_object_link(struct object *obj)
 {
 	char *page, *shortrev, *fullrev, *name;
@@ -650,6 +708,27 @@ static const char *hc(struct cgit_context *ctx, const char *page)
 	return strcmp(ctx->qry.page, page) ? NULL : "active";
 }
 
+static void cgit_print_path_crumbs(struct cgit_context *ctx, char *path)
+{
+	char *old_path = ctx->qry.path;
+	char *p = path, *q, *end = path + strlen(path);
+
+	ctx->qry.path = NULL;
+	cgit_self_link("root", NULL, NULL, ctx);
+	ctx->qry.path = p = path;
+	while (p < end) {
+		if (!(q = strchr(p, '/')))
+			q = end;
+		*q = '\0';
+		html_txt("/");
+		cgit_self_link(p, NULL, NULL, ctx);
+		if (q < end)
+			*q = '/';
+		p = q + 1;
+	}
+	ctx->qry.path = old_path;
+}
+
 static void print_header(struct cgit_context *ctx)
 {
 	html("<table id='header'>\n");
@@ -760,7 +839,7 @@ void cgit_print_pageheader(struct cgit_context *ctx)
 	if (ctx->qry.vpath) {
 		html("<div class='path'>");
 		html("path: ");
-		html_txt(ctx->qry.vpath);
+		cgit_print_path_crumbs(ctx, ctx->qry.vpath);
 		html("</div>");
 	}
 	html("<div class='content'>");
