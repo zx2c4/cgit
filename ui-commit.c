@@ -58,14 +58,14 @@ void cgit_print_commit(char *hex, const char *prefix)
 	html("</td></tr>\n");
 	html("<tr><th>commit</th><td colspan='2' class='sha1'>");
 	tmp = sha1_to_hex(commit->object.sha1);
-	cgit_commit_link(tmp, NULL, NULL, ctx.qry.head, tmp, 0);
+	cgit_commit_link(tmp, NULL, NULL, ctx.qry.head, tmp, prefix, 0);
 	html(" (");
 	cgit_patch_link("patch", NULL, NULL, NULL, tmp, prefix);
 	html(") (");
 	if ((ctx.qry.ssdiff && !ctx.cfg.ssdiff) || (!ctx.qry.ssdiff && ctx.cfg.ssdiff))
-		cgit_commit_link("unidiff", NULL, NULL, ctx.qry.head, tmp, 1);
+		cgit_commit_link("unidiff", NULL, NULL, ctx.qry.head, tmp, prefix, 1);
 	else
-		cgit_commit_link("side-by-side diff", NULL, NULL, ctx.qry.head, tmp, 1);
+		cgit_commit_link("side-by-side diff", NULL, NULL, ctx.qry.head, tmp, prefix, 1);
 	html(")</td></tr>\n");
 	html("<tr><th>tree</th><td colspan='2' class='sha1'>");
 	tmp = xstrdup(hex);
@@ -87,7 +87,8 @@ void cgit_print_commit(char *hex, const char *prefix)
 		html("<tr><th>parent</th>"
 		     "<td colspan='2' class='sha1'>");
 		cgit_commit_link(sha1_to_hex(p->item->object.sha1), NULL, NULL,
-				 ctx.qry.head, sha1_to_hex(p->item->object.sha1), 0);
+				 ctx.qry.head,
+				 sha1_to_hex(p->item->object.sha1), prefix, 0);
 		html(" (");
 		cgit_diff_link("diff", NULL, NULL, ctx.qry.head, hex,
 			       sha1_to_hex(p->item->object.sha1), prefix, 0);
