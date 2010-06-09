@@ -430,7 +430,7 @@ snapshots=tar.gz tar.bz2 zip
 ## List of common mimetypes
 ##
 
-mimetype.git=image/git
+mimetype.gif=image/gif
 mimetype.html=text/html
 mimetype.jpg=image/jpeg
 mimetype.jpeg=image/jpeg
