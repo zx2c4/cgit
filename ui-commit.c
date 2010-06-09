@@ -71,6 +71,10 @@ void cgit_print_commit(char *hex, const char *prefix)
 	tmp = xstrdup(hex);
 	cgit_tree_link(sha1_to_hex(commit->tree->object.sha1), NULL, NULL,
 		       ctx.qry.head, tmp, NULL);
+	if (prefix) {
+		html(" /");
+		cgit_tree_link(prefix, NULL, NULL, ctx.qry.head, tmp, prefix);
+	}
 	html("</td></tr>\n");
       	for (p = commit->parents; p ; p = p->next) {
 		parent = lookup_commit_reference(p->item->object.sha1);
@@ -86,7 +90,7 @@ void cgit_print_commit(char *hex, const char *prefix)
 				 ctx.qry.head, sha1_to_hex(p->item->object.sha1), 0);
 		html(" (");
 		cgit_diff_link("diff", NULL, NULL, ctx.qry.head, hex,
-			       sha1_to_hex(p->item->object.sha1), NULL, 0);
+			       sha1_to_hex(p->item->object.sha1), prefix, 0);
 		html(")</td></tr>");
 		parents++;
 	}
