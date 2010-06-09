@@ -534,7 +534,7 @@ void cgit_print_docstart(struct cgit_context *ctx)
 		html("<link rel='alternate' title='Atom feed' href='");
 		html(cgit_httpscheme());
 		html_attr(cgit_hosturl());
-		html_attr(cgit_fileurl(ctx->repo->url, "atom", ctx->qry.path,
+		html_attr(cgit_fileurl(ctx->repo->url, "atom", ctx->qry.vpath,
 				       fmt("h=%s", ctx->qry.head)));
 		html("' type='application/atom+xml'/>\n");
 	}
@@ -621,8 +621,8 @@ void cgit_add_hidden_formfields(int incl_head, int incl_search,
 
 	if (!ctx.cfg.virtual_root) {
 		url = fmt("%s/%s", ctx.qry.repo, page);
-		if (ctx.qry.path)
-			url = fmt("%s/%s", url, ctx.qry.path);
+		if (ctx.qry.vpath)
+			url = fmt("%s/%s", url, ctx.qry.vpath);
 		html_hidden("url", url);
 	}
 
@@ -728,7 +728,7 @@ void cgit_print_pageheader(struct cgit_context *ctx)
 		html("<form class='right' method='get' action='");
 		if (ctx->cfg.virtual_root)
 			html_url_path(cgit_fileurl(ctx->qry.repo, "log",
-						   ctx->qry.path, NULL));
+						   ctx->qry.vpath, NULL));
 		html("'>\n");
 		cgit_add_hidden_formfields(1, 0, "log");
 		html("<select name='qt'>\n");
