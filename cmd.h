@@ -7,7 +7,8 @@ struct cgit_cmd {
 	const char *name;
 	cgit_cmd_fn fn;
 	unsigned int want_repo:1,
-		want_layout:1;
+		want_layout:1,
+		want_vpath:1;
 };
 
 extern struct cgit_cmd *cgit_get_cmd(struct cgit_context *ctx);
