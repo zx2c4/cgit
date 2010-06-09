@@ -12,7 +12,7 @@
 #include "ui-diff.h"
 #include "ui-log.h"
 
-void cgit_print_commit(char *hex)
+void cgit_print_commit(char *hex, const char *prefix)
 {
 	struct commit *commit, *parent;
 	struct commitinfo *info;
@@ -117,7 +117,7 @@ void cgit_print_commit(char *hex)
 			tmp = sha1_to_hex(commit->parents->item->object.sha1);
 		else
 			tmp = NULL;
-		cgit_print_diff(ctx.qry.sha1, tmp, NULL);
+		cgit_print_diff(ctx.qry.sha1, tmp, prefix);
 	}
 	cgit_free_commitinfo(info);
 }
