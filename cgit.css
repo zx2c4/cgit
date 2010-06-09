@@ -102,6 +102,14 @@ table.tabs td.form select {
 	font-size: 90%;
 }
 
+div.path {
+	margin: 0px;
+	padding: 5px 2em 2px 2em;
+	color: #000;
+	background-color: #ccc;
+	font-weight: bold;
+}
+
 div.content {
 	margin: 0px;
 	padding: 2em;

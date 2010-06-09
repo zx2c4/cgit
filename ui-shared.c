@@ -757,6 +757,12 @@ void cgit_print_pageheader(struct cgit_context *ctx)
 		html("</form>");
 	}
 	html("</td></tr></table>\n");
+	if (ctx->qry.vpath) {
+		html("<div class='path'>");
+		html("path: ");
+		html_txt(ctx->qry.vpath);
+		html("</div>");
+	}
 	html("<div class='content'>");
 }
 
