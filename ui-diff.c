@@ -154,17 +154,19 @@ static void inspect_filepair(struct diff_filepair *pair)
 }
 
 void cgit_print_diffstat(const unsigned char *old_sha1,
-			 const unsigned char *new_sha1)
+			 const unsigned char *new_sha1, const char *prefix)
 {
 	int i;
 
 	html("<div class='diffstat-header'>");
 	cgit_diff_link("Diffstat", NULL, NULL, ctx.qry.head, ctx.qry.sha1,
 		       ctx.qry.sha2, NULL, 0);
+	if (prefix)
+		htmlf(" (limited to '%s')", prefix);
 	html("</div>");
 	html("<table summary='diffstat' class='diffstat'>");
 	max_changes = 0;
-	cgit_diff_tree(old_sha1, new_sha1, inspect_filepair, NULL);
+	cgit_diff_tree(old_sha1, new_sha1, inspect_filepair, prefix);
 	for(i = 0; i<files; i++)
 		print_fileinfo(&items[i]);
 	html("</table>");
@@ -338,7 +340,7 @@ void cgit_print_diff(const char *new_rev, const char *old_rev, const char *prefi
 		use_ssdiff = 1;
 
 	print_ssdiff_link();
-	cgit_print_diffstat(old_rev_sha1, new_rev_sha1);
+	cgit_print_diffstat(old_rev_sha1, new_rev_sha1, prefix);
 
 	if (use_ssdiff) {
 		html("<table summary='ssdiff' class='ssdiff'>");
