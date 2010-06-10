@@ -33,7 +33,7 @@ void inspect_files(struct diff_filepair *pair)
 	files++;
 	if (ctx.repo->enable_log_linecount)
 		cgit_diff_files(pair->one->sha1, pair->two->sha1, &old_size,
-				&new_size, &binary, count_lines);
+				&new_size, &binary, 0, count_lines);
 }
 
 void show_commit_decorations(struct commit *commit)

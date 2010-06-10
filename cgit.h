@@ -145,6 +145,7 @@ struct cgit_query {
 	char *sort;
 	int showmsg;
 	int ssdiff;
+	int context;
 	char *vpath;
 };
 
@@ -274,7 +275,7 @@ extern void *cgit_free_commitinfo(struct commitinfo *info);
 extern int cgit_diff_files(const unsigned char *old_sha1,
 			   const unsigned char *new_sha1,
 			   unsigned long *old_size, unsigned long *new_size,
-			   int *binary, linediff_fn fn);
+			   int *binary, int context, linediff_fn fn);
 
 extern void cgit_diff_tree(const unsigned char *old_sha1,
 			   const unsigned char *new_sha1,

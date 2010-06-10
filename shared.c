@@ -262,7 +262,8 @@ int filediff_cb(void *priv, mmbuffer_t *mb, int nbuf)
 
 int cgit_diff_files(const unsigned char *old_sha1,
 		    const unsigned char *new_sha1, unsigned long *old_size,
-		    unsigned long *new_size, int *binary, linediff_fn fn)
+		    unsigned long *new_size, int *binary, int context,
+		    linediff_fn fn)
 {
 	mmfile_t file1, file2;
 	xpparam_t diff_params;
@@ -285,7 +286,7 @@ int cgit_diff_files(const unsigned char *old_sha1,
 	memset(&emit_params, 0, sizeof(emit_params));
 	memset(&emit_cb, 0, sizeof(emit_cb));
 	diff_params.flags = XDF_NEED_MINIMAL;
-	emit_params.ctxlen = 3;
+	emit_params.ctxlen = context > 0 ? context : 3;
 	emit_params.flags = XDL_EMIT_FUNCNAMES;
 	emit_cb.outf = filediff_cb;
 	emit_cb.priv = fn;

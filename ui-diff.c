@@ -127,7 +127,7 @@ static void inspect_filepair(struct diff_filepair *pair)
 	lines_added = 0;
 	lines_removed = 0;
 	cgit_diff_files(pair->one->sha1, pair->two->sha1, &old_size, &new_size,
-			&binary, count_diff_lines);
+			&binary, 0, count_diff_lines);
 	if (files >= slots) {
 		if (slots == 0)
 			slots = 4;
@@ -288,7 +288,7 @@ static void filepair_cb(struct diff_filepair *pair)
 		return;
 	}
 	if (cgit_diff_files(pair->one->sha1, pair->two->sha1, &old_size,
-			    &new_size, &binary, print_line_fn))
+			    &new_size, &binary, ctx.qry.context, print_line_fn))
 		cgit_print_error("Error running diff");
 	if (binary) {
 		if (use_ssdiff)
