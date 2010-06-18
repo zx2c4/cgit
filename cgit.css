@@ -525,7 +525,10 @@ a.deco {
 	border: solid 1px #770000;
 }
 
-div.commit-subject a {
+div.commit-subject a.branch-deco,
+div.commit-subject a.tag-deco,
+div.commit-subject a.remote-deco,
+div.commit-subject a.deco {
 	margin-left: 1em;
 	font-size: 75%;
 }
