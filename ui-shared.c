@@ -738,6 +738,7 @@ void cgit_print_pageheader(struct cgit_context *ctx)
 		html_option("grep", "log msg", ctx->qry.grep);
 		html_option("author", "author", ctx->qry.grep);
 		html_option("committer", "committer", ctx->qry.grep);
+		html_option("range", "range", ctx->qry.grep);
 		html("</select>\n");
 		html("<input class='txt' type='text' size='10' name='q' value='");
 		html_attr(ctx->qry.search);
