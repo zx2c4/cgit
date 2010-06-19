@@ -15,10 +15,10 @@
 void cgit_print_commit(char *hex)
 {
 	struct commit *commit, *parent;
-	struct commitinfo *info;
+	struct commitinfo *info, *parent_info;
 	struct commit_list *p;
 	unsigned char sha1[20];
-	char *tmp;
+	char *tmp, *tmp2;
 	int parents = 0;
 
 	if (!hex)
@@ -82,8 +82,12 @@ void cgit_print_commit(char *hex)
 		}
 		html("<tr><th>parent</th>"
 		     "<td colspan='2' class='sha1'>");
-		cgit_commit_link(sha1_to_hex(p->item->object.sha1), NULL, NULL,
-				 ctx.qry.head, sha1_to_hex(p->item->object.sha1), 0);
+		tmp = tmp2 = sha1_to_hex(p->item->object.sha1);
+		if (ctx.repo->enable_subject_links) {
+			parent_info = cgit_parse_commit(parent);
+			tmp2 = parent_info->subject;
+		}
+		cgit_commit_link(tmp2, NULL, NULL, ctx.qry.head, tmp, 0);
 		html(" (");
 		cgit_diff_link("diff", NULL, NULL, ctx.qry.head, hex,
 			       sha1_to_hex(p->item->object.sha1), NULL, 0);

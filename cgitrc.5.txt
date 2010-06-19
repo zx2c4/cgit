@@ -115,6 +115,12 @@ enable-remote-branches::
 	in the summary and refs views. Default value: "0". See also:
 	"repo.enable-remote-branches".
 
+enable-subject-links::
+	Flag which, when set to "1", will make cgit use the subject of the
+	parent commit as link text when generating links to parent commits
+	in commit view. Default value: "0". See also:
+	"repo.enable-subject-links".
+
 enable-tree-linenumbers::
 	Flag which, when set to "1", will make cgit generate linenumber links
 	for plaintext blobs printed in the tree view. Default value: "1".
@@ -320,6 +326,10 @@ repo.enable-log-linecount::
 repo.enable-remote-branches::
 	Flag which, when set to "1", will make cgit display remote branches
 	in the summary and refs views. Default value: <enable-remote-branches>.
+
+repo.enable-subject-links::
+	A flag which can be used to override the global setting
+	`enable-subject-links'. Default value: none.
 
 repo.max-stats::
 	Override the default maximum statistics period. Valid values are equal

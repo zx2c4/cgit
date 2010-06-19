@@ -62,6 +62,8 @@ void repo_config(struct cgit_repo *repo, const char *name, const char *value)
 		repo->enable_log_linecount = ctx.cfg.enable_log_linecount * atoi(value);
 	else if (!strcmp(name, "enable-remote-branches"))
 		repo->enable_remote_branches = atoi(value);
+	else if (!strcmp(name, "enable-subject-links"))
+		repo->enable_subject_links = atoi(value);
 	else if (!strcmp(name, "max-stats"))
 		repo->max_stats = cgit_find_stats_period(value, NULL);
 	else if (!strcmp(name, "module-link"))
@@ -141,6 +143,8 @@ void config_cb(const char *name, const char *value)
 		ctx.cfg.enable_log_linecount = atoi(value);
 	else if (!strcmp(name, "enable-remote-branches"))
 		ctx.cfg.enable_remote_branches = atoi(value);
+	else if (!strcmp(name, "enable-subject-links"))
+		ctx.cfg.enable_subject_links = atoi(value);
 	else if (!strcmp(name, "enable-tree-linenumbers"))
 		ctx.cfg.enable_tree_linenumbers = atoi(value);
 	else if (!strcmp(name, "max-stats"))
