@@ -146,6 +146,7 @@ struct cgit_query {
 	char *sort;
 	int showmsg;
 	int ssdiff;
+	int show_all;
 };
 
 struct cgit_config {
@@ -185,6 +186,7 @@ struct cgit_config {
 	int enable_subject_links;
 	int enable_tree_linenumbers;
 	int local_time;
+	int max_atom_items;
 	int max_repo_count;
 	int max_commit_count;
 	int max_lock_attempts;

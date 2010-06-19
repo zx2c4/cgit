@@ -172,6 +172,10 @@ logo-link::
 	calculated url of the repository index page will be used. Default
 	value: none.
 
+max-atom-items::
+	Specifies the number of items to display in atom feeds view. Default
+	value: "10".
+
 max-commit-count::
 	Specifies the number of entries to list per page in "log" view. Default
 	value: "50".
