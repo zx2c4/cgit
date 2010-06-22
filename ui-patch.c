@@ -71,7 +71,7 @@ static void filepair_cb(struct diff_filepair *pair)
 		return;
 	}
 	if (cgit_diff_files(pair->one->sha1, pair->two->sha1, &old_size,
-			    &new_size, &binary, print_line))
+			    &new_size, &binary, 0, print_line))
 		html("Error running diff");
 	if (binary)
 		html("Binary files differ\n");

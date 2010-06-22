@@ -258,6 +258,8 @@ static void querystring_cb(const char *name, const char *value)
 		ctx.qry.ssdiff = atoi(value);
 	} else if (!strcmp(name, "all")) {
 		ctx.qry.show_all = atoi(value);
+	} else if (!strcmp(name, "context")) {
+		ctx.qry.context = atoi(value);
 	}
 }
 
