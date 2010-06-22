@@ -149,10 +149,13 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 
 	argv[1] = disambiguate_ref(tip);
 
-	if (grep && pattern && (!strcmp(grep, "grep") ||
-				!strcmp(grep, "author") ||
-				!strcmp(grep, "committer")))
-		argv[argc++] = fmt("--%s=%s", grep, pattern);
+	if (grep && pattern) {
+		if (!strcmp(grep, "grep") || !strcmp(grep, "author") ||
+		    !strcmp(grep, "committer"))
+			argv[argc++] = fmt("--%s=%s", grep, pattern);
+		if (!strcmp(grep, "range"))
+			argv[1] = pattern;
+	}
 
 	if (path) {
 		argv[argc++] = "--";
