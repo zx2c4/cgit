@@ -12,7 +12,7 @@
 #include "ui-diff.h"
 #include "ui-log.h"
 
-void cgit_print_commit(char *hex)
+void cgit_print_commit(char *hex, const char *prefix)
 {
 	struct commit *commit, *parent;
 	struct commitinfo *info, *parent_info;
@@ -58,19 +58,23 @@ void cgit_print_commit(char *hex)
 	html("</td></tr>\n");
 	html("<tr><th>commit</th><td colspan='2' class='sha1'>");
 	tmp = sha1_to_hex(commit->object.sha1);
-	cgit_commit_link(tmp, NULL, NULL, ctx.qry.head, tmp, 0);
+	cgit_commit_link(tmp, NULL, NULL, ctx.qry.head, tmp, prefix, 0);
 	html(" (");
-	cgit_patch_link("patch", NULL, NULL, NULL, tmp);
+	cgit_patch_link("patch", NULL, NULL, NULL, tmp, prefix);
 	html(") (");
 	if ((ctx.qry.ssdiff && !ctx.cfg.ssdiff) || (!ctx.qry.ssdiff && ctx.cfg.ssdiff))
-		cgit_commit_link("unidiff", NULL, NULL, ctx.qry.head, tmp, 1);
+		cgit_commit_link("unidiff", NULL, NULL, ctx.qry.head, tmp, prefix, 1);
 	else
-		cgit_commit_link("side-by-side diff", NULL, NULL, ctx.qry.head, tmp, 1);
+		cgit_commit_link("side-by-side diff", NULL, NULL, ctx.qry.head, tmp, prefix, 1);
 	html(")</td></tr>\n");
 	html("<tr><th>tree</th><td colspan='2' class='sha1'>");
 	tmp = xstrdup(hex);
 	cgit_tree_link(sha1_to_hex(commit->tree->object.sha1), NULL, NULL,
 		       ctx.qry.head, tmp, NULL);
+	if (prefix) {
+		html(" /");
+		cgit_tree_link(prefix, NULL, NULL, ctx.qry.head, tmp, prefix);
+	}
 	html("</td></tr>\n");
       	for (p = commit->parents; p ; p = p->next) {
 		parent = lookup_commit_reference(p->item->object.sha1);
@@ -87,10 +91,10 @@ void cgit_print_commit(char *hex)
 			parent_info = cgit_parse_commit(parent);
 			tmp2 = parent_info->subject;
 		}
-		cgit_commit_link(tmp2, NULL, NULL, ctx.qry.head, tmp, 0);
+		cgit_commit_link(tmp2, NULL, NULL, ctx.qry.head, tmp, prefix, 0);
 		html(" (");
 		cgit_diff_link("diff", NULL, NULL, ctx.qry.head, hex,
-			       sha1_to_hex(p->item->object.sha1), NULL, 0);
+			       sha1_to_hex(p->item->object.sha1), prefix, 0);
 		html(")</td></tr>");
 		parents++;
 	}
@@ -121,7 +125,7 @@ void cgit_print_commit(char *hex)
 			tmp = sha1_to_hex(commit->parents->item->object.sha1);
 		else
 			tmp = NULL;
-		cgit_print_diff(ctx.qry.sha1, tmp, NULL);
+		cgit_print_diff(ctx.qry.sha1, tmp, prefix);
 	}
 	cgit_free_commitinfo(info);
 }

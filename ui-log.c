@@ -46,8 +46,9 @@ void show_commit_decorations(struct commit *commit)
 	while (deco) {
 		if (!prefixcmp(deco->name, "refs/heads/")) {
 			strncpy(buf, deco->name + 11, sizeof(buf) - 1);
-			cgit_log_link(buf, NULL, "branch-deco", buf, NULL, NULL,
-				0, NULL, NULL, ctx.qry.showmsg);
+			cgit_log_link(buf, NULL, "branch-deco", buf, NULL,
+				      ctx.qry.vpath, 0, NULL, NULL,
+				      ctx.qry.showmsg);
 		}
 		else if (!prefixcmp(deco->name, "tag: refs/tags/")) {
 			strncpy(buf, deco->name + 15, sizeof(buf) - 1);
@@ -60,13 +61,15 @@ void show_commit_decorations(struct commit *commit)
 		else if (!prefixcmp(deco->name, "refs/remotes/")) {
 			strncpy(buf, deco->name + 13, sizeof(buf) - 1);
 			cgit_log_link(buf, NULL, "remote-deco", NULL,
-				sha1_to_hex(commit->object.sha1), NULL,
-				0, NULL, NULL, ctx.qry.showmsg);
+				      sha1_to_hex(commit->object.sha1),
+				      ctx.qry.vpath, 0, NULL, NULL,
+				      ctx.qry.showmsg);
 		}
 		else {
 			strncpy(buf, deco->name, sizeof(buf) - 1);
 			cgit_commit_link(buf, NULL, "deco", ctx.qry.head,
-				sha1_to_hex(commit->object.sha1), 0);
+					 sha1_to_hex(commit->object.sha1),
+					 ctx.qry.vpath, 0);
 		}
 		deco = deco->next;
 	}
@@ -82,14 +85,14 @@ void print_commit(struct commit *commit)
 	htmlf("<tr%s><td>",
 		ctx.qry.showmsg ? " class='logheader'" : "");
 	tmp = fmt("id=%s", sha1_to_hex(commit->object.sha1));
-	tmp = cgit_pageurl(ctx.repo->url, "commit", tmp);
+	tmp = cgit_fileurl(ctx.repo->url, "commit", ctx.qry.vpath, tmp);
 	html_link_open(tmp, NULL, NULL);
 	cgit_print_age(commit->date, TM_WEEK * 2, FMT_SHORTDATE);
 	html_link_close();
 	htmlf("</td><td%s>",
 		ctx.qry.showmsg ? " class='logsubject'" : "");
 	cgit_commit_link(info->subject, NULL, NULL, ctx.qry.head,
-			 sha1_to_hex(commit->object.sha1), 0);
+			 sha1_to_hex(commit->object.sha1), ctx.qry.vpath, 0);
 	show_commit_decorations(commit);
 	html("</td><td>");
 	html_txt(info->author);
@@ -176,7 +179,7 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 		html(" (");
 		cgit_log_link(ctx.qry.showmsg ? "Collapse" : "Expand", NULL,
 			      NULL, ctx.qry.head, ctx.qry.sha1,
-			      ctx.qry.path, ctx.qry.ofs, ctx.qry.grep,
+			      ctx.qry.vpath, ctx.qry.ofs, ctx.qry.grep,
 			      ctx.qry.search, ctx.qry.showmsg ? 0 : 1);
 		html(")");
 	}
@@ -213,22 +216,22 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 		     columns);
 		if (ofs > 0) {
 			cgit_log_link("[prev]", NULL, NULL, ctx.qry.head,
-				      ctx.qry.sha1, ctx.qry.path,
+				      ctx.qry.sha1, ctx.qry.vpath,
 				      ofs - cnt, ctx.qry.grep,
 				      ctx.qry.search, ctx.qry.showmsg);
 			html("&nbsp;");
 		}
 		if ((commit = get_revision(&rev)) != NULL) {
 			cgit_log_link("[next]", NULL, NULL, ctx.qry.head,
-				      ctx.qry.sha1, ctx.qry.path,
+				      ctx.qry.sha1, ctx.qry.vpath,
 				      ofs + cnt, ctx.qry.grep,
 				      ctx.qry.search, ctx.qry.showmsg);
 		}
 		html("</div>");
 	} else if ((commit = get_revision(&rev)) != NULL) {
 		html("<tr class='nohover'><td colspan='3'>");
-		cgit_log_link("[...]", NULL, NULL, ctx.qry.head, NULL, NULL, 0,
-			      NULL, NULL, ctx.qry.showmsg);
+		cgit_log_link("[...]", NULL, NULL, ctx.qry.head, NULL,
+			      ctx.qry.vpath, 0, NULL, NULL, ctx.qry.showmsg);
 		html("</td></tr>\n");
 	}
 }

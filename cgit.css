@@ -64,7 +64,7 @@ table#header td.sub {
 }
 
 table.tabs {
-	/* border-bottom: solid 2px #ccc; */
+	border-bottom: solid 3px #ccc;
 	border-collapse: collapse;
 	margin-top: 2em;
 	margin-bottom: 0px;
@@ -102,10 +102,16 @@ table.tabs td.form select {
 	font-size: 90%;
 }
 
+div.path {
+	margin: 0px;
+	padding: 5px 2em 2px 2em;
+	color: #000;
+	background-color: #eee;
+}
+
 div.content {
 	margin: 0px;
 	padding: 2em;
-	border-top: solid 3px #ccc;
 	border-bottom: solid 3px #ccc;
 }
 

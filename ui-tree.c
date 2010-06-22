@@ -102,10 +102,10 @@ static void print_object(const unsigned char *sha1, char *path, const char *base
 		return;
 	}
 
-	html(" (");
+	htmlf("blob: %s (", sha1_to_hex(sha1));
 	cgit_plain_link("plain", NULL, NULL, ctx.qry.head,
 		        curr_rev, path);
-	htmlf(")<br/>blob: %s\n", sha1_to_hex(sha1));
+	html(")\n");
 
 	if (ctx.cfg.max_blob_size && size / 1024 > ctx.cfg.max_blob_size) {
 		htmlf("<div class='error'>blob size (%dKB) exceeds display size limit (%dKB).</div>",
@@ -225,17 +225,10 @@ static int walk_tree(const unsigned char *sha1, const char *base, int baselen,
 {
 	static int state;
 	static char buffer[PATH_MAX];
-	char *url;
 
 	if (state == 0) {
 		memcpy(buffer, base, baselen);
 		strcpy(buffer+baselen, pathname);
-		url = cgit_pageurl(ctx.qry.repo, "tree",
-				   fmt("h=%s&amp;path=%s", curr_rev, buffer));
-		html("/");
-		cgit_tree_link(xstrdup(pathname), NULL, NULL, ctx.qry.head,
-			       curr_rev, buffer);
-
 		if (strcmp(match_path, buffer))
 			return READ_TREE_RECURSIVE;
 
@@ -277,10 +270,6 @@ void cgit_print_tree(const char *rev, char *path)
 		cgit_print_error(fmt("Invalid commit reference: %s", rev));
 		return;
 	}
-
-	html("path: <a href='");
-	html_attr(cgit_pageurl(ctx.qry.repo, "tree", fmt("h=%s", rev)));
-	html("'>root</a>");
 
 	if (path == NULL) {
 		ls_tree(commit->tree->object.sha1, NULL);
