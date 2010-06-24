@@ -171,6 +171,11 @@ void cgit_print_diffstat(const unsigned char *old_sha1,
 	cgit_self_link("less", NULL, NULL, &ctx);
 	ctx.qry.context = save_context;
 	html(" context)");
+	html(" (");
+	ctx.qry.ignorews = (ctx.qry.ignorews + 1) % 2;
+	cgit_self_link(ctx.qry.ignorews ? "ignore" : "show", NULL, NULL, &ctx);
+	ctx.qry.ignorews = (ctx.qry.ignorews + 1) % 2;
+	html(" whitespace changes)");
 	html("</div>");
 	html("<table summary='diffstat' class='diffstat'>");
 	max_changes = 0;
