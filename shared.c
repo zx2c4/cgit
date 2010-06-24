@@ -263,7 +263,7 @@ int filediff_cb(void *priv, mmbuffer_t *mb, int nbuf)
 int cgit_diff_files(const unsigned char *old_sha1,
 		    const unsigned char *new_sha1, unsigned long *old_size,
 		    unsigned long *new_size, int *binary, int context,
-		    linediff_fn fn)
+		    int ignorews, linediff_fn fn)
 {
 	mmfile_t file1, file2;
 	xpparam_t diff_params;
@@ -286,6 +286,8 @@ int cgit_diff_files(const unsigned char *old_sha1,
 	memset(&emit_params, 0, sizeof(emit_params));
 	memset(&emit_cb, 0, sizeof(emit_cb));
 	diff_params.flags = XDF_NEED_MINIMAL;
+	if (ignorews)
+		diff_params.flags |= XDF_IGNORE_WHITESPACE;
 	emit_params.ctxlen = context > 0 ? context : 3;
 	emit_params.flags = XDL_EMIT_FUNCNAMES;
 	emit_cb.outf = filediff_cb;
@@ -296,7 +298,7 @@ int cgit_diff_files(const unsigned char *old_sha1,
 
 void cgit_diff_tree(const unsigned char *old_sha1,
 		    const unsigned char *new_sha1,
-		    filepair_fn fn, const char *prefix)
+		    filepair_fn fn, const char *prefix, int ignorews)
 {
 	struct diff_options opt;
 	int ret;
@@ -307,6 +309,8 @@ void cgit_diff_tree(const unsigned char *old_sha1,
 	opt.detect_rename = 1;
 	opt.rename_limit = ctx.cfg.renamelimit;
 	DIFF_OPT_SET(&opt, RECURSIVE);
+	if (ignorews)
+		DIFF_XDL_SET(&opt, IGNORE_WHITESPACE);
 	opt.format_callback = cgit_diff_tree_cb;
 	opt.format_callback_data = fn;
 	if (prefix) {
@@ -331,7 +335,8 @@ void cgit_diff_commit(struct commit *commit, filepair_fn fn)
 
 	if (commit->parents)
 		old_sha1 = commit->parents->item->object.sha1;
-	cgit_diff_tree(old_sha1, commit->object.sha1, fn, NULL);
+	cgit_diff_tree(old_sha1, commit->object.sha1, fn, NULL,
+		       ctx.qry.ignorews);
 }
 
 int cgit_parse_snapshots_mask(const char *str)

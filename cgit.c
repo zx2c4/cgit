@@ -252,6 +252,8 @@ static void querystring_cb(const char *name, const char *value)
 		ctx.qry.ssdiff = atoi(value);
 	} else if (!strcmp(name, "context")) {
 		ctx.qry.context = atoi(value);
+	} else if (!strcmp(name, "ignorews")) {
+		ctx.qry.ignorews = atoi(value);
 	}
 }
 
