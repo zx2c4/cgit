@@ -190,6 +190,10 @@ struct commitinfo *cgit_parse_commit(struct commit *commit)
 		ret->subject = xstrdup(p);
 
 	if (ret->msg_encoding) {
+		reencode(&ret->author, PAGE_ENCODING, ret->msg_encoding);
+		reencode(&ret->author_email, PAGE_ENCODING, ret->msg_encoding);
+		reencode(&ret->committer, PAGE_ENCODING, ret->msg_encoding);
+		reencode(&ret->committer_email, PAGE_ENCODING, ret->msg_encoding);
 		reencode(&ret->subject, PAGE_ENCODING, ret->msg_encoding);
 		reencode(&ret->msg, PAGE_ENCODING, ret->msg_encoding);
 	}
