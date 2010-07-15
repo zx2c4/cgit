@@ -139,7 +139,9 @@ cgit: $(OBJECTS) libgit
 
 cgit.o: VERSION
 
--include $(OBJECTS:.o=.d)
+ifneq "$(MAKECMDGOALS)" "clean"
+  -include $(OBJECTS:.o=.d)
+endif
 
 libgit:
 	$(QUIET_SUBDIR0)git $(QUIET_SUBDIR1) NO_CURL=1 $(GIT_OPTIONS) libgit.a
