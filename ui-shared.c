@@ -349,6 +349,11 @@ void cgit_commit_link(char *name, const char *title, const char *class,
 		htmlf("%d", ctx.qry.context);
 		delim = "&amp;";
 	}
+	if (ctx.qry.ignorews) {
+		html(delim);
+		html("ignorews=1");
+		delim = "&amp;";
+	}
 	html("'>");
 	html_txt(name);
 	html("</a>");
@@ -395,6 +400,11 @@ void cgit_diff_link(const char *name, const char *title, const char *class,
 		html(delim);
 		html("context=");
 		htmlf("%d", ctx.qry.context);
+		delim = "&amp;";
+	}
+	if (ctx.qry.ignorews) {
+		html(delim);
+		html("ignorews=1");
 		delim = "&amp;";
 	}
 	html("'>");

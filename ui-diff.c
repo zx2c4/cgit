@@ -127,7 +127,7 @@ static void inspect_filepair(struct diff_filepair *pair)
 	lines_added = 0;
 	lines_removed = 0;
 	cgit_diff_files(pair->one->sha1, pair->two->sha1, &old_size, &new_size,
-			&binary, 0, count_diff_lines);
+			&binary, 0, ctx.qry.ignorews, count_diff_lines);
 	if (files >= slots) {
 		if (slots == 0)
 			slots = 4;
@@ -171,10 +171,16 @@ void cgit_print_diffstat(const unsigned char *old_sha1,
 	cgit_self_link("less", NULL, NULL, &ctx);
 	ctx.qry.context = save_context;
 	html(" context)");
+	html(" (");
+	ctx.qry.ignorews = (ctx.qry.ignorews + 1) % 2;
+	cgit_self_link(ctx.qry.ignorews ? "ignore" : "show", NULL, NULL, &ctx);
+	ctx.qry.ignorews = (ctx.qry.ignorews + 1) % 2;
+	html(" whitespace changes)");
 	html("</div>");
 	html("<table summary='diffstat' class='diffstat'>");
 	max_changes = 0;
-	cgit_diff_tree(old_sha1, new_sha1, inspect_filepair, prefix);
+	cgit_diff_tree(old_sha1, new_sha1, inspect_filepair, prefix,
+		       ctx.qry.ignorews);
 	for(i = 0; i<files; i++)
 		print_fileinfo(&items[i]);
 	html("</table>");
@@ -296,7 +302,8 @@ static void filepair_cb(struct diff_filepair *pair)
 		return;
 	}
 	if (cgit_diff_files(pair->one->sha1, pair->two->sha1, &old_size,
-			    &new_size, &binary, ctx.qry.context, print_line_fn))
+			    &new_size, &binary, ctx.qry.context,
+			    ctx.qry.ignorews, print_line_fn))
 		cgit_print_error("Error running diff");
 	if (binary) {
 		if (use_ssdiff)
@@ -356,7 +363,8 @@ void cgit_print_diff(const char *new_rev, const char *old_rev, const char *prefi
 		html("<table summary='diff' class='diff'>");
 		html("<tr><td>");
 	}
-	cgit_diff_tree(old_rev_sha1, new_rev_sha1, filepair_cb, prefix);
+	cgit_diff_tree(old_rev_sha1, new_rev_sha1, filepair_cb, prefix,
+		       ctx.qry.ignorews);
 	if (!use_ssdiff)
 		html("</td></tr>");
 	html("</table>");

@@ -71,7 +71,7 @@ static void filepair_cb(struct diff_filepair *pair)
 		return;
 	}
 	if (cgit_diff_files(pair->one->sha1, pair->two->sha1, &old_size,
-			    &new_size, &binary, 0, print_line))
+			    &new_size, &binary, 0, 0, print_line))
 		html("Error running diff");
 	if (binary)
 		html("Binary files differ\n");
@@ -124,7 +124,7 @@ void cgit_print_patch(char *hex, const char *prefix)
 	html("---\n");
 	if (prefix)
 		htmlf("(limited to '%s')\n\n", prefix);
-	cgit_diff_tree(old_sha1, sha1, filepair_cb, prefix);
+	cgit_diff_tree(old_sha1, sha1, filepair_cb, prefix, 0);
 	html("--\n");
 	htmlf("cgit %s\n", CGIT_VERSION);
 	cgit_free_commitinfo(info);
