@@ -302,4 +302,6 @@ extern int cgit_close_filter(struct cgit_filter *filter);
 
 extern int readfile(const char *path, char **buf, size_t *size);
 
+extern char *expand_macros(const char *txt);
+
 #endif /* CGIT_H */

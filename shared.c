@@ -432,3 +432,74 @@ int readfile(const char *path, char **buf, size_t *size)
 	close(fd);
 	return (*size == st.st_size ? 0 : e);
 }
+
+int is_token_char(char c)
+{
+	return isalnum(c) || c == '_';
+}
+
+/* Replace name with getenv(name), return pointer to zero-terminating char
+ */
+char *expand_macro(char *name, int maxlength)
+{
+	char *value;
+	int len;
+
+	len = 0;
+	value = getenv(name);
+	if (value) {
+		len = strlen(value);
+		if (len > maxlength)
+			len = maxlength;
+		strncpy(name, value, len);
+	}
+	return name + len;
+}
+
+#define EXPBUFSIZE (1024 * 8)
+
+/* Replace all tokens prefixed by '$' in the specified text with the
+ * value of the named environment variable.
+ * NB: the return value is a static buffer, i.e. it must be strdup'd
+ * by the caller.
+ */
+char *expand_macros(const char *txt)
+{
+	static char result[EXPBUFSIZE];
+	char *p, *start;
+	int len;
+
+	p = result;
+	start = NULL;
+	while (p < result + EXPBUFSIZE - 1 && txt && *txt) {
+		*p = *txt;
+		if (start) {
+			if (!is_token_char(*txt)) {
+				if (p - start > 0) {
+					*p = '\0';
+					len = result + EXPBUFSIZE - start - 1;
+					p = expand_macro(start, len) - 1;
+				}
+				start = NULL;
+				txt--;
+			}
+			p++;
+			txt++;
+			continue;
+		}
+		if (*txt == '$') {
+			start = p;
+			txt++;
+			continue;
+		}
+		p++;
+		txt++;
+	}
+	*p = '\0';
+	if (start && p - start > 0) {
+		len = result + EXPBUFSIZE - start - 1;
+		p = expand_macro(start, len);
+		*p = '\0';
+	}
+	return result;
+}

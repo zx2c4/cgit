@@ -152,7 +152,7 @@ void config_cb(const char *name, const char *value)
 	else if (!strcmp(name, "cache-size"))
 		ctx.cfg.cache_size = atoi(value);
 	else if (!strcmp(name, "cache-root"))
-		ctx.cfg.cache_root = xstrdup(value);
+		ctx.cfg.cache_root = xstrdup(expand_macros(value));
 	else if (!strcmp(name, "cache-root-ttl"))
 		ctx.cfg.cache_root_ttl = atoi(value);
 	else if (!strcmp(name, "cache-repo-ttl"))
@@ -183,9 +183,9 @@ void config_cb(const char *name, const char *value)
 		ctx.cfg.max_commit_count = atoi(value);
 	else if (!strcmp(name, "scan-path"))
 		if (!ctx.cfg.nocache && ctx.cfg.cache_size)
-			process_cached_repolist(value);
+			process_cached_repolist(expand_macros(value));
 		else
-			scan_tree(value, repo_config);
+			scan_tree(expand_macros(value), repo_config);
 	else if (!strcmp(name, "source-filter"))
 		ctx.cfg.source_filter = new_filter(value, 1);
 	else if (!strcmp(name, "summary-log"))
@@ -209,7 +209,7 @@ void config_cb(const char *name, const char *value)
 	else if (!prefixcmp(name, "mimetype."))
 		add_mimetype(name + 9, value);
 	else if (!strcmp(name, "include"))
-		parse_configfile(value, config_cb);
+		parse_configfile(expand_macros(value), config_cb);
 }
 
 static void querystring_cb(const char *name, const char *value)
@@ -705,7 +705,7 @@ int main(int argc, const char **argv)
 	cgit_repolist.repos = NULL;
 
 	cgit_parse_args(argc, argv);
-	parse_configfile(ctx.env.cgit_config, config_cb);
+	parse_configfile(expand_macros(ctx.env.cgit_config), config_cb);
 	ctx.repo = NULL;
 	http_parse_querystring(ctx.qry.raw, querystring_cb);
 
