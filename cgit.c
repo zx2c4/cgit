@@ -181,9 +181,14 @@ void config_cb(const char *name, const char *value)
 		ctx.cfg.max_repo_count = atoi(value);
 	else if (!strcmp(name, "max-commit-count"))
 		ctx.cfg.max_commit_count = atoi(value);
+	else if (!strcmp(name, "project-list"))
+		ctx.cfg.project_list = xstrdup(expand_macros(value));
 	else if (!strcmp(name, "scan-path"))
 		if (!ctx.cfg.nocache && ctx.cfg.cache_size)
 			process_cached_repolist(expand_macros(value));
+		else if (ctx.cfg.project_list)
+			scan_projects(expand_macros(value),
+				      ctx.cfg.project_list, repo_config);
 		else
 			scan_tree(expand_macros(value), repo_config);
 	else if (!strcmp(name, "source-filter"))
@@ -295,6 +300,7 @@ static void prepare_context(struct cgit_context *ctx)
 	ctx->cfg.max_blob_size = 0;
 	ctx->cfg.max_stats = 0;
 	ctx->cfg.module_link = "./?repo=%s&page=commit&id=%s";
+	ctx->cfg.project_list = NULL;
 	ctx->cfg.renamelimit = -1;
 	ctx->cfg.robots = "index, nofollow";
 	ctx->cfg.root_title = "Git repository browser";
@@ -574,7 +580,10 @@ static int generate_cached_repolist(const char *path, const char *cached_rc)
 		return errno;
 	}
 	idx = cgit_repolist.count;
-	scan_tree(path, repo_config);
+	if (ctx.cfg.project_list)
+		scan_projects(path, ctx.cfg.project_list, repo_config);
+	else
+		scan_tree(path, repo_config);
 	print_repolist(f, &cgit_repolist, idx);
 	if (rename(locked_rc, cached_rc))
 		fprintf(stderr, "[cgit] Error renaming %s to %s: %s (%d)\n",
@@ -588,17 +597,25 @@ static void process_cached_repolist(const char *path)
 	struct stat st;
 	char *cached_rc;
 	time_t age;
+	unsigned long hash;
 
-	cached_rc = xstrdup(fmt("%s/rc-%8x", ctx.cfg.cache_root,
-		hash_str(path)));
+	hash = hash_str(path);
+	if (ctx.cfg.project_list)
+		hash += hash_str(ctx.cfg.project_list);
+	cached_rc = xstrdup(fmt("%s/rc-%8x", ctx.cfg.cache_root, hash));
 
 	if (stat(cached_rc, &st)) {
 		/* Nothing is cached, we need to scan without forking. And
 		 * if we fail to generate a cached repolist, we need to
 		 * invoke scan_tree manually.
 		 */
-		if (generate_cached_repolist(path, cached_rc))
-			scan_tree(path, repo_config);
+		if (generate_cached_repolist(path, cached_rc)) {
+			if (ctx.cfg.project_list)
+				scan_projects(path, ctx.cfg.project_list,
+					      repo_config);
+			else
+				scan_tree(path, repo_config);
+		}
 		return;
 	}
 

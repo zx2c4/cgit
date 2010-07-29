@@ -1,3 +1,12 @@
+/* scan-tree.c
+ * 
+ * Copyright (C) 2008-2009 Lars Hjemli
+ * Copyright (C) 2010 Jason A. Donenfeld <Jason@zx2c4.com>
+ *
+ * Licensed under GNU General Public License v2
+ *   (see COPYING for full license text)
+ */
+
 #include "cgit.h"
 #include "configfile.h"
 #include "html.h"
@@ -140,6 +149,34 @@ static void scan_path(const char *base, const char *path, repo_config_fn fn)
 		free(buf);
 	}
 	closedir(dir);
+}
+
+#define lastc(s) s[strlen(s) - 1]
+
+void scan_projects(const char *path, const char *projectsfile, repo_config_fn fn)
+{
+	char line[MAX_PATH * 2], *z;
+	FILE *projects;
+	int err;
+	
+	projects = fopen(projectsfile, "r");
+	if (!projects) {
+		fprintf(stderr, "Error opening projectsfile %s: %s (%d)\n",
+			projectsfile, strerror(errno), errno);
+	}
+	while (fgets(line, sizeof(line), projects) != NULL) {
+		for (z = &lastc(line);
+		     strlen(line) && strchr("\n\r", *z);
+		     z = &lastc(line))
+			*z = '\0';
+		if (strlen(line))
+			scan_path(path, fmt("%s/%s", path, line), fn);
+	}
+	if ((err = ferror(projects))) {
+		fprintf(stderr, "Error reading from projectsfile %s: %s (%d)\n",
+			projectsfile, strerror(err), err);
+	}
+	fclose(projects);
 }
 
 void scan_tree(const char *path, repo_config_fn fn)
