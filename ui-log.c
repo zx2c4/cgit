@@ -111,6 +111,9 @@ void print_commit(struct commit *commit)
 	}
 	html("</td></tr>\n");
 	if (ctx.qry.showmsg) {
+		struct strbuf notes = STRBUF_INIT;
+		get_commit_notes(commit, &notes, PAGE_ENCODING, 0);
+
 		if (ctx.repo->enable_log_filecount) {
 			cols++;
 			if (ctx.repo->enable_log_linecount)
@@ -120,6 +123,15 @@ void print_commit(struct commit *commit)
 			cols);
 		html_txt(info->msg);
 		html("</td></tr>\n");
+		if (notes.len != 0) {
+			html("<tr class='nohover'>");
+			html("<td class='lognotes-label'>Notes:</td>");
+			htmlf("<td colspan='%d' class='lognotes'>",
+				cols);
+			html_txt(notes.buf);
+			html("</td></tr>\n");
+		}
+		strbuf_release(&notes);
 	}
 	cgit_free_commitinfo(info);
 }

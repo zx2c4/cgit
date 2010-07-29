@@ -164,6 +164,17 @@ table.list td.logmsg {
 	padding: 1em 0.5em 2em 0.5em;
 }
 
+table.list td.lognotes-label {
+	text-align:right;
+	vertical-align:top;
+}
+
+table.list td.lognotes {
+	font-family: monospace;
+	white-space: pre;
+	padding: 0em 0.5em 2em 0.5em;
+}
+
 table.list td a {
 	color: black;
 }
