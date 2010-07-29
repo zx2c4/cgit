@@ -183,6 +183,7 @@ struct cgit_config {
 	int cache_static_ttl;
 	int embedded;
 	int enable_filter_overrides;
+	int enable_gitweb_owner;
 	int enable_index_links;
 	int enable_log_filecount;
 	int enable_log_linecount;

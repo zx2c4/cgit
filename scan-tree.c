@@ -47,10 +47,18 @@ static int is_git_dir(const char *path)
 
 struct cgit_repo *repo;
 repo_config_fn config_fn;
+char *owner;
 
 static void repo_config(const char *name, const char *value)
 {
 	config_fn(repo, name, value);
+}
+
+static int git_owner_config(const char *key, const char *value, void *cb)
+{
+	if (!strcmp(key, "gitweb.owner"))
+		owner = xstrdup(value);
+	return 0;
 }
 
 static void add_repo(const char *base, const char *path, repo_config_fn fn)
@@ -67,11 +75,10 @@ static void add_repo(const char *base, const char *path, repo_config_fn fn)
 	}
 	if (!stat(fmt("%s/noweb", path), &st))
 		return;
-	if ((pwd = getpwuid(st.st_uid)) == NULL) {
-		fprintf(stderr, "Error reading owner-info for %s: %s (%d)\n",
-			path, strerror(errno), errno);
-		return;
-	}
+
+	owner = NULL;
+	if (ctx.cfg.enable_gitweb_owner)
+		git_config_from_file(git_owner_config, fmt("%s/config", path), NULL);
 	if (base == path)
 		p = fmt("%s", path);
 	else
@@ -86,10 +93,18 @@ static void add_repo(const char *base, const char *path, repo_config_fn fn)
 			*p = '\0';
 	repo->name = repo->url;
 	repo->path = xstrdup(path);
-	p = (pwd && pwd->pw_gecos) ? strchr(pwd->pw_gecos, ',') : NULL;
-	if (p)
-		*p = '\0';
-	repo->owner = (pwd ? xstrdup(pwd->pw_gecos ? pwd->pw_gecos : pwd->pw_name) : "");
+	while (!owner) {
+		if ((pwd = getpwuid(st.st_uid)) == NULL) {
+			fprintf(stderr, "Error reading owner-info for %s: %s (%d)\n",
+				path, strerror(errno), errno);
+			break;
+		}
+		if (pwd->pw_gecos)
+			if ((p = strchr(pwd->pw_gecos, ',')))
+				*p = '\0';
+		owner = xstrdup(pwd->pw_gecos ? pwd->pw_gecos : pwd->pw_name);
+	}
+	repo->owner = owner;
 
 	p = fmt("%s/description", path);
 	if (!stat(p, &st))

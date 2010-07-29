@@ -135,6 +135,8 @@ void config_cb(const char *name, const char *value)
 		ctx.cfg.snapshots = cgit_parse_snapshots_mask(value);
 	else if (!strcmp(name, "enable-filter-overrides"))
 		ctx.cfg.enable_filter_overrides = atoi(value);
+	else if (!strcmp(name, "enable-gitweb-owner"))
+		ctx.cfg.enable_gitweb_owner = atoi(value);
 	else if (!strcmp(name, "enable-index-links"))
 		ctx.cfg.enable_index_links = atoi(value);
 	else if (!strcmp(name, "enable-log-filecount"))
@@ -293,6 +295,7 @@ static void prepare_context(struct cgit_context *ctx)
 	ctx->cfg.css = "/cgit.css";
 	ctx->cfg.logo = "/cgit.png";
 	ctx->cfg.local_time = 0;
+	ctx->cfg.enable_gitweb_owner = 1;
 	ctx->cfg.enable_tree_linenumbers = 1;
 	ctx->cfg.max_repo_count = 50;
 	ctx->cfg.max_commit_count = 50;

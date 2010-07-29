@@ -95,6 +95,11 @@ enable-filter-overrides::
 	Flag which, when set to "1", allows all filter settings to be
 	overridden in repository-specific cgitrc files. Default value: none.
 
+enable-gitweb-owner::
+	If set to "1" and scan-path is enabled, we first check each repository
+	for the git config value "gitweb.owner" to determine the owner.
+	Default value: "1". See also: scan-path.
+
 enable-index-links::
 	Flag which, when set to "1", will make cgit generate extra links for
 	each repo in the repository index (specifically, to the "summary",
