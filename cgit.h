@@ -202,6 +202,7 @@ struct cgit_config {
 	int noplainemail;
 	int noheader;
 	int renamelimit;
+	int remove_suffix;
 	int snapshots;
 	int summary_branches;
 	int summary_log;

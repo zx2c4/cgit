@@ -81,6 +81,9 @@ static void add_repo(const char *base, const char *path, repo_config_fn fn)
 		p[strlen(p) - 5] = '\0';
 
 	repo = cgit_add_repo(xstrdup(p));
+	if (ctx.cfg.remove_suffix)
+		if ((p = strrchr(repo->url, '.')) && !strcmp(p, ".git"))
+			*p = '\0';
 	repo->name = repo->url;
 	repo->path = xstrdup(path);
 	p = (pwd && pwd->pw_gecos) ? strchr(pwd->pw_gecos, ',') : NULL;

@@ -229,6 +229,11 @@ project-list::
 	should loaded as git repositories. This must be defined prior to
 	scan-path. Default value: none. See also: scan-path.
 
+remove-suffix::
+	If set to "1" and scan-path is enabled, if any repositories are found
+	with a suffix of ".git", this suffix will be removed for the url and
+	name. Default value: "0". See also: scan-path.
+
 renamelimit::
 	Maximum number of files to consider when detecting renames. The value
 	 "-1" uses the compiletime value in git (for further info, look at
@@ -538,3 +543,4 @@ will generate the following html element:
 AUTHOR
 ------
 Lars Hjemli <hjemli@gmail.com>
+Jason A. Donenfeld <Jason@zx2c4.com>

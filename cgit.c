@@ -205,6 +205,8 @@ void config_cb(const char *name, const char *value)
 		ctx.cfg.agefile = xstrdup(value);
 	else if (!strcmp(name, "renamelimit"))
 		ctx.cfg.renamelimit = atoi(value);
+	else if (!strcmp(name, "remove-suffix"))
+		ctx.cfg.remove_suffix = atoi(value);
 	else if (!strcmp(name, "robots"))
 		ctx.cfg.robots = xstrdup(value);
 	else if (!strcmp(name, "clone-prefix"))
@@ -302,6 +304,7 @@ static void prepare_context(struct cgit_context *ctx)
 	ctx->cfg.module_link = "./?repo=%s&page=commit&id=%s";
 	ctx->cfg.project_list = NULL;
 	ctx->cfg.renamelimit = -1;
+	ctx->cfg.remove_suffix = 0;
 	ctx->cfg.robots = "index, nofollow";
 	ctx->cfg.root_title = "Git repository browser";
 	ctx->cfg.root_desc = "a fast webinterface for the git dscm";
