@@ -19,6 +19,7 @@
 #include <xdiff-interface.h>
 #include <xdiff/xdiff.h>
 #include <utf8.h>
+#include <notes.h>
 
 
 /*

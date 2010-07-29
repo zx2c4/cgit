@@ -326,6 +326,24 @@ div.commit-msg {
 	font-family: monospace;
 }
 
+div.notes-header {
+	font-weight: bold;
+	padding-top: 1.5em;
+}
+
+div.notes {
+	white-space: pre;
+	font-family: monospace;
+	border: solid 1px #ee9;
+	background-color: #ffd;
+	padding: 0.3em 2em 0.3em 1em;
+	float: left;
+}
+
+div.notes-footer {
+	clear: left;
+}
+
 div.diffstat-header {
 	font-weight: bold;
 	padding-top: 1.5em;
