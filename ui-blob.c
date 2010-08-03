@@ -1,6 +1,7 @@
 /* ui-blob.c: show blob content
  *
  * Copyright (C) 2008 Lars Hjemli
+ * Copyright (C) 2010 Jason A. Donenfeld <Jason@zx2c4.com>
  *
  * Licensed under GNU General Public License v2
  *   (see COPYING for full license text)
@@ -12,6 +13,7 @@
 
 static char *match_path;
 static unsigned char *matched_sha1;
+static int found_path;
 
 static int walk_tree(const unsigned char *sha1, const char *base,int baselen,
 	const char *pathname, unsigned mode, int stage, void *cbdata) {
@@ -19,12 +21,43 @@ static int walk_tree(const unsigned char *sha1, const char *base,int baselen,
 		|| strcmp(match_path+baselen,pathname) )
 		return READ_TREE_RECURSIVE;
 	memmove(matched_sha1,sha1,20);
+	found_path = 1;
+	return 0;
+}
+
+int cgit_print_file(char *path, const char *head)
+{
+	unsigned char sha1[20];
+	enum object_type type;
+	char *buf;
+	unsigned long size;
+	struct commit *commit;
+	const char *paths[] = {path, NULL};
+	if (get_sha1(head, sha1))
+		return -1;
+	type = sha1_object_info(sha1, &size);
+	if(type == OBJ_COMMIT && path) {
+		commit = lookup_commit_reference(sha1);
+		match_path = path;
+		matched_sha1 = sha1;
+		found_path = 0;
+		read_tree_recursive(commit->tree, "", 0, 0, paths, walk_tree, NULL);
+		if (!found_path)
+			return -1;
+		type = sha1_object_info(sha1, &size);
+	}
+	if (type == OBJ_BAD)
+		return -1;
+	buf = read_sha1_file(sha1, &type, &size);
+	if (!buf)
+		return -1;
+	buf[size] = '\0';
+	write(htmlfd, buf, size);
 	return 0;
 }
 
 void cgit_print_blob(const char *hex, char *path, const char *head)
 {
-
 	unsigned char sha1[20];
 	enum object_type type;
 	char *buf;

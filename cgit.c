@@ -1,6 +1,7 @@
 /* cgit.c: cgi for the git scm
  *
  * Copyright (C) 2006 Lars Hjemli
+ * Copyright (C) 2010 Jason A. Donenfeld <Jason@zx2c4.com>
  *
  * Licensed under GNU General Public License v2
  *   (see COPYING for full license text)
@@ -71,7 +72,8 @@ void repo_config(struct cgit_repo *repo, const char *name, const char *value)
 	else if (!strcmp(name, "section"))
 		repo->section = xstrdup(value);
 	else if (!strcmp(name, "readme") && value != NULL) {
-		if (*value == '/')
+		char *colon;
+		if (*value == '/' || ((colon = strchr(value, ':')) != NULL && colon != value && *(colon + 1) != '\0'))
 			repo->readme = xstrdup(value);
 		else
 			repo->readme = xstrdup(fmt("%s/%s", repo->path, value));
