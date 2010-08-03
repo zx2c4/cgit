@@ -42,23 +42,25 @@ static int cmp_branch_age(const void *a, const void *b)
 	return cmp_age(r1->commit->committer_date, r2->commit->committer_date);
 }
 
+static int get_ref_age(struct refinfo *ref)
+{
+	if (!ref->object)
+		return 0;
+	switch (ref->object->type) {
+	case OBJ_TAG:
+		return ref->tag ? ref->tag->tagger_date : 0;
+	case OBJ_COMMIT:
+		return ref->commit ? ref->commit->committer_date : 0;
+	}
+	return 0;
+}
+
 static int cmp_tag_age(const void *a, const void *b)
 {
 	struct refinfo *r1 = *(struct refinfo **)a;
 	struct refinfo *r2 = *(struct refinfo **)b;
-	int r1date, r2date;
 
-	if (r1->object->type != OBJ_COMMIT)
-		r1date = r1->tag->tagger_date;
-	else
-		r1date = r1->commit->committer_date;
-
-	if (r2->object->type != OBJ_COMMIT)
-		r2date = r2->tag->tagger_date;
-	else
-		r2date = r2->commit->committer_date;
-
-	return cmp_age(r1date, r2date);
+	return cmp_age(get_ref_age(r1), get_ref_age(r2));
 }
 
 static int print_branch(struct refinfo *ref)
