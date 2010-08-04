@@ -167,6 +167,7 @@ struct cgit_config {
 	char *logo;
 	char *logo_link;
 	char *module_link;
+	char *project_list;
 	char *robots;
 	char *root_title;
 	char *root_desc;
@@ -183,6 +184,7 @@ struct cgit_config {
 	int cache_static_ttl;
 	int embedded;
 	int enable_filter_overrides;
+	int enable_gitweb_owner;
 	int enable_index_links;
 	int enable_log_filecount;
 	int enable_log_linecount;
@@ -202,6 +204,7 @@ struct cgit_config {
 	int noplainemail;
 	int noheader;
 	int renamelimit;
+	int remove_suffix;
 	int snapshots;
 	int summary_branches;
 	int summary_log;

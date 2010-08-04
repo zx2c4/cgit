@@ -95,6 +95,11 @@ enable-filter-overrides::
 	Flag which, when set to "1", allows all filter settings to be
 	overridden in repository-specific cgitrc files. Default value: none.
 
+enable-gitweb-owner::
+	If set to "1" and scan-path is enabled, we first check each repository
+	for the git config value "gitweb.owner" to determine the owner.
+	Default value: "1". See also: scan-path.
+
 enable-index-links::
 	Flag which, when set to "1", will make cgit generate extra links for
 	each repo in the repository index (specifically, to the "summary",
@@ -224,6 +229,16 @@ noheader::
 	Flag which, when set to "1", will make cgit omit the standard header
 	on all pages. Default value: none. See also: "embedded".
 
+project-list::
+	A list of subdirectories inside of scan-path, relative to it, that
+	should loaded as git repositories. This must be defined prior to
+	scan-path. Default value: none. See also: scan-path.
+
+remove-suffix::
+	If set to "1" and scan-path is enabled, if any repositories are found
+	with a suffix of ".git", this suffix will be removed for the url and
+	name. Default value: "0". See also: scan-path.
+
 renamelimit::
 	Maximum number of files to consider when detecting renames. The value
 	 "-1" uses the compiletime value in git (for further info, look at
@@ -253,7 +268,10 @@ root-title::
 scan-path::
 	A path which will be scanned for repositories. If caching is enabled,
 	the result will be cached as a cgitrc include-file in the cache
-	directory. Default value: none. See also: cache-scanrc-ttl.
+	directory. If project-list has been defined prior to scan-path,
+	scan-path loads only the directories listed in the file pointed to by
+	project-list. Default value: none. See also: cache-scanrc-ttl,
+	project-list.
 
 section::
 	The name of the current repository section - all repositories defined
@@ -530,3 +548,4 @@ will generate the following html element:
 AUTHOR
 ------
 Lars Hjemli <hjemli@gmail.com>
+Jason A. Donenfeld <Jason@zx2c4.com>
