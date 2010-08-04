@@ -164,6 +164,17 @@ table.list td.logmsg {
 	padding: 1em 0.5em 2em 0.5em;
 }
 
+table.list td.lognotes-label {
+	text-align:right;
+	vertical-align:top;
+}
+
+table.list td.lognotes {
+	font-family: monospace;
+	white-space: pre;
+	padding: 0em 0.5em 2em 0.5em;
+}
+
 table.list td a {
 	color: black;
 }
@@ -324,6 +335,24 @@ div.commit-subject {
 div.commit-msg {
 	white-space: pre;
 	font-family: monospace;
+}
+
+div.notes-header {
+	font-weight: bold;
+	padding-top: 1.5em;
+}
+
+div.notes {
+	white-space: pre;
+	font-family: monospace;
+	border: solid 1px #ee9;
+	background-color: #ffd;
+	padding: 0.3em 2em 0.3em 1em;
+	float: left;
+}
+
+div.notes-footer {
+	clear: left;
 }
 
 div.diffstat-header {

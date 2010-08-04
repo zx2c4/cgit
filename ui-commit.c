@@ -17,6 +17,7 @@ void cgit_print_commit(char *hex, const char *prefix)
 	struct commit *commit, *parent;
 	struct commitinfo *info, *parent_info;
 	struct commit_list *p;
+	struct strbuf notes = STRBUF_INIT;
 	unsigned char sha1[20];
 	char *tmp, *tmp2;
 	int parents = 0;
@@ -34,6 +35,8 @@ void cgit_print_commit(char *hex, const char *prefix)
 		return;
 	}
 	info = cgit_parse_commit(commit);
+
+	get_commit_notes(commit, &notes, PAGE_ENCODING, 0);
 
 	load_ref_decorations(DECORATE_FULL_REFS);
 
@@ -120,6 +123,17 @@ void cgit_print_commit(char *hex, const char *prefix)
 	if (ctx.repo->commit_filter)
 		cgit_close_filter(ctx.repo->commit_filter);
 	html("</div>");
+	if (notes.len != 0) {
+		html("<div class='notes-header'>Notes</div>");
+		html("<div class='notes'>");
+		if (ctx.repo->commit_filter)
+			cgit_open_filter(ctx.repo->commit_filter);
+		html_txt(notes.buf);
+		if (ctx.repo->commit_filter)
+			cgit_close_filter(ctx.repo->commit_filter);
+		html("</div>");
+		html("<div class='notes-footer'></div>");
+	}
 	if (parents < 3) {
 		if (parents)
 			tmp = sha1_to_hex(commit->parents->item->object.sha1);
@@ -127,5 +141,6 @@ void cgit_print_commit(char *hex, const char *prefix)
 			tmp = NULL;
 		cgit_print_diff(ctx.qry.sha1, tmp, prefix);
 	}
+	strbuf_release(&notes);
 	cgit_free_commitinfo(info);
 }
