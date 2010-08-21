@@ -110,9 +110,11 @@ static void add_repo(const char *base, const char *path, repo_config_fn fn)
 	if (!stat(p, &st))
 		readfile(p, &repo->desc, &size);
 
-	p = fmt("%s/README.html", path);
-	if (!stat(p, &st))
-		repo->readme = "README.html";
+	if (!repo->readme) {
+		p = fmt("%s/README.html", path);
+		if (!stat(p, &st))
+			repo->readme = "README.html";
+	}
 
 	p = fmt("%s/cgitrc", path);
 	if (!stat(p, &st)) {
