@@ -22,7 +22,7 @@ void add_mimetype(const char *name, const char *value)
 {
 	struct string_list_item *item;
 
-	item = string_list_insert(xstrdup(name), &ctx.cfg.mimetypes);
+	item = string_list_insert(&ctx.cfg.mimetypes, xstrdup(name));
 	item->util = xstrdup(value);
 }
 

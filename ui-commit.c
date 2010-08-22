@@ -36,7 +36,7 @@ void cgit_print_commit(char *hex, const char *prefix)
 	}
 	info = cgit_parse_commit(commit);
 
-	get_commit_notes(commit, &notes, PAGE_ENCODING, 0);
+	format_note(NULL, sha1, &notes, PAGE_ENCODING, 0);
 
 	load_ref_decorations(DECORATE_FULL_REFS);
 

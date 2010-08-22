@@ -112,7 +112,7 @@ void print_commit(struct commit *commit)
 	html("</td></tr>\n");
 	if (ctx.qry.showmsg) {
 		struct strbuf notes = STRBUF_INIT;
-		get_commit_notes(commit, &notes, PAGE_ENCODING, 0);
+		format_note(NULL, commit->object.sha1, &notes, PAGE_ENCODING, 0);
 
 		if (ctx.repo->enable_log_filecount) {
 			cols++;
