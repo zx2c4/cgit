@@ -83,7 +83,7 @@ static void add_repo(const char *base, const char *path, repo_config_fn fn)
 
 	p = fmt("%s/README.html", path);
 	if (!stat(p, &st))
-		repo->readme = "README.html";
+		repo->readme = xstrdup(p);
 
 	p = fmt("%s/cgitrc", path);
 	if (!stat(p, &st)) {
