@@ -35,3 +35,5 @@ run_test 'generate patch for initial commit' '
 run_test 'find `cgit` signature' '
 	tail -1 trash/tmp | grep -e "^cgit"
 '
+
+tests_done
