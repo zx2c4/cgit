@@ -86,6 +86,7 @@ static int make_snapshot(const struct cgit_snapshot_format *format,
 	}
 	args.tree = commit->tree;
 	args.time = commit->date;
+	args.compression_level = Z_DEFAULT_COMPRESSION;
 	ctx.page.mimetype = xstrdup(format->mimetype);
 	ctx.page.filename = xstrdup(filename);
 	cgit_print_http_headers(&ctx);
