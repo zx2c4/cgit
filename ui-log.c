@@ -228,8 +228,7 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 		commit->parents = NULL;
 	}
 	if (pager) {
-		htmlf("</table><div class='pager'>",
-		     columns);
+		html("</table><div class='pager'>");
 		if (ofs > 0) {
 			cgit_log_link("[prev]", NULL, NULL, ctx.qry.head,
 				      ctx.qry.sha1, ctx.qry.vpath,

@@ -92,7 +92,7 @@ static void print_fileinfo(struct fileinfo *info)
 		      info->old_path);
 	html("</td><td class='right'>");
 	if (info->binary) {
-		htmlf("bin</td><td class='graph'>%d -> %d bytes",
+		htmlf("bin</td><td class='graph'>%ld -> %ld bytes",
 		      info->old_size, info->new_size);
 		return;
 	}
