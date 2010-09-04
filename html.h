@@ -5,7 +5,10 @@ extern int htmlfd;
 
 extern void html_raw(const char *txt, size_t size);
 extern void html(const char *txt);
+
+__attribute__((format (printf,1,2)))
 extern void htmlf(const char *format,...);
+
 extern void html_status(int code, const char *msg, int more_headers);
 extern void html_txt(const char *txt);
 extern void html_ntxt(int len, const char *txt);
