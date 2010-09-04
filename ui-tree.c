@@ -46,7 +46,7 @@ static void print_text_buffer(const char *name, char *buf, unsigned long size)
 		html("<td class='lines'><pre><code>");
 		ctx.repo->source_filter->argv[1] = xstrdup(name);
 		cgit_open_filter(ctx.repo->source_filter);
-		write(STDOUT_FILENO, buf, size);
+		html_raw(buf, size);
 		cgit_close_filter(ctx.repo->source_filter);
 		html("</code></pre></td></tr></table>\n");
 		return;

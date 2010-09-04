@@ -52,7 +52,7 @@ int cgit_print_file(char *path, const char *head)
 	if (!buf)
 		return -1;
 	buf[size] = '\0';
-	write(htmlfd, buf, size);
+	html_raw(buf, size);
 	return 0;
 }
 
@@ -108,5 +108,5 @@ void cgit_print_blob(const char *hex, char *path, const char *head)
 	}
 	ctx.page.filename = path;
 	cgit_print_http_headers(&ctx);
-	write(htmlfd, buf, size);
+	html_raw(buf, size);
 }
