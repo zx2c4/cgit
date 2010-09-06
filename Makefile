@@ -8,6 +8,11 @@ SHA1_HEADER = <openssl/sha.h>
 GIT_VER = 1.7.3
 GIT_URL = http://www.kernel.org/pub/software/scm/git/git-$(GIT_VER).tar.bz2
 INSTALL = install
+MAN5_TXT = $(wildcard *.5.txt)
+MAN_TXT  = $(MAN5_TXT)
+DOC_MAN5 = $(patsubst %.txt,%,$(MAN5_TXT))
+DOC_HTML = $(patsubst %.txt,%.html,$(MAN_TXT))
+DOC_PDF  = $(patsubst %.txt,%.pdf,$(MAN_TXT))
 
 # Define NO_STRCASESTR if you don't have strcasestr.
 #
@@ -110,7 +115,7 @@ endif
 
 
 .PHONY: all libgit test install uninstall clean force-version get-git \
-	doc man-doc html-doc clean-doc
+	doc clean-doc
 
 all: cgit
 
@@ -170,15 +175,19 @@ uninstall:
 	rm -f $(CGIT_DATA_PATH)/cgit.css
 	rm -f $(CGIT_DATA_PATH)/cgit.png
 
-doc: man-doc html-doc pdf-doc
+doc: doc-man doc-html doc-pdf
+doc-man: doc-man5
+doc-man5: $(DOC_MAN5)
+doc-html: $(DOC_HTML)
+doc-pdf: $(DOC_PDF)
 
-man-doc: cgitrc.5.txt
-	a2x -f manpage cgitrc.5.txt
+%.5 : %.5.txt
+	a2x -f manpage $<
 
-html-doc: cgitrc.5.txt
-	a2x -f xhtml --stylesheet=cgit-doc.css cgitrc.5.txt
+$(DOC_HTML): %.html : %.txt
+	a2x -f xhtml --stylesheet=cgit-doc.css $<
 
-pdf-doc: cgitrc.5.txt
+$(DOC_PDF): %.pdf : %.txt
 	a2x -f pdf cgitrc.5.txt
 
 clean: clean-doc
