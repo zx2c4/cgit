@@ -743,3 +743,17 @@ table.ssdiff td.space {
 table.ssdiff td.space div {
 	min-height: 3em;
 }
+
+/* Syntax highlighting */
+table.blob .num  { color:#2928ff; }
+table.blob .esc  { color:#ff00ff; }
+table.blob .str  { color:#ff0000; }
+table.blob .dstr { color:#818100; }
+table.blob .slc  { color:#838183; font-style:italic; }
+table.blob .com  { color:#838183; font-style:italic; }
+table.blob .dir  { color:#008200; }
+table.blob .sym  { color:#000000; }
+table.blob .kwa  { color:#000000; font-weight:bold; }
+table.blob .kwb  { color:#830000; }
+table.blob .kwc  { color:#000000; font-weight:bold; }
+table.blob .kwd  { color:#010181; }
