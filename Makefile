@@ -5,6 +5,8 @@ CGIT_DATA_PATH = $(CGIT_SCRIPT_PATH)
 CGIT_CONFIG = /etc/cgitrc
 CACHE_ROOT = /var/cache/cgit
 prefix = /usr
+libdir = $(prefix)/lib
+filterdir = $(libdir)/cgit/filters
 docdir = $(prefix)/share/doc/cgit
 htmldir = $(docdir)
 pdfdir = $(docdir)
@@ -175,6 +177,8 @@ install: all
 	$(INSTALL) -m 0755 -d $(DESTDIR)$(CGIT_DATA_PATH)
 	$(INSTALL) -m 0644 cgit.css $(DESTDIR)$(CGIT_DATA_PATH)/cgit.css
 	$(INSTALL) -m 0644 cgit.png $(DESTDIR)$(CGIT_DATA_PATH)/cgit.png
+	$(INSTALL) -m 0755 -d $(DESTDIR)$(filterdir)
+	$(INSTALL) -m 0755 filters/* $(DESTDIR)$(filterdir)
 
 install-doc: install-man install-html install-pdf
 
