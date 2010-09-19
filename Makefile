@@ -5,7 +5,7 @@ CGIT_DATA_PATH = $(CGIT_SCRIPT_PATH)
 CGIT_CONFIG = /etc/cgitrc
 CACHE_ROOT = /var/cache/cgit
 SHA1_HEADER = <openssl/sha.h>
-GIT_VER = 1.7.2.2
+GIT_VER = 1.7.3
 GIT_URL = http://www.kernel.org/pub/software/scm/git/git-$(GIT_VER).tar.bz2
 INSTALL = install
 
