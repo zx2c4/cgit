@@ -46,7 +46,7 @@ static void print_text_buffer(const char *name, char *buf, unsigned long size)
 		html("<td class='lines'><pre><code>");
 		ctx.repo->source_filter->argv[1] = xstrdup(name);
 		cgit_open_filter(ctx.repo->source_filter);
-		write(STDOUT_FILENO, buf, size);
+		html_raw(buf, size);
 		cgit_close_filter(ctx.repo->source_filter);
 		html("</code></pre></td></tr></table>\n");
 		return;
@@ -67,7 +67,7 @@ static void print_binary_buffer(char *buf, unsigned long size)
 	html("<table summary='blob content' class='bin-blob'>\n");
 	html("<tr><th>ofs</th><th>hex dump</th><th>ascii</th></tr>");
 	for (ofs = 0; ofs < size; ofs += ROWLEN, buf += ROWLEN) {
-		htmlf("<tr><td class='right'>%04x</td><td class='hex'>", ofs);
+		htmlf("<tr><td class='right'>%04lx</td><td class='hex'>", ofs);
 		for (idx = 0; idx < ROWLEN && ofs + idx < size; idx++)
 			htmlf("%*s%02x",
 			      idx == 16 ? 4 : 1, "",
@@ -108,7 +108,7 @@ static void print_object(const unsigned char *sha1, char *path, const char *base
 	html(")\n");
 
 	if (ctx.cfg.max_blob_size && size / 1024 > ctx.cfg.max_blob_size) {
-		htmlf("<div class='error'>blob size (%dKB) exceeds display size limit (%dKB).</div>",
+		htmlf("<div class='error'>blob size (%ldKB) exceeds display size limit (%dKB).</div>",
 				size / 1024, ctx.cfg.max_blob_size);
 		return;
 	}

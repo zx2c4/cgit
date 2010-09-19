@@ -5,6 +5,12 @@
 #include "ui-shared.h"
 #include "ui-stats.h"
 
+#ifdef NO_C99_FORMAT
+#define SZ_FMT "%u"
+#else
+#define SZ_FMT "%zu"
+#endif
+
 #define MONTHS 6
 
 struct authorstat {
@@ -283,10 +289,10 @@ void print_combined_authorrow(struct string_list *authors, int from, int to,
 			if (date)
 				subtotal += (size_t)date->util;
 		}
-		htmlf("<td class='%s'>%d</td>", centerclass, subtotal);
+		htmlf("<td class='%s'>%ld</td>", centerclass, subtotal);
 		total += subtotal;
 	}
-	htmlf("<td class='%s'>%d</td></tr>", rightclass, total);
+	htmlf("<td class='%s'>%ld</td></tr>", rightclass, total);
 }
 
 void print_authors(struct string_list *authors, int top,
@@ -335,16 +341,16 @@ void print_authors(struct string_list *authors, int top,
 			if (!date)
 				html("<td>0</td>");
 			else {
-				htmlf("<td>%d</td>", date->util);
+				htmlf("<td>"SZ_FMT"</td>", (size_t)date->util);
 				total += (size_t)date->util;
 			}
 		}
-		htmlf("<td class='sum'>%d</td></tr>", total);
+		htmlf("<td class='sum'>%ld</td></tr>", total);
 	}
 
 	if (top < authors->nr)
 		print_combined_authorrow(authors, top, authors->nr - 1,
-			"Others (%d)", "left", "", "sum", period);
+			"Others (%ld)", "left", "", "sum", period);
 
 	print_combined_authorrow(authors, 0, authors->nr - 1, "Total",
 		"total", "sum", "sum", period);
@@ -367,7 +373,7 @@ void cgit_show_stats(struct cgit_context *ctx)
 
 	i = cgit_find_stats_period(code, &period);
 	if (!i) {
-		cgit_print_error(fmt("Unknown statistics type: %c", code));
+		cgit_print_error(fmt("Unknown statistics type: %c", code[0]));
 		return;
 	}
 	if (i > ctx->repo->max_stats) {

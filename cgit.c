@@ -610,7 +610,7 @@ static void process_cached_repolist(const char *path)
 	hash = hash_str(path);
 	if (ctx.cfg.project_list)
 		hash += hash_str(ctx.cfg.project_list);
-	cached_rc = xstrdup(fmt("%s/rc-%8x", ctx.cfg.cache_root, hash));
+	cached_rc = xstrdup(fmt("%s/rc-%8lx", ctx.cfg.cache_root, hash));
 
 	if (stat(cached_rc, &st)) {
 		/* Nothing is cached, we need to scan without forking. And

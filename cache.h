@@ -30,6 +30,7 @@ extern int cache_process(int size, const char *path, const char *key, int ttl,
 extern int cache_ls(const char *path);
 
 /* Print a message to stdout */
+__attribute__((format (printf,1,2)))
 extern void cache_log(const char *format, ...);
 
 extern unsigned long hash_str(const char *str);

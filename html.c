@@ -95,7 +95,7 @@ void html_txt(const char *txt)
 	while(t && *t){
 		int c = *t;
 		if (c=='<' || c=='>' || c=='&') {
-			write(htmlfd, txt, t - txt);
+			html_raw(txt, t - txt);
 			if (c=='>')
 				html("&gt;");
 			else if (c=='<')
@@ -116,7 +116,7 @@ void html_ntxt(int len, const char *txt)
 	while(t && *t && len--){
 		int c = *t;
 		if (c=='<' || c=='>' || c=='&') {
-			write(htmlfd, txt, t - txt);
+			html_raw(txt, t - txt);
 			if (c=='>')
 				html("&gt;");
 			else if (c=='<')
@@ -128,7 +128,7 @@ void html_ntxt(int len, const char *txt)
 		t++;
 	}
 	if (t!=txt)
-		write(htmlfd, txt, t - txt);
+		html_raw(txt, t - txt);
 	if (len<0)
 		html("...");
 }
@@ -139,7 +139,7 @@ void html_attr(const char *txt)
 	while(t && *t){
 		int c = *t;
 		if (c=='<' || c=='>' || c=='\'' || c=='\"') {
-			write(htmlfd, txt, t - txt);
+			html_raw(txt, t - txt);
 			if (c=='>')
 				html("&gt;");
 			else if (c=='<')
@@ -163,8 +163,8 @@ void html_url_path(const char *txt)
 		int c = *t;
 		const char *e = url_escape_table[c];
 		if (e && c!='+' && c!='&' && c!='+') {
-			write(htmlfd, txt, t - txt);
-			write(htmlfd, e, 3);
+			html_raw(txt, t - txt);
+			html_raw(e, 3);
 			txt = t+1;
 		}
 		t++;
@@ -180,8 +180,8 @@ void html_url_arg(const char *txt)
 		int c = *t;
 		const char *e = url_escape_table[c];
 		if (e) {
-			write(htmlfd, txt, t - txt);
-			write(htmlfd, e, 3);
+			html_raw(txt, t - txt);
+			html_raw(e, 3);
 			txt = t+1;
 		}
 		t++;
@@ -249,7 +249,7 @@ int html_include(const char *filename)
 		return -1;
 	}
 	while((len = fread(buf, 1, 4096, f)) > 0)
-		write(htmlfd, buf, len);
+		html_raw(buf, len);
 	fclose(f);
 	return 0;
 }

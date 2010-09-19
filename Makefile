@@ -16,6 +16,11 @@ INSTALL = install
 #
 # Define NEEDS_LIBICONV if linking with libc is not enough (eg. Darwin).
 #
+# Define NO_C99_FORMAT if your formatted IO functions (printf/scanf et.al.)
+# do not support the 'size specifiers' introduced by C99, namely ll, hh,
+# j, z, t. (representing long long int, char, intmax_t, size_t, ptrdiff_t).
+# some C compilers supported these specifiers prior to C99 as an extension.
+#
 
 #-include config.mak
 
@@ -126,6 +131,9 @@ ifdef NO_ICONV
 endif
 ifdef NO_STRCASESTR
 	CFLAGS += -DNO_STRCASESTR
+endif
+ifdef NO_C99_FORMAT
+	CFLAGS += -DNO_C99_FORMAT
 endif
 ifdef NO_OPENSSL
 	CFLAGS += -DNO_OPENSSL
