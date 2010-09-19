@@ -72,11 +72,7 @@ void repo_config(struct cgit_repo *repo, const char *name, const char *value)
 	else if (!strcmp(name, "section"))
 		repo->section = xstrdup(value);
 	else if (!strcmp(name, "readme") && value != NULL) {
-		char *colon;
-		if (*value == '/' || ((colon = strchr(value, ':')) != NULL && colon != value && *(colon + 1) != '\0'))
-			repo->readme = xstrdup(value);
-		else
-			repo->readme = xstrdup(fmt("%s/%s", repo->path, value));
+		repo->readme = xstrdup(value);
 	} else if (ctx.cfg.enable_filter_overrides) {
 		if (!strcmp(name, "about-filter"))
 			repo->about_filter = new_filter(value, 0);
@@ -97,6 +93,8 @@ void config_cb(const char *name, const char *value)
 		ctx.repo->path = trim_end(value, '/');
 	else if (ctx.repo && !prefixcmp(name, "repo."))
 		repo_config(ctx.repo, name + 5, value);
+	else if (!strcmp(name, "readme"))
+		ctx.cfg.readme = xstrdup(value);
 	else if (!strcmp(name, "root-title"))
 		ctx.cfg.root_title = xstrdup(value);
 	else if (!strcmp(name, "root-desc"))

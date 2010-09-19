@@ -168,6 +168,7 @@ struct cgit_config {
 	char *logo_link;
 	char *module_link;
 	char *project_list;
+	char *readme;
 	char *robots;
 	char *root_title;
 	char *root_desc;

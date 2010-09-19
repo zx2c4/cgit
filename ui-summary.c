@@ -70,33 +70,47 @@ void cgit_print_summary()
 
 void cgit_print_repo_readme(char *path)
 {
-	char *slash, *tmp, *colon, *ref = 0;
+	char *slash, *tmp, *colon, *ref;
 
-	if (!ctx.repo->readme)
+	if (!ctx.repo->readme || !(*ctx.repo->readme))
 		return;
 
+	ref = NULL;
+
+	/* Check if the readme is tracked in the git repo. */
+	colon = strchr(ctx.repo->readme, ':');
+	if (colon && strlen(colon) > 1) {
+		*colon = '\0';
+		ref = ctx.repo->readme;
+		ctx.repo->readme = colon + 1;
+		if (!(*ctx.repo->readme))
+			return;
+	}
+
+	/* Prepend repo path to relative readme path unless tracked. */
+	if (!ref && *ctx.repo->readme != '/')
+		ctx.repo->readme = xstrdup(fmt("%s/%s", ctx.repo->path,
+					       ctx.repo->readme));
+
+	/* If a subpath is specified for the about page, make it relative
+	 * to the directory containing the configured readme.
+	 */
 	if (path) {
 		slash = strrchr(ctx.repo->readme, '/');
 		if (!slash) {
-			slash = strchr(ctx.repo->readme, ':');
-			if (!slash)
+			if (!colon)
 				return;
+			slash = colon;
 		}
 		tmp = xmalloc(slash - ctx.repo->readme + 1 + strlen(path) + 1);
 		strncpy(tmp, ctx.repo->readme, slash - ctx.repo->readme + 1);
 		strcpy(tmp + (slash - ctx.repo->readme + 1), path);
 	} else
 		tmp = ctx.repo->readme;
-	colon = strchr(tmp, ':');
-	if (colon && strlen(colon) > 1) {
-		*colon = '\0';
-		ref = tmp;
-		tmp = colon + 1;
-		while ((*tmp == '/' || *tmp == ':') && *tmp != '\0')
-			++tmp;
-		if (!(*tmp))
-			return;
-	}
+
+	/* Print the calculated readme, either from the git repo or from the
+	 * filesystem, while applying the about-filter.
+	 */
 	html("<div id='summary'>");
 	if (ctx.repo->about_filter)
 		cgit_open_filter(ctx.repo->about_filter);

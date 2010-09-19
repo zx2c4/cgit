@@ -234,6 +234,10 @@ project-list::
 	should loaded as git repositories. This must be defined prior to
 	scan-path. Default value: none. See also: scan-path.
 
+readme::
+	Text which will be used as default value for "repo.readme". Default
+	value: none.
+
 remove-suffix::
 	If set to "1" and scan-path is enabled, if any repositories are found
 	with a suffix of ".git", this suffix will be removed for the url and
@@ -373,7 +377,7 @@ repo.readme::
 	A path (relative to <repo.path>) which specifies a file to include
 	verbatim as the "About" page for this repo. You may also specify a
 	git refspec by head or by hash by prepending the refspec followed by
-	a colon. For example, "master:docs/readme.mkd" Default value: none.
+	a colon. For example, "master:docs/readme.mkd" Default value: <readme>.
 
 repo.snapshots::
 	A mask of allowed snapshot-formats for this repo, restricted by the
