@@ -61,11 +61,19 @@ static int git_owner_config(const char *key, const char *value, void *cb)
 	return 0;
 }
 
+static char *xstrrchr(char *s, char *from, int c)
+{
+	while (from >= s && *from != c)
+		from--;
+	return from < s ? NULL : from;
+}
+
 static void add_repo(const char *base, const char *path, repo_config_fn fn)
 {
 	struct stat st;
 	struct passwd *pwd;
-	char *p;
+	char *rel, *p, *slash;
+	int n;
 	size_t size;
 
 	if (stat(path, &st)) {
@@ -80,14 +88,14 @@ static void add_repo(const char *base, const char *path, repo_config_fn fn)
 	if (ctx.cfg.enable_gitweb_owner)
 		git_config_from_file(git_owner_config, fmt("%s/config", path), NULL);
 	if (base == path)
-		p = fmt("%s", path);
+		rel = xstrdup(fmt("%s", path));
 	else
-		p = fmt("%s", path + strlen(base) + 1);
+		rel = xstrdup(fmt("%s", path + strlen(base) + 1));
 
-	if (!strcmp(p + strlen(p) - 5, "/.git"))
-		p[strlen(p) - 5] = '\0';
+	if (!strcmp(rel + strlen(rel) - 5, "/.git"))
+		rel[strlen(rel) - 5] = '\0';
 
-	repo = cgit_add_repo(xstrdup(p));
+	repo = cgit_add_repo(rel);
 	if (ctx.cfg.remove_suffix)
 		if ((p = strrchr(repo->url, '.')) && !strcmp(p, ".git"))
 			*p = '\0';
@@ -114,6 +122,28 @@ static void add_repo(const char *base, const char *path, repo_config_fn fn)
 		p = fmt("%s/README.html", path);
 		if (!stat(p, &st))
 			repo->readme = "README.html";
+	}
+	if (ctx.cfg.section_from_path) {
+		n  = ctx.cfg.section_from_path;
+		if (n > 0) {
+			slash = rel;
+			while (slash && n && (slash = strchr(slash, '/')))
+				n--;
+		} else {
+			slash = rel + strlen(rel);
+			while (slash && n && (slash = xstrrchr(rel, slash, '/')))
+				n++;
+		}
+		if (slash && !n) {
+			*slash = '\0';
+			repo->section = xstrdup(rel);
+			*slash = '/';
+			if (!prefixcmp(repo->name, repo->section)) {
+				repo->name += strlen(repo->section);
+				if (*repo->name == '/')
+					repo->name++;
+			}
+		}
 	}
 
 	p = fmt("%s/cgitrc", path);

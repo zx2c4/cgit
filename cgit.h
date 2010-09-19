@@ -206,6 +206,7 @@ struct cgit_config {
 	int noheader;
 	int renamelimit;
 	int remove_suffix;
+	int section_from_path;
 	int snapshots;
 	int summary_branches;
 	int summary_log;

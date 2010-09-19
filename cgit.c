@@ -193,6 +193,8 @@ void config_cb(const char *name, const char *value)
 				      ctx.cfg.project_list, repo_config);
 		else
 			scan_tree(expand_macros(value), repo_config);
+	else if (!strcmp(name, "section-from-path"))
+		ctx.cfg.section_from_path = atoi(value);
 	else if (!strcmp(name, "source-filter"))
 		ctx.cfg.source_filter = new_filter(value, 1);
 	else if (!strcmp(name, "summary-log"))

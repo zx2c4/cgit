@@ -282,6 +282,12 @@ section::
 	after this option will inherit the current section name. Default value:
 	none.
 
+section-from-path::
+	A number which, if specified before scan-path, specifies how many
+	path elements from each repo path to use as a default section name.
+	If negative, cgit will discard the specified number of path elements
+	above the repo directory. Default value: 0.
+
 side-by-side-diffs::
 	If set to "1" shows side-by-side diffs instead of unidiffs per
 	default. Default value: "0".
