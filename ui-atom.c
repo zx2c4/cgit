@@ -111,6 +111,14 @@ void cgit_print_atom(char *tip, char *path, int max_count)
 	html("<feed xmlns='http://www.w3.org/2005/Atom'>\n");
 	html("<title>");
 	html_txt(ctx.repo->name);
+	if (path) {
+		html("/");
+		html_txt(path);
+	}
+	if (tip && !ctx.qry.show_all) {
+		html(", branch ");
+		html_txt(tip);
+	}
 	html("</title>\n");
 	html("<subtitle>");
 	html_txt(ctx.repo->desc);
