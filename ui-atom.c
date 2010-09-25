@@ -24,7 +24,7 @@ void add_entry(struct commit *commit, char *host)
 	html_txt(info->subject);
 	html("</title>\n");
 	html("<updated>");
-	cgit_print_date(info->author_date, FMT_ATOMDATE, 0);
+	cgit_print_date(info->committer_date, FMT_ATOMDATE, 0);
 	html("</updated>\n");
 	html("<author>\n");
 	if (info->author) {
