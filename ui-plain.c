@@ -35,7 +35,7 @@ static void print_object(const unsigned char *sha1, const char *path)
 	ctx.page.mimetype = NULL;
 	ext = strrchr(path, '.');
 	if (ext && *(++ext)) {
-		mime = string_list_lookup(ext, &ctx.cfg.mimetypes);
+		mime = string_list_lookup(&ctx.cfg.mimetypes, ext);
 		if (mime)
 			ctx.page.mimetype = (char *)mime->util;
 	}

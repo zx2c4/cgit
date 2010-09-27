@@ -175,7 +175,7 @@ static void add_commit(struct string_list *authors, struct commit *commit,
 
 	info = cgit_parse_commit(commit);
 	tmp = xstrdup(info->author);
-	author = string_list_insert(tmp, authors);
+	author = string_list_insert(authors, tmp);
 	if (!author->util)
 		author->util = xcalloc(1, sizeof(struct authorstat));
 	else
@@ -186,7 +186,7 @@ static void add_commit(struct string_list *authors, struct commit *commit,
 	date = gmtime(&t);
 	period->trunc(date);
 	tmp = xstrdup(period->pretty(date));
-	item = string_list_insert(tmp, items);
+	item = string_list_insert(items, tmp);
 	if (item->util)
 		free(tmp);
 	item->util++;
@@ -279,7 +279,7 @@ void print_combined_authorrow(struct string_list *authors, int from, int to,
 			author = &authors->items[i];
 			authorstat = author->util;
 			items = &authorstat->list;
-			date = string_list_lookup(tmp, items);
+			date = string_list_lookup(items, tmp);
 			if (date)
 				subtotal += (size_t)date->util;
 		}
@@ -331,7 +331,7 @@ void print_authors(struct string_list *authors, int top,
 		for (j = 0; j < period->count; j++) {
 			tmp = period->pretty(tm);
 			period->inc(tm);
-			date = string_list_lookup(tmp, items);
+			date = string_list_lookup(items, tmp);
 			if (!date)
 				html("<td>0</td>");
 			else {
