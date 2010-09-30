@@ -338,13 +338,13 @@ void cgit_diff_tree(const unsigned char *old_sha1,
 	diff_flush(&opt);
 }
 
-void cgit_diff_commit(struct commit *commit, filepair_fn fn)
+void cgit_diff_commit(struct commit *commit, filepair_fn fn, const char *prefix)
 {
 	unsigned char *old_sha1 = NULL;
 
 	if (commit->parents)
 		old_sha1 = commit->parents->item->object.sha1;
-	cgit_diff_tree(old_sha1, commit->object.sha1, fn, NULL,
+	cgit_diff_tree(old_sha1, commit->object.sha1, fn, prefix,
 		       ctx.qry.ignorews);
 }
 

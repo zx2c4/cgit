@@ -101,7 +101,7 @@ void print_commit(struct commit *commit)
 		files = 0;
 		add_lines = 0;
 		rem_lines = 0;
-		cgit_diff_commit(commit, inspect_files);
+		cgit_diff_commit(commit, inspect_files, ctx.qry.vpath);
 		html("</td><td>");
 		htmlf("%d", files);
 		if (ctx.repo->enable_log_linecount) {

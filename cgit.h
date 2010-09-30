@@ -294,7 +294,8 @@ extern void cgit_diff_tree(const unsigned char *old_sha1,
 			   const unsigned char *new_sha1,
 			   filepair_fn fn, const char *prefix, int ignorews);
 
-extern void cgit_diff_commit(struct commit *commit, filepair_fn fn);
+extern void cgit_diff_commit(struct commit *commit, filepair_fn fn,
+			     const char *prefix);
 
 __attribute__((format (printf,1,2)))
 extern char *fmt(const char *format,...);
