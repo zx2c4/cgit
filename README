@@ -49,7 +49,7 @@ like this:
 
   <Directory "/var/www/htdocs/cgit/">
       AllowOverride None
-      Options ExecCGI
+      Options +ExecCGI
       Order allow,deny
       Allow from all
   </Directory>
