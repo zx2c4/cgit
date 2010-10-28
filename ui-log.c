@@ -162,7 +162,7 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 
 	argv[1] = disambiguate_ref(tip);
 
-	if (grep && pattern) {
+	if (grep && pattern && *pattern) {
 		if (!strcmp(grep, "grep") || !strcmp(grep, "author") ||
 		    !strcmp(grep, "committer"))
 			argv[argc++] = fmt("--%s=%s", grep, pattern);
