@@ -67,7 +67,7 @@ endif
 # Define a pattern rule for automatic dependency building
 #
 %.d: %.c
-	$(QUIET_MM)$(CC) $(CFLAGS) -MM $< | sed -e 's/\($*\)\.o:/\1.o $@:/g' >$@
+	$(QUIET_MM)$(CC) $(CFLAGS) -MM -MP $< | sed -e 's/\($*\)\.o:/\1.o $@:/g' >$@
 
 #
 # Define a pattern rule for silent object building
