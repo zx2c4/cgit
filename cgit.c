@@ -121,6 +121,8 @@ void config_cb(const char *name, const char *value)
 		ctx.cfg.logo_link = xstrdup(value);
 	else if (!strcmp(name, "module-link"))
 		ctx.cfg.module_link = xstrdup(value);
+	else if (!strcmp(name, "strict-export"))
+		ctx.cfg.strict_export = xstrdup(value);
 	else if (!strcmp(name, "virtual-root")) {
 		ctx.cfg.virtual_root = trim_end(value, '/');
 		if (!ctx.cfg.virtual_root && (!strcmp(value, "/")))

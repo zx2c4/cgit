@@ -317,6 +317,13 @@ summary-tags::
 	Specifies the number of tags to display in the repository "summary"
 	view. Default value: "10".
 
+strict-export::
+	Filename which, if specified, needs to be present within the repository
+	for cgit to allow access to that repository. This can be used to emulate
+	gitweb's EXPORT_OK and STRICT_EXPORT functionality and limit cgit's
+	repositories to match those exported by git-daemon. This option MUST come
+	before 'scan-path'.
+
 virtual-root::
 	Url which, if specified, will be used as root for all cgit links. It
 	will also cause cgit to generate 'virtual urls', i.e. urls like

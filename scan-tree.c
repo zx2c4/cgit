@@ -81,6 +81,10 @@ static void add_repo(const char *base, const char *path, repo_config_fn fn)
 			path, strerror(errno), errno);
 		return;
 	}
+
+	if (ctx.cfg.strict_export && stat(fmt("%s/%s", path, ctx.cfg.strict_export), &st))
+		return;
+
 	if (!stat(fmt("%s/noweb", path), &st))
 		return;
 

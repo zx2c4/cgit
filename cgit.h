@@ -176,6 +176,7 @@ struct cgit_config {
 	char *script_name;
 	char *section;
 	char *virtual_root;
+	char *strict_export;
 	int cache_size;
 	int cache_dynamic_ttl;
 	int cache_max_create_time;
