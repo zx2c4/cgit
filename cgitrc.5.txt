@@ -431,7 +431,7 @@ cache-size=1000
 
 
 # Specify some default clone prefixes
-clone-prefix=git://foobar.com ssh://foobar.com/pub/git http://foobar.com/git
+clone-prefix=git://example.com ssh://example.com/pub/git http://example.com/git
 
 # Specify the css url
 css=/css/cgit.css
@@ -462,14 +462,14 @@ max-stats=quarter
 
 
 # Set the title and heading of the repository index page
-root-title=foobar.com git repositories
+root-title=example.com git repositories
 
 
 # Set a subheading for the repository index page
 root-desc=tracking the foobar development
 
 
-# Include some more info about foobar.com on the index page
+# Include some more info about example.com on the index page
 root-readme=/var/www/htdocs/about.html
 
 
@@ -503,14 +503,14 @@ mimetype.svg=image/svg+xml
 repo.url=foo
 repo.path=/pub/git/foo.git
 repo.desc=the master foo repository
-repo.owner=fooman@foobar.com
+repo.owner=fooman@example.com
 repo.readme=info/web/about.html
 
 
 repo.url=bar
 repo.path=/pub/git/bar.git
 repo.desc=the bars for your foo
-repo.owner=barman@foobar.com
+repo.owner=barman@example.com
 repo.readme=info/web/about.html
 
 

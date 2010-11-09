@@ -4,10 +4,22 @@ CGIT_SCRIPT_PATH = /var/www/htdocs/cgit
 CGIT_DATA_PATH = $(CGIT_SCRIPT_PATH)
 CGIT_CONFIG = /etc/cgitrc
 CACHE_ROOT = /var/cache/cgit
+prefix = /usr
+libdir = $(prefix)/lib
+filterdir = $(libdir)/cgit/filters
+docdir = $(prefix)/share/doc/cgit
+htmldir = $(docdir)
+pdfdir = $(docdir)
+mandir = $(prefix)/share/man
 SHA1_HEADER = <openssl/sha.h>
 GIT_VER = 1.7.3
 GIT_URL = http://www.kernel.org/pub/software/scm/git/git-$(GIT_VER).tar.bz2
 INSTALL = install
+MAN5_TXT = $(wildcard *.5.txt)
+MAN_TXT  = $(MAN5_TXT)
+DOC_MAN5 = $(patsubst %.txt,%,$(MAN5_TXT))
+DOC_HTML = $(patsubst %.txt,%.html,$(MAN_TXT))
+DOC_PDF  = $(patsubst %.txt,%.pdf,$(MAN_TXT))
 
 # Define NO_STRCASESTR if you don't have strcasestr.
 #
@@ -110,7 +122,8 @@ endif
 
 
 .PHONY: all libgit test install uninstall clean force-version get-git \
-	doc man-doc html-doc clean-doc
+	doc clean-doc install-doc install-man install-html install-pdf \
+	uninstall-doc uninstall-man uninstall-html uninstall-pdf
 
 all: cgit
 
@@ -166,21 +179,58 @@ install: all
 	$(INSTALL) -m 0755 -d $(DESTDIR)$(CGIT_DATA_PATH)
 	$(INSTALL) -m 0644 cgit.css $(DESTDIR)$(CGIT_DATA_PATH)/cgit.css
 	$(INSTALL) -m 0644 cgit.png $(DESTDIR)$(CGIT_DATA_PATH)/cgit.png
+	$(INSTALL) -m 0755 -d $(DESTDIR)$(filterdir)
+	$(INSTALL) -m 0755 filters/* $(DESTDIR)$(filterdir)
+
+install-doc: install-man install-html install-pdf
+
+install-man: doc-man
+	$(INSTALL) -m 0755 -d $(DESTDIR)$(mandir)/man5
+	$(INSTALL) -m 0644 $(DOC_MAN5) $(DESTDIR)$(mandir)/man5
+
+install-html: doc-html
+	$(INSTALL) -m 0755 -d $(DESTDIR)$(htmldir)
+	$(INSTALL) -m 0644 $(DOC_HTML) $(DESTDIR)$(htmldir)
+
+install-pdf: doc-pdf
+	$(INSTALL) -m 0755 -d $(DESTDIR)$(pdfdir)
+	$(INSTALL) -m 0644 $(DOC_PDF) $(DESTDIR)$(pdfdir)
 
 uninstall:
 	rm -f $(CGIT_SCRIPT_PATH)/$(CGIT_SCRIPT_NAME)
 	rm -f $(CGIT_DATA_PATH)/cgit.css
 	rm -f $(CGIT_DATA_PATH)/cgit.png
 
-doc: man-doc html-doc pdf-doc
+uninstall-doc: uninstall-man uninstall-html uninstall-pdf
 
-man-doc: cgitrc.5.txt
-	a2x -f manpage cgitrc.5.txt
+uninstall-man:
+	@for i in $(DOC_MAN5); do \
+	    rm -fv $(DESTDIR)$(mandir)/man5/$$i; \
+	done
 
-html-doc: cgitrc.5.txt
-	a2x -f xhtml --stylesheet=cgit-doc.css cgitrc.5.txt
+uninstall-html:
+	@for i in $(DOC_HTML); do \
+	    rm -fv $(DESTDIR)$(htmldir)/$$i; \
+	done
 
-pdf-doc: cgitrc.5.txt
+uninstall-pdf:
+	@for i in $(DOC_PDF); do \
+	    rm -fv $(DESTDIR)$(pdfdir)/$$i; \
+	done
+
+doc: doc-man doc-html doc-pdf
+doc-man: doc-man5
+doc-man5: $(DOC_MAN5)
+doc-html: $(DOC_HTML)
+doc-pdf: $(DOC_PDF)
+
+%.5 : %.5.txt
+	a2x -f manpage $<
+
+$(DOC_HTML): %.html : %.txt
+	a2x -f xhtml --stylesheet=cgit-doc.css $<
+
+$(DOC_PDF): %.pdf : %.txt
 	a2x -f pdf cgitrc.5.txt
 
 clean: clean-doc
