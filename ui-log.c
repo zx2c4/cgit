@@ -111,29 +111,33 @@ void print_commit(struct commit *commit)
 		}
 	}
 	html("</td></tr>\n");
-	if (ctx.qry.showmsg) {
-		struct strbuf notes = STRBUF_INIT;
-		format_note(NULL, commit->object.sha1, &notes, PAGE_ENCODING, 0);
+
+	if (ctx.qry.showmsg) { /* Print message + notes in a second table row */
+		/* Concatenate commit message and notes in msgbuf */
+		struct strbuf msgbuf = STRBUF_INIT;
+		if (info->msg && *(info->msg)) {
+			strbuf_addstr(&msgbuf, info->msg);
+			strbuf_addch(&msgbuf, '\n');
+		}
+		format_note(NULL, commit->object.sha1, &msgbuf, PAGE_ENCODING,
+		            NOTES_SHOW_HEADER | NOTES_INDENT);
+		strbuf_addch(&msgbuf, '\n');
+		strbuf_ltrim(&msgbuf);
 
 		if (ctx.repo->enable_log_filecount) {
 			cols++;
 			if (ctx.repo->enable_log_linecount)
 				cols++;
 		}
+
+		/* Create second table row containing msgbuf */
 		htmlf("<tr class='nohover'><td/><td colspan='%d' class='logmsg'>",
 			cols);
-		html_txt(info->msg);
+		html_txt(msgbuf.buf);
 		html("</td></tr>\n");
-		if (notes.len != 0) {
-			html("<tr class='nohover'>");
-			html("<td class='lognotes-label'>Notes:</td>");
-			htmlf("<td colspan='%d' class='lognotes'>",
-				cols);
-			html_txt(notes.buf);
-			html("</td></tr>\n");
-		}
-		strbuf_release(&notes);
+		strbuf_release(&msgbuf);
 	}
+
 	cgit_free_commitinfo(info);
 }
 
