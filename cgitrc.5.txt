@@ -90,7 +90,12 @@ embedded::
 	Flag which, when set to "1", will make cgit generate a html fragment
 	suitable for embedding in other html pages. Default value: none. See
 	also: "noheader".
-	
+
+enable-commit-graph::
+	Flag which, when set to "1", will make cgit print an ASCII-art commit
+	history graph to the left of the commit messages in the repository
+	log page. Default value: "0".
+
 enable-filter-overrides::
 	Flag which, when set to "1", allows all filter settings to be
 	overridden in repository-specific cgitrc files. Default value: none.
@@ -354,6 +359,10 @@ repo.defbranch::
 repo.desc::
 	The value to show as repository description. Default value: none.
 
+repo.enable-commit-graph::
+	A flag which can be used to disable the global setting
+	`enable-commit-graph'. Default value: none.
+
 repo.enable-log-filecount::
 	A flag which can be used to disable the global setting
 	`enable-log-filecount'. Default value: none.
@@ -439,6 +448,10 @@ css=/css/cgit.css
 
 # Show extra links for each repository on the index page
 enable-index-links=1
+
+
+# Enable ASCII art commit history graph on the log pages
+enable-commit-graph=1
 
 
 # Show number of affected files per commit on the log pages

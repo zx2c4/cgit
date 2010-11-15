@@ -77,11 +77,30 @@ void show_commit_decorations(struct commit *commit)
 	}
 }
 
-void print_commit(struct commit *commit)
+void print_commit(struct commit *commit, struct rev_info *revs)
 {
 	struct commitinfo *info;
 	char *tmp;
 	int cols = 2;
+	struct strbuf graphbuf = STRBUF_INIT;
+
+	if (ctx.repo->enable_log_filecount) {
+		cols++;
+		if (ctx.repo->enable_log_linecount)
+			cols++;
+	}
+
+	if (revs->graph) {
+		/* Advance graph until current commit */
+		while (!graph_next_line(revs->graph, &graphbuf)) {
+			/* Print graph segment in otherwise empty table row */
+			html("<tr class='nohover'><td/><td class='commitgraph'>");
+			html(graphbuf.buf);
+			htmlf("</td><td colspan='%d' /></tr>\n", cols);
+			strbuf_setlen(&graphbuf, 0);
+		}
+		/* Current commit's graph segment is now ready in graphbuf */
+	}
 
 	info = cgit_parse_commit(commit);
 	htmlf("<tr%s><td>",
@@ -91,8 +110,17 @@ void print_commit(struct commit *commit)
 	html_link_open(tmp, NULL, NULL);
 	cgit_print_age(commit->date, TM_WEEK * 2, FMT_SHORTDATE);
 	html_link_close();
-	htmlf("</td><td%s>",
-		ctx.qry.showmsg ? " class='logsubject'" : "");
+	html("</td>");
+
+	if (revs->graph) {
+		/* Print graph segment for current commit */
+		html("<td class='commitgraph'>");
+		html(graphbuf.buf);
+		html("</td>");
+		strbuf_setlen(&graphbuf, 0);
+	}
+
+	htmlf("<td%s>", ctx.qry.showmsg ? " class='logsubject'" : "");
 	cgit_commit_link(info->subject, NULL, NULL, ctx.qry.head,
 			 sha1_to_hex(commit->object.sha1), ctx.qry.vpath, 0);
 	show_commit_decorations(commit);
@@ -112,32 +140,59 @@ void print_commit(struct commit *commit)
 	}
 	html("</td></tr>\n");
 
-	if (ctx.qry.showmsg) { /* Print message + notes in a second table row */
-		/* Concatenate commit message and notes in msgbuf */
+	if (revs->graph || ctx.qry.showmsg) { /* Print a second table row */
 		struct strbuf msgbuf = STRBUF_INIT;
-		if (info->msg && *(info->msg)) {
-			strbuf_addstr(&msgbuf, info->msg);
+		html("<tr class='nohover'><td/>"); /* Empty 'Age' column */
+
+		if (ctx.qry.showmsg) {
+			/* Concatenate commit message + notes in msgbuf */
+			if (info->msg && *(info->msg)) {
+				strbuf_addstr(&msgbuf, info->msg);
+				strbuf_addch(&msgbuf, '\n');
+			}
+			format_note(NULL, commit->object.sha1, &msgbuf,
+			            PAGE_ENCODING,
+			            NOTES_SHOW_HEADER | NOTES_INDENT);
 			strbuf_addch(&msgbuf, '\n');
-		}
-		format_note(NULL, commit->object.sha1, &msgbuf, PAGE_ENCODING,
-		            NOTES_SHOW_HEADER | NOTES_INDENT);
-		strbuf_addch(&msgbuf, '\n');
-		strbuf_ltrim(&msgbuf);
-
-		if (ctx.repo->enable_log_filecount) {
-			cols++;
-			if (ctx.repo->enable_log_linecount)
-				cols++;
+			strbuf_ltrim(&msgbuf);
 		}
 
-		/* Create second table row containing msgbuf */
-		htmlf("<tr class='nohover'><td/><td colspan='%d' class='logmsg'>",
-			cols);
+		if (revs->graph) {
+			int lines = 0;
+
+			/* Calculate graph padding */
+			if (ctx.qry.showmsg) {
+				/* Count #lines in commit message + notes */
+				const char *p = msgbuf.buf;
+				lines = 1;
+				while ((p = strchr(p, '\n'))) {
+					p++;
+					lines++;
+				}
+			}
+
+			/* Print graph padding */
+			html("<td class='commitgraph'>");
+			while (lines > 0 || !graph_is_commit_finished(revs->graph)) {
+				if (graphbuf.len)
+					html("\n");
+				strbuf_setlen(&graphbuf, 0);
+				graph_next_line(revs->graph, &graphbuf);
+				html(graphbuf.buf);
+				lines--;
+			}
+			html("</td>\n");
+		}
+
+		/* Print msgbuf into remainder of table row */
+		htmlf("<td colspan='%d'%s>\n", cols,
+			ctx.qry.showmsg ? " class='logmsg'" : "");
 		html_txt(msgbuf.buf);
 		html("</td></tr>\n");
 		strbuf_release(&msgbuf);
 	}
 
+	strbuf_release(&graphbuf);
 	cgit_free_commitinfo(info);
 }
 
@@ -216,6 +271,10 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 			}
 		}
 	}
+	if (ctx.repo->enable_commit_graph) {
+		static const char *graph_arg = "--graph";
+		vector_push(&vec, &graph_arg, 0);
+	}
 
 	if (path) {
 		arg = "--";
@@ -242,8 +301,10 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 	if (pager)
 		html("<table class='list nowrap'>");
 
-	html("<tr class='nohover'><th class='left'>Age</th>"
-	      "<th class='left'>Commit message");
+	html("<tr class='nohover'><th class='left'>Age</th>");
+	if (ctx.repo->enable_commit_graph)
+		html("<th></th>");
+	html("<th class='left'>Commit message");
 	if (pager) {
 		html(" (");
 		cgit_log_link(ctx.qry.showmsg ? "Collapse" : "Expand", NULL,
@@ -274,7 +335,7 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 	}
 
 	for (i = 0; i < cnt && (commit = get_revision(&rev)) != NULL; i++) {
-		print_commit(commit);
+		print_commit(commit, &rev);
 		free(commit->buffer);
 		commit->buffer = NULL;
 		free_commit_list(commit->parents);

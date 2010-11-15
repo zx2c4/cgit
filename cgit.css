@@ -153,6 +153,11 @@ table.list td {
 	padding: 0.1em 0.5em 0.1em 0.5em;
 }
 
+table.list td.commitgraph {
+	font-family: monospace;
+	white-space: pre;
+}
+
 table.list td.logsubject {
 	font-family: monospace;
 	font-weight: bold;
