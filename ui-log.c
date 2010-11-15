@@ -96,7 +96,7 @@ void print_commit(struct commit *commit, struct rev_info *revs)
 {
 	struct commitinfo *info;
 	char *tmp;
-	int cols = 2;
+	int cols = revs->graph ? 3 : 2;
 	struct strbuf graphbuf = STRBUF_INIT;
 	struct strbuf msgbuf = STRBUF_INIT;
 
@@ -110,7 +110,7 @@ void print_commit(struct commit *commit, struct rev_info *revs)
 		/* Advance graph until current commit */
 		while (!graph_next_line(revs->graph, &graphbuf)) {
 			/* Print graph segment in otherwise empty table row */
-			html("<tr class='nohover'><td/><td class='commitgraph'>");
+			html("<tr class='nohover'><td class='commitgraph'>");
 			html(graphbuf.buf);
 			htmlf("</td><td colspan='%d' /></tr>\n", cols);
 			strbuf_setlen(&graphbuf, 0);
@@ -119,14 +119,7 @@ void print_commit(struct commit *commit, struct rev_info *revs)
 	}
 
 	info = cgit_parse_commit(commit);
-	htmlf("<tr%s><td>",
-		ctx.qry.showmsg ? " class='logheader'" : "");
-	tmp = fmt("id=%s", sha1_to_hex(commit->object.sha1));
-	tmp = cgit_fileurl(ctx.repo->url, "commit", ctx.qry.vpath, tmp);
-	html_link_open(tmp, NULL, NULL);
-	cgit_print_age(commit->date, TM_WEEK * 2, FMT_SHORTDATE);
-	html_link_close();
-	html("</td>");
+	htmlf("<tr%s>", ctx.qry.showmsg ? " class='logheader'" : "");
 
 	if (revs->graph) {
 		/* Print graph segment for current commit */
@@ -134,6 +127,15 @@ void print_commit(struct commit *commit, struct rev_info *revs)
 		html(graphbuf.buf);
 		html("</td>");
 		strbuf_setlen(&graphbuf, 0);
+	}
+	else {
+		html("<td>");
+		tmp = fmt("id=%s", sha1_to_hex(commit->object.sha1));
+		tmp = cgit_fileurl(ctx.repo->url, "commit", ctx.qry.vpath, tmp);
+		html_link_open(tmp, NULL, NULL);
+		cgit_print_age(commit->date, TM_WEEK * 2, FMT_SHORTDATE);
+		html_link_close();
+		html("</td>");
 	}
 
 	htmlf("<td%s>", ctx.qry.showmsg ? " class='logsubject'" : "");
@@ -167,6 +169,16 @@ void print_commit(struct commit *commit, struct rev_info *revs)
 	show_commit_decorations(commit);
 	html("</td><td>");
 	html_txt(info->author);
+
+	if (revs->graph) {
+		html("</td><td>");
+		tmp = fmt("id=%s", sha1_to_hex(commit->object.sha1));
+		tmp = cgit_fileurl(ctx.repo->url, "commit", ctx.qry.vpath, tmp);
+		html_link_open(tmp, NULL, NULL);
+		cgit_print_age(commit->date, TM_WEEK * 2, FMT_SHORTDATE);
+		html_link_close();
+	}
+
 	if (ctx.repo->enable_log_filecount) {
 		files = 0;
 		add_lines = 0;
@@ -182,7 +194,7 @@ void print_commit(struct commit *commit, struct rev_info *revs)
 	html("</td></tr>\n");
 
 	if (revs->graph || ctx.qry.showmsg) { /* Print a second table row */
-		html("<tr class='nohover'><td/>"); /* Empty 'Age' column */
+		html("<tr class='nohover'>");
 
 		if (ctx.qry.showmsg) {
 			/* Concatenate commit message + notes in msgbuf */
@@ -223,6 +235,8 @@ void print_commit(struct commit *commit, struct rev_info *revs)
 			}
 			html("</td>\n");
 		}
+		else
+			html("<td/>"); /* Empty 'Age' column */
 
 		/* Print msgbuf into remainder of table row */
 		htmlf("<td colspan='%d'%s>\n", cols,
@@ -345,9 +359,11 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 	if (pager)
 		html("<table class='list nowrap'>");
 
-	html("<tr class='nohover'><th class='left'>Age</th>");
+	html("<tr class='nohover'>");
 	if (commit_graph)
 		html("<th></th>");
+	else
+		html("<th class='left'>Age</th>");
 	html("<th class='left'>Commit message");
 	if (pager) {
 		html(" (");
@@ -358,6 +374,8 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 		html(")");
 	}
 	html("</th><th class='left'>Author</th>");
+	if (commit_graph)
+		html("<th class='left'>Age</th>");
 	if (ctx.repo->enable_log_filecount) {
 		html("<th class='left'>Files</th>");
 		columns++;
