@@ -158,6 +158,30 @@ table.list td.commitgraph {
 	white-space: pre;
 }
 
+table.list td.commitgraph .column1 {
+	color: #a00;
+}
+
+table.list td.commitgraph .column2 {
+	color: #0a0;
+}
+
+table.list td.commitgraph .column3 {
+	color: #aa0;
+}
+
+table.list td.commitgraph .column4 {
+	color: #00a;
+}
+
+table.list td.commitgraph .column5 {
+	color: #a0a;
+}
+
+table.list td.commitgraph .column6 {
+	color: #0aa;
+}
+
 table.list td.logsubject {
 	font-family: monospace;
 	font-weight: bold;

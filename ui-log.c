@@ -13,6 +13,21 @@
 
 int files, add_lines, rem_lines;
 
+/*
+ * The list of available column colors in the commit graph.
+ */
+static const char *column_colors_html[] = {
+	"<span class='column1'>",
+	"<span class='column2'>",
+	"<span class='column3'>",
+	"<span class='column4'>",
+	"<span class='column5'>",
+	"<span class='column6'>",
+	"</span>",
+};
+
+#define COLUMN_COLORS_HTML_MAX (ARRAY_SIZE(column_colors_html) - 1)
+
 void count_lines(char *line, int size)
 {
 	if (size <= 0)
@@ -273,7 +288,11 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 	}
 	if (ctx.repo->enable_commit_graph) {
 		static const char *graph_arg = "--graph";
+		static const char *color_arg = "--color";
 		vector_push(&vec, &graph_arg, 0);
+		vector_push(&vec, &color_arg, 0);
+		graph_set_column_colors(column_colors_html,
+					COLUMN_COLORS_HTML_MAX);
 	}
 
 	if (path) {
