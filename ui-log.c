@@ -98,6 +98,7 @@ void print_commit(struct commit *commit, struct rev_info *revs)
 	char *tmp;
 	int cols = 2;
 	struct strbuf graphbuf = STRBUF_INIT;
+	struct strbuf msgbuf = STRBUF_INIT;
 
 	if (ctx.repo->enable_log_filecount) {
 		cols++;
@@ -136,6 +137,31 @@ void print_commit(struct commit *commit, struct rev_info *revs)
 	}
 
 	htmlf("<td%s>", ctx.qry.showmsg ? " class='logsubject'" : "");
+	if (ctx.qry.showmsg) {
+		/* line-wrap long commit subjects instead of truncating them */
+		size_t subject_len = strlen(info->subject);
+
+		if (subject_len > ctx.cfg.max_msg_len &&
+		    ctx.cfg.max_msg_len >= 15) {
+			/* symbol for signaling line-wrap (in PAGE_ENCODING) */
+			const char wrap_symbol[] = { ' ', 0xE2, 0x86, 0xB5, 0 };
+			int i = ctx.cfg.max_msg_len - strlen(wrap_symbol);
+
+			/* Rewind i to preceding space character */
+			while (i > 0 && !isspace(info->subject[i]))
+				--i;
+			if (!i) /* Oops, zero spaces. Reset i */
+				i = ctx.cfg.max_msg_len - strlen(wrap_symbol);
+
+			/* add remainder starting at i to msgbuf */
+			strbuf_add(&msgbuf, info->subject + i, subject_len - i);
+			strbuf_trim(&msgbuf);
+			strbuf_add(&msgbuf, "\n\n", 2);
+
+			/* Place wrap_symbol at position i in info->subject */
+			strcpy(info->subject + i, wrap_symbol);
+		}
+	}
 	cgit_commit_link(info->subject, NULL, NULL, ctx.qry.head,
 			 sha1_to_hex(commit->object.sha1), ctx.qry.vpath, 0);
 	show_commit_decorations(commit);
@@ -156,7 +182,6 @@ void print_commit(struct commit *commit, struct rev_info *revs)
 	html("</td></tr>\n");
 
 	if (revs->graph || ctx.qry.showmsg) { /* Print a second table row */
-		struct strbuf msgbuf = STRBUF_INIT;
 		html("<tr class='nohover'><td/>"); /* Empty 'Age' column */
 
 		if (ctx.qry.showmsg) {
@@ -204,9 +229,9 @@ void print_commit(struct commit *commit, struct rev_info *revs)
 			ctx.qry.showmsg ? " class='logmsg'" : "");
 		html_txt(msgbuf.buf);
 		html("</td></tr>\n");
-		strbuf_release(&msgbuf);
 	}
 
+	strbuf_release(&msgbuf);
 	strbuf_release(&graphbuf);
 	cgit_free_commitinfo(info);
 }
@@ -246,7 +271,7 @@ static char *next_token(char **src)
 }
 
 void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern,
-		    char *path, int pager)
+		    char *path, int pager, int commit_graph)
 {
 	struct rev_info rev;
 	struct commit *commit;
@@ -286,7 +311,7 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 			}
 		}
 	}
-	if (ctx.repo->enable_commit_graph) {
+	if (commit_graph) {
 		static const char *graph_arg = "--graph";
 		static const char *color_arg = "--color";
 		vector_push(&vec, &graph_arg, 0);
@@ -321,7 +346,7 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 		html("<table class='list nowrap'>");
 
 	html("<tr class='nohover'><th class='left'>Age</th>");
-	if (ctx.repo->enable_commit_graph)
+	if (commit_graph)
 		html("<th></th>");
 	html("<th class='left'>Commit message");
 	if (pager) {
