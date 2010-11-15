@@ -195,6 +195,8 @@ void config_cb(const char *name, const char *value)
 				      ctx.cfg.project_list, repo_config);
 		else
 			scan_tree(expand_macros(value), repo_config);
+	else if (!strcmp(name, "scan-hidden-path"))
+		ctx.cfg.scan_hidden_path = atoi(value);
 	else if (!strcmp(name, "section-from-path"))
 		ctx.cfg.section_from_path = atoi(value);
 	else if (!strcmp(name, "source-filter"))
@@ -315,6 +317,7 @@ static void prepare_context(struct cgit_context *ctx)
 	ctx->cfg.robots = "index, nofollow";
 	ctx->cfg.root_title = "Git repository browser";
 	ctx->cfg.root_desc = "a fast webinterface for the git dscm";
+	ctx->cfg.scan_hidden_path = 0;
 	ctx->cfg.script_name = CGIT_SCRIPT_NAME;
 	ctx->cfg.section = "";
 	ctx->cfg.summary_branches = 10;

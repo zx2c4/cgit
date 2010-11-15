@@ -269,6 +269,14 @@ root-title::
 	Text printed as heading on the repository index page. Default value:
 	"Git Repository Browser".
 
+scan-hidden-path::
+	If set to "1" and scan-path is enabled, scan-path will recurse into
+	directories whose name starts with a period ('.'). Otherwise,
+	scan-path will stay away from such directories (considered as
+	"hidden"). Note that this does not apply to the ".git" directory in
+	non-bare repos. This must be defined prior to scan-path.
+	Default value: 0. See also: scan-path.
+
 scan-path::
 	A path which will be scanned for repositories. If caching is enabled,
 	the result will be cached as a cgitrc include-file in the cache

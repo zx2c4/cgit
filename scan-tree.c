@@ -183,6 +183,8 @@ static void scan_path(const char *base, const char *path, repo_config_fn fn)
 				continue;
 			if (ent->d_name[1] == '.' && ent->d_name[2] == '\0')
 				continue;
+			if (!ctx.cfg.scan_hidden_path)
+				continue;
 		}
 		buf = malloc(strlen(path) + strlen(ent->d_name) + 2);
 		if (!buf) {
