@@ -1,5 +1,3 @@
-#include <string-list.h>
-
 #include "cgit.h"
 #include "html.h"
 #include "ui-shared.h"
