@@ -275,7 +275,7 @@ table.blob pre {
 	padding: 0; margin: 0;
 }
 
-table.blob a.no {
+table.blob a.no, table.ssdiff a.no {
 	color: gray;
 	text-align: right;
 	text-decoration: none;

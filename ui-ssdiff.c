@@ -1,6 +1,7 @@
 #include "cgit.h"
 #include "html.h"
 #include "ui-shared.h"
+#include "ui-diff.h"
 
 extern int use_ssdiff;
 
@@ -191,17 +192,24 @@ static void print_ssdiff_line(char *class,
 			      char *new_line, int individual_chars)
 {
 	char *lcs = NULL;
+
 	if (old_line)
 		old_line = replace_tabs(old_line + 1);
 	if (new_line)
 		new_line = replace_tabs(new_line + 1);
 	if (individual_chars && old_line && new_line)
 		lcs = longest_common_subsequence(old_line, new_line);
-	html("<tr>");
-	if (old_line_no > 0)
-		htmlf("<td class='lineno'>%d</td><td class='%s'>",
-		      old_line_no, class);
-	else if (old_line)
+	html("<tr>\n");
+	if (old_line_no > 0) {
+		struct diff_filespec *old_file = cgit_get_current_old_file();
+		char *lineno_str = fmt("n%d", old_line_no);
+		char *id_str = fmt("%s#%s", is_null_sha1(old_file->sha1)?"HEAD":sha1_to_hex(old_rev_sha1), lineno_str);
+		html("<td class='lineno'><a class='no' href='");
+		html(cgit_fileurl(ctx.repo->url, "tree", old_file->path, id_str));
+		htmlf("' id='%s' name='%s'>%s</a>", lineno_str, lineno_str, lineno_str + 1);
+		html("</td>");
+		htmlf("<td class='%s'>", class);
+	} else if (old_line)
 		htmlf("<td class='lineno'></td><td class='%s'>", class);
 	else
 		htmlf("<td class='lineno'></td><td class='%s_dark'>", class);
@@ -212,11 +220,17 @@ static void print_ssdiff_line(char *class,
 			html_txt(old_line);
 	}
 
-	html("</td>");
-	if (new_line_no > 0)
-		htmlf("<td class='lineno'>%d</td><td class='%s'>",
-		      new_line_no, class);
-	else if (new_line)
+	html("</td>\n");
+	if (new_line_no > 0) {
+		struct diff_filespec *new_file = cgit_get_current_new_file();
+		char *lineno_str = fmt("n%d", new_line_no);
+		char *id_str = fmt("%s#%s", is_null_sha1(new_file->sha1)?"HEAD":sha1_to_hex(new_rev_sha1), lineno_str);
+		html("<td class='lineno'><a class='no' href='");
+		html(cgit_fileurl(ctx.repo->url, "tree", new_file->path, id_str));
+		htmlf("' id='%s' name='%s'>%s</a>", lineno_str, lineno_str, lineno_str + 1);
+		html("</td>");
+		htmlf("<td class='%s'>", class);
+	} else if (new_line)
 		htmlf("<td class='lineno'></td><td class='%s'>", class);
 	else
 		htmlf("<td class='lineno'></td><td class='%s_dark'>", class);
