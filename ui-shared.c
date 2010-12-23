@@ -756,17 +756,27 @@ static void cgit_print_path_crumbs(struct cgit_context *ctx, char *path)
 
 static void print_header(struct cgit_context *ctx)
 {
+	char *logo = NULL, *logo_link = NULL;
+
 	html("<table id='header'>\n");
 	html("<tr>\n");
 
-	if (ctx->cfg.logo && ctx->cfg.logo[0] != 0) {
+	if (ctx->repo && ctx->repo->logo && *ctx->repo->logo)
+		logo = ctx->repo->logo;
+	else
+		logo = ctx->cfg.logo;
+	if (ctx->repo && ctx->repo->logo_link && *ctx->repo->logo_link)
+		logo_link = ctx->repo->logo_link;
+	else
+		logo_link = ctx->cfg.logo_link;
+	if (logo && *logo) {
 		html("<td class='logo' rowspan='2'><a href='");
-		if (ctx->cfg.logo_link)
-			html_attr(ctx->cfg.logo_link);
+		if (logo_link && *logo_link)
+			html_attr(logo_link);
 		else
 			html_attr(cgit_rooturl());
 		html("'><img src='");
-		html_attr(ctx->cfg.logo);
+		html_attr(logo);
 		html("' alt='cgit logo'/></a></td>\n");
 	}
 
