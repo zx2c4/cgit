@@ -139,6 +139,8 @@ void config_cb(const char *name, const char *value)
 		ctx.cfg.enable_filter_overrides = atoi(value);
 	else if (!strcmp(name, "enable-gitweb-owner"))
 		ctx.cfg.enable_gitweb_owner = atoi(value);
+	else if (!strcmp(name, "enable-http-clone"))
+		ctx.cfg.enable_http_clone = atoi(value);
 	else if (!strcmp(name, "enable-index-links"))
 		ctx.cfg.enable_index_links = atoi(value);
 	else if (!strcmp(name, "enable-log-filecount"))
@@ -300,6 +302,7 @@ static void prepare_context(struct cgit_context *ctx)
 	ctx->cfg.logo = "/cgit.png";
 	ctx->cfg.local_time = 0;
 	ctx->cfg.enable_gitweb_owner = 1;
+	ctx->cfg.enable_http_clone = 1;
 	ctx->cfg.enable_tree_linenumbers = 1;
 	ctx->cfg.max_repo_count = 50;
 	ctx->cfg.max_commit_count = 50;
@@ -450,6 +453,11 @@ static void process_request(void *cbdata)
 		cgit_print_pageheader(ctx);
 		cgit_print_error("Invalid request");
 		cgit_print_docend();
+		return;
+	}
+
+	if (!ctx->cfg.enable_http_clone && cmd->is_clone) {
+		html_status(404, "Not found", 0);
 		return;
 	}
 
