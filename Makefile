@@ -168,4 +168,4 @@ clean-doc:
 	rm -f cgitrc.5 cgitrc.5.html cgitrc.5.pdf cgitrc.5.xml cgitrc.5.fo
 
 get-git:
-	curl $(GIT_URL) | tar -xj && rm -rf git && mv git-$(GIT_VER) git
+	curl $(GIT_URL) | tar -xjf - && rm -rf git && mv git-$(GIT_VER) git
