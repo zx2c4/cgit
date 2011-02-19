@@ -7,4 +7,10 @@ extern void cgit_print_diffstat(const unsigned char *old_sha1,
 extern void cgit_print_diff(const char *new_hex, const char *old_hex,
 			    const char *prefix);
 
+extern struct diff_filespec *cgit_get_current_old_file(void);
+extern struct diff_filespec *cgit_get_current_new_file(void);
+
+extern unsigned char old_rev_sha1[20];
+extern unsigned char new_rev_sha1[20];
+
 #endif /* UI_DIFF_H */

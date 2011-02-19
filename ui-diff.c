@@ -34,6 +34,17 @@ static struct fileinfo {
 } *items;
 
 static int use_ssdiff = 0;
+static struct diff_filepair *current_filepair;
+
+struct diff_filespec *cgit_get_current_old_file(void)
+{
+	return current_filepair->one;
+}
+
+struct diff_filespec *cgit_get_current_new_file(void)
+{
+	return current_filepair->two;
+}
 
 static void print_fileinfo(struct fileinfo *info)
 {
@@ -284,6 +295,7 @@ static void filepair_cb(struct diff_filepair *pair)
 	int binary = 0;
 	linediff_fn print_line_fn = print_line;
 
+	current_filepair = pair;
 	if (use_ssdiff) {
 		cgit_ssdiff_header_begin();
 		print_line_fn = cgit_ssdiff_line_cb;

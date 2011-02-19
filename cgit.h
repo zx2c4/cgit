@@ -71,6 +71,8 @@ struct cgit_repo {
 	char *readme;
 	char *section;
 	char *clone_url;
+	char *logo;
+	char *logo_link;
 	int snapshots;
 	int enable_commit_graph;
 	int enable_log_filecount;

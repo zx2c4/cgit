@@ -73,9 +73,13 @@ void repo_config(struct cgit_repo *repo, const char *name, const char *value)
 		repo->module_link= xstrdup(value);
 	else if (!strcmp(name, "section"))
 		repo->section = xstrdup(value);
-	else if (!strcmp(name, "readme") && value != NULL) {
+	else if (!strcmp(name, "readme") && value != NULL)
 		repo->readme = xstrdup(value);
-	} else if (ctx.cfg.enable_filter_overrides) {
+	else if (!strcmp(name, "logo") && value != NULL)
+		repo->logo = xstrdup(value);
+	else if (!strcmp(name, "logo-link") && value != NULL)
+		repo->logo_link = xstrdup(value);
+	else if (ctx.cfg.enable_filter_overrides) {
 		if (!strcmp(name, "about-filter"))
 			repo->about_filter = new_filter(value, 0);
 		else if (!strcmp(name, "commit-filter"))
