@@ -115,6 +115,7 @@ OBJECTS += ui-stats.o
 OBJECTS += ui-summary.o
 OBJECTS += ui-tag.o
 OBJECTS += ui-tree.o
+OBJECTS += vector.o
 
 ifdef NEEDS_LIBICONV
 	EXTLIBS += -liconv

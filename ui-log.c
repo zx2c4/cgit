@@ -9,6 +9,7 @@
 #include "cgit.h"
 #include "html.h"
 #include "ui-shared.h"
+#include "vector.h"
 
 int files, add_lines, rem_lines;
 
@@ -148,38 +149,86 @@ static const char *disambiguate_ref(const char *ref)
 	return ref;
 }
 
+static char *next_token(char **src)
+{
+	char *result;
+
+	if (!src || !*src)
+		return NULL;
+	while (isspace(**src))
+		(*src)++;
+	if (!**src)
+		return NULL;
+	result = *src;
+	while (**src) {
+		if (isspace(**src)) {
+			**src = '\0';
+			(*src)++;
+			break;
+		}
+		(*src)++;
+	}
+	return result;
+}
+
 void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern,
 		    char *path, int pager)
 {
 	struct rev_info rev;
 	struct commit *commit;
-	const char *argv[] = {NULL, NULL, NULL, NULL, NULL};
-	int argc = 2;
+	struct vector vec = VECTOR_INIT(char *);
 	int i, columns = 3;
+	char *arg;
+
+	/* First argv is NULL */
+	vector_push(&vec, NULL, 0);
 
 	if (!tip)
 		tip = ctx.qry.head;
-
-	argv[1] = disambiguate_ref(tip);
+	tip = disambiguate_ref(tip);
+	vector_push(&vec, &tip, 0);
 
 	if (grep && pattern && *pattern) {
+		pattern = xstrdup(pattern);
 		if (!strcmp(grep, "grep") || !strcmp(grep, "author") ||
-		    !strcmp(grep, "committer"))
-			argv[argc++] = fmt("--%s=%s", grep, pattern);
-		if (!strcmp(grep, "range"))
-			argv[1] = pattern;
+		    !strcmp(grep, "committer")) {
+			arg = fmt("--%s=%s", grep, pattern);
+			vector_push(&vec, &arg, 0);
+		}
+		if (!strcmp(grep, "range")) {
+			/* Split the pattern at whitespace and add each token
+			 * as a revision expression. Do not accept other
+			 * rev-list options. Also, replace the previously
+			 * pushed tip (it's no longer relevant).
+			 */
+			vec.count--;
+			while ((arg = next_token(&pattern))) {
+				if (*arg == '-') {
+					fprintf(stderr, "Bad range expr: %s\n",
+						arg);
+					break;
+				}
+				vector_push(&vec, &arg, 0);
+			}
+		}
 	}
 
 	if (path) {
-		argv[argc++] = "--";
-		argv[argc++] = path;
+		arg = "--";
+		vector_push(&vec, &arg, 0);
+		vector_push(&vec, &path, 0);
 	}
+
+	/* Make sure the vector is NULL-terminated */
+	vector_push(&vec, NULL, 0);
+	vec.count--;
+
 	init_revisions(&rev, NULL);
 	rev.abbrev = DEFAULT_ABBREV;
 	rev.commit_format = CMIT_FMT_DEFAULT;
 	rev.verbose_header = 1;
 	rev.show_root_diff = 0;
-	setup_revisions(argc, argv, &rev, NULL);
+	setup_revisions(vec.count, vec.data, &rev, NULL);
 	load_ref_decorations(DECORATE_FULL_REFS);
 	rev.show_decorations = 1;
 	rev.grep_filter.regflags |= REG_ICASE;
