@@ -159,30 +159,31 @@ static void add_repo(const char *base, const char *path, repo_config_fn fn)
 
 static void scan_path(const char *base, const char *path, repo_config_fn fn)
 {
-	DIR *dir;
+	DIR *dir = opendir(path);
 	struct dirent *ent;
 	char *buf;
 	struct stat st;
 
-	if (is_git_dir(path)) {
-		add_repo(base, path, fn);
-		return;
-	}
-	if (is_git_dir(fmt("%s/.git", path))) {
-		add_repo(base, fmt("%s/.git", path), fn);
-		return;
-	}
-	dir = opendir(path);
 	if (!dir) {
 		fprintf(stderr, "Error opening directory %s: %s (%d)\n",
 			path, strerror(errno), errno);
 		return;
+	}
+	if (is_git_dir(path)) {
+		add_repo(base, path, fn);
+		goto end;
+	}
+	if (is_git_dir(fmt("%s/.git", path))) {
+		add_repo(base, fmt("%s/.git", path), fn);
+		goto end;
 	}
 	while((ent = readdir(dir)) != NULL) {
 		if (ent->d_name[0] == '.') {
 			if (ent->d_name[1] == '\0')
 				continue;
 			if (ent->d_name[1] == '.' && ent->d_name[2] == '\0')
+				continue;
+			if (!ctx.cfg.scan_hidden_path)
 				continue;
 		}
 		buf = malloc(strlen(path) + strlen(ent->d_name) + 2);
@@ -202,6 +203,7 @@ static void scan_path(const char *base, const char *path, repo_config_fn fn)
 			scan_path(base, buf, fn);
 		free(buf);
 	}
+end:
 	closedir(dir);
 }
 
