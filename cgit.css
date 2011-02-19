@@ -153,6 +153,35 @@ table.list td {
 	padding: 0.1em 0.5em 0.1em 0.5em;
 }
 
+table.list td.commitgraph {
+	font-family: monospace;
+	white-space: pre;
+}
+
+table.list td.commitgraph .column1 {
+	color: #a00;
+}
+
+table.list td.commitgraph .column2 {
+	color: #0a0;
+}
+
+table.list td.commitgraph .column3 {
+	color: #aa0;
+}
+
+table.list td.commitgraph .column4 {
+	color: #00a;
+}
+
+table.list td.commitgraph .column5 {
+	color: #a0a;
+}
+
+table.list td.commitgraph .column6 {
+	color: #0aa;
+}
+
 table.list td.logsubject {
 	font-family: monospace;
 	font-weight: bold;
@@ -161,18 +190,7 @@ table.list td.logsubject {
 table.list td.logmsg {
 	font-family: monospace;
 	white-space: pre;
-	padding: 1em 0.5em 2em 0.5em;
-}
-
-table.list td.lognotes-label {
-	text-align:right;
-	vertical-align:top;
-}
-
-table.list td.lognotes {
-	font-family: monospace;
-	white-space: pre;
-	padding: 0em 0.5em 2em 0.5em;
+	padding: 0 0.5em;
 }
 
 table.list td a {

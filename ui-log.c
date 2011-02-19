@@ -13,6 +13,21 @@
 
 int files, add_lines, rem_lines;
 
+/*
+ * The list of available column colors in the commit graph.
+ */
+static const char *column_colors_html[] = {
+	"<span class='column1'>",
+	"<span class='column2'>",
+	"<span class='column3'>",
+	"<span class='column4'>",
+	"<span class='column5'>",
+	"<span class='column6'>",
+	"</span>",
+};
+
+#define COLUMN_COLORS_HTML_MAX (ARRAY_SIZE(column_colors_html) - 1)
+
 void count_lines(char *line, int size)
 {
 	if (size <= 0)
@@ -77,27 +92,93 @@ void show_commit_decorations(struct commit *commit)
 	}
 }
 
-void print_commit(struct commit *commit)
+void print_commit(struct commit *commit, struct rev_info *revs)
 {
 	struct commitinfo *info;
 	char *tmp;
-	int cols = 2;
+	int cols = revs->graph ? 3 : 2;
+	struct strbuf graphbuf = STRBUF_INIT;
+	struct strbuf msgbuf = STRBUF_INIT;
+
+	if (ctx.repo->enable_log_filecount) {
+		cols++;
+		if (ctx.repo->enable_log_linecount)
+			cols++;
+	}
+
+	if (revs->graph) {
+		/* Advance graph until current commit */
+		while (!graph_next_line(revs->graph, &graphbuf)) {
+			/* Print graph segment in otherwise empty table row */
+			html("<tr class='nohover'><td class='commitgraph'>");
+			html(graphbuf.buf);
+			htmlf("</td><td colspan='%d' /></tr>\n", cols);
+			strbuf_setlen(&graphbuf, 0);
+		}
+		/* Current commit's graph segment is now ready in graphbuf */
+	}
 
 	info = cgit_parse_commit(commit);
-	htmlf("<tr%s><td>",
-		ctx.qry.showmsg ? " class='logheader'" : "");
-	tmp = fmt("id=%s", sha1_to_hex(commit->object.sha1));
-	tmp = cgit_fileurl(ctx.repo->url, "commit", ctx.qry.vpath, tmp);
-	html_link_open(tmp, NULL, NULL);
-	cgit_print_age(commit->date, TM_WEEK * 2, FMT_SHORTDATE);
-	html_link_close();
-	htmlf("</td><td%s>",
-		ctx.qry.showmsg ? " class='logsubject'" : "");
+	htmlf("<tr%s>", ctx.qry.showmsg ? " class='logheader'" : "");
+
+	if (revs->graph) {
+		/* Print graph segment for current commit */
+		html("<td class='commitgraph'>");
+		html(graphbuf.buf);
+		html("</td>");
+		strbuf_setlen(&graphbuf, 0);
+	}
+	else {
+		html("<td>");
+		tmp = fmt("id=%s", sha1_to_hex(commit->object.sha1));
+		tmp = cgit_fileurl(ctx.repo->url, "commit", ctx.qry.vpath, tmp);
+		html_link_open(tmp, NULL, NULL);
+		cgit_print_age(commit->date, TM_WEEK * 2, FMT_SHORTDATE);
+		html_link_close();
+		html("</td>");
+	}
+
+	htmlf("<td%s>", ctx.qry.showmsg ? " class='logsubject'" : "");
+	if (ctx.qry.showmsg) {
+		/* line-wrap long commit subjects instead of truncating them */
+		size_t subject_len = strlen(info->subject);
+
+		if (subject_len > ctx.cfg.max_msg_len &&
+		    ctx.cfg.max_msg_len >= 15) {
+			/* symbol for signaling line-wrap (in PAGE_ENCODING) */
+			const char wrap_symbol[] = { ' ', 0xE2, 0x86, 0xB5, 0 };
+			int i = ctx.cfg.max_msg_len - strlen(wrap_symbol);
+
+			/* Rewind i to preceding space character */
+			while (i > 0 && !isspace(info->subject[i]))
+				--i;
+			if (!i) /* Oops, zero spaces. Reset i */
+				i = ctx.cfg.max_msg_len - strlen(wrap_symbol);
+
+			/* add remainder starting at i to msgbuf */
+			strbuf_add(&msgbuf, info->subject + i, subject_len - i);
+			strbuf_trim(&msgbuf);
+			strbuf_add(&msgbuf, "\n\n", 2);
+
+			/* Place wrap_symbol at position i in info->subject */
+			strcpy(info->subject + i, wrap_symbol);
+		}
+	}
 	cgit_commit_link(info->subject, NULL, NULL, ctx.qry.head,
 			 sha1_to_hex(commit->object.sha1), ctx.qry.vpath, 0);
 	show_commit_decorations(commit);
 	html("</td><td>");
 	html_txt(info->author);
+
+	if (revs->graph) {
+		html("</td><td>");
+		tmp = fmt("id=%s", sha1_to_hex(commit->object.sha1));
+		tmp = cgit_fileurl(ctx.repo->url, "commit", ctx.qry.vpath, tmp);
+		html_link_open(tmp, NULL, NULL);
+		cgit_print_age(commit->date, TM_WEEK * 2, FMT_SHORTDATE);
+		html_link_close();
+	}
+
 	if (ctx.repo->enable_log_filecount) {
 		files = 0;
 		add_lines = 0;
@@ -111,29 +192,61 @@ void print_commit(struct commit *commit)
 		}
 	}
 	html("</td></tr>\n");
-	if (ctx.qry.showmsg) {
-		struct strbuf notes = STRBUF_INIT;
-		format_note(NULL, commit->object.sha1, &notes, PAGE_ENCODING, 0);
 
-		if (ctx.repo->enable_log_filecount) {
-			cols++;
-			if (ctx.repo->enable_log_linecount)
-				cols++;
+	if (revs->graph || ctx.qry.showmsg) { /* Print a second table row */
+		html("<tr class='nohover'>");
+
+		if (ctx.qry.showmsg) {
+			/* Concatenate commit message + notes in msgbuf */
+			if (info->msg && *(info->msg)) {
+				strbuf_addstr(&msgbuf, info->msg);
+				strbuf_addch(&msgbuf, '\n');
+			}
+			format_note(NULL, commit->object.sha1, &msgbuf,
+			            PAGE_ENCODING,
+			            NOTES_SHOW_HEADER | NOTES_INDENT);
+			strbuf_addch(&msgbuf, '\n');
+			strbuf_ltrim(&msgbuf);
 		}
-		htmlf("<tr class='nohover'><td/><td colspan='%d' class='logmsg'>",
-			cols);
-		html_txt(info->msg);
+
+		if (revs->graph) {
+			int lines = 0;
+
+			/* Calculate graph padding */
+			if (ctx.qry.showmsg) {
+				/* Count #lines in commit message + notes */
+				const char *p = msgbuf.buf;
+				lines = 1;
+				while ((p = strchr(p, '\n'))) {
+					p++;
+					lines++;
+				}
+			}
+
+			/* Print graph padding */
+			html("<td class='commitgraph'>");
+			while (lines > 0 || !graph_is_commit_finished(revs->graph)) {
+				if (graphbuf.len)
+					html("\n");
+				strbuf_setlen(&graphbuf, 0);
+				graph_next_line(revs->graph, &graphbuf);
+				html(graphbuf.buf);
+				lines--;
+			}
+			html("</td>\n");
+		}
+		else
+			html("<td/>"); /* Empty 'Age' column */
+
+		/* Print msgbuf into remainder of table row */
+		htmlf("<td colspan='%d'%s>\n", cols,
+			ctx.qry.showmsg ? " class='logmsg'" : "");
+		html_txt(msgbuf.buf);
 		html("</td></tr>\n");
-		if (notes.len != 0) {
-			html("<tr class='nohover'>");
-			html("<td class='lognotes-label'>Notes:</td>");
-			htmlf("<td colspan='%d' class='lognotes'>",
-				cols);
-			html_txt(notes.buf);
-			html("</td></tr>\n");
-		}
-		strbuf_release(&notes);
 	}
+
+	strbuf_release(&msgbuf);
+	strbuf_release(&graphbuf);
 	cgit_free_commitinfo(info);
 }
 
@@ -172,7 +285,7 @@ static char *next_token(char **src)
 }
 
 void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern,
-		    char *path, int pager)
+		    char *path, int pager, int commit_graph)
 {
 	struct rev_info rev;
 	struct commit *commit;
@@ -212,6 +325,14 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 			}
 		}
 	}
+	if (commit_graph) {
+		static const char *graph_arg = "--graph";
+		static const char *color_arg = "--color";
+		vector_push(&vec, &graph_arg, 0);
+		vector_push(&vec, &color_arg, 0);
+		graph_set_column_colors(column_colors_html,
+					COLUMN_COLORS_HTML_MAX);
+	}
 
 	if (path) {
 		arg = "--";
@@ -238,8 +359,12 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 	if (pager)
 		html("<table class='list nowrap'>");
 
-	html("<tr class='nohover'><th class='left'>Age</th>"
-	      "<th class='left'>Commit message");
+	html("<tr class='nohover'>");
+	if (commit_graph)
+		html("<th></th>");
+	else
+		html("<th class='left'>Age</th>");
+	html("<th class='left'>Commit message");
 	if (pager) {
 		html(" (");
 		cgit_log_link(ctx.qry.showmsg ? "Collapse" : "Expand", NULL,
@@ -249,6 +374,8 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 		html(")");
 	}
 	html("</th><th class='left'>Author</th>");
+	if (commit_graph)
+		html("<th class='left'>Age</th>");
 	if (ctx.repo->enable_log_filecount) {
 		html("<th class='left'>Files</th>");
 		columns++;
@@ -270,7 +397,7 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 	}
 
 	for (i = 0; i < cnt && (commit = get_revision(&rev)) != NULL; i++) {
-		print_commit(commit);
+		print_commit(commit, &rev);
 		free(commit->buffer);
 		commit->buffer = NULL;
 		free_commit_list(commit->parents);

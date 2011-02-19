@@ -57,6 +57,8 @@ void repo_config(struct cgit_repo *repo, const char *name, const char *value)
 		repo->defbranch = xstrdup(value);
 	else if (!strcmp(name, "snapshots"))
 		repo->snapshots = ctx.cfg.snapshots & cgit_parse_snapshots_mask(value);
+	else if (!strcmp(name, "enable-commit-graph"))
+		repo->enable_commit_graph = ctx.cfg.enable_commit_graph * atoi(value);
 	else if (!strcmp(name, "enable-log-filecount"))
 		repo->enable_log_filecount = ctx.cfg.enable_log_filecount * atoi(value);
 	else if (!strcmp(name, "enable-log-linecount"))
@@ -141,6 +143,8 @@ void config_cb(const char *name, const char *value)
 		ctx.cfg.enable_gitweb_owner = atoi(value);
 	else if (!strcmp(name, "enable-index-links"))
 		ctx.cfg.enable_index_links = atoi(value);
+	else if (!strcmp(name, "enable-commit-graph"))
+		ctx.cfg.enable_commit_graph = atoi(value);
 	else if (!strcmp(name, "enable-log-filecount"))
 		ctx.cfg.enable_log_filecount = atoi(value);
 	else if (!strcmp(name, "enable-log-linecount"))
@@ -540,6 +544,8 @@ void print_repo(FILE *f, struct cgit_repo *repo)
 		fprintf(f, "repo.section=%s\n", repo->section);
 	if (repo->clone_url)
 		fprintf(f, "repo.clone-url=%s\n", repo->clone_url);
+	fprintf(f, "repo.enable-commit-graph=%d\n",
+	        repo->enable_commit_graph);
 	fprintf(f, "repo.enable-log-filecount=%d\n",
 	        repo->enable_log_filecount);
 	fprintf(f, "repo.enable-log-linecount=%d\n",

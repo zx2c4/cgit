@@ -56,6 +56,7 @@ struct cgit_repo *cgit_add_repo(const char *url)
 	ret->section = ctx.cfg.section;
 	ret->defbranch = "master";
 	ret->snapshots = ctx.cfg.snapshots;
+	ret->enable_commit_graph = ctx.cfg.enable_commit_graph;
 	ret->enable_log_filecount = ctx.cfg.enable_log_filecount;
 	ret->enable_log_linecount = ctx.cfg.enable_log_linecount;
 	ret->enable_remote_branches = ctx.cfg.enable_remote_branches;

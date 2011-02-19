@@ -20,6 +20,7 @@
 #include <xdiff/xdiff.h>
 #include <utf8.h>
 #include <notes.h>
+#include <graph.h>
 
 
 /*
@@ -71,6 +72,7 @@ struct cgit_repo {
 	char *section;
 	char *clone_url;
 	int snapshots;
+	int enable_commit_graph;
 	int enable_log_filecount;
 	int enable_log_linecount;
 	int enable_remote_branches;
@@ -188,6 +190,7 @@ struct cgit_config {
 	int enable_filter_overrides;
 	int enable_gitweb_owner;
 	int enable_index_links;
+	int enable_commit_graph;
 	int enable_log_filecount;
 	int enable_log_linecount;
 	int enable_remote_branches;
