@@ -277,7 +277,7 @@ char *convert_query_hexchar(char *txt)
 	d1 = hextoint(*(txt+1));
 	d2 = hextoint(*(txt+2));
 	if (d1<0 || d2<0) {
-		memmove(txt, txt+3, n-3);
+		memmove(txt, txt+3, n-2);
 		return txt-1;
 	} else {
 		*txt = d1 * 16 + d2;

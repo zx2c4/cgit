@@ -752,10 +752,11 @@ int main(int argc, const char **argv)
 	http_parse_querystring(ctx.qry.raw, querystring_cb);
 
 	/* If virtual-root isn't specified in cgitrc, lets pretend
-	 * that virtual-root equals SCRIPT_NAME.
+	 * that virtual-root equals SCRIPT_NAME, minus any possibly
+	 * trailing slashes.
 	 */
 	if (!ctx.cfg.virtual_root)
-		ctx.cfg.virtual_root = ctx.cfg.script_name;
+		ctx.cfg.virtual_root = trim_end(ctx.cfg.script_name, '/');
 
 	/* If no url parameter is specified on the querystring, lets
 	 * use PATH_INFO as url. This allows cgit to work with virtual

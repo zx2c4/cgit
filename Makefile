@@ -1,4 +1,4 @@
-CGIT_VERSION = v0.8.3.4
+CGIT_VERSION = v0.8.3.5
 CGIT_SCRIPT_NAME = cgit.cgi
 CGIT_SCRIPT_PATH = /var/www/htdocs/cgit
 CGIT_DATA_PATH = $(CGIT_SCRIPT_PATH)
@@ -241,4 +241,4 @@ clean-doc:
 	rm -f cgitrc.5 cgitrc.5.html cgitrc.5.pdf cgitrc.5.xml cgitrc.5.fo
 
 get-git:
-	curl $(GIT_URL) | tar -xj && rm -rf git && mv git-$(GIT_VER) git
+	curl $(GIT_URL) | tar -xjf - && rm -rf git && mv git-$(GIT_VER) git
