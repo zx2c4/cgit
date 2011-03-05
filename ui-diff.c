@@ -172,8 +172,11 @@ void cgit_print_diffstat(const unsigned char *old_sha1,
 	html("<div class='diffstat-header'>");
 	cgit_diff_link("Diffstat", NULL, NULL, ctx.qry.head, ctx.qry.sha1,
 		       ctx.qry.sha2, NULL, 0);
-	if (prefix)
-		htmlf(" (limited to '%s')", prefix);
+	if (prefix) {
+		html(" (limited to '");
+		html_txt(prefix);
+		html("')");
+	}
 	html(" (");
 	ctx.qry.context = (save_context > 0 ? save_context : 3) << 1;
 	cgit_self_link("more", NULL, NULL, &ctx);
