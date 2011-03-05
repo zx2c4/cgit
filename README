@@ -36,7 +36,7 @@ file (see the Makefile for details).
 
 
 Dependencies:
-  -git 1.5.3
+  -git 1.7.4
   -zip lib
   -crypto lib
   -openssl lib
@@ -85,13 +85,6 @@ The missing features
 * Submodule links in the directory listing page have a fixed format per
   repository. This should probably be extended to a generic map between
   submodule path and url.
-
-* Branch- and tag-lists in the summary page can get very long, they should
-  probably only show something like the ten "latest modified" branches and
-  a similar number of "most recent" tags.
-
-* There should be a new page for browsing refs/heads and refs/tags, with links
-  from the summary page whenever the branch/tag lists overflow.
 
 * The log-page should have more/better search options (author, committer,
   pickaxe, paths) and possibly support arbitrary revision specifiers.
