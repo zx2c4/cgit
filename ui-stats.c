@@ -386,6 +386,33 @@ void cgit_show_stats(struct cgit_context *ctx)
 	top = ctx->qry.ofs;
 	if (!top)
 		top = 10;
+
+	html("<div class='cgit-panel'>");
+	html("<b>stat options</b>");
+	html("<form method='get' action=''>");
+	cgit_add_hidden_formfields(1, 0, "stats");
+	html("<table><tr><td colspan='2'/></tr>");
+	if (ctx->repo->max_stats > 1) {
+		html("<tr><td class='label'>Period:</td>");
+		html("<td class='ctrl'><select name='period' onchange='this.form.submit();'>");
+		for (i = 0; i < ctx->repo->max_stats; i++)
+			html_option(fmt("%c", periods[i].code),
+				    periods[i].name, fmt("%c", period->code));
+		html("</select></td></tr>");
+	}
+	html("<tr><td class='label'>Authors:</td>");
+	html("<td class='ctrl'><select name='ofs' onchange='this.form.submit();'>");
+	html_intoption(10, "10", top);
+	html_intoption(25, "25", top);
+	html_intoption(50, "50", top);
+	html_intoption(100, "100", top);
+	html_intoption(-1, "all", top);
+	html("</select></td><tr>");
+	html("<tr><td/><td class='ctrl'>");
+	html("<noscript><input type='submit' value='Reload'/></noscript>");
+	html("</td></tr></table>");
+	html("</form>");
+	html("</div>");
 	htmlf("<h2>Commits per author per %s", period->name);
 	if (ctx->qry.path) {
 		html(" (path '");
@@ -393,30 +420,6 @@ void cgit_show_stats(struct cgit_context *ctx)
 		html("')");
 	}
 	html("</h2>");
-
-	html("<form method='get' action='' style='float: right; text-align: right;'>");
-	cgit_add_hidden_formfields(1, 0, "stats");
-	if (ctx->repo->max_stats > 1) {
-		html("Period: ");
-		html("<select name='period' onchange='this.form.submit();'>");
-		for (i = 0; i < ctx->repo->max_stats; i++)
-			htmlf("<option value='%c'%s>%s</option>",
-				periods[i].code,
-				period == &periods[i] ? " selected" : "",
-				periods[i].name);
-		html("</select><br/><br/>");
-	}
-	html("Authors: ");
-	html("");
-	html("<select name='ofs' onchange='this.form.submit();'>");
-	htmlf("<option value='10'%s>10</option>", top == 10 ? " selected" : "");
-	htmlf("<option value='25'%s>25</option>", top == 25 ? " selected" : "");
-	htmlf("<option value='50'%s>50</option>", top == 50 ? " selected" : "");
-	htmlf("<option value='100'%s>100</option>", top == 100 ? " selected" : "");
-	htmlf("<option value='-1'%s>All</option>", top == -1 ? " selected" : "");
-	html("</select>");
-	html("<noscript>&nbsp;&nbsp;<input type='submit' value='Reload'/></noscript>");
-	html("</form>");
 	print_authors(&authors, top, period);
 }
 
