@@ -167,7 +167,7 @@ static void inspect_filepair(struct diff_filepair *pair)
 void cgit_print_diffstat(const unsigned char *old_sha1,
 			 const unsigned char *new_sha1, const char *prefix)
 {
-	int i, save_context = ctx.qry.context;
+	int i;
 
 	html("<div class='diffstat-header'>");
 	cgit_diff_link("Diffstat", NULL, NULL, ctx.qry.head, ctx.qry.sha1,
@@ -177,19 +177,6 @@ void cgit_print_diffstat(const unsigned char *old_sha1,
 		html_txt(prefix);
 		html("')");
 	}
-	html(" (");
-	ctx.qry.context = (save_context > 0 ? save_context : 3) << 1;
-	cgit_self_link("more", NULL, NULL, &ctx);
-	html("/");
-	ctx.qry.context = (save_context > 3 ? save_context : 3) >> 1;
-	cgit_self_link("less", NULL, NULL, &ctx);
-	ctx.qry.context = save_context;
-	html(" context)");
-	html(" (");
-	ctx.qry.ignorews = (ctx.qry.ignorews + 1) % 2;
-	cgit_self_link(ctx.qry.ignorews ? "ignore" : "show", NULL, NULL, &ctx);
-	ctx.qry.ignorews = (ctx.qry.ignorews + 1) % 2;
-	html(" whitespace changes)");
 	html("</div>");
 	html("<table summary='diffstat' class='diffstat'>");
 	max_changes = 0;
@@ -278,19 +265,6 @@ static void header(unsigned char *sha1, char *path1, int mode1,
 	html("</div>");
 }
 
-static void print_ssdiff_link()
-{
-	if (!strcmp(ctx.qry.page, "diff")) {
-		if (use_ssdiff)
-			cgit_diff_link("Unidiff", NULL, NULL, ctx.qry.head,
-				       ctx.qry.sha1, ctx.qry.sha2, ctx.qry.path, 1);
-		else
-			cgit_diff_link("Side-by-side diff", NULL, NULL,
-				       ctx.qry.head, ctx.qry.sha1,
-				       ctx.qry.sha2, ctx.qry.path, 1);
-	}
-}
-
 static void filepair_cb(struct diff_filepair *pair)
 {
 	unsigned long old_size = 0;
@@ -330,7 +304,56 @@ static void filepair_cb(struct diff_filepair *pair)
 		cgit_ssdiff_footer();
 }
 
-void cgit_print_diff(const char *new_rev, const char *old_rev, const char *prefix)
+void cgit_print_diff_ctrls()
+{
+	int i, curr;
+
+	html("<div class='cgit-panel'>");
+	html("<b>diff options</b>");
+	html("<form method='get' action='.'>");
+	cgit_add_hidden_formfields(1, 0, ctx.qry.page);
+	html("<table>");
+	html("<tr><td colspan='2'/></tr>");
+	html("<tr>");
+	html("<td class='label'>context:</td>");
+	html("<td class='ctrl'>");
+	html("<select name='context' onchange='this.form.submit();'>");
+	curr = ctx.qry.context;
+	if (!curr)
+		curr = 3;
+	for (i = 1; i <= 10; i++)
+		html_intoption(i, fmt("%d", i), curr);
+	for (i = 15; i <= 40; i += 5)
+		html_intoption(i, fmt("%d", i), curr);
+	html("</select>");
+	html("</td>");
+	html("</tr><tr>");
+	html("<td class='label'>space:</td>");
+	html("<td class='ctrl'>");
+	html("<select name='ignorews' onchange='this.form.submit();'>");
+	html_intoption(0, "include", ctx.qry.ignorews);
+	html_intoption(1, "ignore", ctx.qry.ignorews);
+	html("</select>");
+	html("</td>");
+	html("</tr><tr>");
+	html("<td class='label'>mode:</td>");
+	html("<td class='ctrl'>");
+	html("<select name='ss' onchange='this.form.submit();'>");
+	curr = ctx.qry.ssdiff;
+	if (!curr && ctx.cfg.ssdiff)
+		curr = 1;
+	html_intoption(0, "unified", curr);
+	html_intoption(1, "ssdiff", curr);
+	html("</select></td></tr>");
+	html("<tr><td/><td class='ctrl'>");
+	html("<noscript><input type='submit' value='reload'/></noscript>");
+	html("</td></tr></table>");
+	html("</form>");
+	html("</div>");
+}
+
+void cgit_print_diff(const char *new_rev, const char *old_rev,
+		     const char *prefix, int show_ctrls)
 {
 	enum object_type type;
 	unsigned long size;
@@ -369,7 +392,9 @@ void cgit_print_diff(const char *new_rev, const char *old_rev, const char *prefi
 	if ((ctx.qry.ssdiff && !ctx.cfg.ssdiff) || (!ctx.qry.ssdiff && ctx.cfg.ssdiff))
 		use_ssdiff = 1;
 
-	print_ssdiff_link();
+	if (show_ctrls)
+		cgit_print_diff_ctrls();
+
 	cgit_print_diffstat(old_rev_sha1, new_rev_sha1, prefix);
 
 	if (use_ssdiff) {

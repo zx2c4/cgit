@@ -331,6 +331,33 @@ table.commit-info {
 	margin-top: 1.5em;
 }
 
+div.cgit-panel {
+	float: right;
+	margin-top: 1.5em;
+}
+
+div.cgit-panel table {
+	border-collapse: collapse;
+	border: solid 1px #aaa;
+	background-color: #eee;
+}
+
+div.cgit-panel th {
+	text-align: center;
+}
+
+div.cgit-panel td {
+	padding: 0.25em 0.5em;
+}
+
+div.cgit-panel td.label {
+	padding-right: 0.5em;
+}
+
+div.cgit-panel td.ctrl {
+	padding-left: 0.5em;
+}
+
 table.commit-info th {
 	text-align: left;
 	font-weight: normal;
