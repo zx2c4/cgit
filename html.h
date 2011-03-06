@@ -17,6 +17,7 @@ extern void html_url_path(const char *txt);
 extern void html_url_arg(const char *txt);
 extern void html_hidden(const char *name, const char *value);
 extern void html_option(const char *value, const char *text, const char *selected_value);
+extern void html_intoption(int value, const char *text, int selected_value);
 extern void html_link_open(const char *url, const char *title, const char *class);
 extern void html_link_close(void);
 extern void html_fileperm(unsigned short mode);

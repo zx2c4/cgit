@@ -211,6 +211,14 @@ void html_option(const char *value, const char *text, const char *selected_value
 	html("</option>\n");
 }
 
+void html_intoption(int value, const char *text, int selected_value)
+{
+	htmlf("<option value='%d'%s>", value,
+	      value == selected_value ? " selected='selected'" : "");
+	html_txt(text);
+	html("</option>");
+}
+
 void html_link_open(const char *url, const char *title, const char *class)
 {
 	html("<a href='");
