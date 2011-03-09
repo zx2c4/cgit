@@ -29,15 +29,17 @@ void add_mimetype(const char *name, const char *value)
 struct cgit_filter *new_filter(const char *cmd, int extra_args)
 {
 	struct cgit_filter *f;
+	int args_size = 0;
 
 	if (!cmd || !cmd[0])
 		return NULL;
 
 	f = xmalloc(sizeof(struct cgit_filter));
 	f->cmd = xstrdup(cmd);
-	f->argv = xmalloc((2 + extra_args) * sizeof(char *));
+	args_size = (2 + extra_args) * sizeof(char *);
+	f->argv = xmalloc(args_size);
+	memset(f->argv, 0, args_size);
 	f->argv[0] = f->cmd;
-	f->argv[1] = NULL;
 	return f;
 }
 
