@@ -48,6 +48,8 @@ static void print_text_buffer(const char *name, char *buf, unsigned long size)
 		cgit_open_filter(ctx.repo->source_filter);
 		html_raw(buf, size);
 		cgit_close_filter(ctx.repo->source_filter);
+		free(ctx.repo->source_filter->argv[1]);
+		ctx.repo->source_filter->argv[1] = NULL;
 		html("</code></pre></td></tr></table>\n");
 		return;
 	}
