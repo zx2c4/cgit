@@ -287,8 +287,9 @@ scan-path::
 	the result will be cached as a cgitrc include-file in the cache
 	directory. If project-list has been defined prior to scan-path,
 	scan-path loads only the directories listed in the file pointed to by
-	project-list. Default value: none. See also: cache-scanrc-ttl,
-	project-list.
+	project-list. Be advised that only the global settings taken
+	before the scan-path directive will be applied to each repository.
+	Default value: none. See also: cache-scanrc-ttl, project-list.
 
 section::
 	The name of the current repository section - all repositories defined
