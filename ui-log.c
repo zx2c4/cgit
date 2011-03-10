@@ -100,11 +100,10 @@ void print_commit(struct commit *commit, struct rev_info *revs)
 	struct strbuf graphbuf = STRBUF_INIT;
 	struct strbuf msgbuf = STRBUF_INIT;
 
-	if (ctx.repo->enable_log_filecount) {
+	if (ctx.repo->enable_log_filecount)
 		cols++;
-		if (ctx.repo->enable_log_linecount)
-			cols++;
-	}
+	if (ctx.repo->enable_log_linecount)
+		cols++;
 
 	if (revs->graph) {
 		/* Advance graph until current commit */
@@ -179,18 +178,18 @@ void print_commit(struct commit *commit, struct rev_info *revs)
 		html_link_close();
 	}
 
-	if (ctx.repo->enable_log_filecount) {
+	if (ctx.repo->enable_log_filecount || ctx.repo->enable_log_linecount) {
 		files = 0;
 		add_lines = 0;
 		rem_lines = 0;
 		cgit_diff_commit(commit, inspect_files, ctx.qry.vpath);
-		html("</td><td>");
-		htmlf("%d", files);
-		if (ctx.repo->enable_log_linecount) {
-			html("</td><td>");
-			htmlf("-%d/+%d", rem_lines, add_lines);
-		}
 	}
+
+	if (ctx.repo->enable_log_filecount)
+		htmlf("</td><td>%d", files);
+	if (ctx.repo->enable_log_linecount)
+		htmlf("</td><td>-%d/+%d", rem_lines, add_lines);
+
 	html("</td></tr>\n");
 
 	if (revs->graph || ctx.qry.showmsg) { /* Print a second table row */
@@ -379,10 +378,10 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 	if (ctx.repo->enable_log_filecount) {
 		html("<th class='left'>Files</th>");
 		columns++;
-		if (ctx.repo->enable_log_linecount) {
-			html("<th class='left'>Lines</th>");
-			columns++;
-		}
+	}
+	if (ctx.repo->enable_log_linecount) {
+		html("<th class='left'>Lines</th>");
+		columns++;
 	}
 	html("</tr>\n");
 
