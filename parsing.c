@@ -106,7 +106,11 @@ const char *reencode(char **txt, const char *src_enc, const char *dst_enc)
 	if (!txt || !*txt || !src_enc || !dst_enc)
 		return *txt;
 
-	tmp = reencode_string(*txt, src_enc, dst_enc);
+	/* no encoding needed if src_enc equals dst_enc */
+	if(!strcasecmp(src_enc, dst_enc))
+		return *txt;
+
+	tmp = reencode_string(*txt, dst_enc, src_enc);
 	if (tmp) {
 		free(*txt);
 		*txt = tmp;
@@ -160,6 +164,10 @@ struct commitinfo *cgit_parse_commit(struct commit *commit)
 		}
 	}
 
+	/* if no special encoding is found, assume UTF-8 */
+	if(!ret->msg_encoding)
+		ret->msg_encoding = xstrdup("UTF-8");
+
 	// skip unknown header fields
 	while (p && *p && (*p != '\n')) {
 		p = strchr(p, '\n');
@@ -189,14 +197,12 @@ struct commitinfo *cgit_parse_commit(struct commit *commit)
 	} else
 		ret->subject = xstrdup(p);
 
-	if (ret->msg_encoding) {
-		reencode(&ret->author, PAGE_ENCODING, ret->msg_encoding);
-		reencode(&ret->author_email, PAGE_ENCODING, ret->msg_encoding);
-		reencode(&ret->committer, PAGE_ENCODING, ret->msg_encoding);
-		reencode(&ret->committer_email, PAGE_ENCODING, ret->msg_encoding);
-		reencode(&ret->subject, PAGE_ENCODING, ret->msg_encoding);
-		reencode(&ret->msg, PAGE_ENCODING, ret->msg_encoding);
-	}
+	reencode(&ret->author, ret->msg_encoding, PAGE_ENCODING);
+	reencode(&ret->author_email, ret->msg_encoding, PAGE_ENCODING);
+	reencode(&ret->committer, ret->msg_encoding, PAGE_ENCODING);
+	reencode(&ret->committer_email, ret->msg_encoding, PAGE_ENCODING);
+	reencode(&ret->subject, ret->msg_encoding, PAGE_ENCODING);
+	reencode(&ret->msg, ret->msg_encoding, PAGE_ENCODING);
 
 	return ret;
 }
