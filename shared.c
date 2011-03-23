@@ -7,6 +7,8 @@
  */
 
 #include "cgit.h"
+#include <stdio.h>
+#include <linux/limits.h>
 
 struct cgit_repolist cgit_repolist;
 struct cgit_context ctx;
@@ -376,6 +378,70 @@ int cgit_parse_snapshots_mask(const char *str)
 	return rv;
 }
 
+typedef struct {
+	char * name;
+	char * value;
+} cgit_env_var;
+
+static char * prepare_env(struct cgit_repo * repo) {
+	cgit_env_var env_vars[] = {
+		{ .name = "CGIT_REPO_URL", .value = repo->url },
+		{ .name = "CGIT_REPO_NAME", .value = repo->name },
+		{ .name = "CGIT_REPO_PATH", .value = repo->path },
+		{ .name = "CGIT_REPO_OWNER", .value = repo->owner },
+		{ .name = "CGIT_REPO_DEFBRANCH", .value = repo->defbranch },
+		{ .name = "CGIT_REPO_SECTION", .value = repo->section },
+		{ .name = "CGIT_REPO_CLONE_URL", .value = repo->clone_url }
+	};
+	int env_var_count = ARRAY_SIZE(env_vars);
+	long values_space = (env_var_count * (PATH_MAX + 64));
+
+	void * buffer;
+	char ** vars;
+	char * values;
+	int vars_index = 0;
+	unsigned int chars_printed;
+
+	/* Allocate buffer for environment variables: first in the buffer is an
+	 * array of pointers to argument strings, terminated with a NULL pointer.
+	 * After that the argument strings are placed after each other */
+	buffer = malloc(((env_var_count + 1) * sizeof(char *)) + values_space);
+	if (!buffer)
+		return NULL;
+
+	vars = buffer;
+	values = (char *) &vars[env_var_count + 1];
+
+	/* loop over all defined environment variables and their values */
+	while (vars_index < env_var_count) {
+		char * name = env_vars[vars_index].name;
+		char * value = env_vars[vars_index].value;
+
+		if (!value)
+			value = "";
+
+		chars_printed = snprintf(values, (values_space - 1), "%s=%s", name,
+				value);
+		if (chars_printed > (values_space - 1)) {
+			/* Buffer space exhausted: stop adding variables.
+			 * Not all environment variables are defined, but the best we can
+			 * do is to provide the ones that _are_ defined */
+			break;
+		}
+
+		values[chars_printed] = '\0';
+		*&vars[vars_index] = values;
+		values += (chars_printed + 1);
+		values_space -= (chars_printed + 1);
+		vars_index++;
+	}
+
+	/* terminate the array with pointers */
+	*&vars[vars_index] = NULL;
+
+	return (char *) buffer;
+}
+
 int cgit_open_filter(struct cgit_filter *filter, struct cgit_repo * repo)
 {
 
@@ -384,10 +450,20 @@ int cgit_open_filter(struct cgit_filter *filter, struct cgit_repo * repo)
 	chk_zero(pipe(filter->pipe_fh), "Unable to create pipe to subprocess");
 	filter->pid = chk_non_negative(fork(), "Unable to create subprocess");
 	if (filter->pid == 0) {
+		char * env = NULL;
+
 		close(filter->pipe_fh[1]);
 		chk_non_negative(dup2(filter->pipe_fh[0], STDIN_FILENO),
 			"Unable to use pipe as STDIN");
-		execvp(filter->cmd, filter->argv);
+
+		if (repo)
+			env = prepare_env(repo);
+
+		execve(filter->cmd, filter->argv, (char **)env);
+
+		if (env)
+			free(env);
+
 		die("Unable to exec subprocess %s: %s (%d)", filter->cmd,
 			strerror(errno), errno);
 	}
