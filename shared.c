@@ -376,7 +376,7 @@ int cgit_parse_snapshots_mask(const char *str)
 	return rv;
 }
 
-int cgit_open_filter(struct cgit_filter *filter)
+int cgit_open_filter(struct cgit_filter *filter, struct cgit_repo * repo)
 {
 
 	filter->old_stdout = chk_positive(dup(STDOUT_FILENO),

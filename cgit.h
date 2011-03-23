@@ -318,7 +318,7 @@ extern const char *cgit_repobasename(const char *reponame);
 
 extern int cgit_parse_snapshots_mask(const char *str);
 
-extern int cgit_open_filter(struct cgit_filter *filter);
+extern int cgit_open_filter(struct cgit_filter *filter, struct cgit_repo * repo);
 extern int cgit_close_filter(struct cgit_filter *filter);
 
 extern int readfile(const char *path, char **buf, size_t *size);
