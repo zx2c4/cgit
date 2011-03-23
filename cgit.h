@@ -51,6 +51,10 @@ typedef void (*configfn)(const char *name, const char *value);
 typedef void (*filepair_fn)(struct diff_filepair *pair);
 typedef void (*linediff_fn)(char *line, int len);
 
+typedef enum {
+	ABOUT, COMMIT, SOURCE
+} filter_type;
+
 struct cgit_filter {
 	char *cmd;
 	char **argv;
