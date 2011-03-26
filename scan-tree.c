@@ -219,6 +219,7 @@ void scan_projects(const char *path, const char *projectsfile, repo_config_fn fn
 	if (!projects) {
 		fprintf(stderr, "Error opening projectsfile %s: %s (%d)\n",
 			projectsfile, strerror(errno), errno);
+		return;
 	}
 	while (fgets(line, sizeof(line), projects) != NULL) {
 		for (z = &lastc(line);
