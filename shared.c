@@ -303,7 +303,6 @@ void cgit_diff_tree(const unsigned char *old_sha1,
 		    filepair_fn fn, const char *prefix, int ignorews)
 {
 	struct diff_options opt;
-	int ret;
 	int prefixlen;
 
 	diff_setup(&opt);
@@ -324,9 +323,9 @@ void cgit_diff_tree(const unsigned char *old_sha1,
 	diff_setup_done(&opt);
 
 	if (old_sha1 && !is_null_sha1(old_sha1))
-		ret = diff_tree_sha1(old_sha1, new_sha1, "", &opt);
+		diff_tree_sha1(old_sha1, new_sha1, "", &opt);
 	else
-		ret = diff_root_tree_sha1(new_sha1, "", &opt);
+		diff_root_tree_sha1(new_sha1, "", &opt);
 	diffcore_std(&opt);
 	diff_flush(&opt);
 }
