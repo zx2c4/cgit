@@ -290,12 +290,12 @@ char *convert_query_hexchar(char *txt)
 
 int http_parse_querystring(const char *txt_, void (*fn)(const char *name, const char *value))
 {
-	char *t, *txt, *value = NULL, c;
+	char *o, *t, *txt, *value = NULL, c;
 
 	if (!txt_)
 		return 0;
 
-	t = txt = strdup(txt_);
+	o = t = txt = strdup(txt_);
 	if (t == NULL) {
 		printf("Out of memory\n");
 		exit(1);
@@ -318,5 +318,6 @@ int http_parse_querystring(const char *txt_, void (*fn)(const char *name, const 
 	}
 	if (t!=txt)
 		(*fn)(txt, value);
+	free(o);
 	return 0;
 }
