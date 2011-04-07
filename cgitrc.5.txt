@@ -377,7 +377,8 @@ repo.commit-filter::
 repo.defbranch::
 	The name of the default branch for this repository. If no such branch
 	exists in the repository, the first branch name (when sorted) is used
-	as default instead. Default value: "master".
+	as default instead. Default value: branch pointed to by HEAD, or
+	"master" if there is no suitable HEAD.
 
 repo.desc::
 	The value to show as repository description. Default value: none.

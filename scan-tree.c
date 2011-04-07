@@ -68,6 +68,39 @@ static char *xstrrchr(char *s, char *from, int c)
 	return from < s ? NULL : from;
 }
 
+static char *guess_defbranch(const char *repo_path)
+{
+	int fd, len;
+	char buffer[256];
+	char *ref_start;
+	char *head;
+
+	head = fmt("%s/HEAD", repo_path);
+	fd = open(head, O_RDONLY);
+	if (fd == -1)
+		return xstrdup("master");
+
+	memset(buffer, 0, sizeof(buffer));
+	len = read_in_full(fd, buffer, sizeof(buffer)-1);
+	close(fd);
+
+	if(!memcmp(buffer, "ref: refs/heads/", 16))
+		return xstrndup(buffer+16, len-17);
+
+	if(strlen(buffer) == 41) {
+		/* probably contains a SHA1 sum */
+		memset(buffer, 0, sizeof(buffer));
+		if(readlink(head, buffer, sizeof(buffer)-1)) {
+			ref_start = memmem(buffer, sizeof(buffer)-1, "refs/heads/", 11);
+			if(ref_start)
+				return xstrdup(ref_start+11);
+		}
+	}
+
+	return xstrdup("master");
+}
+
+
 static void add_repo(const char *base, const char *path, repo_config_fn fn)
 {
 	struct stat st;
@@ -105,6 +138,9 @@ static void add_repo(const char *base, const char *path, repo_config_fn fn)
 			*p = '\0';
 	repo->name = repo->url;
 	repo->path = xstrdup(path);
+
+	repo->defbranch = guess_defbranch(repo->path);
+
 	while (!owner) {
 		if ((pwd = getpwuid(st.st_uid)) == NULL) {
 			fprintf(stderr, "Error reading owner-info for %s: %s (%d)\n",
