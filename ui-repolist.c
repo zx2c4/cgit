@@ -46,11 +46,20 @@ static int get_repo_modtime(const struct cgit_repo *repo, time_t *mtime)
 	}
 
 	path = fmt("%s/refs/heads/%s", repo->path, repo->defbranch);
-	if (stat(path, &s) == 0)
+	if (stat(path, &s) == 0) {
 		*mtime = s.st_mtime;
-	else
-		*mtime = 0;
+		r->mtime = *mtime;
+		return 1;
+	}
 
+	path = fmt("%s/%s", repo->path, "packed-refs");
+	if (stat(path, &s) == 0) {
+		*mtime = s.st_mtime;
+		r->mtime = *mtime;
+		return 1;
+	}
+
+	*mtime = 0;
 	r->mtime = *mtime;
 	return (r->mtime != 0);
 }
