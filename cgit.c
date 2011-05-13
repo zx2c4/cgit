@@ -757,8 +757,11 @@ int main(int argc, const char **argv)
 	 * that virtual-root equals SCRIPT_NAME, minus any possibly
 	 * trailing slashes.
 	 */
-	if (!ctx.cfg.virtual_root)
+	if (!ctx.cfg.virtual_root && ctx.cfg.script_name) {
 		ctx.cfg.virtual_root = trim_end(ctx.cfg.script_name, '/');
+		if (!ctx.cfg.virtual_root)
+			ctx.cfg.virtual_root = "";
+        }
 
 	/* If no url parameter is specified on the querystring, lets
 	 * use PATH_INFO as url. This allows cgit to work with virtual
