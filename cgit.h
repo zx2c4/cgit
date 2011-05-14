@@ -191,6 +191,7 @@ struct cgit_config {
 	int embedded;
 	int enable_filter_overrides;
 	int enable_gitweb_owner;
+	int enable_http_clone;
 	int enable_index_links;
 	int enable_commit_graph;
 	int enable_log_filecount;

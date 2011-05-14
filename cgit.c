@@ -147,6 +147,8 @@ void config_cb(const char *name, const char *value)
 		ctx.cfg.enable_filter_overrides = atoi(value);
 	else if (!strcmp(name, "enable-gitweb-owner"))
 		ctx.cfg.enable_gitweb_owner = atoi(value);
+	else if (!strcmp(name, "enable-http-clone"))
+		ctx.cfg.enable_http_clone = atoi(value);
 	else if (!strcmp(name, "enable-index-links"))
 		ctx.cfg.enable_index_links = atoi(value);
 	else if (!strcmp(name, "enable-commit-graph"))
@@ -312,6 +314,7 @@ static void prepare_context(struct cgit_context *ctx)
 	ctx->cfg.logo = "/cgit.png";
 	ctx->cfg.local_time = 0;
 	ctx->cfg.enable_gitweb_owner = 1;
+	ctx->cfg.enable_http_clone = 1;
 	ctx->cfg.enable_tree_linenumbers = 1;
 	ctx->cfg.max_repo_count = 50;
 	ctx->cfg.max_commit_count = 50;
@@ -439,7 +442,7 @@ static int prepare_repo_cmd(struct cgit_context *ctx)
 		tmp = xstrdup(ctx->qry.head);
 		ctx->qry.head = ctx->repo->defbranch;
 		ctx->page.status = 404;
-		ctx->page.statusmsg = "not found";
+		ctx->page.statusmsg = "Not found";
 		cgit_print_http_headers(ctx);
 		cgit_print_docstart(ctx);
 		cgit_print_pageheader(ctx);
@@ -458,11 +461,18 @@ static void process_request(void *cbdata)
 	cmd = cgit_get_cmd(ctx);
 	if (!cmd) {
 		ctx->page.title = "cgit error";
+		ctx->page.status = 404;
+		ctx->page.statusmsg = "Not found";
 		cgit_print_http_headers(ctx);
 		cgit_print_docstart(ctx);
 		cgit_print_pageheader(ctx);
 		cgit_print_error("Invalid request");
 		cgit_print_docend();
+		return;
+	}
+
+	if (!ctx->cfg.enable_http_clone && cmd->is_clone) {
+		html_status(404, "Not found", 0);
 		return;
 	}
 
