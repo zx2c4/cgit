@@ -39,7 +39,8 @@ void cgit_print_commit(char *hex, const char *prefix)
 	format_note(NULL, sha1, &notes, PAGE_ENCODING, 0);
 
 	load_ref_decorations(DECORATE_FULL_REFS);
-
+	
+	cgit_print_diff_ctrls();
 	html("<table summary='commit info' class='commit-info'>\n");
 	html("<tr><th>author</th><td>");
 	html_txt(info->author);
@@ -64,11 +65,6 @@ void cgit_print_commit(char *hex, const char *prefix)
 	cgit_commit_link(tmp, NULL, NULL, ctx.qry.head, tmp, prefix, 0);
 	html(" (");
 	cgit_patch_link("patch", NULL, NULL, NULL, tmp, prefix);
-	html(") (");
-	if ((ctx.qry.ssdiff && !ctx.cfg.ssdiff) || (!ctx.qry.ssdiff && ctx.cfg.ssdiff))
-		cgit_commit_link("unidiff", NULL, NULL, ctx.qry.head, tmp, prefix, 1);
-	else
-		cgit_commit_link("side-by-side diff", NULL, NULL, ctx.qry.head, tmp, prefix, 1);
 	html(")</td></tr>\n");
 	html("<tr><th>tree</th><td colspan='2' class='sha1'>");
 	tmp = xstrdup(hex);
@@ -139,7 +135,7 @@ void cgit_print_commit(char *hex, const char *prefix)
 			tmp = sha1_to_hex(commit->parents->item->object.sha1);
 		else
 			tmp = NULL;
-		cgit_print_diff(ctx.qry.sha1, tmp, prefix);
+		cgit_print_diff(ctx.qry.sha1, tmp, prefix, 0);
 	}
 	strbuf_release(&notes);
 	cgit_free_commitinfo(info);
