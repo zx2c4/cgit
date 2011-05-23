@@ -100,23 +100,15 @@ void *cgit_free_commitinfo(struct commitinfo *info)
 char *trim_end(const char *str, char c)
 {
 	int len;
-	char *s, *t;
 
 	if (str == NULL)
 		return NULL;
-	t = (char *)str;
-	len = strlen(t);
-	while(len > 0 && t[len - 1] == c)
+	len = strlen(str);
+	while(len > 0 && str[len - 1] == c)
 		len--;
-
 	if (len == 0)
 		return NULL;
-
-	c = t[len];
-	t[len] = '\0';
-	s = xstrdup(t);
-	t[len] = c;
-	return s;
+	return xstrndup(str, len);
 }
 
 char *strlpart(char *txt, int maxlen)
@@ -311,7 +303,6 @@ void cgit_diff_tree(const unsigned char *old_sha1,
 		    filepair_fn fn, const char *prefix, int ignorews)
 {
 	struct diff_options opt;
-	int ret;
 	int prefixlen;
 
 	diff_setup(&opt);
@@ -332,9 +323,9 @@ void cgit_diff_tree(const unsigned char *old_sha1,
 	diff_setup_done(&opt);
 
 	if (old_sha1 && !is_null_sha1(old_sha1))
-		ret = diff_tree_sha1(old_sha1, new_sha1, "", &opt);
+		diff_tree_sha1(old_sha1, new_sha1, "", &opt);
 	else
-		ret = diff_root_tree_sha1(new_sha1, "", &opt);
+		diff_root_tree_sha1(new_sha1, "", &opt);
 	diffcore_std(&opt);
 	diff_flush(&opt);
 }

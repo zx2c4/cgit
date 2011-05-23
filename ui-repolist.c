@@ -20,7 +20,7 @@ time_t read_agefile(char *path)
 	if (readfile(path, &buf, &size))
 		return -1;
 
-	if (parse_date(buf, buf2, sizeof(buf2)))
+	if (parse_date(buf, buf2, sizeof(buf2)) > 0)
 		result = strtoul(buf2, NULL, 10);
 	else
 		result = 0;

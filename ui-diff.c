@@ -345,8 +345,10 @@ void cgit_print_diff(const char *new_rev, const char *old_rev, const char *prefi
 		return;
 	}
 	commit = lookup_commit_reference(new_rev_sha1);
-	if (!commit || parse_commit(commit))
+	if (!commit || parse_commit(commit)) {
 		cgit_print_error(fmt("Bad commit: %s", sha1_to_hex(new_rev_sha1)));
+		return;
+	}
 
 	if (old_rev)
 		get_sha1(old_rev, old_rev_sha1);
@@ -362,8 +364,10 @@ void cgit_print_diff(const char *new_rev, const char *old_rev, const char *prefi
 			return;
 		}
 		commit2 = lookup_commit_reference(old_rev_sha1);
-		if (!commit2 || parse_commit(commit2))
+		if (!commit2 || parse_commit(commit2)) {
 			cgit_print_error(fmt("Bad commit: %s", sha1_to_hex(old_rev_sha1)));
+			return;
+		}
 	}
 
 	if ((ctx.qry.ssdiff && !ctx.cfg.ssdiff) || (!ctx.qry.ssdiff && ctx.cfg.ssdiff))

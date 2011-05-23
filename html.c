@@ -18,7 +18,7 @@ static const char* url_escape_table[256] = {
 	"%00", "%01", "%02", "%03", "%04", "%05", "%06", "%07", "%08", "%09",
 	"%0a", "%0b", "%0c", "%0d", "%0e", "%0f", "%10", "%11", "%12", "%13",
 	"%14", "%15", "%16", "%17", "%18", "%19", "%1a", "%1b", "%1c", "%1d",
-	"%1e", "%1f", "+", 0, "%22", "%23", 0, "%25", "%26", "%27", 0, 0, 0,
+	"%1e", "%1f", "%20", 0, "%22", "%23", 0, "%25", "%26", "%27", 0, 0, 0,
 	"%2b", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "%3c", "%3d",
 	"%3e", "%3f", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, "%5c", 0, "%5e", 0, "%60", 0, 0, 0, 0, 0,
@@ -162,9 +162,9 @@ void html_url_path(const char *txt)
 	while(t && *t){
 		int c = *t;
 		const char *e = url_escape_table[c];
-		if (e && c!='+' && c!='&' && c!='+') {
+		if (e && c!='+' && c!='&') {
 			html_raw(txt, t - txt);
-			html_raw(e, 3);
+			html(e);
 			txt = t+1;
 		}
 		t++;
@@ -179,9 +179,11 @@ void html_url_arg(const char *txt)
 	while(t && *t){
 		int c = *t;
 		const char *e = url_escape_table[c];
+		if (c == ' ')
+			e = "+";
 		if (e) {
 			html_raw(txt, t - txt);
-			html_raw(e, strlen(e));
+			html(e);
 			txt = t+1;
 		}
 		t++;
@@ -288,12 +290,12 @@ char *convert_query_hexchar(char *txt)
 
 int http_parse_querystring(const char *txt_, void (*fn)(const char *name, const char *value))
 {
-	char *t, *txt, *value = NULL, c;
+	char *o, *t, *txt, *value = NULL, c;
 
 	if (!txt_)
 		return 0;
 
-	t = txt = strdup(txt_);
+	o = t = txt = strdup(txt_);
 	if (t == NULL) {
 		printf("Out of memory\n");
 		exit(1);
@@ -316,5 +318,6 @@ int http_parse_querystring(const char *txt_, void (*fn)(const char *name, const 
 	}
 	if (t!=txt)
 		(*fn)(txt, value);
+	free(o);
 	return 0;
 }

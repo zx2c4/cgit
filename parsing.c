@@ -103,7 +103,10 @@ const char *reencode(char **txt, const char *src_enc, const char *dst_enc)
 {
 	char *tmp;
 
-	if (!txt || !*txt || !src_enc || !dst_enc)
+	if (!txt)
+		return NULL;
+
+	if (!*txt || !src_enc || !dst_enc)
 		return *txt;
 
 	/* no encoding needed if src_enc equals dst_enc */
