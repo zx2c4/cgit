@@ -113,7 +113,7 @@ void cgit_print_repo_readme(char *path)
 	 */
 	html("<div id='summary'>");
 	if (ctx.repo->about_filter)
-		cgit_open_filter(ctx.repo->about_filter);
+		cgit_open_filter(ctx.repo->about_filter, ctx.repo);
 	if (ref)
 		cgit_print_file(tmp, ref);
 	else

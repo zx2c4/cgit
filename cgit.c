@@ -26,13 +26,26 @@ void add_mimetype(const char *name, const char *value)
 	item->util = xstrdup(value);
 }
 
-struct cgit_filter *new_filter(const char *cmd, int extra_args)
+struct cgit_filter *new_filter(const char *cmd, filter_type filtertype)
 {
 	struct cgit_filter *f;
 	int args_size = 0;
+	int extra_args;
 
 	if (!cmd || !cmd[0])
 		return NULL;
+
+	switch (filtertype) {
+		case SOURCE:
+			extra_args = 1;
+			break;
+
+		case ABOUT:
+		case COMMIT:
+		default:
+			extra_args = 0;
+			break;
+	}
 
 	f = xmalloc(sizeof(struct cgit_filter));
 	f->cmd = xstrdup(cmd);
@@ -83,11 +96,11 @@ void repo_config(struct cgit_repo *repo, const char *name, const char *value)
 		repo->logo_link = xstrdup(value);
 	else if (ctx.cfg.enable_filter_overrides) {
 		if (!strcmp(name, "about-filter"))
-			repo->about_filter = new_filter(value, 0);
+			repo->about_filter = new_filter(value, ABOUT);
 		else if (!strcmp(name, "commit-filter"))
-			repo->commit_filter = new_filter(value, 0);
+			repo->commit_filter = new_filter(value, COMMIT);
 		else if (!strcmp(name, "source-filter"))
-			repo->source_filter = new_filter(value, 1);
+			repo->source_filter = new_filter(value, SOURCE);
 	}
 }
 
@@ -180,9 +193,9 @@ void config_cb(const char *name, const char *value)
 	else if (!strcmp(name, "cache-dynamic-ttl"))
 		ctx.cfg.cache_dynamic_ttl = atoi(value);
 	else if (!strcmp(name, "about-filter"))
-		ctx.cfg.about_filter = new_filter(value, 0);
+		ctx.cfg.about_filter = new_filter(value, ABOUT);
 	else if (!strcmp(name, "commit-filter"))
-		ctx.cfg.commit_filter = new_filter(value, 0);
+		ctx.cfg.commit_filter = new_filter(value, COMMIT);
 	else if (!strcmp(name, "embedded"))
 		ctx.cfg.embedded = atoi(value);
 	else if (!strcmp(name, "max-atom-items"))
@@ -212,7 +225,7 @@ void config_cb(const char *name, const char *value)
 	else if (!strcmp(name, "section-from-path"))
 		ctx.cfg.section_from_path = atoi(value);
 	else if (!strcmp(name, "source-filter"))
-		ctx.cfg.source_filter = new_filter(value, 1);
+		ctx.cfg.source_filter = new_filter(value, SOURCE);
 	else if (!strcmp(name, "summary-log"))
 		ctx.cfg.summary_log = atoi(value);
 	else if (!strcmp(name, "summary-branches"))

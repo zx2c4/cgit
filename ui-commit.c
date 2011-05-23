@@ -110,7 +110,7 @@ void cgit_print_commit(char *hex, const char *prefix)
 	html("</table>\n");
 	html("<div class='commit-subject'>");
 	if (ctx.repo->commit_filter)
-		cgit_open_filter(ctx.repo->commit_filter);
+		cgit_open_filter(ctx.repo->commit_filter, ctx.repo);
 	html_txt(info->subject);
 	if (ctx.repo->commit_filter)
 		cgit_close_filter(ctx.repo->commit_filter);
@@ -118,7 +118,7 @@ void cgit_print_commit(char *hex, const char *prefix)
 	html("</div>");
 	html("<div class='commit-msg'>");
 	if (ctx.repo->commit_filter)
-		cgit_open_filter(ctx.repo->commit_filter);
+		cgit_open_filter(ctx.repo->commit_filter, ctx.repo);
 	html_txt(info->msg);
 	if (ctx.repo->commit_filter)
 		cgit_close_filter(ctx.repo->commit_filter);
@@ -127,7 +127,7 @@ void cgit_print_commit(char *hex, const char *prefix)
 		html("<div class='notes-header'>Notes</div>");
 		html("<div class='notes'>");
 		if (ctx.repo->commit_filter)
-			cgit_open_filter(ctx.repo->commit_filter);
+			cgit_open_filter(ctx.repo->commit_filter, ctx.repo);
 		html_txt(notes.buf);
 		if (ctx.repo->commit_filter)
 			cgit_close_filter(ctx.repo->commit_filter);

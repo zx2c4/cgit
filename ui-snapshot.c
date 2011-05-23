@@ -19,7 +19,7 @@ static int write_compressed_tar_archive(struct archiver_args *args,const char *f
 	f.argv = malloc(2 * sizeof(char *));
 	f.argv[0] = f.cmd;
 	f.argv[1] = NULL;
-	cgit_open_filter(&f);
+	cgit_open_filter(&f, NULL);
 	rv = write_tar_archive(args);
 	cgit_close_filter(&f);
 	return rv;

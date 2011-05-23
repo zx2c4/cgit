@@ -7,6 +7,8 @@
  */
 
 #include "cgit.h"
+#include <stdio.h>
+#include <linux/limits.h>
 
 struct cgit_repolist cgit_repolist;
 struct cgit_context ctx;
@@ -367,7 +369,33 @@ int cgit_parse_snapshots_mask(const char *str)
 	return rv;
 }
 
-int cgit_open_filter(struct cgit_filter *filter)
+typedef struct {
+	char * name;
+	char * value;
+} cgit_env_var;
+
+static void prepare_env(struct cgit_repo * repo) {
+	cgit_env_var env_vars[] = {
+		{ .name = "CGIT_REPO_URL", .value = repo->url },
+		{ .name = "CGIT_REPO_NAME", .value = repo->name },
+		{ .name = "CGIT_REPO_PATH", .value = repo->path },
+		{ .name = "CGIT_REPO_OWNER", .value = repo->owner },
+		{ .name = "CGIT_REPO_DEFBRANCH", .value = repo->defbranch },
+		{ .name = "CGIT_REPO_SECTION", .value = repo->section },
+		{ .name = "CGIT_REPO_CLONE_URL", .value = repo->clone_url }
+	};
+	int env_var_count = ARRAY_SIZE(env_vars);
+	cgit_env_var *p, *q;
+	static char *warn = "cgit warning: failed to set env: %s=%s\n";
+
+	p = env_vars;
+	q = p + env_var_count;
+	for (; p < q; p++)
+		if (setenv(p->name, p->value, 1))
+			fprintf(stderr, warn, p->name, p->value);
+}
+
+int cgit_open_filter(struct cgit_filter *filter, struct cgit_repo * repo)
 {
 
 	filter->old_stdout = chk_positive(dup(STDOUT_FILENO),
@@ -378,6 +406,8 @@ int cgit_open_filter(struct cgit_filter *filter)
 		close(filter->pipe_fh[1]);
 		chk_non_negative(dup2(filter->pipe_fh[0], STDIN_FILENO),
 			"Unable to use pipe as STDIN");
+		if (repo)
+			prepare_env(repo);
 		execvp(filter->cmd, filter->argv);
 		die("Unable to exec subprocess %s: %s (%d)", filter->cmd,
 			strerror(errno), errno);

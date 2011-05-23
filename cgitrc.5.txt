@@ -31,7 +31,7 @@ about-filter::
 	about pages (both top-level and for each repository). The command will
 	get the content of the about-file on its STDIN, and the STDOUT from the
 	command will be included verbatim on the about page. Default value:
-	none.
+	none. See also: "FILTER API".
 
 agefile::
 	Specifies a path, relative to each repository path, which can be used
@@ -81,6 +81,7 @@ commit-filter::
 	The command will get the message on its STDIN, and the STDOUT from the
 	command will be included verbatim as the commit message, i.e. this can
 	be used to implement bugtracker integration. Default value: none.
+	See also: "FILTER API".
 
 css::
 	Url which specifies the css document to include in all cgit pages.
@@ -323,7 +324,7 @@ source-filter::
 	and the name of the blob as its only command line argument. The STDOUT
 	from the command will be included verbatim as the blob contents, i.e.
 	this can be used to implement e.g. syntax highlighting. Default value:
-	none.
+	none. See also: "FILTER API".
 
 summary-branches::
 	Specifies the number of branches to display in the repository "summary"
@@ -356,7 +357,7 @@ REPOSITORY SETTINGS
 -------------------
 repo.about-filter::
 	Override the default about-filter. Default value: none. See also:
-	"enable-filter-overrides".
+	"enable-filter-overrides". See also: "FILTER API".
 
 repo.clone-url::
 	A list of space-separated urls which can be used to clone this repo.
@@ -364,7 +365,7 @@ repo.clone-url::
 
 repo.commit-filter::
 	Override the default commit-filter. Default value: none. See also:
-	"enable-filter-overrides".
+	"enable-filter-overrides". See also: "FILTER API".
 
 repo.defbranch::
 	The name of the default branch for this repository. If no such branch
@@ -435,7 +436,7 @@ repo.section::
 
 repo.source-filter::
 	Override the default source-filter. Default value: none. See also:
-	"enable-filter-overrides".
+	"enable-filter-overrides". See also: "FILTER API".
 
 repo.url::
 	The relative url used to access the repository. This must be the first
@@ -453,6 +454,42 @@ options are only acknowledged in repo-specific config files when
 
 Note: the "repo." prefix is dropped from the option names in repo-specific
 config files, e.g. "repo.desc" becomes "desc".
+
+
+FILTER API
+----------
+- about filter::
+  This filter is given no arguments.
+  The about text that is to be filtered is available on standard input and the
+  filtered text is expected on standard output.
+- commit filter::
+  This filter is given no arguments.
+  The commit message text that is to be filtered is available on standard input
+  and the filtered text is expected on standard output.
+- source filter::
+  This filter is given a single parameter: the filename of the source file to
+  filter. The filter can use the filename to determine (for example) the syntax
+  highlighting mode.
+  The contents of the source file that is to be filtered is available on
+  standard input and the filtered contents is expected on standard output.
+
+Also, all filters are handed the following environment variables:
+- CGIT_REPO_URL        ( = repo.url       setting )
+- CGIT_REPO_NAME       ( = repo.name      setting )
+- CGIT_REPO_PATH       ( = repo.path      setting )
+- CGIT_REPO_OWNER      ( = repo.owner     setting )
+- CGIT_REPO_DEFBRANCH  ( = repo.defbranch setting )
+- CGIT_REPO_SECTION    ( = section        setting )
+- CGIT_REPO_CLONE_URL  ( = repo.clone-url setting )
+
+If a setting is not defined for a repository and the corresponding global
+setting is also not defined (if applicable), then the corresponding
+environment variable will be an empty string.
+
+Note that under normal circumstance all these environment variables are
+defined. If however the total size of the defined settings exceed the
+allocated buffer within cgit then only the environment variables that fit
+in the allocated buffer are handed to the filter.
 
 
 EXAMPLE CGITRC FILE
