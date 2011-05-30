@@ -407,7 +407,7 @@ void cgit_show_stats(struct cgit_context *ctx)
 	html_intoption(50, "50", top);
 	html_intoption(100, "100", top);
 	html_intoption(-1, "all", top);
-	html("</select></td><tr>");
+	html("</select></td></tr>");
 	html("<tr><td/><td class='ctrl'>");
 	html("<noscript><input type='submit' value='Reload'/></noscript>");
 	html("</td></tr></table>");
