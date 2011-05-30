@@ -138,7 +138,7 @@ void html_attr(const char *txt)
 	const char *t = txt;
 	while(t && *t){
 		int c = *t;
-		if (c=='<' || c=='>' || c=='\'' || c=='\"') {
+		if (c=='<' || c=='>' || c=='\'' || c=='\"' || c=='&') {
 			html_raw(txt, t - txt);
 			if (c=='>')
 				html("&gt;");
@@ -148,6 +148,8 @@ void html_attr(const char *txt)
 				html("&#x27;");
 			else if (c=='"')
 				html("&quot;");
+			else if (c=='&')
+				html("&amp;");
 			txt = t+1;
 		}
 		t++;
