@@ -1,0 +1,71 @@
+cgit quick facts
+----------------
+
+ * web interface ([cgi][]) for [git][] repositories, written in [C][]
+ * licensed under [GPLv2][]
+ * discussions, patches etc. goes to the [list] ([archive]).
+
+[cgi]:     http://www.ietf.org/rfc/rfc3875.txt
+[git]:     http://git-scm.org
+[C]:       http://en.wikipedia.org/wiki/C_%28programming_language%29
+[GPLv2]:   http://www.gnu.org/licenses/gpl-2.0.html
+[list]:    mailto:cgit@hjemli.net
+[archive]: http://hjemli.net/pipermail/cgit/
+
+
+features
+--------
+ * basic repository browsing (logs, diffs, trees...)
+ * caching of generated html
+ * cloneable urls (implements dumb http transport)
+ * commit feeds (atom format)
+ * discovery of git repositories
+ * on-the-fly archives for tags and commits
+ * plugin-support for e.g. syntax highlighting
+ * side-by-side diffs
+ * simple time/author statistics
+ * simple virtual hosting support (macro expansion)
+ * understands gitweb project-lists
+ * understands gitweb.owner in git config files
+
+
+branches
+--------
+ * [stable]: fixes for the previous release
+ * [master]: features for the next release
+ * [wip]: bleeding-edge stuff, frequently rebased
+
+[stable]:  http://hjemli.net/git/cgit/log/?h=stable
+[master]:  http://hjemli.net/git/cgit/log/
+[wip]:     http://hjemli.net/git/cgit/log/?h=wip
+
+
+source code
+-----------
+ * download current or past [releases]
+ * clone the repo using git or http protocol:
+   * git://hjemli.net/pub/git/cgit
+   * http://hjemli.net/git/cgit
+ * see the [README] for build instructions
+
+[releases]: http://hjemli.net/git/cgit/refs/tags
+[README]:   http://hjemli.net/git/cgit/tree/README
+
+
+packages
+--------
+ * [archlinux][]
+ * [darwinports][]
+ * [fedora][]
+ * [gentoo][]
+ * [macports][]
+ * [opensuse][]
+ * [pkgsrc]
+
+[archlinux]:    http://aur.archlinux.org/packages.php?ID=22790
+[darwinports]:  http://cgit.darwinports.com/
+[fedora]:       https://admin.fedoraproject.org/pkgdb/acls/name/cgit
+[gentoo]:       http://packages.gentoo.org/package/www-apps/cgit
+[macports]:     http://trac.macports.org/browser/trunk/dports/www/cgit
+[opensuse]:     https://build.opensuse.org/package/show?package=cgit&project=devel%3Atools%3Ascm
+[pkgsrc]:       http://pkgsrc.se/wip/cgit
