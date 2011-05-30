@@ -34,10 +34,12 @@ branches
  * [stable]: fixes for the previous release
  * [master]: features for the next release
  * [wip]: bleeding-edge stuff, frequently rebased
+ * [wiki]: the info found on this page
 
 [stable]:  http://hjemli.net/git/cgit/log/?h=stable
 [master]:  http://hjemli.net/git/cgit/log/
 [wip]:     http://hjemli.net/git/cgit/log/?h=wip
+[wiki]:    http://hjemli.net/git/cgit/log/?h=wiki
 
 
 source code
