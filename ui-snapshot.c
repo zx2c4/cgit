@@ -119,13 +119,11 @@ static const char *get_ref_from_filename(const char *url, const char *filename,
 
 	snapshot = xstrdup(filename);
 	snapshot[strlen(snapshot) - strlen(format->suffix)] = '\0';
-	fprintf(stderr, "snapshot=%s\n", snapshot);
 
 	if (get_sha1(snapshot, sha1) == 0)
 		return snapshot;
 
 	reponame = cgit_repobasename(url);
-	fprintf(stderr, "reponame=%s\n", reponame);
 	if (prefixcmp(snapshot, reponame) == 0) {
 		snapshot += strlen(reponame);
 		while (snapshot && (*snapshot == '-' || *snapshot == '_'))
