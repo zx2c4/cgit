@@ -95,7 +95,6 @@ void show_commit_decorations(struct commit *commit)
 void print_commit(struct commit *commit, struct rev_info *revs)
 {
 	struct commitinfo *info;
-	char *tmp;
 	int cols = revs->graph ? 3 : 2;
 	struct strbuf graphbuf = STRBUF_INIT;
 	struct strbuf msgbuf = STRBUF_INIT;
@@ -129,11 +128,7 @@ void print_commit(struct commit *commit, struct rev_info *revs)
 	}
 	else {
 		html("<td>");
-		tmp = fmt("id=%s", sha1_to_hex(commit->object.sha1));
-		tmp = cgit_fileurl(ctx.repo->url, "commit", ctx.qry.vpath, tmp);
-		html_link_open(tmp, NULL, NULL);
 		cgit_print_age(commit->date, TM_WEEK * 2, FMT_SHORTDATE);
-		html_link_close();
 		html("</td>");
 	}
 
@@ -171,11 +166,7 @@ void print_commit(struct commit *commit, struct rev_info *revs)
 
 	if (revs->graph) {
 		html("</td><td>");
-		tmp = fmt("id=%s", sha1_to_hex(commit->object.sha1));
-		tmp = cgit_fileurl(ctx.repo->url, "commit", ctx.qry.vpath, tmp);
-		html_link_open(tmp, NULL, NULL);
 		cgit_print_age(commit->date, TM_WEEK * 2, FMT_SHORTDATE);
-		html_link_close();
 	}
 
 	if (ctx.repo->enable_log_filecount || ctx.repo->enable_log_linecount) {
