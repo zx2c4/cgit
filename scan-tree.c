@@ -155,6 +155,8 @@ static void add_repo(const char *base, const char *path, repo_config_fn fn)
 		config_fn = fn;
 		parse_configfile(xstrdup(p), &repo_config);
 	}
+
+	free(rel);
 }
 
 static void scan_path(const char *base, const char *path, repo_config_fn fn)
