@@ -165,6 +165,7 @@ struct cgit_config {
 	char *agefile;
 	char *cache_root;
 	char *clone_prefix;
+	char *clone_url;
 	char *css;
 	char *favicon;
 	char *footer;

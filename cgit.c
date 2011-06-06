@@ -244,6 +244,8 @@ void config_cb(const char *name, const char *value)
 		ctx.cfg.robots = xstrdup(value);
 	else if (!strcmp(name, "clone-prefix"))
 		ctx.cfg.clone_prefix = xstrdup(value);
+	else if (!strcmp(name, "clone-url"))
+		ctx.cfg.clone_url = xstrdup(value);
 	else if (!strcmp(name, "local-time"))
 		ctx.cfg.local_time = atoi(value);
 	else if (!prefixcmp(name, "mimetype."))

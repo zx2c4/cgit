@@ -76,6 +76,11 @@ clone-prefix::
 	setting is only used if `repo.clone-url` is unspecified. Default value:
 	none.
 
+clone-url::
+	Space-separated list of clone-url templates. This setting is only
+	used if `repo.clone-url` is unspecified. Default value: none. See
+	also: "MACRO EXPANSION", "FILTER API".
+
 commit-filter::
 	Specifies a command which will be invoked to format commit messages.
 	The command will get the message on its STDIN, and the STDOUT from the
@@ -363,7 +368,7 @@ repo.about-filter::
 
 repo.clone-url::
 	A list of space-separated urls which can be used to clone this repo.
-	Default value: none.
+	Default value: none. See also: "MACRO EXPANSION".
 
 repo.commit-filter::
 	Override the default commit-filter. Default value: none. See also:
@@ -511,6 +516,12 @@ can be accomplished by adding the following line to /etc/cgitrc:
 
 	include=/etc/cgitrc.d/$HTTP_HOST
 
+The following options are expanded during request processing, and support
+the environment variables defined in "FILTER API":
+
+- clone-url
+- repo.clone-url
+
 
 EXAMPLE CGITRC FILE
 -------------------
@@ -520,8 +531,8 @@ EXAMPLE CGITRC FILE
 cache-size=1000
 
 
-# Specify some default clone prefixes
-clone-prefix=git://example.com ssh://example.com/pub/git http://example.com/git
+# Specify some default clone urls using macro expansion
+clone-url=git://foo.org/$CGIT_REPO_URL git@foo.org:$CGIT_REPO_URL
 
 # Specify the css url
 css=/css/cgit.css

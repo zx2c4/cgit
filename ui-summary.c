@@ -62,7 +62,7 @@ void cgit_print_summary()
 			       NULL, NULL, 0, 0);
 	}
 	if (ctx.repo->clone_url)
-		print_urls(ctx.repo->clone_url, NULL);
+		print_urls(expand_macros(ctx.repo->clone_url), NULL);
 	else if (ctx.cfg.clone_prefix)
 		print_urls(ctx.cfg.clone_prefix, ctx.repo->url);
 	html("</table>");
