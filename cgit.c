@@ -463,6 +463,7 @@ static int prepare_repo_cmd(struct cgit_context *ctx)
 		cgit_print_docend();
 		return 1;
 	}
+	cgit_prepare_repo_env(ctx->repo);
 	return 0;
 }
 
