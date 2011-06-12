@@ -52,30 +52,57 @@ static void print_object(const unsigned char *sha1, const char *path)
 	match = 1;
 }
 
-static void print_dir(const unsigned char *sha1, const char *path,
-		      const char *base)
+static char *buildpath(const char *base, int baselen, const char *path)
 {
-	char *fullpath;
-	if (path[0] || base[0])
-		fullpath = fmt("/%s%s/", base, path);
+	if (path[0])
+		return fmt("%.*s%s/", baselen, base, path);
 	else
-		fullpath = "/";
+		return fmt("%.*s/", baselen, base);
+}
+
+static void print_dir(const unsigned char *sha1, const char *base,
+		      int baselen, const char *path)
+{
+	char *fullpath, *slash;
+	size_t len;
+
+	fullpath = buildpath(base, baselen, path);
+	slash = (fullpath[0] == '/' ? "" : "/");
 	ctx.page.etag = sha1_to_hex(sha1);
 	cgit_print_http_headers(&ctx);
-	htmlf("<html><head><title>%s</title></head>\n<body>\n"
-	      " <h2>%s</h2>\n <ul>\n", fullpath, fullpath);
-	if (path[0] || base[0])
-	      html("  <li><a href=\"../\">../</a></li>\n");
+	htmlf("<html><head><title>%s", slash);
+	html_txt(fullpath);
+	htmlf("</title></head>\n<body>\n<h2>%s", slash);
+	html_txt(fullpath);
+	html("</h2>\n<ul>\n");
+	len = strlen(fullpath);
+	if (len > 1) {
+		fullpath[len - 1] = 0;
+		slash = strrchr(fullpath, '/');
+		if (slash)
+			*(slash + 1) = 0;
+		else
+			fullpath = NULL;
+		html("<li>");
+		cgit_plain_link("../", NULL, NULL, ctx.qry.head, ctx.qry.sha1,
+				fullpath);
+		html("</li>\n");
+	}
 	match = 2;
 }
 
-static void print_dir_entry(const unsigned char *sha1, const char *path,
-			    unsigned mode)
+static void print_dir_entry(const unsigned char *sha1, const char *base,
+			    int baselen, const char *path, unsigned mode)
 {
-	const char *sep = "";
-	if (S_ISDIR(mode))
-		sep = "/";
-	htmlf("  <li><a href=\"%s%s\">%s%s</a></li>\n", path, sep, path, sep);
+	char *fullpath;
+
+	fullpath = buildpath(base, baselen, path);
+	if (!S_ISDIR(mode))
+		fullpath[strlen(fullpath) - 1] = 0;
+	html("  <li>");
+	cgit_plain_link(path, NULL, NULL, ctx.qry.head, ctx.qry.sha1,
+			fullpath);
+	html("</li>\n");
 	match = 2;
 }
 
@@ -92,12 +119,12 @@ static int walk_tree(const unsigned char *sha1, const char *base, int baselen,
 		if (S_ISREG(mode))
 			print_object(sha1, pathname);
 		else if (S_ISDIR(mode)) {
-			print_dir(sha1, pathname, base);
+			print_dir(sha1, base, baselen, pathname);
 			return READ_TREE_RECURSIVE;
 		}
 	}
 	else if (baselen > match_baselen)
-		print_dir_entry(sha1, pathname, mode);
+		print_dir_entry(sha1, base, baselen, pathname, mode);
 	else if (S_ISDIR(mode))
 		return READ_TREE_RECURSIVE;
 
@@ -134,7 +161,7 @@ void cgit_print_plain(struct cgit_context *ctx)
 	if (!paths[0]) {
 		paths[0] = "";
 		match_baselen = -1;
-		print_dir(commit->tree->object.sha1, "", "");
+		print_dir(commit->tree->object.sha1, "", 0, "");
 	}
 	else
 		match_baselen = basedir_len(paths[0]);
