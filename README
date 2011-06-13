@@ -58,11 +58,8 @@ like this:
 Runtime configuration
 
 The file /etc/cgitrc is read by cgit before handling a request. In addition
-to runtime parameters, this file also contains a list of the repositories
-displayed by cgit.
-
-A template cgitrc is shipped with the sources, and all parameters and default
-values are documented in this file.
+to runtime parameters, this file may also contain a list of repositories
+displayed by cgit (see cgitrc.5.txt for further details).
 
 
 The cache
@@ -80,16 +77,9 @@ The generated content contains the complete response to the client, including
 the http-headers "Modified" and "Expires".
 
 
-The missing features
+Online presence
 
-* Submodule links in the directory listing page have a fixed format per
-  repository. This should probably be extended to a generic map between
-  submodule path and url.
+* The cgit homepage is hosted by cgit at http://hjemli.net/git/cgit/about
 
-* The log-page should have more/better search options (author, committer,
-  pickaxe, paths) and possibly support arbitrary revision specifiers.
-
-* A set of test-scripts is required before cgit-1.0 can be released.
-
-Patches/bugreports/suggestions/comments are always welcome, please feel free
-to contact the author: hjemli@gmail.com
+* Patches, bugreports, discussions and support should go to the cgit
+  mailing list: cgit@hjemli.net
