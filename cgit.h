@@ -165,6 +165,7 @@ struct cgit_config {
 	char *agefile;
 	char *cache_root;
 	char *clone_prefix;
+	char *clone_url;
 	char *css;
 	char *favicon;
 	char *footer;
@@ -319,8 +320,10 @@ extern const char *cgit_repobasename(const char *reponame);
 
 extern int cgit_parse_snapshots_mask(const char *str);
 
-extern int cgit_open_filter(struct cgit_filter *filter, struct cgit_repo * repo);
+extern int cgit_open_filter(struct cgit_filter *filter);
 extern int cgit_close_filter(struct cgit_filter *filter);
+
+extern void cgit_prepare_repo_env(struct cgit_repo * repo);
 
 extern int readfile(const char *path, char **buf, size_t *size);
 

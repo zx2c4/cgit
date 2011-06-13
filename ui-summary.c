@@ -62,7 +62,7 @@ void cgit_print_summary()
 			       NULL, NULL, 0, 0);
 	}
 	if (ctx.repo->clone_url)
-		print_urls(ctx.repo->clone_url, NULL);
+		print_urls(expand_macros(ctx.repo->clone_url), NULL);
 	else if (ctx.cfg.clone_prefix)
 		print_urls(ctx.cfg.clone_prefix, ctx.repo->url);
 	html("</table>");
@@ -113,7 +113,7 @@ void cgit_print_repo_readme(char *path)
 	 */
 	html("<div id='summary'>");
 	if (ctx.repo->about_filter)
-		cgit_open_filter(ctx.repo->about_filter, ctx.repo);
+		cgit_open_filter(ctx.repo->about_filter);
 	if (ref)
 		cgit_print_file(tmp, ref);
 	else

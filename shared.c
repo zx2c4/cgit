@@ -70,6 +70,7 @@ struct cgit_repo *cgit_add_repo(const char *url)
 	ret->about_filter = ctx.cfg.about_filter;
 	ret->commit_filter = ctx.cfg.commit_filter;
 	ret->source_filter = ctx.cfg.source_filter;
+	ret->clone_url = ctx.cfg.clone_url;
 	return ret;
 }
 
@@ -374,7 +375,8 @@ typedef struct {
 	char * value;
 } cgit_env_var;
 
-static void prepare_env(struct cgit_repo * repo) {
+void cgit_prepare_repo_env(struct cgit_repo * repo)
+{
 	cgit_env_var env_vars[] = {
 		{ .name = "CGIT_REPO_URL", .value = repo->url },
 		{ .name = "CGIT_REPO_NAME", .value = repo->name },
@@ -395,7 +397,7 @@ static void prepare_env(struct cgit_repo * repo) {
 			fprintf(stderr, warn, p->name, p->value);
 }
 
-int cgit_open_filter(struct cgit_filter *filter, struct cgit_repo * repo)
+int cgit_open_filter(struct cgit_filter *filter)
 {
 
 	filter->old_stdout = chk_positive(dup(STDOUT_FILENO),
@@ -406,8 +408,6 @@ int cgit_open_filter(struct cgit_filter *filter, struct cgit_repo * repo)
 		close(filter->pipe_fh[1]);
 		chk_non_negative(dup2(filter->pipe_fh[0], STDIN_FILENO),
 			"Unable to use pipe as STDIN");
-		if (repo)
-			prepare_env(repo);
 		execvp(filter->cmd, filter->argv);
 		die("Unable to exec subprocess %s: %s (%d)", filter->cmd,
 			strerror(errno), errno);

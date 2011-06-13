@@ -62,6 +62,7 @@ enable-log-linecount=1
 summary-log=5
 summary-branches=5
 summary-tags=5
+clone-url=git://example.org/\$CGIT_REPO_URL.git
 
 repo.url=foo
 repo.path=$PWD/trash/repos/foo/.git
