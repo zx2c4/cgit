@@ -42,7 +42,7 @@ agefile::
 
 cache-root::
 	Path used to store the cgit cache entries. Default value:
-	"/var/cache/cgit".
+	"/var/cache/cgit". See also: "MACRO EXPANSION".
 
 cache-dynamic-ttl::
 	Number which specifies the time-to-live, in minutes, for the cached
@@ -155,7 +155,7 @@ header::
 
 include::
 	Name of a configfile to include before the rest of the current config-
-	file is parsed. Default value: none.
+	file is parsed. Default value: none. See also: "MACRO EXPANSION".
 
 index-header::
 	The content of the file specified with this option will be included
@@ -237,7 +237,8 @@ noheader::
 project-list::
 	A list of subdirectories inside of scan-path, relative to it, that
 	should loaded as git repositories. This must be defined prior to
-	scan-path. Default value: none. See also: scan-path.
+	scan-path. Default value: none. See also: scan-path, "MACRO
+	EXPANSION".
 
 readme::
 	Text which will be used as default value for "repo.readme". Default
@@ -289,7 +290,8 @@ scan-path::
 	scan-path loads only the directories listed in the file pointed to by
 	project-list. Be advised that only the global settings taken
 	before the scan-path directive will be applied to each repository.
-	Default value: none. See also: cache-scanrc-ttl, project-list.
+	Default value: none. See also: cache-scanrc-ttl, project-list,
+	"MACRO EXPANSION".
 
 section::
 	The name of the current repository section - all repositories defined
@@ -448,6 +450,26 @@ options are only acknowledged in repo-specific config files when
 
 Note: the "repo." prefix is dropped from the option names in repo-specific
 config files, e.g. "repo.desc" becomes "desc".
+
+
+MACRO EXPANSION
+---------------
+The following cgitrc options supports a simple macro expansion feature,
+where tokens prefixed with "$" are replaced with the value of a similary
+named environment variable:
+
+- cache-root
+- include
+- project-list
+- scan-path
+
+Macro expansion will also happen on the content of $CGIT_CONFIG, if
+defined.
+
+One usage of this feature is virtual hosting, which in its simplest form
+can be accomplished by adding the following line to /etc/cgitrc:
+
+	include=/etc/cgitrc.d/$HTTP_HOST
 
 
 EXAMPLE CGITRC FILE
