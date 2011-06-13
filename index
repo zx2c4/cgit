@@ -3,7 +3,7 @@ cgit quick facts
 
  * web interface ([cgi][]) for [git][] repositories, written in [C][]
  * licensed under [GPLv2][]
- * discussions, patches etc. goes to the [list] ([archive]).
+ * discussions, patches etc. goes to the [list] ([archive], [gmane]).
  * common questions are answered in the [faq].
 
 [cgi]:     http://www.ietf.org/rfc/rfc3875.txt
@@ -12,6 +12,7 @@ cgit quick facts
 [GPLv2]:   http://www.gnu.org/licenses/gpl-2.0.html
 [list]:    mailto:cgit@hjemli.net
 [archive]: http://hjemli.net/pipermail/cgit/
+[gmane]:   http://dir.gmane.org/gmane.comp.version-control.cgit
 [faq]:     faq
 
 
