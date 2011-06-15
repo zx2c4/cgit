@@ -411,6 +411,12 @@ repo.logo-link::
 	calculated url of the repository index page will be used. Default
 	value: global logo-link.
 
+repo.module-link::
+	Text which will be used as the formatstring for a hyperlink when a
+	submodule is printed in a directory listing. The arguments for the
+	formatstring are the path and SHA1 of the submodule commit. Default
+	value: <module-link>
+
 repo.max-stats::
 	Override the default maximum statistics period. Valid values are equal
 	to the values specified for the global "max-stats" setting. Default
