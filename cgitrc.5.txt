@@ -230,7 +230,7 @@ module-link::
 	Text which will be used as the formatstring for a hyperlink when a
 	submodule is printed in a directory listing. The arguments for the
 	formatstring are the path and SHA1 of the submodule commit. Default
-	value: "./?repo=%s&page=commit&id=%s"
+	value: none.
 
 nocache::
 	If set to the value "1" caching will be disabled. This settings is

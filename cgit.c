@@ -343,7 +343,6 @@ static void prepare_context(struct cgit_context *ctx)
 	ctx->cfg.max_repodesc_len = 80;
 	ctx->cfg.max_blob_size = 0;
 	ctx->cfg.max_stats = 0;
-	ctx->cfg.module_link = "./?repo=%s&page=commit&id=%s";
 	ctx->cfg.project_list = NULL;
 	ctx->cfg.renamelimit = -1;
 	ctx->cfg.remove_suffix = 0;
