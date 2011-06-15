@@ -60,6 +60,8 @@ static void process_cached_repolist(const char *path);
 
 void repo_config(struct cgit_repo *repo, const char *name, const char *value)
 {
+	struct string_list_item *item;
+
 	if (!strcmp(name, "name"))
 		repo->name = xstrdup(value);
 	else if (!strcmp(name, "clone-url"))
@@ -86,7 +88,10 @@ void repo_config(struct cgit_repo *repo, const char *name, const char *value)
 		repo->max_stats = cgit_find_stats_period(value, NULL);
 	else if (!strcmp(name, "module-link"))
 		repo->module_link= xstrdup(value);
-	else if (!strcmp(name, "section"))
+	else if (!prefixcmp(name, "module-link.")) {
+		item = string_list_append(&repo->submodules, name + 12);
+		item->util = xstrdup(value);
+	} else if (!strcmp(name, "section"))
 		repo->section = xstrdup(value);
 	else if (!strcmp(name, "readme") && value != NULL)
 		repo->readme = xstrdup(value);
@@ -465,6 +470,7 @@ static int prepare_repo_cmd(struct cgit_context *ctx)
 		cgit_print_docend();
 		return 1;
 	}
+	sort_string_list(&ctx->repo->submodules);
 	cgit_prepare_repo_env(ctx->repo);
 	return 0;
 }

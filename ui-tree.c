@@ -150,13 +150,7 @@ static int ls_item(const unsigned char *sha1, const char *base, int baselen,
 	cgit_print_filemode(mode);
 	html("</td><td>");
 	if (S_ISGITLINK(mode)) {
-		htmlf("<a class='ls-mod' href='");
-		html_attr(fmt(ctx.repo->module_link,
-			      name,
-			      sha1_to_hex(sha1)));
-		html("'>");
-		html_txt(name);
-		html("</a>");
+		cgit_submodule_link("ls-mod", fullpath, sha1_to_hex(sha1));
 	} else if (S_ISDIR(mode)) {
 		cgit_tree_link(name, NULL, "ls-dir", ctx.qry.head,
 			       curr_rev, fullpath);
@@ -177,8 +171,9 @@ static int ls_item(const unsigned char *sha1, const char *base, int baselen,
 	if (ctx.repo->max_stats)
 		cgit_stats_link("stats", NULL, "button", ctx.qry.head,
 				fullpath);
-	cgit_plain_link("plain", NULL, "button", ctx.qry.head, curr_rev,
-			fullpath);
+	if (!S_ISGITLINK(mode))
+		cgit_plain_link("plain", NULL, "button", ctx.qry.head, curr_rev,
+				fullpath);
 	html("</td></tr>\n");
 	free(name);
 	return 0;

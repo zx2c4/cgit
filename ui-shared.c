@@ -503,6 +503,62 @@ void cgit_object_link(struct object *obj)
 	reporevlink(page, name, NULL, NULL, ctx.qry.head, fullrev, NULL);
 }
 
+struct string_list_item *lookup_path(struct string_list *list,
+				     const char *path)
+{
+	struct string_list_item *item;
+
+	while (path && path[0]) {
+		if ((item = string_list_lookup(list, path)))
+			return item;
+		if (!(path = strchr(path, '/')))
+			break;
+		path++;
+	}
+	return NULL;
+}
+
+void cgit_submodule_link(const char *class, char *path, const char *rev)
+{
+	struct string_list *list;
+	struct string_list_item *item;
+	char tail, *dir;
+	size_t len;
+
+	tail = 0;
+	list = &ctx.repo->submodules;
+	item = lookup_path(list, path);
+	if (!item) {
+		len = strlen(path);
+		tail = path[len - 1];
+		if (tail == '/') {
+			path[len - 1] = 0;
+			item = lookup_path(list, path);
+		}
+	}
+	html("<a ");
+	if (class)
+		htmlf("class='%s' ", class);
+	html("href='");
+	if (item) {
+		html_attr(fmt(item->util, rev));
+	} else if (ctx.repo->module_link) {
+		dir = strrchr(path, '/');
+		if (dir)
+			dir++;
+		else
+			dir = path;
+		html_attr(fmt(ctx.repo->module_link, dir, rev));
+	} else {
+		html("#");
+	}
+	html("'>");
+	html_txt(path);
+	html("</a>");
+	if (item && tail)
+		path[len - 1] = tail;
+}
+
 void cgit_print_date(time_t secs, const char *format, int local_time)
 {
 	char buf[64];
