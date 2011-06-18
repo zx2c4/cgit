@@ -1,4 +1,22 @@
 Frequently Asked Questions
 ==========================
 
-(Coming soon)
+* I'm using the "scan-path" option, but cgit doesn't find my repo
+
+   * This is most likely due to permission problems: cgit usually runs under
+     your webserver user account and will need read access to your repo (and
+     all of the parent directories)
+
+* My repo shows up in the list of repositories, but when clicking the
+  repo name, cgit complains that it's "Not a git repository"
+
+   * The most common cause of this is permission problems - see the previous
+     faq entry for more details.
+
+   * The second most common cause is that you've set repo.path to point
+     at the working-directory of your git repo - it should point at the
+     $GITDIR, i.e. the .git directory.
+
+   * A less likely cause is that the repo is, infact, not a valid repo. Try
+     to run a 'git show' in the offending repo to see if git also reports
+     about problems.
