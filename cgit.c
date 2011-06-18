@@ -403,13 +403,17 @@ static int prepare_repo_cmd(struct cgit_context *ctx)
 	char *tmp;
 	unsigned char sha1[20];
 	int nongit = 0;
+	int rc;
 
 	setenv("GIT_DIR", ctx->repo->path, 1);
 	setup_git_directory_gently(&nongit);
 	if (nongit) {
+		rc = errno;
 		ctx->page.title = fmt("%s - %s", ctx->cfg.root_title,
 				      "config error");
-		tmp = fmt("Not a git repository: '%s'", ctx->repo->path);
+		tmp = fmt("Failed to open %s: %s",
+			  ctx->repo->name,
+			  rc ? strerror(rc) : "Not a valid git repository");
 		ctx->repo = NULL;
 		cgit_print_http_headers(ctx);
 		cgit_print_docstart(ctx);
