@@ -416,6 +416,37 @@ char *find_default_branch(struct cgit_repo *repo)
 	return ref;
 }
 
+static char *guess_defbranch(const char *repo_path)
+{
+	int fd, len;
+	char buffer[256];
+	char *ref_start;
+	char *head;
+
+	head = fmt("%s/HEAD", repo_path);
+	fd = open(head, O_RDONLY);
+	if (fd == -1)
+		return xstrdup("master");
+
+	memset(buffer, 0, sizeof(buffer));
+	len = read_in_full(fd, buffer, sizeof(buffer) - 1);
+	close(fd);
+
+	if(!memcmp(buffer, "ref: refs/heads/", 16))
+		return xstrndup(buffer + 16, len - 17);
+
+	if(strlen(buffer) == 41) {
+		/* probably contains a SHA1 sum */
+		memset(buffer, 0, sizeof(buffer));
+		if(readlink(head, buffer, sizeof(buffer)-1)) {
+			ref_start = memmem(buffer, sizeof(buffer)-1, "refs/heads/", 11);
+			if(ref_start)
+				return xstrdup(ref_start+11);
+		}
+	}
+	return xstrdup("master");
+}
+
 static int prepare_repo_cmd(struct cgit_context *ctx)
 {
 	char *tmp;
@@ -442,10 +473,12 @@ static int prepare_repo_cmd(struct cgit_context *ctx)
 	}
 	ctx->page.title = fmt("%s - %s", ctx->repo->name, ctx->repo->desc);
 
+	if (!ctx->repo->defbranch)
+		ctx->repo->defbranch = guess_defbranch(ctx->repo->path);
+
 	if (!ctx->qry.head) {
 		ctx->qry.nohead = 1;
 		ctx->qry.head = find_default_branch(ctx->repo);
-		ctx->repo->defbranch = ctx->qry.head;
 	}
 
 	if (!ctx->qry.head) {
