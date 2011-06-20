@@ -418,33 +418,13 @@ char *find_default_branch(struct cgit_repo *repo)
 
 static char *guess_defbranch(const char *repo_path)
 {
-	int fd, len;
-	char buffer[256];
-	char *ref_start;
-	char *head;
+	const char *ref;
+	unsigned char sha1[20];
 
-	head = fmt("%s/HEAD", repo_path);
-	fd = open(head, O_RDONLY);
-	if (fd == -1)
-		return xstrdup("master");
-
-	memset(buffer, 0, sizeof(buffer));
-	len = read_in_full(fd, buffer, sizeof(buffer) - 1);
-	close(fd);
-
-	if(!memcmp(buffer, "ref: refs/heads/", 16))
-		return xstrndup(buffer + 16, len - 17);
-
-	if(strlen(buffer) == 41) {
-		/* probably contains a SHA1 sum */
-		memset(buffer, 0, sizeof(buffer));
-		if(readlink(head, buffer, sizeof(buffer)-1)) {
-			ref_start = memmem(buffer, sizeof(buffer)-1, "refs/heads/", 11);
-			if(ref_start)
-				return xstrdup(ref_start+11);
-		}
-	}
-	return xstrdup("master");
+	ref = resolve_ref("HEAD", sha1, 0, NULL);
+	if (!ref || prefixcmp(ref, "refs/heads/"))
+		return "master";
+	return xstrdup(ref + 11);
 }
 
 static int prepare_repo_cmd(struct cgit_context *ctx)
