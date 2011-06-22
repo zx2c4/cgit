@@ -246,6 +246,61 @@ static char *repolink(const char *title, const char *class, const char *page,
 	return fmt("%s", delim);
 }
 
+static char *repolink2(const char *title, const char *class, const char *page,
+		       const char *head, const char *path, int lineno)
+{
+	char *delim = "?";
+
+	html("<a");
+	if (title) {
+		html(" title='");
+		html_attr(title);
+		html("'");
+	}
+	if (class) {
+		html(" class='");
+		html_attr(class);
+		html("'");
+	}
+	html(" href='");
+	if (ctx.cfg.virtual_root) {
+		html_url_path(ctx.cfg.virtual_root);
+		if (ctx.cfg.virtual_root[strlen(ctx.cfg.virtual_root) - 1] != '/')
+			html("/");
+		html_url_path(ctx.repo->url);
+		if (ctx.repo->url[strlen(ctx.repo->url) - 1] != '/')
+			html("/");
+		if (page) {
+			html_url_path(page);
+			html("/");
+			if (path)
+				html_url_path(path);
+		}
+	} else {
+		html(ctx.cfg.script_name);
+		html("?url=");
+		html_url_arg(ctx.repo->url);
+		if (ctx.repo->url[strlen(ctx.repo->url) - 1] != '/')
+			html("/");
+		if (page) {
+			html_url_arg(page);
+			html("/");
+			if (path)
+				html_url_arg(path);
+		}
+		delim = "&amp;";
+	}
+	if (head && strcmp(head, ctx.repo->defbranch)) {
+		html(delim);
+		html("h=");
+		html_url_arg(head);
+		delim = "&amp;";
+	}
+	if (lineno)
+		htmlf("#n%d", lineno);
+	return fmt("%s", delim);
+}
+
 static void reporevlink(const char *page, const char *name, const char *title,
 			const char *class, const char *head, const char *rev,
 			const char *path)
@@ -253,6 +308,23 @@ static void reporevlink(const char *page, const char *name, const char *title,
 	char *delim;
 
 	delim = repolink(title, class, page, head, path);
+	if (rev && ctx.qry.head != NULL && strcmp(rev, ctx.qry.head)) {
+		html(delim);
+		html("id=");
+		html_url_arg(rev);
+	}
+	html("'>");
+	html_txt(name);
+	html("</a>");
+}
+
+static void reporevlink2(const char *page, const char *name, const char *title,
+			 const char *class, const char *head, const char *rev,
+			 const char *path, int lineno)
+{
+	char *delim;
+
+	delim = repolink2(title, class, page, head, path, lineno);
 	if (rev && ctx.qry.head != NULL && strcmp(rev, ctx.qry.head)) {
 		html(delim);
 		html("id=");
@@ -279,6 +351,13 @@ void cgit_tree_link(const char *name, const char *title, const char *class,
 		    const char *head, const char *rev, const char *path)
 {
 	reporevlink("tree", name, title, class, head, rev, path);
+}
+
+void cgit_tree_link2(const char *name, const char *title, const char *class,
+		     const char *head, const char *rev, const char *path,
+		     int lineno)
+{
+	reporevlink2("tree", name, title, class, head, rev, path, lineno);
 }
 
 void cgit_plain_link(const char *name, const char *title, const char *class,
@@ -875,6 +954,9 @@ static void print_header(struct cgit_context *ctx)
 
 void cgit_print_pageheader(struct cgit_context *ctx)
 {
+	int tree;
+	char *page;
+
 	html("<div id='cgit'>");
 	if (!ctx->cfg.noheader)
 		print_header(ctx);
@@ -903,16 +985,23 @@ void cgit_print_pageheader(struct cgit_context *ctx)
 				    NULL);
 		html("</td><td class='form'>");
 		html("<form class='right' method='get' action='");
-		if (ctx->cfg.virtual_root)
-			html_url_path(cgit_fileurl(ctx->qry.repo, "log",
+		if (ctx->cfg.virtual_root) {
+			tree = !strcmp(ctx->qry.page, "tree");
+			page = tree ? "tree" : "log";
+			html_url_path(cgit_fileurl(ctx->qry.repo, page,
 						   ctx->qry.vpath, NULL));
+		}
 		html("'>\n");
-		cgit_add_hidden_formfields(1, 0, "log");
+		cgit_add_hidden_formfields(1, 0, page);
 		html("<select name='qt'>\n");
-		html_option("grep", "log msg", ctx->qry.grep);
-		html_option("author", "author", ctx->qry.grep);
-		html_option("committer", "committer", ctx->qry.grep);
-		html_option("range", "range", ctx->qry.grep);
+		if (tree) {
+			html_option("grep", "source", ctx->qry.grep);
+		} else {
+			html_option("grep", "log msg", ctx->qry.grep);
+			html_option("author", "author", ctx->qry.grep);
+			html_option("committer", "committer", ctx->qry.grep);
+			html_option("range", "range", ctx->qry.grep);
+		}
 		html("</select>\n");
 		html("<input class='txt' type='text' size='10' name='q' value='");
 		html_attr(ctx->qry.search);

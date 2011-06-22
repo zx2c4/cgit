@@ -277,3 +277,122 @@ void cgit_print_tree(const char *rev, char *path)
 	read_tree_recursive(commit->tree, "", 0, 0, paths, walk_tree, NULL);
 	ls_tail();
 }
+
+struct grep_data {
+	regex_t re;
+	char *path;
+	int max_hits;
+};
+
+static int grep_blob(const unsigned char *sha1, const char *base, int baselen,
+		      const char *pathname, struct grep_data *grep)
+{
+	enum object_type type;
+	char *buf, *line, *lf, *fullpath;
+	unsigned long size;
+	int hits, lno, rc;
+
+	type = sha1_object_info(sha1, &size);
+	if (type == OBJ_BAD) {
+		cgit_print_error(fmt("Bad object name: %s",
+				     sha1_to_hex(sha1)));
+		return -1;
+	}
+
+	buf = read_sha1_file(sha1, &type, &size);
+	if (!buf) {
+		cgit_print_error(fmt("Error reading object %s",
+				     sha1_to_hex(sha1)));
+		return -1;
+	}
+	hits = 0;
+	line = buf;
+	lno = 1;
+	while (size) {
+		lf = strchr(line, '\n');
+		if (lf)
+			*lf = 0;
+		rc = regexec(&grep->re, line, 0, NULL, 0);
+		if (!rc) {
+			if (!hits) {
+				fullpath = fmt("%.*s%s", baselen, base,
+					       pathname);
+				htmlf("<strong>%s</strong><pre>", fullpath);
+			}
+			htmlf("%6d: ", lno);
+			while (isspace(*line))
+				line++;
+			cgit_tree_link2(line, NULL, NULL, ctx.qry.head,
+					ctx.qry.sha1, fullpath, lno);
+			html("\n");
+			++hits;
+			if (!(--grep->max_hits))
+				break;
+		}
+		if (!lf)
+			break;
+		size -= (lf - line);
+		*lf = '\n';
+		line = lf + 1;
+		lno++;
+	}
+	if (hits)
+		html("</pre>");
+	if (!grep->max_hits) {
+		cgit_print_error("Too many matches found.");
+		return -1;
+	}
+	return 0;
+}
+
+static int grep_tree(const unsigned char *sha1, const char *base, int baselen,
+		     const char *pathname, unsigned mode, int stage,
+		     void *cbdata)
+{
+	int rc;
+	char *fullpath;
+	struct grep_data *grep;
+
+	grep = cbdata;
+	fullpath = fmt("%.*s%s", baselen, base, pathname);
+	if (S_ISDIR(mode)) {
+		rc = grep->path ? prefixcmp(grep->path, fullpath) : 0;
+		if (!rc)
+			return READ_TREE_RECURSIVE;
+		return (rc > 0 ? -1 : 0);
+	} else if (S_ISREG(mode)) {
+		rc = grep->path ? prefixcmp(fullpath, grep->path) : 0;
+		if (!rc)
+			return grep_blob(sha1, base, baselen, pathname, grep);
+		return (rc < 0 ? -1 : 0);
+	}
+	return 0;
+}
+
+void cgit_grep(const char *rev, char *path, char *grep)
+{
+	unsigned char sha1[20];
+	struct commit *commit;
+	struct grep_data data;
+
+	if (!rev)
+		rev = ctx.qry.head;
+
+	curr_rev = xstrdup(rev);
+	if (get_sha1(rev, sha1)) {
+		cgit_print_error(fmt("Invalid revision name: %s", rev));
+		return;
+	}
+	commit = lookup_commit_reference(sha1);
+	if (!commit || parse_commit(commit)) {
+		cgit_print_error(fmt("Invalid commit reference: %s", rev));
+		return;
+	}
+	data.path = path;
+	data.max_hits = 100;
+	if (regcomp(&data.re, ctx.qry.search, REG_EXTENDED | REG_ICASE | REG_NOSUB)) {
+		cgit_print_error("Invalid regex");
+		return;
+	}
+	read_tree_recursive(commit->tree, "", 0, 0, NULL, grep_tree, &data);
+}

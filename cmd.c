@@ -127,7 +127,10 @@ static void tag_fn(struct cgit_context *ctx)
 
 static void tree_fn(struct cgit_context *ctx)
 {
-	cgit_print_tree(ctx->qry.sha1, ctx->qry.path);
+	if (ctx->qry.grep)
+		cgit_grep(ctx->qry.sha1, ctx->qry.path, ctx->qry.grep);
+	else
+		cgit_print_tree(ctx->qry.sha1, ctx->qry.path);
 }
 
 #define def_cmd(name, want_repo, want_layout, want_vpath, is_clone) \
