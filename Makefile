@@ -198,9 +198,9 @@ install-pdf: doc-pdf
 	$(INSTALL) -m 0644 $(DOC_PDF) $(DESTDIR)$(pdfdir)
 
 uninstall:
-	rm -f $(CGIT_SCRIPT_PATH)/$(CGIT_SCRIPT_NAME)
-	rm -f $(CGIT_DATA_PATH)/cgit.css
-	rm -f $(CGIT_DATA_PATH)/cgit.png
+	rm -f $(DESTDIR)$(CGIT_SCRIPT_PATH)/$(CGIT_SCRIPT_NAME)
+	rm -f $(DESTDIR)$(CGIT_DATA_PATH)/cgit.css
+	rm -f $(DESTDIR)$(CGIT_DATA_PATH)/cgit.png
 
 uninstall-doc: uninstall-man uninstall-html uninstall-pdf
 
