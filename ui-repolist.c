@@ -45,7 +45,8 @@ static int get_repo_modtime(const struct cgit_repo *repo, time_t *mtime)
 		return 1;
 	}
 
-	path = fmt("%s/refs/heads/%s", repo->path, repo->defbranch);
+	path = fmt("%s/refs/heads/%s", repo->path, repo->defbranch ?
+		   repo->defbranch : "master");
 	if (stat(path, &s) == 0) {
 		*mtime = s.st_mtime;
 		r->mtime = *mtime;
