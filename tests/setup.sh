@@ -15,6 +15,7 @@
 # run_test 'repo index' 'cgit_url "/" | tidy -e'
 # run_test 'repo summary' 'cgit_url "/foo" | tidy -e'
 
+unset CDPATH
 
 mkrepo() {
 	name=$1
