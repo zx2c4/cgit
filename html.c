@@ -162,7 +162,7 @@ void html_url_path(const char *txt)
 {
 	const char *t = txt;
 	while(t && *t){
-		int c = *t;
+		unsigned char c = *t;
 		const char *e = url_escape_table[c];
 		if (e && c!='+' && c!='&') {
 			html_raw(txt, t - txt);
@@ -179,7 +179,7 @@ void html_url_arg(const char *txt)
 {
 	const char *t = txt;
 	while(t && *t){
-		int c = *t;
+		unsigned char c = *t;
 		const char *e = url_escape_table[c];
 		if (c == ' ')
 			e = "+";
