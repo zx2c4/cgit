@@ -97,10 +97,12 @@ static void print_fileinfo(struct fileinfo *info)
 	htmlf("</td><td class='%s'>", class);
 	cgit_diff_link(info->new_path, NULL, NULL, ctx.qry.head, ctx.qry.sha1,
 		       ctx.qry.sha2, info->new_path, 0);
-	if (info->status == DIFF_STATUS_COPIED || info->status == DIFF_STATUS_RENAMED)
-		htmlf(" (%s from %s)",
-		      info->status == DIFF_STATUS_COPIED ? "copied" : "renamed",
-		      info->old_path);
+	if (info->status == DIFF_STATUS_COPIED || info->status == DIFF_STATUS_RENAMED) {
+		htmlf(" (%s from ",
+		      info->status == DIFF_STATUS_COPIED ? "copied" : "renamed");
+		html_txt(info->old_path);
+		html(")");
+	}
 	html("</td><td class='right'>");
 	if (info->binary) {
 		htmlf("bin</td><td class='graph'>%ld -> %ld bytes",
