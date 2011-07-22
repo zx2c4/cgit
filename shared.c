@@ -8,7 +8,6 @@
 
 #include "cgit.h"
 #include <stdio.h>
-#include <linux/limits.h>
 
 struct cgit_repolist cgit_repolist;
 struct cgit_context ctx;
