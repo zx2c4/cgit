@@ -500,7 +500,7 @@ Also, all filters are handed the following environment variables:
 
 If a setting is not defined for a repository and the corresponding global
 setting is also not defined (if applicable), then the corresponding
-environment variable will be an empty string.
+environment variable will be unset.
 
 
 MACRO EXPANSION
