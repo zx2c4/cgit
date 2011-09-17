@@ -2,10 +2,12 @@
 #include "html.h"
 #include "ui-shared.h"
 #include "ui-diff.h"
+#include "ui-ssdiff.h"
 
 extern int use_ssdiff;
 
 static int current_old_line, current_new_line;
+static int **L = NULL;
 
 struct deferred_lines {
 	int line_no;
@@ -16,15 +18,41 @@ struct deferred_lines {
 static struct deferred_lines *deferred_old, *deferred_old_last;
 static struct deferred_lines *deferred_new, *deferred_new_last;
 
+static void create_or_reset_lcs_table()
+{
+	int i;
+
+	if (L != NULL) {
+		memset(*L, 0, sizeof(*L) * MAX_SSDIFF_SIZE);
+		return;
+	}
+
+	// xcalloc will die if we ran out of memory;
+	// not very helpful for debugging
+	L = (int**)xcalloc(MAX_SSDIFF_M, sizeof(int *));
+	*L = (int*)xcalloc(MAX_SSDIFF_SIZE, sizeof(int));
+
+	for (i = 1; i < MAX_SSDIFF_M; i++) {
+		L[i] = *L + i * MAX_SSDIFF_N;
+	}
+}
+
 static char *longest_common_subsequence(char *A, char *B)
 {
 	int i, j, ri;
 	int m = strlen(A);
 	int n = strlen(B);
-	int L[m + 1][n + 1];
-	int tmp1, tmp2;
+	int tmp1, tmp2, length;
 	int lcs_length;
 	char *result;
+
+	length = (m + 1) * (n + 1);
+
+	// We bail if the lines are too long
+	if (length > MAX_SSDIFF_SIZE)
+		return NULL;
+
+	create_or_reset_lcs_table();
 
 	for (i = m; i >= 0; i--) {
 		for (j = n; j >= 0; j--) {
@@ -59,6 +87,7 @@ static char *longest_common_subsequence(char *A, char *B)
 			j += 1;
 		}
 	}
+
 	return result;
 }
 
