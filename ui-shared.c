@@ -619,7 +619,7 @@ void cgit_print_docstart(struct cgit_context *ctx)
 		html_attr(ctx->cfg.favicon);
 		html("'/>\n");
 	}
-	if (host && ctx->repo) {
+	if (host && ctx->repo && ctx->qry.head) {
 		html("<link rel='alternate' title='Atom feed' href='");
 		html(cgit_httpscheme());
 		html_attr(cgit_hosturl());
