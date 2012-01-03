@@ -133,7 +133,7 @@ char *cgit_currurl()
 		return fmt("%s/", ctx.cfg.virtual_root);
 }
 
-static void site_url(const char *page, const char *search, int ofs)
+static void site_url(const char *page, const char *search, const char *sort, int ofs)
 {
 	char *delim = "?";
 
@@ -154,6 +154,12 @@ static void site_url(const char *page, const char *search, int ofs)
 		html_attr(search);
 		delim = "&";
 	}
+	if (sort) {
+		html(delim);
+		html("s=");
+		html_attr(sort);
+		delim = "&";
+	}
 	if (ofs) {
 		html(delim);
 		htmlf("ofs=%d", ofs);
@@ -161,7 +167,7 @@ static void site_url(const char *page, const char *search, int ofs)
 }
 
 static void site_link(const char *page, const char *name, const char *title,
-		      const char *class, const char *search, int ofs)
+		      const char *class, const char *search, const char *sort, int ofs)
 {
 	html("<a");
 	if (title) {
@@ -175,16 +181,16 @@ static void site_link(const char *page, const char *name, const char *title,
 		html("'");
 	}
 	html(" href='");
-	site_url(page, search, ofs);
+	site_url(page, search, sort, ofs);
 	html("'>");
 	html_txt(name);
 	html("</a>");
 }
 
 void cgit_index_link(const char *name, const char *title, const char *class,
-		     const char *pattern, int ofs)
+		     const char *pattern, const char *sort, int ofs)
 {
-	site_link(NULL, name, title, class, pattern, ofs);
+	site_link(NULL, name, title, class, pattern, sort, ofs);
 }
 
 static char *repolink(const char *title, const char *class, const char *page,
@@ -428,7 +434,7 @@ void cgit_self_link(char *name, const char *title, const char *class,
 		    struct cgit_context *ctx)
 {
 	if (!strcmp(ctx->qry.page, "repolist"))
-		return cgit_index_link(name, title, class, ctx->qry.search,
+		return cgit_index_link(name, title, class, ctx->qry.search, ctx->qry.sort,
 				       ctx->qry.ofs);
 	else if (!strcmp(ctx->qry.page, "summary"))
 		return cgit_summary_link(name, title, class, ctx->qry.head);
@@ -782,7 +788,7 @@ static void print_header(struct cgit_context *ctx)
 
 	html("<td class='main'>");
 	if (ctx->repo) {
-		cgit_index_link("index", NULL, NULL, NULL, 0);
+		cgit_index_link("index", NULL, NULL, NULL, NULL, 0);
 		html(" : ");
 		cgit_summary_link(ctx->repo->name, ctx->repo->name, NULL, NULL);
 		html("</td><td class='form'>");
@@ -858,10 +864,10 @@ void cgit_print_pageheader(struct cgit_context *ctx)
 		html("<input type='submit' value='search'/>\n");
 		html("</form>\n");
 	} else {
-		site_link(NULL, "index", NULL, hc(ctx, "repolist"), NULL, 0);
+		site_link(NULL, "index", NULL, hc(ctx, "repolist"), NULL, NULL, 0);
 		if (ctx->cfg.root_readme)
 			site_link("about", "about", NULL, hc(ctx, "about"),
-				  NULL, 0);
+				  NULL, NULL, 0);
 		html("</td><td class='form'>");
 		html("<form method='get' action='");
 		html_attr(cgit_rooturl());

@@ -76,6 +76,8 @@ void show_commit_decorations(struct commit *commit)
 			cgit_tag_link(buf, NULL, "tag-deco", ctx.qry.head, buf);
 		}
 		else if (!prefixcmp(deco->name, "refs/remotes/")) {
+			if (!ctx.repo->enable_remote_branches)
+				goto next;
 			strncpy(buf, deco->name + 13, sizeof(buf) - 1);
 			cgit_log_link(buf, NULL, "remote-deco", NULL,
 				      sha1_to_hex(commit->object.sha1),
@@ -88,6 +90,7 @@ void show_commit_decorations(struct commit *commit)
 					 sha1_to_hex(commit->object.sha1),
 					 ctx.qry.vpath, 0);
 		}
+next:
 		deco = deco->next;
 	}
 }

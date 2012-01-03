@@ -395,8 +395,7 @@ void cgit_print_diff(const char *new_rev, const char *old_rev,
 		}
 	}
 
-	if ((ctx.qry.ssdiff && !ctx.cfg.ssdiff) || (!ctx.qry.ssdiff && ctx.cfg.ssdiff))
-		use_ssdiff = 1;
+	use_ssdiff = ctx.qry.has_ssdiff ? ctx.qry.ssdiff : ctx.cfg.ssdiff;
 
 	if (show_ctrls)
 		cgit_print_diff_ctrls();
