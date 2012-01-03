@@ -372,8 +372,7 @@ void cgit_print_diff(const char *new_rev, const char *old_rev, const char *prefi
 		}
 	}
 
-	if ((ctx.qry.ssdiff && !ctx.cfg.ssdiff) || (!ctx.qry.ssdiff && ctx.cfg.ssdiff))
-		use_ssdiff = 1;
+	use_ssdiff = ctx.qry.has_ssdiff ? ctx.qry.ssdiff : ctx.cfg.ssdiff;
 
 	print_ssdiff_link();
 	cgit_print_diffstat(old_rev_sha1, new_rev_sha1, prefix);
