@@ -294,7 +294,7 @@ void cgit_log_link(const char *name, const char *title, const char *class,
 	char *delim;
 
 	delim = repolink(title, class, "log", head, path);
-	if (rev && strcmp(rev, ctx.qry.head)) {
+	if (rev && ctx.qry.head && strcmp(rev, ctx.qry.head)) {
 		html(delim);
 		html("id=");
 		html_url_arg(rev);
@@ -338,7 +338,7 @@ void cgit_commit_link(char *name, const char *title, const char *class,
 	char *delim;
 
 	delim = repolink(title, class, "commit", head, path);
-	if (rev && strcmp(rev, ctx.qry.head)) {
+	if (rev && ctx.qry.head && strcmp(rev, ctx.qry.head)) {
 		html(delim);
 		html("id=");
 		html_url_arg(rev);
