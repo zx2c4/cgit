@@ -42,14 +42,12 @@ static char *longest_common_subsequence(char *A, char *B)
 	int i, j, ri;
 	int m = strlen(A);
 	int n = strlen(B);
-	int tmp1, tmp2, length;
+	int tmp1, tmp2;
 	int lcs_length;
 	char *result;
 
-	length = (m + 1) * (n + 1);
-
 	// We bail if the lines are too long
-	if (length > MAX_SSDIFF_SIZE)
+	if (m >= MAX_SSDIFF_M || n >= MAX_SSDIFF_N)
 		return NULL;
 
 	create_or_reset_lcs_table();
