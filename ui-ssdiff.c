@@ -23,7 +23,7 @@ static void create_or_reset_lcs_table()
 	int i;
 
 	if (L != NULL) {
-		memset(*L, 0, sizeof(*L) * MAX_SSDIFF_SIZE);
+		memset(*L, 0, sizeof(int) * MAX_SSDIFF_SIZE);
 		return;
 	}
 
