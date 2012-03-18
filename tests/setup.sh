@@ -41,7 +41,7 @@ mkrepo() {
 		git commit -m "add a+b"
 		git branch "1+2"
 	fi
-	cd $dir
+	cd "$dir"
 }
 
 setup_repos()

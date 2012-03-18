@@ -25,7 +25,7 @@ run_test 'find `cgit` signature' '
 '
 
 run_test 'find initial commit' '
-	root=$(git --git-dir=$PWD/trash/repos/foo/.git rev-list HEAD | tail -1)
+	root=$(git --git-dir="$PWD/trash/repos/foo/.git" rev-list HEAD | tail -1)
 '
 
 run_test 'generate patch for initial commit' '
