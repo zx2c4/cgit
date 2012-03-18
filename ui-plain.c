@@ -6,6 +6,7 @@
  *   (see COPYING for full license text)
  */
 
+#include <stdio.h>
 #include "cgit.h"
 #include "html.h"
 #include "ui-shared.h"
@@ -13,12 +14,53 @@
 int match_baselen;
 int match;
 
+static char *get_mimetype_from_file(const char *filename, const char *ext)
+{
+	static const char *delimiters;
+	char *result;
+	FILE *fd;
+	char line[1024];
+	char *mimetype;
+	char *token;
+
+	if (!filename)
+		return NULL;
+
+	fd = fopen(filename, "r");
+	if (!fd)
+		return NULL;
+
+	delimiters = " \t\r\n";
+	result = NULL;
+
+	/* loop over all lines in the file */
+	while (!result && fgets(line, sizeof(line), fd)) {
+		mimetype = strtok(line, delimiters);
+
+		/* skip empty lines and comment lines */
+		if (!mimetype || (mimetype[0] == '#'))
+			continue;
+
+		/* loop over all extensions of mimetype */
+		while ((token = strtok(NULL, delimiters))) {
+			if (!strcasecmp(ext, token)) {
+				result = xstrdup(mimetype);
+				break;
+			}
+		}
+	}
+	fclose(fd);
+
+	return result;
+}
+
 static void print_object(const unsigned char *sha1, const char *path)
 {
 	enum object_type type;
 	char *buf, *ext;
 	unsigned long size;
 	struct string_list_item *mime;
+	int freemime;
 
 	type = sha1_object_info(sha1, &size);
 	if (type == OBJ_BAD) {
@@ -33,10 +75,16 @@ static void print_object(const unsigned char *sha1, const char *path)
 	}
 	ctx.page.mimetype = NULL;
 	ext = strrchr(path, '.');
+	freemime = 0;
 	if (ext && *(++ext)) {
 		mime = string_list_lookup(&ctx.cfg.mimetypes, ext);
-		if (mime)
+		if (mime) {
 			ctx.page.mimetype = (char *)mime->util;
+		} else {
+			ctx.page.mimetype = get_mimetype_from_file(ctx.cfg.mimetype_file, ext);
+			if (ctx.page.mimetype)
+				freemime = 1;
+		}
 	}
 	if (!ctx.page.mimetype) {
 		if (buffer_is_binary(buf, size))
@@ -50,6 +98,8 @@ static void print_object(const unsigned char *sha1, const char *path)
 	cgit_print_http_headers(&ctx);
 	html_raw(buf, size);
 	match = 1;
+	if (freemime)
+		free(ctx.page.mimetype);
 }
 
 static char *buildpath(const char *base, int baselen, const char *path)

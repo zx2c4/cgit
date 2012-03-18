@@ -177,6 +177,7 @@ struct cgit_config {
 	char *index_info;
 	char *logo;
 	char *logo_link;
+	char *mimetype_file;
 	char *module_link;
 	char *project_list;
 	char *readme;

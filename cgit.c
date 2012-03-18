@@ -241,6 +241,8 @@ void config_cb(const char *name, const char *value)
 		ctx.cfg.ssdiff = atoi(value);
 	else if (!strcmp(name, "agefile"))
 		ctx.cfg.agefile = xstrdup(value);
+	else if (!strcmp(name, "mimetype-file"))
+		ctx.cfg.mimetype_file = xstrdup(value);
 	else if (!strcmp(name, "renamelimit"))
 		ctx.cfg.renamelimit = atoi(value);
 	else if (!strcmp(name, "remove-suffix"))
