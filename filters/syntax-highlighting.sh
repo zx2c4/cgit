@@ -42,4 +42,21 @@ EXTENSION="${BASENAME##*.}"
 exec highlight --force -f -I -X -S $EXTENSION 2>/dev/null
 
 # This is for version 3
+#
+# On CentOS 6.2 (using highlight from EPEL), when highlight doesn't know about
+# an EXTENSION, it outputs a lua error and _no_ text, even when the --force
+# option is used.
+#
+# Also see the bug reports at:
+# http://sourceforge.net/tracker/?func=detail&aid=3490017&group_id=215618&atid=1034391
+# https://bugzilla.redhat.com/show_bug.cgi?id=795567
+#
+# This workaround can be removed when the bug is fixed upstream and the new
+# version is packaged in most distributions.
+#
+# The workaround is to set the extension to 'txt' (plain text) when highlight
+# exits with an error (doesn't know the format).
+#
+#echo "test" | highlight -f -I -O xhtml -S $EXTENSION &>/dev/null
+#[ ${?} -ne 0 ] && EXTENSION="txt"
 #exec highlight --force -f -I -O xhtml -S $EXTENSION 2>/dev/null
