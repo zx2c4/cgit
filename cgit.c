@@ -421,6 +421,17 @@ char *find_default_branch(struct cgit_repo *repo)
 	return ref;
 }
 
+static char *guess_defbranch(const char *repo_path)
+{
+	const char *ref;
+	unsigned char sha1[20];
+
+	ref = resolve_ref("HEAD", sha1, 0, NULL);
+	if (!ref || prefixcmp(ref, "refs/heads/"))
+		return "master";
+	return xstrdup(ref + 11);
+}
+
 static int prepare_repo_cmd(struct cgit_context *ctx)
 {
 	char *tmp;
@@ -447,10 +458,12 @@ static int prepare_repo_cmd(struct cgit_context *ctx)
 	}
 	ctx->page.title = fmt("%s - %s", ctx->repo->name, ctx->repo->desc);
 
+	if (!ctx->repo->defbranch)
+		ctx->repo->defbranch = guess_defbranch(ctx->repo->path);
+
 	if (!ctx->qry.head) {
 		ctx->qry.nohead = 1;
 		ctx->qry.head = find_default_branch(ctx->repo);
-		ctx->repo->defbranch = ctx->qry.head;
 	}
 
 	if (!ctx->qry.head) {
