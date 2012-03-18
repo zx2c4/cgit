@@ -1,4 +1,4 @@
-body, table, form {
+body, div#cgit table, div#cgit form {
 	padding: 0em;
 	margin: 0em;
 }
@@ -11,39 +11,39 @@ body {
 	padding: 4px;
 }
 
-a {
+div#cgit a {
 	color: blue;
 	text-decoration: none;
 }
 
-a:hover {
+div#cgit a:hover {
 	text-decoration: underline;
 }
 
-table {
+div#cgit table {
       border-collapse: collapse;
 }
 
-table#header {
+div#cgit table#header {
 	width: 100%;
 	margin-bottom: 1em;
 }
 
-table#header td.logo {
+div#cgit table#header td.logo {
 	width: 96px;
 }
 
-table#header td.main {
+div#cgit table#header td.main {
 	font-size: 250%;
 	padding-left: 10px;
 	white-space: nowrap;
 }
 
-table#header td.main a {
+div#cgit table#header td.main a {
 	color: #000;
 }
 
-table#header td.form {
+div#cgit table#header td.form {
 	text-align: right;
 	vertical-align: bottom;
 	padding-right: 1em;
@@ -51,19 +51,19 @@ table#header td.form {
 	white-space: nowrap;
 }
 
-table#header td.form form,
-table#header td.form input,
-table#header td.form select {
+div#cgit table#header td.form form,
+div#cgit table#header td.form input,
+div#cgit table#header td.form select {
 	font-size: 90%;
 }
 
-table#header td.sub {
+div#cgit table#header td.sub {
 	color: #777;
 	border-top: solid 1px #ccc;
 	padding-left: 10px;
 }
 
-table.tabs {
+div#cgit table.tabs {
 	border-bottom: solid 3px #ccc;
 	border-collapse: collapse;
 	margin-top: 2em;
@@ -71,74 +71,74 @@ table.tabs {
 	width: 100%;
 }
 
-table.tabs td {
+div#cgit table.tabs td {
 	padding: 0px 1em;
 	vertical-align: bottom;
 }
 
-table.tabs td a {
+div#cgit table.tabs td a {
 	padding: 2px 0.75em;
 	color: #777;
 	font-size: 110%;
 }
 
-table.tabs td a.active {
+div#cgit table.tabs td a.active {
 	color: #000;
 	background-color: #ccc;
 }
 
-table.tabs td.form {
+div#cgit table.tabs td.form {
 	text-align: right;
 }
 
-table.tabs td.form form {
+div#cgit table.tabs td.form form {
 	padding-bottom: 2px;
 	font-size: 90%;
 	white-space: nowrap;
 }
 
-table.tabs td.form input,
-table.tabs td.form select {
+div#cgit table.tabs td.form input,
+div#cgit table.tabs td.form select {
 	font-size: 90%;
 }
 
-div.path {
+div#cgit div.path {
 	margin: 0px;
 	padding: 5px 2em 2px 2em;
 	color: #000;
 	background-color: #eee;
 }
 
-div.content {
+div#cgit div.content {
 	margin: 0px;
 	padding: 2em;
 	border-bottom: solid 3px #ccc;
 }
 
 
-table.list {
+div#cgit table.list {
 	width: 100%;
 	border: none;
 	border-collapse: collapse;
 }
 
-table.list tr {
+div#cgit table.list tr {
 	background: white;
 }
 
-table.list tr.logheader {
+div#cgit table.list tr.logheader {
 	background: #eee;
 }
 
-table.list tr:hover {
+div#cgit table.list tr:hover {
 	background: #eee;
 }
 
-table.list tr.nohover:hover {
+div#cgit table.list tr.nohover:hover {
 	background: white;
 }
 
-table.list th {
+div#cgit table.list th {
 	font-weight: bold;
 	/* color: #888;
 	border-top: dashed 1px #888;
@@ -148,93 +148,93 @@ table.list th {
 	vertical-align: baseline;
 }
 
-table.list td {
+div#cgit table.list td {
 	border: none;
 	padding: 0.1em 0.5em 0.1em 0.5em;
 }
 
-table.list td.commitgraph {
+div#cgit table.list td.commitgraph {
 	font-family: monospace;
 	white-space: pre;
 }
 
-table.list td.commitgraph .column1 {
+div#cgit table.list td.commitgraph .column1 {
 	color: #a00;
 }
 
-table.list td.commitgraph .column2 {
+div#cgit table.list td.commitgraph .column2 {
 	color: #0a0;
 }
 
-table.list td.commitgraph .column3 {
+div#cgit table.list td.commitgraph .column3 {
 	color: #aa0;
 }
 
-table.list td.commitgraph .column4 {
+div#cgit table.list td.commitgraph .column4 {
 	color: #00a;
 }
 
-table.list td.commitgraph .column5 {
+div#cgit table.list td.commitgraph .column5 {
 	color: #a0a;
 }
 
-table.list td.commitgraph .column6 {
+div#cgit table.list td.commitgraph .column6 {
 	color: #0aa;
 }
 
-table.list td.logsubject {
+div#cgit table.list td.logsubject {
 	font-family: monospace;
 	font-weight: bold;
 }
 
-table.list td.logmsg {
+div#cgit table.list td.logmsg {
 	font-family: monospace;
 	white-space: pre;
 	padding: 0 0.5em;
 }
 
-table.list td a {
+div#cgit table.list td a {
 	color: black;
 }
 
-table.list td a.ls-dir {
+div#cgit table.list td a.ls-dir {
 	font-weight: bold;
 	color: #00f;
 }
 
-table.list td a:hover {
+div#cgit table.list td a:hover {
 	color: #00f;
 }
 
-img {
+div#cgit img {
 	border: none;
 }
 
-input#switch-btn {
+div#cgit input#switch-btn {
 	margin: 2px 0px 0px 0px;
 }
 
-td#sidebar input.txt {
+div#cgit td#sidebar input.txt {
 	width: 100%;
 	margin: 2px 0px 0px 0px;
 }
 
-table#grid {
+div#cgit table#grid {
 	margin: 0px;
 }
 
-td#content {
+div#cgit td#content {
 	vertical-align: top;
 	padding: 1em 2em 1em 1em;
 	border: none;
 }
 
-div#summary {
+div#cgit div#summary {
 	vertical-align: top;
 	margin-bottom: 1em;
 }
 
-table#downloads {
+div#cgit table#downloads {
 	float: right;
 	border-collapse: collapse;
 	border: solid 1px #777;
@@ -242,152 +242,152 @@ table#downloads {
 	margin-bottom: 0.5em;
 }
 
-table#downloads th {
+div#cgit table#downloads th {
 	background-color: #ccc;
 }
 
-div#blob {
+div#cgit div#blob {
 	border: solid 1px black;
 }
 
-div.error {
+div#cgit div.error {
 	color: red;
 	font-weight: bold;
 	margin: 1em 2em;
 }
 
-a.ls-blob, a.ls-dir, a.ls-mod {
+div#cgit a.ls-blob, div#cgit a.ls-dir, div#cgit a.ls-mod {
 	font-family: monospace;
 }
 
-td.ls-size {
+div#cgit td.ls-size {
 	text-align: right;
 	font-family: monospace;
 	width: 10em;
 }
 
-td.ls-mode {
+div#cgit td.ls-mode {
 	font-family: monospace;
 	width: 10em;
 }
 
-table.blob {
+div#cgit table.blob {
 	margin-top: 0.5em;
 	border-top: solid 1px black;
 }
 
-table.blob td.lines {
+div#cgit table.blob td.lines {
 	margin: 0; padding: 0 0 0 0.5em;
 	vertical-align: top;
 	color: black;
 }
 
-table.blob td.linenumbers {
+div#cgit table.blob td.linenumbers {
 	margin: 0; padding: 0 0.5em 0 0.5em;
 	vertical-align: top;
 	text-align: right;
 	border-right: 1px solid gray;
 }
 
-table.blob pre {
+div#cgit table.blob pre {
 	padding: 0; margin: 0;
 }
 
-table.blob a.no, table.ssdiff a.no {
+div#cgit table.blob a.no, div#cgit table.ssdiff a.no {
 	color: gray;
 	text-align: right;
 	text-decoration: none;
 }
 
-table.blob a.no a:hover {
+div#cgit table.blob a.no a:hover {
 	color: black;
 }
 
-table.bin-blob {
+div#cgit table.bin-blob {
 	margin-top: 0.5em;
 	border: solid 1px black;
 }
 
-table.bin-blob th {
+div#cgit table.bin-blob th {
 	font-family: monospace;
 	white-space: pre;
 	border: solid 1px #777;
 	padding: 0.5em 1em;
 }
 
-table.bin-blob td {
+div#cgit table.bin-blob td {
 	font-family: monospace;
 	white-space: pre;
 	border-left: solid 1px #777;
 	padding: 0em 1em;
 }
 
-table.nowrap td {
+div#cgit table.nowrap td {
 	white-space: nowrap;
 }
 
-table.commit-info {
+div#cgit table.commit-info {
 	border-collapse: collapse;
 	margin-top: 1.5em;
 }
 
-div.cgit-panel {
+div#cgit div.cgit-panel {
 	float: right;
 	margin-top: 1.5em;
 }
 
-div.cgit-panel table {
+div#cgit div.cgit-panel table {
 	border-collapse: collapse;
 	border: solid 1px #aaa;
 	background-color: #eee;
 }
 
-div.cgit-panel th {
+div#cgit div.cgit-panel th {
 	text-align: center;
 }
 
-div.cgit-panel td {
+div#cgit div.cgit-panel td {
 	padding: 0.25em 0.5em;
 }
 
-div.cgit-panel td.label {
+div#cgit div.cgit-panel td.label {
 	padding-right: 0.5em;
 }
 
-div.cgit-panel td.ctrl {
+div#cgit div.cgit-panel td.ctrl {
 	padding-left: 0.5em;
 }
 
-table.commit-info th {
+div#cgit table.commit-info th {
 	text-align: left;
 	font-weight: normal;
 	padding: 0.1em 1em 0.1em 0.1em;
 	vertical-align: top;
 }
 
-table.commit-info td {
+div#cgit table.commit-info td {
 	font-weight: normal;
 	padding: 0.1em 1em 0.1em 0.1em;
 }
 
-div.commit-subject {
+div#cgit div.commit-subject {
 	font-weight: bold;
 	font-size: 125%;
 	margin: 1.5em 0em 0.5em 0em;
 	padding: 0em;
 }
 
-div.commit-msg {
+div#cgit div.commit-msg {
 	white-space: pre;
 	font-family: monospace;
 }
 
-div.notes-header {
+div#cgit div.notes-header {
 	font-weight: bold;
 	padding-top: 1.5em;
 }
 
-div.notes {
+div#cgit div.notes {
 	white-space: pre;
 	font-family: monospace;
 	border: solid 1px #ee9;
@@ -396,22 +396,22 @@ div.notes {
 	float: left;
 }
 
-div.notes-footer {
+div#cgit div.notes-footer {
 	clear: left;
 }
 
-div.diffstat-header {
+div#cgit div.diffstat-header {
 	font-weight: bold;
 	padding-top: 1.5em;
 }
 
-table.diffstat {
+div#cgit table.diffstat {
 	border-collapse: collapse;
 	border: solid 1px #aaa;
 	background-color: #eee;
 }
 
-table.diffstat th {
+div#cgit table.diffstat th {
 	font-weight: normal;
 	text-align: left;
 	text-decoration: underline;
@@ -419,282 +419,282 @@ table.diffstat th {
 	font-size: 100%;
 }
 
-table.diffstat td {
+div#cgit table.diffstat td {
 	padding: 0.2em 0.2em 0.1em 0.1em;
 	font-size: 100%;
 	border: none;
 }
 
-table.diffstat td.mode {
+div#cgit table.diffstat td.mode {
 	white-space: nowrap;
 }
 
-table.diffstat td span.modechange {
+div#cgit table.diffstat td span.modechange {
 	padding-left: 1em;
 	color: red;
 }
 
-table.diffstat td.add a {
+div#cgit table.diffstat td.add a {
 	color: green;
 }
 
-table.diffstat td.del a {
+div#cgit table.diffstat td.del a {
 	color: red;
 }
 
-table.diffstat td.upd a {
+div#cgit table.diffstat td.upd a {
 	color: blue;
 }
 
-table.diffstat td.graph {
+div#cgit table.diffstat td.graph {
 	width: 500px;
 	vertical-align: middle;
 }
 
-table.diffstat td.graph table {
+div#cgit table.diffstat td.graph table {
 	border: none;
 }
 
-table.diffstat td.graph td {
+div#cgit table.diffstat td.graph td {
 	padding: 0px;
 	border: 0px;
 	height: 7pt;
 }
 
-table.diffstat td.graph td.add {
+div#cgit table.diffstat td.graph td.add {
 	background-color: #5c5;
 }
 
-table.diffstat td.graph td.rem {
+div#cgit table.diffstat td.graph td.rem {
 	background-color: #c55;
 }
 
-div.diffstat-summary {
+div#cgit div.diffstat-summary {
 	color: #888;
 	padding-top: 0.5em;
 }
 
-table.diff {
+div#cgit table.diff {
 	width: 100%;
 }
 
-table.diff td {
+div#cgit table.diff td {
 	font-family: monospace;
 	white-space: pre;
 }
 
-table.diff td div.head {
+div#cgit table.diff td div.head {
 	font-weight: bold;
 	margin-top: 1em;
 	color: black;
 }
 
-table.diff td div.hunk {
+div#cgit table.diff td div.hunk {
 	color: #009;
 }
 
-table.diff td div.add {
+div#cgit table.diff td div.add {
 	color: green;
 }
 
-table.diff td div.del {
+div#cgit table.diff td div.del {
 	color: red;
 }
 
-.sha1 {
+div#cgit .sha1 {
 	font-family: monospace;
 	font-size: 90%;
 }
 
-.left {
+div#cgit .left {
 	text-align: left;
 }
 
-.right {
+div#cgit .right {
 	text-align: right;
 }
 
-table.list td.reposection {
+div#cgit table.list td.reposection {
 	font-style: italic;
 	color: #888;
 }
 
-a.button {
+div#cgit a.button {
 	font-size: 80%;
 	padding: 0em 0.5em;
 }
 
-a.primary {
+div#cgit a.primary {
 	font-size: 100%;
 }
 
-a.secondary {
+div#cgit a.secondary {
 	font-size: 90%;
 }
 
-td.toplevel-repo {
+div#cgit td.toplevel-repo {
 
 }
 
-table.list td.sublevel-repo {
+div#cgit table.list td.sublevel-repo {
 	padding-left: 1.5em;
 }
 
-div.pager {
+div#cgit div.pager {
 	text-align: center;
 	margin: 1em 0em 0em 0em;
 }
 
-div.pager a {
+div#cgit div.pager a {
 	color: #777;
 	margin: 0em 0.5em;
 }
 
-span.age-mins {
+div#cgit span.age-mins {
 	font-weight: bold;
 	color: #080;
 }
 
-span.age-hours {
+div#cgit span.age-hours {
 	color: #080;
 }
 
-span.age-days {
+div#cgit span.age-days {
 	color: #040;
 }
 
-span.age-weeks {
+div#cgit span.age-weeks {
 	color: #444;
 }
 
-span.age-months {
+div#cgit span.age-months {
 	color: #888;
 }
 
-span.age-years {
+div#cgit span.age-years {
 	color: #bbb;
 }
-div.footer {
+div#cgit div.footer {
 	margin-top: 0.5em;
 	text-align: center;
 	font-size: 80%;
 	color: #ccc;
 }
-a.branch-deco {
+div#cgit a.branch-deco {
 	margin: 0px 0.5em;
 	padding: 0px 0.25em;
 	background-color: #88ff88;
 	border: solid 1px #007700;
 }
-a.tag-deco {
+div#cgit a.tag-deco {
 	margin: 0px 0.5em;
 	padding: 0px 0.25em;
 	background-color: #ffff88;
 	border: solid 1px #777700;
 }
-a.remote-deco {
+div#cgit a.remote-deco {
 	margin: 0px 0.5em;
 	padding: 0px 0.25em;
 	background-color: #ccccff;
 	border: solid 1px #000077;
 }
-a.deco {
+div#cgit a.deco {
 	margin: 0px 0.5em;
 	padding: 0px 0.25em;
 	background-color: #ff8888;
 	border: solid 1px #770000;
 }
 
-div.commit-subject a.branch-deco,
-div.commit-subject a.tag-deco,
-div.commit-subject a.remote-deco,
-div.commit-subject a.deco {
+div#cgit div.commit-subject a.branch-deco,
+div#cgit div.commit-subject a.tag-deco,
+div#cgit div.commit-subject a.remote-deco,
+div#cgit div.commit-subject a.deco {
 	margin-left: 1em;
 	font-size: 75%;
 }
 
-table.stats {
+div#cgit table.stats {
 	border: solid 1px black;
 	border-collapse: collapse;
 }
 
-table.stats th {
+div#cgit table.stats th {
 	text-align: left;
 	padding: 1px 0.5em;
 	background-color: #eee;
 	border: solid 1px black;
 }
 
-table.stats td {
+div#cgit table.stats td {
 	text-align: right;
 	padding: 1px 0.5em;
 	border: solid 1px black;
 }
 
-table.stats td.total {
+div#cgit table.stats td.total {
 	font-weight: bold;
 	text-align: left;
 }
 
-table.stats td.sum {
+div#cgit table.stats td.sum {
 	color: #c00;
 	font-weight: bold;
 /*	background-color: #eee; */
 }
 
-table.stats td.left {
+div#cgit table.stats td.left {
 	text-align: left;
 }
 
-table.vgraph {
+div#cgit table.vgraph {
 	border-collapse: separate;
 	border: solid 1px black;
 	height: 200px;
 }
 
-table.vgraph th {
+div#cgit table.vgraph th {
 	background-color: #eee;
 	font-weight: bold;
 	border: solid 1px white;
 	padding: 1px 0.5em;
 }
 
-table.vgraph td {
+div#cgit table.vgraph td {
 	vertical-align: bottom;
 	padding: 0px 10px;
 }
 
-table.vgraph div.bar {
+div#cgit table.vgraph div.bar {
 	background-color: #eee;
 }
 
-table.hgraph {
+div#cgit table.hgraph {
 	border: solid 1px black;
 	width: 800px;
 }
 
-table.hgraph th {
+div#cgit table.hgraph th {
 	background-color: #eee;
 	font-weight: bold;
 	border: solid 1px black;
 	padding: 1px 0.5em;
 }
 
-table.hgraph td {
+div#cgit table.hgraph td {
 	vertical-align: middle;
 	padding: 2px 2px;
 }
 
-table.hgraph div.bar {
+div#cgit table.hgraph div.bar {
 	background-color: #eee;
 	height: 1em;
 }
 
-table.ssdiff {
+div#cgit table.ssdiff {
 	width: 100%;
 }
 
-table.ssdiff td {
+div#cgit table.ssdiff td {
 	font-size: 75%;
 	font-family: monospace;
 	white-space: pre;
@@ -703,53 +703,53 @@ table.ssdiff td {
 	border-right: solid 1px #aaa;
 }
 
-table.ssdiff td.add {
+div#cgit table.ssdiff td.add {
 	color: black;
 	background: #cfc;
 	min-width: 50%;
 }
 
-table.ssdiff td.add_dark {
+div#cgit table.ssdiff td.add_dark {
 	color: black;
 	background: #aca;
 	min-width: 50%;
 }
 
-table.ssdiff span.add {
+div#cgit table.ssdiff span.add {
 	background: #cfc;
 	font-weight: bold;
 }
 
-table.ssdiff td.del {
+div#cgit table.ssdiff td.del {
 	color: black;
 	background: #fcc;
 	min-width: 50%;
 }
 
-table.ssdiff td.del_dark {
+div#cgit table.ssdiff td.del_dark {
 	color: black;
 	background: #caa;
 	min-width: 50%;
 }
 
-table.ssdiff span.del {
+div#cgit table.ssdiff span.del {
 	background: #fcc;
 	font-weight: bold;
 }
 
-table.ssdiff td.changed {
+div#cgit table.ssdiff td.changed {
 	color: black;
 	background: #ffc;
 	min-width: 50%;
 }
 
-table.ssdiff td.changed_dark {
+div#cgit table.ssdiff td.changed_dark {
 	color: black;
 	background: #cca;
 	min-width: 50%;
 }
 
-table.ssdiff td.lineno {
+div#cgit table.ssdiff td.lineno {
 	color: black;
 	background: #eee;
 	text-align: right;
@@ -757,48 +757,48 @@ table.ssdiff td.lineno {
 	min-width: 3em;
 }
 
-table.ssdiff td.hunk {
+div#cgit table.ssdiff td.hunk {
 	color: black;
 	background: #ccf;
 	border-top: solid 1px #aaa;
 	border-bottom: solid 1px #aaa;
 }
 
-table.ssdiff td.head {
+div#cgit table.ssdiff td.head {
 	border-top: solid 1px #aaa;
 	border-bottom: solid 1px #aaa;
 }
 
-table.ssdiff td.head div.head {
+div#cgit table.ssdiff td.head div.head {
 	font-weight: bold;
 	color: black;
 }
 
-table.ssdiff td.foot {
+div#cgit table.ssdiff td.foot {
 	border-top: solid 1px #aaa;
         border-left: none;
         border-right: none;
         border-bottom: none;
 }
 
-table.ssdiff td.space {
+div#cgit table.ssdiff td.space {
 	border: none;
 }
 
-table.ssdiff td.space div {
+div#cgit table.ssdiff td.space div {
 	min-height: 3em;
 }
 
 /* Syntax highlighting */
-table.blob .num  { color:#2928ff; }
-table.blob .esc  { color:#ff00ff; }
-table.blob .str  { color:#ff0000; }
-table.blob .dstr { color:#818100; }
-table.blob .slc  { color:#838183; font-style:italic; }
-table.blob .com  { color:#838183; font-style:italic; }
-table.blob .dir  { color:#008200; }
-table.blob .sym  { color:#000000; }
-table.blob .kwa  { color:#000000; font-weight:bold; }
-table.blob .kwb  { color:#830000; }
-table.blob .kwc  { color:#000000; font-weight:bold; }
-table.blob .kwd  { color:#010181; }
+div#cgit table.blob .num  { color:#2928ff; }
+div#cgit table.blob .esc  { color:#ff00ff; }
+div#cgit table.blob .str  { color:#ff0000; }
+div#cgit table.blob .dstr { color:#818100; }
+div#cgit table.blob .slc  { color:#838183; font-style:italic; }
+div#cgit table.blob .com  { color:#838183; font-style:italic; }
+div#cgit table.blob .dir  { color:#008200; }
+div#cgit table.blob .sym  { color:#000000; }
+div#cgit table.blob .kwa  { color:#000000; font-weight:bold; }
+div#cgit table.blob .kwb  { color:#830000; }
+div#cgit table.blob .kwc  { color:#000000; font-weight:bold; }
+div#cgit table.blob .kwd  { color:#010181; }
