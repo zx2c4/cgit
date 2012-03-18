@@ -31,6 +31,7 @@ div#cgit table#header {
 
 div#cgit table#header td.logo {
 	width: 96px;
+	vertical-align: top;
 }
 
 div#cgit table#header td.main {
