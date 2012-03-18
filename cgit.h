@@ -88,6 +88,7 @@ struct cgit_repo {
 	struct cgit_filter *about_filter;
 	struct cgit_filter *commit_filter;
 	struct cgit_filter *source_filter;
+	struct string_list submodules;
 };
 
 typedef void (*repo_config_fn)(struct cgit_repo *repo, const char *name,

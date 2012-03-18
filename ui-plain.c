@@ -97,11 +97,14 @@ static void print_dir_entry(const unsigned char *sha1, const char *base,
 	char *fullpath;
 
 	fullpath = buildpath(base, baselen, path);
-	if (!S_ISDIR(mode))
+	if (!S_ISDIR(mode) && !S_ISGITLINK(mode))
 		fullpath[strlen(fullpath) - 1] = 0;
 	html("  <li>");
-	cgit_plain_link(path, NULL, NULL, ctx.qry.head, ctx.qry.sha1,
-			fullpath);
+	if (S_ISGITLINK(mode)) {
+		cgit_submodule_link(NULL, fullpath, sha1_to_hex(sha1));
+	} else
+		cgit_plain_link(path, NULL, NULL, ctx.qry.head, ctx.qry.sha1,
+				fullpath);
 	html("</li>\n");
 	match = 2;
 }
