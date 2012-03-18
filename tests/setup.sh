@@ -22,7 +22,7 @@ mkrepo() {
 	count=$2
 	dir=$PWD
 	test -d "$name" && return
-	printf "Creating testrepo %s\n" $name
+	printf "Creating testrepo %s\n" "$name"
 	mkdir -p "$name"
 	cd "$name"
 	git init
@@ -41,7 +41,7 @@ mkrepo() {
 		git commit -m "add a+b"
 		git branch "1+2"
 	fi
-	cd $dir
+	cd "$dir"
 }
 
 setup_repos()
