@@ -582,24 +582,28 @@ div#cgit div.footer {
 	color: #ccc;
 }
 div#cgit a.branch-deco {
+	color: #000;
 	margin: 0px 0.5em;
 	padding: 0px 0.25em;
 	background-color: #88ff88;
 	border: solid 1px #007700;
 }
 div#cgit a.tag-deco {
+	color: #000;
 	margin: 0px 0.5em;
 	padding: 0px 0.25em;
 	background-color: #ffff88;
 	border: solid 1px #777700;
 }
 div#cgit a.remote-deco {
+	color: #000;
 	margin: 0px 0.5em;
 	padding: 0px 0.25em;
 	background-color: #ccccff;
 	border: solid 1px #000077;
 }
 div#cgit a.deco {
+	color: #000;
 	margin: 0px 0.5em;
 	padding: 0px 0.25em;
 	background-color: #ff8888;
