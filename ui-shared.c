@@ -939,6 +939,13 @@ void cgit_print_pageheader(struct cgit_context *ctx)
 		html("<div class='path'>");
 		html("path: ");
 		cgit_print_path_crumbs(ctx, ctx->qry.vpath);
+		if (!strcmp(ctx->qry.page, "tree")) {
+			html(" (");
+			cgit_plain_link("plain", NULL, NULL, ctx->qry.head,
+					ctx->qry.has_sha1 ? ctx->qry.sha1 : NULL,
+					ctx->qry.vpath);
+			html(")");
+		}
 		html("</div>");
 	}
 	html("<div class='content'>");

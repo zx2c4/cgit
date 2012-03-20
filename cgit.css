@@ -270,8 +270,7 @@ div#cgit td.ls-mode {
 }
 
 div#cgit table.blob {
-	margin-top: 0.5em;
-	border-top: solid 1px black;
+	margin-top: 0px;
 }
 
 div#cgit table.blob td.lines {
@@ -284,7 +283,7 @@ div#cgit table.blob td.linenumbers {
 	margin: 0; padding: 0 0.5em 0 0.5em;
 	vertical-align: top;
 	text-align: right;
-	border-right: 1px solid gray;
+	color: #eee;
 }
 
 div#cgit table.blob pre {
@@ -302,21 +301,20 @@ div#cgit table.blob a.no a:hover {
 }
 
 div#cgit table.bin-blob {
-	margin-top: 0.5em;
-	border: solid 1px black;
+	border: solid 1px #ccc;
 }
 
 div#cgit table.bin-blob th {
 	font-family: monospace;
 	white-space: pre;
-	border: solid 1px #777;
+	border: solid 1px #ccc;
 	padding: 0.5em 1em;
 }
 
 div#cgit table.bin-blob td {
 	font-family: monospace;
 	white-space: pre;
-	border-left: solid 1px #777;
+	border-left: solid 1px #ccc;
 	padding: 0em 1em;
 }
 

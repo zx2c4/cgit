@@ -104,11 +104,6 @@ static void print_object(const unsigned char *sha1, char *path, const char *base
 		return;
 	}
 
-	htmlf("blob: %s (", sha1_to_hex(sha1));
-	cgit_plain_link("plain", NULL, NULL, ctx.qry.head,
-		        curr_rev, path);
-	html(")\n");
-
 	if (ctx.cfg.max_blob_size && size / 1024 > ctx.cfg.max_blob_size) {
 		htmlf("<div class='error'>blob size (%ldKB) exceeds display size limit (%dKB).</div>",
 				size / 1024, ctx.cfg.max_blob_size);
