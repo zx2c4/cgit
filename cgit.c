@@ -75,11 +75,11 @@ void repo_config(struct cgit_repo *repo, const char *name, const char *value)
 	else if (!strcmp(name, "snapshots"))
 		repo->snapshots = ctx.cfg.snapshots & cgit_parse_snapshots_mask(value);
 	else if (!strcmp(name, "enable-commit-graph"))
-		repo->enable_commit_graph = ctx.cfg.enable_commit_graph * atoi(value);
+		repo->enable_commit_graph = atoi(value);
 	else if (!strcmp(name, "enable-log-filecount"))
-		repo->enable_log_filecount = ctx.cfg.enable_log_filecount * atoi(value);
+		repo->enable_log_filecount = atoi(value);
 	else if (!strcmp(name, "enable-log-linecount"))
-		repo->enable_log_linecount = ctx.cfg.enable_log_linecount * atoi(value);
+		repo->enable_log_linecount = atoi(value);
 	else if (!strcmp(name, "enable-remote-branches"))
 		repo->enable_remote_branches = atoi(value);
 	else if (!strcmp(name, "enable-subject-links"))
