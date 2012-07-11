@@ -49,6 +49,7 @@ struct cgit_repo *repo;
 repo_config_fn config_fn;
 char *owner;
 char *desc;
+char *section;
 
 static void repo_config(const char *name, const char *value)
 {
@@ -61,6 +62,8 @@ static int gitweb_config(const char *key, const char *value, void *cb)
 		owner = xstrdup(value);
 	else if (ctx.cfg.enable_gitweb_desc && !strcmp(key, "gitweb.description"))
 		desc = xstrdup(value);
+	else if (ctx.cfg.enable_gitweb_section && !strcmp(key, "gitweb.category"))
+		section = xstrdup(value);
 	return 0;
 }
 
@@ -95,6 +98,7 @@ static void add_repo(const char *base, const char *path, repo_config_fn fn)
 
 	owner = NULL;
 	desc = NULL;
+	section = NULL;
 	git_config_from_file(gitweb_config, fmt("%s/config", path), NULL);
 	
 	if (base == path)
@@ -137,6 +141,8 @@ static void add_repo(const char *base, const char *path, repo_config_fn fn)
 		if (!stat(p, &st))
 			repo->readme = "README.html";
 	}
+	if (section)
+		repo->section = section;
 	if (ctx.cfg.section_from_path) {
 		n  = ctx.cfg.section_from_path;
 		if (n > 0) {

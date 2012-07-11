@@ -200,6 +200,7 @@ struct cgit_config {
 	int enable_filter_overrides;
 	int enable_gitweb_owner;
 	int enable_gitweb_desc;
+	int enable_gitweb_section;
 	int enable_http_clone;
 	int enable_index_links;
 	int enable_commit_graph;

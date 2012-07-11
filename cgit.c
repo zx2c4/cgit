@@ -340,6 +340,7 @@ static void prepare_context(struct cgit_context *ctx)
 	ctx->cfg.local_time = 0;
 	ctx->cfg.enable_gitweb_desc = 1;
 	ctx->cfg.enable_gitweb_owner = 1;
+	ctx->cfg.enable_gitweb_section = 1;
 	ctx->cfg.enable_http_clone = 1;
 	ctx->cfg.enable_tree_linenumbers = 1;
 	ctx->cfg.max_repo_count = 50;
