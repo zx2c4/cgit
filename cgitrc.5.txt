@@ -106,6 +106,13 @@ enable-filter-overrides::
 	Flag which, when set to "1", allows all filter settings to be
 	overridden in repository-specific cgitrc files. Default value: none.
 
+enable-gitweb-desc::
+	If set to "1" and scan-path is enabled, we first check each repository
+	for the git config value "gitweb.description" to determine the owner.
+	Otherwise, the description is read from a file titled "description"
+	inside of the repository directory.
+	Default value: "1". See also: scan-path.
+
 enable-gitweb-owner::
 	If set to "1" and scan-path is enabled, we first check each repository
 	for the git config value "gitweb.owner" to determine the owner.

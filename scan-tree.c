@@ -48,18 +48,23 @@ static int is_git_dir(const char *path)
 struct cgit_repo *repo;
 repo_config_fn config_fn;
 char *owner;
+char *desc;
 
 static void repo_config(const char *name, const char *value)
 {
 	config_fn(repo, name, value);
 }
 
-static int git_owner_config(const char *key, const char *value, void *cb)
+static int gitweb_config(const char *key, const char *value, void *cb)
 {
-	if (!strcmp(key, "gitweb.owner"))
+	if (ctx.cfg.enable_gitweb_owner && !strcmp(key, "gitweb.owner"))
 		owner = xstrdup(value);
+	else if (ctx.cfg.enable_gitweb_desc && !strcmp(key, "gitweb.description"))
+		desc = xstrdup(value);
 	return 0;
 }
+
+
 
 static char *xstrrchr(char *s, char *from, int c)
 {
@@ -89,8 +94,9 @@ static void add_repo(const char *base, const char *path, repo_config_fn fn)
 		return;
 
 	owner = NULL;
-	if (ctx.cfg.enable_gitweb_owner)
-		git_config_from_file(git_owner_config, fmt("%s/config", path), NULL);
+	desc = NULL;
+	git_config_from_file(gitweb_config, fmt("%s/config", path), NULL);
+	
 	if (base == path)
 		rel = xstrdup(fmt("%s", path));
 	else
@@ -118,9 +124,13 @@ static void add_repo(const char *base, const char *path, repo_config_fn fn)
 	}
 	repo->owner = owner;
 
-	p = fmt("%s/description", path);
-	if (!stat(p, &st))
-		readfile(p, &repo->desc, &size);
+	if (desc)
+		repo->desc = desc;
+	else {
+		p = fmt("%s/description", path);
+		if (!stat(p, &st))
+			readfile(p, &repo->desc, &size);
+	}
 
 	if (!repo->readme) {
 		p = fmt("%s/README.html", path);
