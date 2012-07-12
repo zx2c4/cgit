@@ -1,6 +1,7 @@
 /* ui-repolist.c: functions for generating the repolist page
  *
  * Copyright (C) 2006 Lars Hjemli
+ * Copyright (C) 2012 Jason A. Donenfeld <Jason@zx2c4.com>
  *
  * Licensed under GNU General Public License v2
  *   (see COPYING for full license text)

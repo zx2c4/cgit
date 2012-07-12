@@ -1,7 +1,7 @@
 /* cgit.c: cgi for the git scm
  *
  * Copyright (C) 2006 Lars Hjemli
- * Copyright (C) 2010 Jason A. Donenfeld <Jason@zx2c4.com>
+ * Copyright (C) 2010, 2012 Jason A. Donenfeld <Jason@zx2c4.com>
  *
  * Licensed under GNU General Public License v2
  *   (see COPYING for full license text)
