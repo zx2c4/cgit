@@ -9,6 +9,7 @@
 #include "cgit.h"
 #include "html.h"
 #include "ui-shared.h"
+#include <strings.h>
 
 time_t read_agefile(char *path)
 {
@@ -131,8 +132,12 @@ void print_pager(int items, int pagelen, char *search, char *sort)
 
 static int cmp(const char *s1, const char *s2)
 {
-	if (s1 && s2)
-		return strcmp(s1, s2);
+	if (s1 && s2) {
+		if (ctx.cfg.case_sensitive_sort)
+			return strcmp(s1, s2);
+		else
+			return strcasecmp(s1, s2);
+	}
 	if (s1 && !s2)
 		return -1;
 	if (s2 && !s1)
@@ -145,10 +150,19 @@ static int sort_section(const void *a, const void *b)
 	const struct cgit_repo *r1 = a;
 	const struct cgit_repo *r2 = b;
 	int result;
+	time_t t;
 
 	result = cmp(r1->section, r2->section);
-	if (!result)
-		result = cmp(r1->name, r2->name);
+	if (!result) {
+		if (!strcmp(ctx.cfg.section_sort, "age")) {
+			// get_repo_modtime caches the value in r->mtime, so we don't
+			// have to worry about inefficiencies here.
+			if (get_repo_modtime(r1, &t) && get_repo_modtime(r2, &t))
+				result = r2->mtime - r1->mtime;
+		}
+		if (!result)
+			result = cmp(r1->name, r2->name);
+	}
 	return result;
 }
 

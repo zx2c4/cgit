@@ -199,6 +199,8 @@ void config_cb(const char *name, const char *value)
 		ctx.cfg.cache_static_ttl = atoi(value);
 	else if (!strcmp(name, "cache-dynamic-ttl"))
 		ctx.cfg.cache_dynamic_ttl = atoi(value);
+	else if (!strcmp(name, "case-sensitive-sort"))
+		ctx.cfg.case_sensitive_sort = atoi(value);
 	else if (!strcmp(name, "about-filter"))
 		ctx.cfg.about_filter = new_filter(value, ABOUT);
 	else if (!strcmp(name, "commit-filter"))
@@ -231,6 +233,8 @@ void config_cb(const char *name, const char *value)
 		ctx.cfg.scan_hidden_path = atoi(value);
 	else if (!strcmp(name, "section-from-path"))
 		ctx.cfg.section_from_path = atoi(value);
+	else if (!strcmp(name, "section-sort"))
+		ctx.cfg.section_sort = xstrdup(value);
 	else if (!strcmp(name, "source-filter"))
 		ctx.cfg.source_filter = new_filter(value, SOURCE);
 	else if (!strcmp(name, "summary-log"))
@@ -335,6 +339,7 @@ static void prepare_context(struct cgit_context *ctx)
 	ctx->cfg.cache_root_ttl = 5;
 	ctx->cfg.cache_scanrc_ttl = 15;
 	ctx->cfg.cache_static_ttl = -1;
+	ctx->cfg.case_sensitive_sort = 1;
 	ctx->cfg.css = "/cgit.css";
 	ctx->cfg.logo = "/cgit.png";
 	ctx->cfg.local_time = 0;
@@ -359,6 +364,7 @@ static void prepare_context(struct cgit_context *ctx)
 	ctx->cfg.scan_hidden_path = 0;
 	ctx->cfg.script_name = CGIT_SCRIPT_NAME;
 	ctx->cfg.section = "";
+	ctx->cfg.section_sort = "name";
 	ctx->cfg.summary_branches = 10;
 	ctx->cfg.summary_log = 10;
 	ctx->cfg.summary_tags = 10;

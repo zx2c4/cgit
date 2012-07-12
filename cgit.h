@@ -187,6 +187,7 @@ struct cgit_config {
 	char *root_readme;
 	char *script_name;
 	char *section;
+	char *section_sort;
 	char *virtual_root;
 	char *strict_export;
 	int cache_size;
@@ -196,6 +197,7 @@ struct cgit_config {
 	int cache_root_ttl;
 	int cache_scanrc_ttl;
 	int cache_static_ttl;
+	int case_sensitive_sort;
 	int embedded;
 	int enable_filter_overrides;
 	int enable_gitweb_owner;

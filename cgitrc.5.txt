@@ -70,6 +70,10 @@ cache-static-ttl::
 	version of repository pages accessed with a fixed SHA1. Default value:
 	"5".
 
+case-sensitive-sort::
+	Sort items in the repo list case sensitively. Default value: "1".
+	See also: section-sort.
+
 clone-prefix::
 	Space-separated list of common prefixes which, when combined with a
 	repository url, generates valid clone urls for the repository. This
@@ -333,11 +337,17 @@ section::
 	after this option will inherit the current section name. Default value:
 	none.
 
+section-sort::
+	The way in which repositories in each section are sorted. Valid values
+	are "name" for sorting by the repo name or "age" for sorting by the
+	most recently updated repository. Default value: "name". See also:
+	section, case-sensitive-sort.
+
 section-from-path::
 	A number which, if specified before scan-path, specifies how many
 	path elements from each repo path to use as a default section name.
 	If negative, cgit will discard the specified number of path elements
-	above the repo directory. Default value: 0.
+	above the repo directory. Default value: "0".
 
 side-by-side-diffs::
 	If set to "1" shows side-by-side diffs instead of unidiffs per
