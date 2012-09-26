@@ -1,6 +1,7 @@
 /* ui-snapshot.c: generate snapshot of a commit
  *
  * Copyright (C) 2006 Lars Hjemli
+ * Copyright (C) 2012 Jason A. Donenfeld <Jason@zx2c4.com>
  *
  * Licensed under GNU General Public License v2
  *   (see COPYING for full license text)
@@ -10,15 +11,13 @@
 #include "html.h"
 #include "ui-shared.h"
 
-static int write_compressed_tar_archive(struct archiver_args *args,const char *filter)
+static int write_compressed_tar_archive(struct archiver_args *args, char *filter_argv[])
 {
 	int rv;
 	struct cgit_filter f;
 
-	f.cmd = xstrdup(filter);
-	f.argv = malloc(2 * sizeof(char *));
-	f.argv[0] = f.cmd;
-	f.argv[1] = NULL;
+	f.cmd = filter_argv[0];
+	f.argv = filter_argv;
 	cgit_open_filter(&f);
 	rv = write_tar_archive(args);
 	cgit_close_filter(&f);
@@ -27,17 +26,20 @@ static int write_compressed_tar_archive(struct archiver_args *args,const char *f
 
 static int write_tar_gzip_archive(struct archiver_args *args)
 {
-	return write_compressed_tar_archive(args,"gzip");
+	char *argv[] = { "gzip", "-n", NULL };
+	return write_compressed_tar_archive(args, argv);
 }
 
 static int write_tar_bzip2_archive(struct archiver_args *args)
 {
-	return write_compressed_tar_archive(args,"bzip2");
+	char *argv[] = { "bzip2", NULL };
+	return write_compressed_tar_archive(args, argv);
 }
 
 static int write_tar_xz_archive(struct archiver_args *args)
 {
-	return write_compressed_tar_archive(args,"xz");
+	char *argv[] = { "xz", NULL };
+	return write_compressed_tar_archive(args, argv);
 }
 
 const struct cgit_snapshot_format cgit_snapshot_formats[] = {
