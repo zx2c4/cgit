@@ -73,6 +73,7 @@ ifndef V
 	QUIET_SUBDIR0  = +@subdir=
 	QUIET_SUBDIR1  = ;$(NO_SUBDIR) echo '   ' SUBDIR $$subdir; \
 			 $(MAKE) $(PRINT_DIR) -C $$subdir
+	QUIET_TAGS     = @echo '   ' TAGS $@;
 endif
 
 #
@@ -124,7 +125,7 @@ endif
 
 .PHONY: all libgit test install uninstall clean force-version get-git \
 	doc clean-doc install-doc install-man install-html install-pdf \
-	uninstall-doc uninstall-man uninstall-html uninstall-pdf
+	uninstall-doc uninstall-man uninstall-html uninstall-pdf tags
 
 all: cgit
 
@@ -242,3 +243,6 @@ clean-doc:
 
 get-git:
 	curl $(GIT_URL) | tar -xjf - && rm -rf git && mv git-$(GIT_VER) git
+
+tags:
+	$(QUIET_TAGS)find . -name '*.[ch]' | xargs ctags
