@@ -47,27 +47,25 @@ static int is_git_dir(const char *path)
 
 struct cgit_repo *repo;
 repo_config_fn config_fn;
-char *owner;
-char *desc;
-char *section;
 
 static void repo_config(const char *name, const char *value)
 {
 	config_fn(repo, name, value);
 }
 
-static int gitweb_config(const char *key, const char *value, void *cb)
+static int gitconfig_config(const char *key, const char *value, void *cb)
 {
-	if (ctx.cfg.enable_gitweb_owner && !strcmp(key, "gitweb.owner"))
-		owner = xstrdup(value);
-	else if (ctx.cfg.enable_gitweb_desc && !strcmp(key, "gitweb.description"))
-		desc = xstrdup(value);
-	else if (ctx.cfg.enable_gitweb_section && !strcmp(key, "gitweb.category"))
-		section = xstrdup(value);
+	if (!strcmp(key, "gitweb.owner"))
+		config_fn(repo, "owner", value);
+	else if (!strcmp(key, "gitweb.description"))
+		config_fn(repo, "desc", value);
+	else if (!strcmp(key, "gitweb.category"))
+		config_fn(repo, "section", value);
+	else if (!prefixcmp(key, "cgit."))
+		config_fn(repo, key + 5, value);
+
 	return 0;
 }
-
-
 
 static char *xstrrchr(char *s, char *from, int c)
 {
@@ -96,11 +94,6 @@ static void add_repo(const char *base, const char *path, repo_config_fn fn)
 	if (!stat(fmt("%s/noweb", path), &st))
 		return;
 
-	owner = NULL;
-	desc = NULL;
-	section = NULL;
-	git_config_from_file(gitweb_config, fmt("%s/config", path), NULL);
-	
 	if (base == path)
 		rel = xstrdup(fmt("%s", path));
 	else
@@ -110,12 +103,15 @@ static void add_repo(const char *base, const char *path, repo_config_fn fn)
 		rel[strlen(rel) - 5] = '\0';
 
 	repo = cgit_add_repo(rel);
+	config_fn = fn;
+	if (ctx.cfg.enable_git_config)
+		git_config_from_file(gitconfig_config, fmt("%s/config", path), NULL);
+	
 	if (ctx.cfg.remove_suffix)
 		if ((p = strrchr(repo->url, '.')) && !strcmp(p, ".git"))
 			*p = '\0';
-	repo->name = repo->url;
 	repo->path = xstrdup(path);
-	while (!owner) {
+	while (!repo->owner) {
 		if ((pwd = getpwuid(st.st_uid)) == NULL) {
 			fprintf(stderr, "Error reading owner-info for %s: %s (%d)\n",
 				path, strerror(errno), errno);
@@ -124,13 +120,10 @@ static void add_repo(const char *base, const char *path, repo_config_fn fn)
 		if (pwd->pw_gecos)
 			if ((p = strchr(pwd->pw_gecos, ',')))
 				*p = '\0';
-		owner = xstrdup(pwd->pw_gecos ? pwd->pw_gecos : pwd->pw_name);
+		repo->owner = xstrdup(pwd->pw_gecos ? pwd->pw_gecos : pwd->pw_name);
 	}
-	repo->owner = owner;
 
-	if (desc)
-		repo->desc = desc;
-	else {
+	if (repo->desc == cgit_default_repo_desc || !repo->desc) {
 		p = fmt("%s/description", path);
 		if (!stat(p, &st))
 			readfile(p, &repo->desc, &size);
@@ -141,8 +134,6 @@ static void add_repo(const char *base, const char *path, repo_config_fn fn)
 		if (!stat(p, &st))
 			repo->readme = "README.html";
 	}
-	if (section)
-		repo->section = section;
 	if (ctx.cfg.section_from_path) {
 		n  = ctx.cfg.section_from_path;
 		if (n > 0) {
@@ -167,10 +158,9 @@ static void add_repo(const char *base, const char *path, repo_config_fn fn)
 	}
 
 	p = fmt("%s/cgitrc", path);
-	if (!stat(p, &st)) {
-		config_fn = fn;
+	if (!stat(p, &st))
 		parse_configfile(xstrdup(p), &repo_config);
-	}
+
 
 	free(rel);
 }

@@ -163,10 +163,6 @@ void config_cb(const char *name, const char *value)
 		ctx.cfg.snapshots = cgit_parse_snapshots_mask(value);
 	else if (!strcmp(name, "enable-filter-overrides"))
 		ctx.cfg.enable_filter_overrides = atoi(value);
-	else if (!strcmp(name, "enable-gitweb-desc"))
-		ctx.cfg.enable_gitweb_desc = atoi(value);
-	else if (!strcmp(name, "enable-gitweb-owner"))
-		ctx.cfg.enable_gitweb_owner = atoi(value);
 	else if (!strcmp(name, "enable-http-clone"))
 		ctx.cfg.enable_http_clone = atoi(value);
 	else if (!strcmp(name, "enable-index-links"))
@@ -183,6 +179,8 @@ void config_cb(const char *name, const char *value)
 		ctx.cfg.enable_subject_links = atoi(value);
 	else if (!strcmp(name, "enable-tree-linenumbers"))
 		ctx.cfg.enable_tree_linenumbers = atoi(value);
+	else if (!strcmp(name, "enable-git-config"))
+		ctx.cfg.enable_git_config = atoi(value);
 	else if (!strcmp(name, "max-stats"))
 		ctx.cfg.max_stats = cgit_find_stats_period(value, NULL);
 	else if (!strcmp(name, "cache-size"))
@@ -343,11 +341,9 @@ static void prepare_context(struct cgit_context *ctx)
 	ctx->cfg.css = "/cgit.css";
 	ctx->cfg.logo = "/cgit.png";
 	ctx->cfg.local_time = 0;
-	ctx->cfg.enable_gitweb_desc = 1;
-	ctx->cfg.enable_gitweb_owner = 1;
-	ctx->cfg.enable_gitweb_section = 1;
 	ctx->cfg.enable_http_clone = 1;
 	ctx->cfg.enable_tree_linenumbers = 1;
+	ctx->cfg.enable_git_config = 0;
 	ctx->cfg.max_repo_count = 50;
 	ctx->cfg.max_commit_count = 50;
 	ctx->cfg.max_lock_attempts = 5;

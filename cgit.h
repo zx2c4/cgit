@@ -200,9 +200,6 @@ struct cgit_config {
 	int case_sensitive_sort;
 	int embedded;
 	int enable_filter_overrides;
-	int enable_gitweb_owner;
-	int enable_gitweb_desc;
-	int enable_gitweb_section;
 	int enable_http_clone;
 	int enable_index_links;
 	int enable_commit_graph;
@@ -211,6 +208,7 @@ struct cgit_config {
 	int enable_remote_branches;
 	int enable_subject_links;
 	int enable_tree_linenumbers;
+	int enable_git_config;
 	int local_time;
 	int max_atom_items;
 	int max_repo_count;
@@ -285,6 +283,7 @@ extern struct cgit_repolist cgit_repolist;
 extern struct cgit_context ctx;
 extern const struct cgit_snapshot_format cgit_snapshot_formats[];
 
+extern char *cgit_default_repo_desc;
 extern struct cgit_repo *cgit_add_repo(const char *url);
 extern struct cgit_repo *cgit_get_repoinfo(const char *url);
 extern void cgit_repo_config_cb(const char *name, const char *value);

@@ -110,24 +110,6 @@ enable-filter-overrides::
 	Flag which, when set to "1", allows all filter settings to be
 	overridden in repository-specific cgitrc files. Default value: none.
 
-enable-gitweb-desc::
-	If set to "1" and scan-path is enabled, we first check each repository
-	for the git config value "gitweb.description" to determine the owner.
-	Otherwise, the description is read from a file titled "description"
-	inside of the repository directory.
-	Default value: "1". See also: scan-path.
-
-enable-gitweb-owner::
-	If set to "1" and scan-path is enabled, we first check each repository
-	for the git config value "gitweb.owner" to determine the owner.
-	Default value: "1". See also: scan-path.
-
-enable-gitweb-section::
-	If set to "1" and scan-path is enabled, we first check each repository
-	for the git config value "gitweb.category" to determine the repository's
-	section. This value is overridden if section-from-path is enabled.
-	Default value: "1". See also: scan-path section-from-path.
-
 enable-http-clone::
 	If set to "1", cgit will act as an dumb HTTP endpoint for git clones.
 	If you use an alternate way of serving git repositories, you may wish
@@ -162,6 +144,15 @@ enable-subject-links::
 enable-tree-linenumbers::
 	Flag which, when set to "1", will make cgit generate linenumber links
 	for plaintext blobs printed in the tree view. Default value: "1".
+
+enable-git-config::
+	Flag which, when set to "1", will allow cgit to use git config to set
+	any repo specific settings. This option is used in conjunction with
+	"scan-path" to augment _repo._ settings. The keys gitweb.owner,
+	gitweb.category, and gitweb.description will map to the cgit keys
+	repo.owner, repo.section, and repo.desc, respectivly. All git config
+	keys that begin with "cgit." will be mapped to the corresponding "repo."
+	key in cgit. Default value: "0". See also: scan-path section-from-path.
 
 favicon::
 	Url used as link to a shortcut icon for cgit. If specified, it is
@@ -393,6 +384,7 @@ virtual-root::
 	value: none.
 	NOTE: cgit has recently learned how to use PATH_INFO to achieve the
 	same kind of virtual urls, so this option will probably be deprecated.
+
 
 REPOSITORY SETTINGS
 -------------------
