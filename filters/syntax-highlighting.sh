@@ -39,8 +39,11 @@
 BASENAME="$1"
 EXTENSION="${BASENAME##*.}"
 
+[ "${BASENAME}" = "${EXTENSION}" ] && EXTENSION=txt
+[ -z "${EXTENSION}" ] && EXTENSION=txt
+
 # map Makefile and Makefile.* to .mk
-[ "${BASENAME%%.*}" == "Makefile" ] && EXTENSION=mk
+[ "${BASENAME%%.*}" = "Makefile" ] && EXTENSION=mk
 
 # highlight versions 2 and 3 have different commandline options. Specifically,
 # the -X option that is used for version 2 is replaced by the -O xhtml option
