@@ -104,7 +104,7 @@ void print_sort_header(const char *title, const char *sort)
 {
 	htmlf("<th class='left'><a href='%s?s=%s", cgit_rooturl(), sort);
 	if (ctx.qry.search) {
-		html("&q=");
+		html("&amp;q=");
 		html_url_arg(ctx.qry.search);
 	}
 	htmlf("'>%s</a></th>", title);

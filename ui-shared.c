@@ -83,7 +83,7 @@ char *cgit_fileurl(const char *reponame, const char *pagename,
 	} else {
 		tmp = fmt("?url=%s/%s/%s", reponame, pagename,
 			  (filename ? filename : ""));
-		delim = "&";
+		delim = "&amp;";
 	}
 	if (query)
 		tmp = fmt("%s%s%s", tmp, delim, query);
@@ -146,19 +146,19 @@ static void site_url(const char *page, const char *search, const char *sort, int
 
 	if (page) {
 		htmlf("?p=%s", page);
-		delim = "&";
+		delim = "&amp;";
 	}
 	if (search) {
 		html(delim);
 		html("q=");
 		html_attr(search);
-		delim = "&";
+		delim = "&amp;";
 	}
 	if (sort) {
 		html(delim);
 		html("s=");
 		html_attr(sort);
-		delim = "&";
+		delim = "&amp;";
 	}
 	if (ofs) {
 		html(delim);
@@ -298,13 +298,13 @@ void cgit_log_link(const char *name, const char *title, const char *class,
 		html(delim);
 		html("id=");
 		html_url_arg(rev);
-		delim = "&";
+		delim = "&amp;";
 	}
 	if (grep && pattern) {
 		html(delim);
 		html("qt=");
 		html_url_arg(grep);
-		delim = "&";
+		delim = "&amp;";
 		html(delim);
 		html("q=");
 		html_url_arg(pattern);
@@ -313,7 +313,7 @@ void cgit_log_link(const char *name, const char *title, const char *class,
 		html(delim);
 		html("ofs=");
 		htmlf("%d", ofs);
-		delim = "&";
+		delim = "&amp;";
 	}
 	if (showmsg) {
 		html(delim);
