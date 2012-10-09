@@ -43,8 +43,10 @@ static int get_repo_modtime(const struct cgit_repo *repo, time_t *mtime)
 	path = fmt("%s/%s", repo->path, ctx.cfg.agefile);
 	if (stat(path, &s) == 0) {
 		*mtime = read_agefile(path);
-		r->mtime = *mtime;
-		return 1;
+		if (*mtime) {
+			r->mtime = *mtime;
+			return 1;
+		}
 	}
 
 	path = fmt("%s/refs/heads/%s", repo->path, repo->defbranch ?
