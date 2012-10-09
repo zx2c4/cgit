@@ -3,8 +3,8 @@ cgit quick facts
 
  * web interface ([cgi][]) for [git][] repositories, written in [C][]
  * licensed under [GPLv2][]
- * discussions, patches etc. goes to the [list] ([archive], [gmane]).
- * common questions are answered in the [faq].
+ * discussions, patches etc. goes to the [list][] ([archive][], [gmane][]).
+ * common questions are answered in the [faq][].
 
 [cgi]:     http://www.ietf.org/rfc/rfc3875.txt
 [git]:     http://git-scm.org
@@ -31,30 +31,15 @@ features
  * understands gitweb project-lists
  * understands gitweb.owner in git config files
 
-
-branches
---------
- * [stable]: fixes for the previous release
- * [master]: features for the next release
- * [wip]: bleeding-edge stuff, frequently rebased
- * [wiki]: the info found on this page
-
-[stable]:  http://hjemli.net/git/cgit/log/?h=stable
-[master]:  http://hjemli.net/git/cgit/log/
-[wip]:     http://hjemli.net/git/cgit/log/?h=wip
-[wiki]:    http://hjemli.net/git/cgit/log/?h=wiki
-
-
 source code
 -----------
- * download current or past [releases]
- * clone the repo using git or http protocol:
-   * git://hjemli.net/pub/git/cgit
-   * http://hjemli.net/git/cgit
- * see the [README] for build instructions
+ * download current or past [releases][]
+ * clone the repo using the http protocol:
+   * git clone http://git.zx2c4.com/cgit
+ * see the [README][] for build instructions
 
-[releases]: http://hjemli.net/git/cgit/refs/tags
-[README]:   http://hjemli.net/git/cgit/tree/README
+[releases]: ../refs/tags
+[README]:   ../tree/README
 
 
 packages
@@ -65,7 +50,7 @@ packages
  * [gentoo][]
  * [macports][]
  * [opensuse][]
- * [pkgsrc]
+ * [pkgsrc][]
 
 [archlinux]:    http://aur.archlinux.org/packages.php?ID=22790
 [darwinports]:  http://cgit.darwinports.com/
