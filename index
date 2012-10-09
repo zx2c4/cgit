@@ -38,8 +38,8 @@ source code
    * git clone http://git.zx2c4.com/cgit
  * see the [README][] for build instructions
 
-[releases]: ../refs/tags
-[README]:   ../tree/README
+[releases]: /cgit/refs/tags
+[README]:   /cgit/tree/README
 
 
 packages
