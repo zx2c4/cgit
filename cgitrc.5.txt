@@ -72,7 +72,7 @@ cache-static-ttl::
 
 case-sensitive-sort::
 	Sort items in the repo list case sensitively. Default value: "1".
-	See also: repository-sort.
+	See also: repository-sort, section-sort.
 
 clone-prefix::
 	Space-separated list of common prefixes which, when combined with a
@@ -332,7 +332,13 @@ repository-sort::
 	The way in which repositories in each section are sorted. Valid values
 	are "name" for sorting by the repo name or "age" for sorting by the
 	most recently updated repository. Default value: "name". See also:
-	section, case-sensitive-sort.
+	section, case-sensitive-sort, section-sort.
+
+section-sort::
+	Flag which, when set to "1", will sort the sections on the repository
+	listing by name. Set this flag to "0" if the order in the cgitrc file should
+	be preserved. Default value: "1". See also: section,
+	case-sensitive-sort, repository-sort.
 
 section-from-path::
 	A number which, if specified before scan-path, specifies how many

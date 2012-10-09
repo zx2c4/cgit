@@ -226,6 +226,7 @@ struct cgit_config {
 	int scan_hidden_path;
 	int section_from_path;
 	int snapshots;
+	int section_sort;
 	int summary_branches;
 	int summary_log;
 	int summary_tags;

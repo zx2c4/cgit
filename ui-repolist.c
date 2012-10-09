@@ -257,7 +257,7 @@ void cgit_print_repolist()
 
 	if(ctx.qry.sort)
 		sorted = sort_repolist(ctx.qry.sort);
-	else
+	else if (ctx.cfg.section_sort)
 		sort_repolist("section");
 
 	html("<table summary='repository list' class='list nowrap'>");
