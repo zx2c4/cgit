@@ -84,6 +84,7 @@ struct cgit_repo {
 	int enable_remote_branches;
 	int enable_subject_links;
 	int max_stats;
+	int commit_sort;
 	time_t mtime;
 	struct cgit_filter *about_filter;
 	struct cgit_filter *commit_filter;
@@ -231,6 +232,7 @@ struct cgit_config {
 	int summary_log;
 	int summary_tags;
 	int ssdiff;
+	int commit_sort;
 	struct string_list mimetypes;
 	struct cgit_filter *about_filter;
 	struct cgit_filter *commit_filter;

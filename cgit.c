@@ -84,7 +84,12 @@ void repo_config(struct cgit_repo *repo, const char *name, const char *value)
 		repo->enable_remote_branches = atoi(value);
 	else if (!strcmp(name, "enable-subject-links"))
 		repo->enable_subject_links = atoi(value);
-	else if (!strcmp(name, "max-stats"))
+	else if (!strcmp(name, "commit-sort")) {
+		if (!strcmp(value, "date"))
+			repo->commit_sort = 1;
+		if (!strcmp(value, "topo"))
+			repo->commit_sort = 2;
+	} else if (!strcmp(name, "max-stats"))
 		repo->max_stats = cgit_find_stats_period(value, NULL);
 	else if (!strcmp(name, "module-link"))
 		repo->module_link= xstrdup(value);
@@ -261,7 +266,12 @@ void config_cb(const char *name, const char *value)
 		ctx.cfg.clone_url = xstrdup(value);
 	else if (!strcmp(name, "local-time"))
 		ctx.cfg.local_time = atoi(value);
-	else if (!prefixcmp(name, "mimetype."))
+	else if (!strcmp(name, "commit-sort")) {
+		if (!strcmp(value, "date"))
+			ctx.cfg.commit_sort = 1;
+		if (!strcmp(value, "topo"))
+			ctx.cfg.commit_sort = 2;
+	} else if (!prefixcmp(name, "mimetype."))
 		add_mimetype(name + 9, value);
 	else if (!strcmp(name, "include"))
 		parse_configfile(expand_macros(value), config_cb);

@@ -59,7 +59,7 @@ void cgit_print_summary()
 	if (ctx.cfg.summary_log > 0) {
 		html("<tr class='nohover'><td colspan='4'>&nbsp;</td></tr>");
 		cgit_print_log(ctx.qry.head, 0, ctx.cfg.summary_log, NULL,
-			       NULL, NULL, 0, 0);
+			       NULL, NULL, 0, 0, 0);
 	}
 	if (ctx.repo->clone_url)
 		print_urls(expand_macros(ctx.repo->clone_url), NULL);

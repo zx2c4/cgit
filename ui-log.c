@@ -278,7 +278,7 @@ static char *next_token(char **src)
 }
 
 void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern,
-		    char *path, int pager, int commit_graph)
+		    char *path, int pager, int commit_graph, int commit_sort)
 {
 	struct rev_info rev;
 	struct commit *commit;
@@ -325,6 +325,14 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 		vector_push(&vec, &color_arg, 0);
 		graph_set_column_colors(column_colors_html,
 					COLUMN_COLORS_HTML_MAX);
+	}
+
+	if (commit_sort == 1) {
+		static const char *date_order_arg = "--date-order";
+		vector_push(&vec, &date_order_arg, 0);
+	} else if (commit_sort == 2) {
+		static const char *topo_order_arg = "--topo-order";
+		vector_push(&vec, &topo_order_arg, 0);
 	}
 
 	if (path) {
