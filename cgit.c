@@ -233,8 +233,8 @@ void config_cb(const char *name, const char *value)
 		ctx.cfg.scan_hidden_path = atoi(value);
 	else if (!strcmp(name, "section-from-path"))
 		ctx.cfg.section_from_path = atoi(value);
-	else if (!strcmp(name, "section-sort"))
-		ctx.cfg.section_sort = xstrdup(value);
+	else if (!strcmp(name, "repository-sort"))
+		ctx.cfg.repository_sort = xstrdup(value);
 	else if (!strcmp(name, "source-filter"))
 		ctx.cfg.source_filter = new_filter(value, SOURCE);
 	else if (!strcmp(name, "summary-log"))
@@ -364,7 +364,7 @@ static void prepare_context(struct cgit_context *ctx)
 	ctx->cfg.scan_hidden_path = 0;
 	ctx->cfg.script_name = CGIT_SCRIPT_NAME;
 	ctx->cfg.section = "";
-	ctx->cfg.section_sort = "name";
+	ctx->cfg.repository_sort = "name";
 	ctx->cfg.summary_branches = 10;
 	ctx->cfg.summary_log = 10;
 	ctx->cfg.summary_tags = 10;

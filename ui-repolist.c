@@ -160,7 +160,7 @@ static int sort_section(const void *a, const void *b)
 
 	result = cmp(r1->section, r2->section);
 	if (!result) {
-		if (!strcmp(ctx.cfg.section_sort, "age")) {
+		if (!strcmp(ctx.cfg.repository_sort, "age")) {
 			// get_repo_modtime caches the value in r->mtime, so we don't
 			// have to worry about inefficiencies here.
 			if (get_repo_modtime(r1, &t) && get_repo_modtime(r2, &t))

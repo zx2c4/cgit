@@ -187,7 +187,7 @@ struct cgit_config {
 	char *root_readme;
 	char *script_name;
 	char *section;
-	char *section_sort;
+	char *repository_sort;
 	char *virtual_root;
 	char *strict_export;
 	int cache_size;

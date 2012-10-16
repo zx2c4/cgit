@@ -72,7 +72,7 @@ cache-static-ttl::
 
 case-sensitive-sort::
 	Sort items in the repo list case sensitively. Default value: "1".
-	See also: section-sort.
+	See also: repository-sort.
 
 clone-prefix::
 	Space-separated list of common prefixes which, when combined with a
@@ -337,7 +337,7 @@ section::
 	after this option will inherit the current section name. Default value:
 	none.
 
-section-sort::
+repository-sort::
 	The way in which repositories in each section are sorted. Valid values
 	are "name" for sorting by the repo name or "age" for sorting by the
 	most recently updated repository. Default value: "name". See also:
