@@ -49,8 +49,8 @@ ifeq ($(uname_O),Cygwin)
 	NEEDS_LIBICONV = YesPlease
 endif
 
-ifeq ($(uname_S),FreeBSD)
-	# Apparantly libiconv is installed in /usr/local on FreeBSD
+ifeq ($(uname_S),$(filter $(uname_S),FreeBSD OpenBSD))
+	# Apparantly libiconv is installed in /usr/local on BSD
 	LDFLAGS ?= -L/usr/local/lib
 	CFLAGS ?= -I/usr/local/include
 	NEEDS_LIBICONV = yes
