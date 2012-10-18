@@ -148,11 +148,11 @@ enable-tree-linenumbers::
 enable-git-config::
 	Flag which, when set to "1", will allow cgit to use git config to set
 	any repo specific settings. This option is used in conjunction with
-	"scan-path" to augment _repo._ settings. The keys gitweb.owner,
+	"scan-path" to augment repo-specific settings. The keys gitweb.owner,
 	gitweb.category, and gitweb.description will map to the cgit keys
 	repo.owner, repo.section, and repo.desc, respectivly. All git config
 	keys that begin with "cgit." will be mapped to the corresponding "repo."
-	key in cgit. Default value: "0". See also: scan-path section-from-path.
+	key in cgit. Default value: "0". See also: scan-path, section-from-path.
 
 favicon::
 	Url used as link to a shortcut icon for cgit. If specified, it is
