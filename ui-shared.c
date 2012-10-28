@@ -361,7 +361,10 @@ void cgit_commit_link(char *name, const char *title, const char *class,
 		delim = "&amp;";
 	}
 	html("'>");
-	html_txt(name);
+	if (name[0] != '\0')
+		html_txt(name);
+	else
+		html_txt("(no commit message)");
 	html("</a>");
 }
 
