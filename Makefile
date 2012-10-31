@@ -243,7 +243,7 @@ $(DOC_PDF): %.pdf : %.txt
 	a2x -f pdf cgitrc.5.txt
 
 clean: clean-doc
-	rm -f cgit VERSION *.o *.d
+	rm -f cgit VERSION *.o *.d tags
 
 clean-doc:
 	rm -f cgitrc.5 cgitrc.5.html cgitrc.5.pdf cgitrc.5.xml cgitrc.5.fo
