@@ -13,7 +13,7 @@ pdfdir = $(docdir)
 mandir = $(prefix)/share/man
 SHA1_HEADER = <openssl/sha.h>
 GIT_VER = 1.7.4
-GIT_URL = http://hjemli.net/git/git/snapshot/git-$(GIT_VER).tar.bz2
+GIT_URL = https://github.com/git/git/archive/v$(GIT_VER).tar.gz
 INSTALL = install
 MAN5_TXT = $(wildcard *.5.txt)
 MAN_TXT  = $(MAN5_TXT)
@@ -249,7 +249,7 @@ clean-doc:
 	rm -f cgitrc.5 cgitrc.5.html cgitrc.5.pdf cgitrc.5.xml cgitrc.5.fo
 
 get-git:
-	curl $(GIT_URL) | tar -xjf - && rm -rf git && mv git-$(GIT_VER) git
+	curl -L $(GIT_URL) | tar -xzf - && rm -rf git && mv git-$(GIT_VER) git
 
 tags:
 	$(QUIET_TAGS)find . -name '*.[ch]' | xargs ctags
