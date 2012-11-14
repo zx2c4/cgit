@@ -229,11 +229,6 @@ static void header(unsigned char *sha1, char *path1, int mode1,
 	html(" b/");
 	html_txt(path2);
 
-	if (is_null_sha1(sha1))
-		path1 = "dev/null";
-	if (is_null_sha1(sha2))
-		path2 = "dev/null";
-
 	if (mode1 == 0)
 		htmlf("<br/>new file mode %.6o", mode2);
 
@@ -251,13 +246,21 @@ static void header(unsigned char *sha1, char *path1, int mode1,
 			if (mode2 != mode1)
 				htmlf("..%.6o", mode2);
 		}
-		html("<br/>--- a/");
+		if (is_null_sha1(sha1)) {
+			path1 = "dev/null";
+			html("<br/>--- /");
+		} else
+			html("<br/>--- a/");
 		if (mode1 != 0)
 			cgit_tree_link(path1, NULL, NULL, ctx.qry.head,
 				       sha1_to_hex(old_rev_sha1), path1);
 		else
 			html_txt(path1);
-		html("<br/>+++ b/");
+		if (is_null_sha1(sha2)) {
+			path2 = "dev/null";
+			html("<br/>+++ /");
+		} else
+			html("<br/>+++ b/");
 		if (mode2 != 0)
 			cgit_tree_link(path2, NULL, NULL, ctx.qry.head,
 				       sha1_to_hex(new_rev_sha1), path2);

@@ -28,11 +28,6 @@ static void header(unsigned char *sha1, char *path1, int mode1,
 	subproject = (S_ISGITLINK(mode1) || S_ISGITLINK(mode2));
 	htmlf("diff --git a/%s b/%s\n", path1, path2);
 
-	if (is_null_sha1(sha1))
-		path1 = "dev/null";
-	if (is_null_sha1(sha2))
-		path2 = "dev/null";
-
 	if (mode1 == 0)
 		htmlf("new file mode %.6o\n", mode2);
 
@@ -50,8 +45,18 @@ static void header(unsigned char *sha1, char *path1, int mode1,
 			if (mode2 != mode1)
 				htmlf("..%.6o", mode2);
 		}
-		htmlf("\n--- a/%s\n", path1);
-		htmlf("+++ b/%s\n", path2);
+
+		if (is_null_sha1(sha1)) {
+			path1 = "dev/null";
+			htmlf("\n--- /%s\n", path1);
+		} else
+			htmlf("\n--- a/%s\n", path1);
+
+		if (is_null_sha1(sha2)) {
+			path2 = "dev/null";
+			htmlf("+++ /%s\n", path2);
+		} else
+			htmlf("+++ b/%s\n", path2);
 	}
 }
 
