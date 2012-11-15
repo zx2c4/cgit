@@ -250,6 +250,7 @@ mimetype-file::
 	  optionally preceded by whitespace
 	- a non-comment line starts with the mimetype (like image/png), followed
 	  by one or more file extensions (like jpg), all separated by whitespace
+	Default value: none. See also: "mimetype.<ext>".
 
 module-link::
 	Text which will be used as the formatstring for a hyperlink when a
