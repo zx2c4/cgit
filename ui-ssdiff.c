@@ -138,9 +138,8 @@ static char *replace_tabs(char *line)
 			strcat(result, prev_buf);
 			break;
 		} else {
-			strcat(result, " ");
-			strncat(result, spaces, 8 - (strlen(result) % 8));
 			strncat(result, prev_buf, cur_buf - prev_buf);
+			strncat(result, spaces, 8 - (strlen(result) % 8));
 		}
 		prev_buf = cur_buf + 1;
 	}
