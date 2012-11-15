@@ -244,8 +244,8 @@ mimetype-file::
 	Specifies the file to use for automatic mimetype lookup. If specified
 	then this field is used as a fallback when no "mimetype.<ext>" match is
 	found. If unspecified then no such lookup is performed. The typical file
-	to use on a Linux system is /etc/mime.types. Default value: none. See
-	also: "mimetype.<ext>".	The format of the file must comply to:
+	to use on a Linux system is /etc/mime.types. The format of the file must
+	comply to:
 	- a comment line is an empty line or a line starting with a hash (#),
 	  optionally preceded by whitespace
 	- a non-comment line starts with the mimetype (like image/png), followed
