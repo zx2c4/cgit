@@ -1,3 +1,5 @@
+all::
+
 CGIT_VERSION = v0.9.1
 CGIT_SCRIPT_NAME = cgit.cgi
 CGIT_SCRIPT_PATH = /var/www/htdocs/cgit
@@ -12,8 +14,8 @@ htmldir = $(docdir)
 pdfdir = $(docdir)
 mandir = $(prefix)/share/man
 SHA1_HEADER = <openssl/sha.h>
-GIT_VER = 1.7.4
-GIT_URL = https://github.com/git/git/archive/v$(GIT_VER).tar.gz
+GIT_VER = 1.7.12.4
+GIT_URL = https://git-core.googlecode.com/files/git-$(GIT_VER).tar.gz
 INSTALL = install
 MAN5_TXT = $(wildcard *.5.txt)
 MAN_TXT  = $(MAN5_TXT)
@@ -40,21 +42,13 @@ DOC_PDF  = $(patsubst %.txt,%.pdf,$(MAN_TXT))
 # Platform specific tweaks
 #
 
+VERSION: force-version
+	@./gen-version.sh "$(CGIT_VERSION)"
+-include VERSION
+
 uname_S := $(shell sh -c 'uname -s 2>/dev/null || echo not')
 uname_O := $(shell sh -c 'uname -o 2>/dev/null || echo not')
 uname_R := $(shell sh -c 'uname -r 2>/dev/null || echo not')
-
-ifeq ($(uname_O),Cygwin)
-	NO_STRCASESTR = YesPlease
-	NEEDS_LIBICONV = YesPlease
-endif
-
-ifeq ($(uname_S),$(filter $(uname_S),FreeBSD OpenBSD))
-	# Apparantly libiconv is installed in /usr/local on BSD
-	LDFLAGS ?= -L/usr/local/lib
-	CFLAGS ?= -I/usr/local/include
-	NEEDS_LIBICONV = yes
-endif
 
 #
 # Let the user override the above settings.
@@ -76,30 +70,62 @@ endif
 
 ifndef V
 	QUIET_CC       = @echo '   ' CC $@;
-	QUIET_MM       = @echo '   ' MM $@;
+	QUIET_LINK     = @echo '   ' LINK $@;
 	QUIET_SUBDIR0  = +@subdir=
 	QUIET_SUBDIR1  = ;$(NO_SUBDIR) echo '   ' SUBDIR $$subdir; \
 			 $(MAKE) $(PRINT_DIR) -C $$subdir
 	QUIET_TAGS     = @echo '   ' TAGS $@;
+	export V
 endif
 
-#
-# Define a pattern rule for automatic dependency building
-#
-%.d: %.c
-	$(QUIET_MM)$(CC) $(CFLAGS) -MM -MP $< | sed -e 's/\($*\)\.o:/\1.o $@:/g' >$@
+LDFLAGS ?=
+CFLAGS ?= -g -Wall
+CFLAGS += -Igit
+CFLAGS += -DSHA1_HEADER='$(SHA1_HEADER)'
+CFLAGS += -DCGIT_VERSION='"$(CGIT_VERSION)"'
+CFLAGS += -DCGIT_CONFIG='"$(CGIT_CONFIG)"'
+CFLAGS += -DCGIT_SCRIPT_NAME='"$(CGIT_SCRIPT_NAME)"'
+CFLAGS += -DCGIT_CACHE_ROOT='"$(CACHE_ROOT)"'
 
-#
-# Define a pattern rule for silent object building
-#
-%.o: %.c
-	$(QUIET_CC)$(CC) -o $*.o -c $(CFLAGS) $<
+ifeq ($(uname_O),Cygwin)
+	NO_STRCASESTR = YesPlease
+	NEEDS_LIBICONV = YesPlease
+endif
 
+ifeq ($(uname_S),$(filter $(uname_S),FreeBSD OpenBSD))
+	# Apparantly libiconv is installed in /usr/local on BSD
+	LDFLAGS += -L/usr/local/lib
+	CFLAGS += -I/usr/local/include
+	NEEDS_LIBICONV = yes
+endif
 
-EXTLIBS = git/libgit.a git/xdiff/lib.a -lz -lpthread
+GIT_OPTIONS = prefix=/usr
 OBJECTS =
-OBJECTS += cache.o
+
+ifdef NO_ICONV
+	CFLAGS += -DNO_ICONV
+endif
+ifdef NO_STRCASESTR
+	CFLAGS += -DNO_STRCASESTR
+endif
+ifdef NO_C99_FORMAT
+	CFLAGS += -DNO_C99_FORMAT
+endif
+ifdef NO_OPENSSL
+	CFLAGS += -DNO_OPENSSL
+	GIT_OPTIONS += NO_OPENSSL=1
+else
+	LDLIBS += -lcrypto
+endif
+
+ifdef NEEDS_LIBICONV
+	LDLIBS += -liconv
+endif
+
+LDLIBS += git/libgit.a git/xdiff/lib.a -lz -lpthread
+
 OBJECTS += cgit.o
+OBJECTS += cache.o
 OBJECTS += cmd.o
 OBJECTS += configfile.o
 OBJECTS += html.o
@@ -125,55 +151,30 @@ OBJECTS += ui-tag.o
 OBJECTS += ui-tree.o
 OBJECTS += vector.o
 
-ifdef NEEDS_LIBICONV
-	EXTLIBS += -liconv
+dep_files := $(foreach f,$(OBJECTS),$(dir $f).deps/$(notdir $f).d)
+dep_dirs := $(addsuffix .deps,$(sort $(dir $OBJECTS)))
+
+$(dep_dirs):
+	@mkdir -p $@
+
+missing_dep_dirs := $(filter-out $(wildcard $(dep_dirs)),$(dep_dirs))
+dep_file = $(dir $@).deps/$(notdir $@).d
+dep_args = -MF $(dep_file) -MMD -MP
+
+.SUFFIXES:
+
+$(OBJECTS): %.o: %.c $(missing_dep_dirs)
+	$(QUIET_CC)$(CC) -o $*.o -c $(dep_args) $(CFLAGS) $<
+
+dep_files_present := $(wildcard $(dep_files))
+ifneq ($(dep_files_present),)
+include $(dep_files_present)
 endif
 
+all:: cgit
 
-.PHONY: all libgit test install uninstall clean force-version get-git \
-	doc clean-doc install-doc install-man install-html install-pdf \
-	uninstall-doc uninstall-man uninstall-html uninstall-pdf tags
-
-all: cgit
-
-VERSION: force-version
-	@./gen-version.sh "$(CGIT_VERSION)"
--include VERSION
-
-
-CFLAGS += -g -Wall -Igit
-CFLAGS += -DSHA1_HEADER='$(SHA1_HEADER)'
-CFLAGS += -DCGIT_VERSION='"$(CGIT_VERSION)"'
-CFLAGS += -DCGIT_CONFIG='"$(CGIT_CONFIG)"'
-CFLAGS += -DCGIT_SCRIPT_NAME='"$(CGIT_SCRIPT_NAME)"'
-CFLAGS += -DCGIT_CACHE_ROOT='"$(CACHE_ROOT)"'
-
-GIT_OPTIONS = prefix=/usr
-
-ifdef NO_ICONV
-	CFLAGS += -DNO_ICONV
-endif
-ifdef NO_STRCASESTR
-	CFLAGS += -DNO_STRCASESTR
-endif
-ifdef NO_C99_FORMAT
-	CFLAGS += -DNO_C99_FORMAT
-endif
-ifdef NO_OPENSSL
-	CFLAGS += -DNO_OPENSSL
-	GIT_OPTIONS += NO_OPENSSL=1
-else
-	EXTLIBS += -lcrypto
-endif
-
-cgit: $(OBJECTS) libgit
-	$(QUIET_CC)$(CC) $(CFLAGS) $(LDFLAGS) -o cgit $(OBJECTS) $(EXTLIBS)
-
-cgit.o: VERSION
-
-ifneq "$(MAKECMDGOALS)" "clean"
-  -include $(OBJECTS:.o=.d)
-endif
+cgit: VERSION $(OBJECTS) libgit
+	$(QUIET_LINK)$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(OBJECTS) $(LDLIBS)
 
 libgit:
 	$(QUIET_SUBDIR0)git $(QUIET_SUBDIR1) NO_CURL=1 $(GIT_OPTIONS) libgit.a
@@ -243,13 +244,24 @@ $(DOC_PDF): %.pdf : %.txt
 	a2x -f pdf cgitrc.5.txt
 
 clean: clean-doc
-	rm -f cgit VERSION *.o *.d tags
+	$(RM) cgit VERSION *.o tags
+	$(RM) -r .deps
+
+cleanall: clean
+	$(MAKE) -C git clean
 
 clean-doc:
-	rm -f cgitrc.5 cgitrc.5.html cgitrc.5.pdf cgitrc.5.xml cgitrc.5.fo
+	$(RM) cgitrc.5 cgitrc.5.html cgitrc.5.pdf cgitrc.5.xml cgitrc.5.fo
 
 get-git:
 	curl -L $(GIT_URL) | tar -xzf - && rm -rf git && mv git-$(GIT_VER) git
 
 tags:
 	$(QUIET_TAGS)find . -name '*.[ch]' | xargs ctags
+
+.PHONY: all cgit get-git libgit force-version
+.PHONY: clean clean-doc cleanall
+.PHONY: doc doc-html doc-man doc-pdf
+.PHONY: install install-doc install-html install-man install-pdf
+.PHONY: tags test
+.PHONY: uninstall uninstall-doc uninstall-html uninstall-man uninstall-pdf
