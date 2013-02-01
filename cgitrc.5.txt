@@ -120,6 +120,10 @@ enable-index-links::
 	each repo in the repository index (specifically, to the "summary",
 	"commit" and "tree" pages). Default value: "0".
 
+enable-index-owner::
+	Flag which, when set to "1", will make cgit display the owner of
+	each repo in the repository index. Default value: "1".
+
 enable-log-filecount::
 	Flag which, when set to "1", will make cgit print the number of
 	modified files for each commit on the repository log page. Default

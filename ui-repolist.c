@@ -110,12 +110,13 @@ void print_sort_header(const char *title, const char *sort)
 	htmlf("'>%s</a></th>", title);
 }
 
-void print_header(int columns)
+void print_header()
 {
 	html("<tr class='nohover'>");
 	print_sort_header("Name", "name");
 	print_sort_header("Description", "desc");
-	print_sort_header("Owner", "owner");
+	if (ctx.cfg.enable_index_owner)
+		print_sort_header("Owner", "owner");
 	print_sort_header("Idle", "idle");
 	if (ctx.cfg.enable_index_links)
 		html("<th class='left'>Links</th>");
@@ -239,13 +240,15 @@ int sort_repolist(char *field)
 
 void cgit_print_repolist()
 {
-	int i, columns = 4, hits = 0, header = 0;
+	int i, columns = 3, hits = 0, header = 0;
 	char *last_section = NULL;
 	char *section;
 	int sorted = 0;
 
 	if (ctx.cfg.enable_index_links)
-		columns++;
+		++columns;
+	if (ctx.cfg.enable_index_owner)
+		++columns;
 
 	ctx.page.title = ctx.cfg.root_title;
 	cgit_print_http_headers(&ctx);
@@ -271,7 +274,7 @@ void cgit_print_repolist()
 		if (hits > ctx.qry.ofs + ctx.cfg.max_repo_count)
 			continue;
 		if (!header++)
-			print_header(columns);
+			print_header();
 		section = ctx.repo->section;
 		if (section && !strcmp(section, ""))
 			section = NULL;
@@ -294,8 +297,10 @@ void cgit_print_repolist()
 		html_ntxt(ctx.cfg.max_repodesc_len, ctx.repo->desc);
 		html_link_close();
 		html("</td><td>");
-		html_txt(ctx.repo->owner);
-		html("</td><td>");
+		if (ctx.cfg.enable_index_owner) {
+			html_txt(ctx.repo->owner);
+			html("</td><td>");
+		}
 		print_modtime(ctx.repo);
 		html("</td>");
 		if (ctx.cfg.enable_index_links) {
