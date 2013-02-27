@@ -564,6 +564,7 @@ void cgit_submodule_link(const char *class, char *path, const char *rev)
 	html("'>");
 	html_txt(path);
 	html("</a>");
+	html_txt(fmt(" @ %.7s", rev));
 	if (item && tail)
 		path[len - 1] = tail;
 }
