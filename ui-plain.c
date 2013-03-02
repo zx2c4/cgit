@@ -197,7 +197,14 @@ void cgit_print_plain(struct cgit_context *ctx)
 	const char *rev = ctx->qry.sha1;
 	unsigned char sha1[20];
 	struct commit *commit;
-	const char *paths[] = {ctx->qry.path, NULL};
+	struct pathspec_item path_items = {
+		.match = ctx->qry.path,
+		.len = ctx->qry.path ? strlen(ctx->qry.path) : 0
+	};
+	struct pathspec paths = {
+		.nr = 1,
+		.items = &path_items
+	};
 
 	if (!rev)
 		rev = ctx->qry.head;
@@ -211,14 +218,14 @@ void cgit_print_plain(struct cgit_context *ctx)
 		html_status(404, "Not found", 0);
 		return;
 	}
-	if (!paths[0]) {
-		paths[0] = "";
+	if (!path_items.match) {
+		path_items.match = "";
 		match_baselen = -1;
 		print_dir(commit->tree->object.sha1, "", 0, "");
 	}
 	else
-		match_baselen = basedir_len(paths[0]);
-	read_tree_recursive(commit->tree, "", 0, 0, paths, walk_tree, NULL);
+		match_baselen = basedir_len(path_items.match);
+	read_tree_recursive(commit->tree, "", 0, 0, &paths, walk_tree, NULL);
 	if (!match)
 		html_status(404, "Not found", 0);
 	else if (match == 2)
