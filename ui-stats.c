@@ -239,7 +239,7 @@ struct string_list collect_stats(struct cgit_context *ctx,
 	init_revisions(&rev, NULL);
 	rev.abbrev = DEFAULT_ABBREV;
 	rev.commit_format = CMIT_FMT_DEFAULT;
-	rev.no_merges = 1;
+	rev.max_parents = 1;
 	rev.verbose_header = 1;
 	rev.show_root_diff = 0;
 	setup_revisions(argc, argv, &rev, NULL);
