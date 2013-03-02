@@ -11,6 +11,7 @@
 #include <tag.h>
 #include <diff.h>
 #include <diffcore.h>
+#include <argv-array.h>
 #include <refs.h>
 #include <revision.h>
 #include <log-tree.h>
@@ -273,6 +274,8 @@ struct cgit_context {
 	struct cgit_repo *repo;
 	struct cgit_page page;
 };
+
+typedef int (*write_archive_fn_t)(const char *, const char *);
 
 struct cgit_snapshot_format {
 	const char *suffix;

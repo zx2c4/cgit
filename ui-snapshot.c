@@ -11,7 +11,31 @@
 #include "html.h"
 #include "ui-shared.h"
 
-static int write_compressed_tar_archive(struct archiver_args *args, char *filter_argv[])
+static int write_archive_type(const char *format, const char *hex, const char *prefix)
+{
+	struct argv_array argv = ARGV_ARRAY_INIT;
+	argv_array_push(&argv, format);
+	if (prefix) {
+		argv_array_push(&argv, "--prefix");
+		argv_array_push(&argv, fmt("%s/", prefix));
+	}
+	argv_array_push(&argv, hex);
+	return write_archive(argv.argc, argv.argv, NULL, 1, NULL, 0);
+}
+
+static int write_tar_archive(const char *hex, const char *prefix)
+{
+	return write_archive_type("--format=tar", hex, prefix);
+}
+
+static int write_zip_archive(const char *hex, const char *prefix)
+{
+	return write_archive_type("--format=zip", hex, prefix);
+}
+
+static int write_compressed_tar_archive(const char *hex,
+					const char *prefix,
+					char *filter_argv[])
 {
 	int rv;
 	struct cgit_filter f;
@@ -19,27 +43,27 @@ static int write_compressed_tar_archive(struct archiver_args *args, char *filter
 	f.cmd = filter_argv[0];
 	f.argv = filter_argv;
 	cgit_open_filter(&f);
-	rv = write_tar_archive(args);
+	rv = write_tar_archive(hex, prefix);
 	cgit_close_filter(&f);
 	return rv;
 }
 
-static int write_tar_gzip_archive(struct archiver_args *args)
+static int write_tar_gzip_archive(const char *hex, const char *prefix)
 {
 	char *argv[] = { "gzip", "-n", NULL };
-	return write_compressed_tar_archive(args, argv);
+	return write_compressed_tar_archive(hex, prefix, argv);
 }
 
-static int write_tar_bzip2_archive(struct archiver_args *args)
+static int write_tar_bzip2_archive(const char *hex, const char *prefix)
 {
 	char *argv[] = { "bzip2", NULL };
-	return write_compressed_tar_archive(args, argv);
+	return write_compressed_tar_archive(hex, prefix, argv);
 }
 
-static int write_tar_xz_archive(struct archiver_args *args)
+static int write_tar_xz_archive(const char *hex, const char *prefix)
 {
 	char *argv[] = { "xz", NULL };
-	return write_compressed_tar_archive(args, argv);
+	return write_compressed_tar_archive(hex, prefix, argv);
 }
 
 const struct cgit_snapshot_format cgit_snapshot_formats[] = {
@@ -71,34 +95,20 @@ static int make_snapshot(const struct cgit_snapshot_format *format,
 			 const char *hex, const char *prefix,
 			 const char *filename)
 {
-	struct archiver_args args;
-	struct commit *commit;
 	unsigned char sha1[20];
 
-	if(get_sha1(hex, sha1)) {
+	if (get_sha1(hex, sha1)) {
 		cgit_print_error(fmt("Bad object id: %s", hex));
 		return 1;
 	}
-	commit = lookup_commit_reference(sha1);
-	if(!commit) {
+	if (!lookup_commit_reference(sha1)) {
 		cgit_print_error(fmt("Not a commit reference: %s", hex));
 		return 1;
 	}
-	memset(&args, 0, sizeof(args));
-	if (prefix) {
-		args.base = fmt("%s/", prefix);
-		args.baselen = strlen(prefix) + 1;
-	} else {
-		args.base = "";
-		args.baselen = 0;
-	}
-	args.tree = commit->tree;
-	args.time = commit->date;
-	args.compression_level = Z_DEFAULT_COMPRESSION;
 	ctx.page.mimetype = xstrdup(format->mimetype);
 	ctx.page.filename = xstrdup(filename);
 	cgit_print_http_headers(&ctx);
-	format->write_func(&args);
+	format->write_func(hex, prefix);
 	return 0;
 }
 
