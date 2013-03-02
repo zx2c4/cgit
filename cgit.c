@@ -450,7 +450,7 @@ static char *guess_defbranch(const char *repo_path)
 	const char *ref;
 	unsigned char sha1[20];
 
-	ref = resolve_ref("HEAD", sha1, 0, NULL);
+	ref = resolve_ref_unsafe("HEAD", sha1, 0, NULL);
 	if (!ref || prefixcmp(ref, "refs/heads/"))
 		return "master";
 	return xstrdup(ref + 11);
