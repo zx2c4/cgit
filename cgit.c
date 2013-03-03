@@ -445,7 +445,7 @@ char *find_default_branch(struct cgit_repo *repo)
 	return ref;
 }
 
-static char *guess_defbranch(const char *repo_path)
+static char *guess_defbranch(void)
 {
 	const char *ref;
 	unsigned char sha1[20];
@@ -483,7 +483,7 @@ static int prepare_repo_cmd(struct cgit_context *ctx)
 	ctx->page.title = fmt("%s - %s", ctx->repo->name, ctx->repo->desc);
 
 	if (!ctx->repo->defbranch)
-		ctx->repo->defbranch = guess_defbranch(ctx->repo->path);
+		ctx->repo->defbranch = guess_defbranch();
 
 	if (!ctx->qry.head) {
 		ctx->qry.nohead = 1;
