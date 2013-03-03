@@ -11,8 +11,10 @@
 #include "html.h"
 #include "ui-shared.h"
 
-int match_baselen;
-int match;
+struct walk_tree_context {
+	int match_baselen;
+	int match;
+};
 
 static char *get_mimetype_from_file(const char *filename, const char *ext)
 {
@@ -166,18 +168,20 @@ static int walk_tree(const unsigned char *sha1, const char *base, int baselen,
 		     const char *pathname, unsigned mode, int stage,
 		     void *cbdata)
 {
-	if (baselen == match_baselen) {
+	struct walk_tree_context *walk_tree_ctx = cbdata;
+
+	if (baselen == walk_tree_ctx->match_baselen) {
 		if (S_ISREG(mode)) {
 			if (print_object(sha1, pathname))
-				match = 1;
+				walk_tree_ctx->match = 1;
 		} else if (S_ISDIR(mode)) {
 			print_dir(sha1, base, baselen, pathname);
-			match = 2;
+			walk_tree_ctx->match = 2;
 			return READ_TREE_RECURSIVE;
 		}
-	} else if (baselen > match_baselen) {
+	} else if (baselen > walk_tree_ctx->match_baselen) {
 		print_dir_entry(sha1, base, baselen, pathname, mode);
-		match = 2;
+		walk_tree_ctx->match = 2;
 	} else if (S_ISDIR(mode)) {
 		return READ_TREE_RECURSIVE;
 	}
@@ -206,6 +210,9 @@ void cgit_print_plain(struct cgit_context *ctx)
 		.nr = 1,
 		.items = &path_items
 	};
+	struct walk_tree_context walk_tree_ctx = {
+		.match = 0
+	};
 
 	if (!rev)
 		rev = ctx->qry.head;
@@ -221,15 +228,15 @@ void cgit_print_plain(struct cgit_context *ctx)
 	}
 	if (!path_items.match) {
 		path_items.match = "";
-		match_baselen = -1;
+		walk_tree_ctx.match_baselen = -1;
 		print_dir(commit->tree->object.sha1, "", 0, "");
-		match = 2;
+		walk_tree_ctx.match = 2;
 	}
 	else
-		match_baselen = basedir_len(path_items.match);
-	read_tree_recursive(commit->tree, "", 0, 0, &paths, walk_tree, NULL);
-	if (!match)
+		walk_tree_ctx.match_baselen = basedir_len(path_items.match);
+	read_tree_recursive(commit->tree, "", 0, 0, &paths, walk_tree, &walk_tree_ctx);
+	if (!walk_tree_ctx.match)
 		html_status(404, "Not found", 0);
-	else if (match == 2)
+	else if (walk_tree_ctx.match == 2)
 		print_dir_tail();
 }
