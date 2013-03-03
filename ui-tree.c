@@ -84,7 +84,7 @@ static void print_binary_buffer(char *buf, unsigned long size)
 	html("</table>\n");
 }
 
-static void print_object(const unsigned char *sha1, char *path, const char *basename)
+static void print_object(const unsigned char *sha1, char *path, const char *basename, const char *rev)
 {
 	enum object_type type;
 	char *buf;
@@ -106,7 +106,7 @@ static void print_object(const unsigned char *sha1, char *path, const char *base
 
 	htmlf("blob: %s (", sha1_to_hex(sha1));
 	cgit_plain_link("plain", NULL, NULL, ctx.qry.head,
-		        curr_rev, path);
+		        rev, path);
 	html(")\n");
 
 	if (ctx.cfg.max_blob_size && size / 1024 > ctx.cfg.max_blob_size) {
@@ -237,7 +237,7 @@ static int walk_tree(const unsigned char *sha1, const char *base, int baselen,
 			ls_head();
 			return READ_TREE_RECURSIVE;
 		} else {
-			print_object(sha1, buffer, pathname);
+			print_object(sha1, buffer, pathname, curr_rev);
 			return 0;
 		}
 	}
