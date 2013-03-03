@@ -14,6 +14,7 @@
 char *curr_rev;
 char *match_path;
 int header = 0;
+static int state;
 
 static void print_text_buffer(const char *name, char *buf, unsigned long size)
 {
@@ -223,7 +224,6 @@ static int walk_tree(const unsigned char *sha1, const char *base, int baselen,
 		     const char *pathname, unsigned mode, int stage,
 		     void *cbdata)
 {
-	static int state;
 	static char buffer[PATH_MAX];
 
 	if (state == 0) {
@@ -284,6 +284,7 @@ void cgit_print_tree(const char *rev, char *path)
 	}
 
 	match_path = path;
+	state = 0;
 	read_tree_recursive(commit->tree, "", 0, 0, &paths, walk_tree, NULL);
 	ls_tail();
 }
