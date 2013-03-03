@@ -13,7 +13,6 @@
 
 char *curr_rev;
 char *match_path;
-int header = 0;
 static int state;
 
 static void print_text_buffer(const char *name, char *buf, unsigned long size)
@@ -189,15 +188,11 @@ static void ls_head()
 	html("<th class='right'>Size</th>");
 	html("<th/>");
 	html("</tr>\n");
-	header = 1;
 }
 
 static void ls_tail()
 {
-	if (!header)
-		return;
 	html("</table>\n");
-	header = 0;
 }
 
 static void ls_tree(const unsigned char *sha1, char *path)
@@ -286,5 +281,6 @@ void cgit_print_tree(const char *rev, char *path)
 	match_path = path;
 	state = 0;
 	read_tree_recursive(commit->tree, "", 0, 0, &paths, walk_tree, NULL);
-	ls_tail();
+	if (state == 1)
+		ls_tail();
 }
