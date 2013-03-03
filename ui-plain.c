@@ -54,7 +54,7 @@ static char *get_mimetype_from_file(const char *filename, const char *ext)
 	return result;
 }
 
-static void print_object(const unsigned char *sha1, const char *path)
+static int print_object(const unsigned char *sha1, const char *path)
 {
 	enum object_type type;
 	char *buf, *ext;
@@ -65,13 +65,13 @@ static void print_object(const unsigned char *sha1, const char *path)
 	type = sha1_object_info(sha1, &size);
 	if (type == OBJ_BAD) {
 		html_status(404, "Not found", 0);
-		return;
+		return 0;
 	}
 
 	buf = read_sha1_file(sha1, &type, &size);
 	if (!buf) {
 		html_status(404, "Not found", 0);
-		return;
+		return 0;
 	}
 	ctx.page.mimetype = NULL;
 	ext = strrchr(path, '.');
@@ -97,9 +97,9 @@ static void print_object(const unsigned char *sha1, const char *path)
 	ctx.page.etag = sha1_to_hex(sha1);
 	cgit_print_http_headers(&ctx);
 	html_raw(buf, size);
-	match = 1;
 	if (freemime)
 		free(ctx.page.mimetype);
+	return 1;
 }
 
 static char *buildpath(const char *base, int baselen, const char *path)
@@ -138,7 +138,6 @@ static void print_dir(const unsigned char *sha1, const char *base,
 				fullpath);
 		html("</li>\n");
 	}
-	match = 2;
 }
 
 static void print_dir_entry(const unsigned char *sha1, const char *base,
@@ -156,7 +155,6 @@ static void print_dir_entry(const unsigned char *sha1, const char *base,
 		cgit_plain_link(path, NULL, NULL, ctx.qry.head, ctx.qry.sha1,
 				fullpath);
 	html("</li>\n");
-	match = 2;
 }
 
 static void print_dir_tail(void)
@@ -169,17 +167,20 @@ static int walk_tree(const unsigned char *sha1, const char *base, int baselen,
 		     void *cbdata)
 {
 	if (baselen == match_baselen) {
-		if (S_ISREG(mode))
-			print_object(sha1, pathname);
-		else if (S_ISDIR(mode)) {
+		if (S_ISREG(mode)) {
+			if (print_object(sha1, pathname))
+				match = 1;
+		} else if (S_ISDIR(mode)) {
 			print_dir(sha1, base, baselen, pathname);
+			match = 2;
 			return READ_TREE_RECURSIVE;
 		}
-	}
-	else if (baselen > match_baselen)
+	} else if (baselen > match_baselen) {
 		print_dir_entry(sha1, base, baselen, pathname, mode);
-	else if (S_ISDIR(mode))
+		match = 2;
+	} else if (S_ISDIR(mode)) {
 		return READ_TREE_RECURSIVE;
+	}
 
 	return 0;
 }
@@ -222,6 +223,7 @@ void cgit_print_plain(struct cgit_context *ctx)
 		path_items.match = "";
 		match_baselen = -1;
 		print_dir(commit->tree->object.sha1, "", 0, "");
+		match = 2;
 	}
 	else
 		match_baselen = basedir_len(path_items.match);
