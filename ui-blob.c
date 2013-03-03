@@ -11,17 +11,22 @@
 #include "html.h"
 #include "ui-shared.h"
 
-static char *match_path;
-static unsigned char *matched_sha1;
-static int found_path;
+struct walk_tree_context {
+	char *match_path;
+	unsigned char *matched_sha1;
+	int found_path;
+};
 
 static int walk_tree(const unsigned char *sha1, const char *base, int baselen,
-	const char *pathname, unsigned mode, int stage, void *cbdata) {
-	if (strncmp(base, match_path, baselen)
-		|| strcmp(match_path + baselen, pathname))
+	const char *pathname, unsigned mode, int stage, void *cbdata)
+{
+	struct walk_tree_context *walk_tree_ctx = cbdata;
+
+	if (strncmp(base, walk_tree_ctx->match_path, baselen)
+		|| strcmp(walk_tree_ctx->match_path + baselen, pathname))
 		return READ_TREE_RECURSIVE;
-	memmove(matched_sha1, sha1, 20);
-	found_path = 1;
+	memmove(walk_tree_ctx->matched_sha1, sha1, 20);
+	walk_tree_ctx->found_path = 1;
 	return 0;
 }
 
@@ -40,16 +45,19 @@ int cgit_print_file(char *path, const char *head)
 		.nr = 1,
 		.items = &path_items
 	};
+	struct walk_tree_context walk_tree_ctx = {
+		.match_path = path,
+		.matched_sha1 = sha1,
+		.found_path = 0
+	};
+
 	if (get_sha1(head, sha1))
 		return -1;
 	type = sha1_object_info(sha1, &size);
 	if (type == OBJ_COMMIT && path) {
 		commit = lookup_commit_reference(sha1);
-		match_path = path;
-		matched_sha1 = sha1;
-		found_path = 0;
-		read_tree_recursive(commit->tree, "", 0, 0, &paths, walk_tree, NULL);
-		if (!found_path)
+		read_tree_recursive(commit->tree, "", 0, 0, &paths, walk_tree, &walk_tree_ctx);
+		if (!walk_tree_ctx.found_path)
 			return -1;
 		type = sha1_object_info(sha1, &size);
 	}
@@ -78,6 +86,10 @@ void cgit_print_blob(const char *hex, char *path, const char *head)
 		.nr = 1,
 		.items = &path_items
 	};
+	struct walk_tree_context walk_tree_ctx = {
+		.match_path = path,
+		.matched_sha1 = sha1,
+	};
 
 	if (hex) {
 		if (get_sha1_hex(hex, sha1)) {
@@ -95,9 +107,7 @@ void cgit_print_blob(const char *hex, char *path, const char *head)
 
 	if ((!hex) && type == OBJ_COMMIT && path) {
 		commit = lookup_commit_reference(sha1);
-		match_path = path;
-		matched_sha1 = sha1;
-		read_tree_recursive(commit->tree, "", 0, 0, &paths, walk_tree, NULL);
+		read_tree_recursive(commit->tree, "", 0, 0, &paths, walk_tree, &walk_tree_ctx);
 		type = sha1_object_info(sha1,&size);
 	}
 
