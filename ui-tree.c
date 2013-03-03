@@ -11,9 +11,11 @@
 #include "html.h"
 #include "ui-shared.h"
 
-char *curr_rev;
-char *match_path;
-static int state;
+struct walk_tree_context {
+	char *curr_rev;
+	char *match_path;
+	int state;
+};
 
 static void print_text_buffer(const char *name, char *buf, unsigned long size)
 {
@@ -126,6 +128,7 @@ static int ls_item(const unsigned char *sha1, const char *base, int baselen,
 		   const char *pathname, unsigned int mode, int stage,
 		   void *cbdata)
 {
+	struct walk_tree_context *walk_tree_ctx = cbdata;
 	char *name;
 	char *fullpath;
 	char *class;
@@ -153,7 +156,7 @@ static int ls_item(const unsigned char *sha1, const char *base, int baselen,
 		cgit_submodule_link("ls-mod", fullpath, sha1_to_hex(sha1));
 	} else if (S_ISDIR(mode)) {
 		cgit_tree_link(name, NULL, "ls-dir", ctx.qry.head,
-			       curr_rev, fullpath);
+			       walk_tree_ctx->curr_rev, fullpath);
 	} else {
 		class = strrchr(name, '.');
 		if (class != NULL) {
@@ -161,19 +164,20 @@ static int ls_item(const unsigned char *sha1, const char *base, int baselen,
 		} else
 			class = "ls-blob";
 		cgit_tree_link(name, NULL, class, ctx.qry.head,
-			       curr_rev, fullpath);
+			       walk_tree_ctx->curr_rev, fullpath);
 	}
 	htmlf("</td><td class='ls-size'>%li</td>", size);
 
 	html("<td>");
-	cgit_log_link("log", NULL, "button", ctx.qry.head, curr_rev,
-		      fullpath, 0, NULL, NULL, ctx.qry.showmsg);
+	cgit_log_link("log", NULL, "button", ctx.qry.head,
+		      walk_tree_ctx->curr_rev, fullpath, 0, NULL, NULL,
+		      ctx.qry.showmsg);
 	if (ctx.repo->max_stats)
 		cgit_stats_link("stats", NULL, "button", ctx.qry.head,
 				fullpath);
 	if (!S_ISGITLINK(mode))
-		cgit_plain_link("plain", NULL, "button", ctx.qry.head, curr_rev,
-				fullpath);
+		cgit_plain_link("plain", NULL, "button", ctx.qry.head,
+				walk_tree_ctx->curr_rev, fullpath);
 	html("</td></tr>\n");
 	free(name);
 	return 0;
@@ -195,7 +199,7 @@ static void ls_tail()
 	html("</table>\n");
 }
 
-static void ls_tree(const unsigned char *sha1, char *path)
+static void ls_tree(const unsigned char *sha1, char *path, struct walk_tree_context *walk_tree_ctx)
 {
 	struct tree *tree;
 	struct pathspec paths = {
@@ -210,7 +214,7 @@ static void ls_tree(const unsigned char *sha1, char *path)
 	}
 
 	ls_head();
-	read_tree_recursive(tree, "", 0, 1, &paths, ls_item, NULL);
+	read_tree_recursive(tree, "", 0, 1, &paths, ls_item, walk_tree_ctx);
 	ls_tail();
 }
 
@@ -219,24 +223,25 @@ static int walk_tree(const unsigned char *sha1, const char *base, int baselen,
 		     const char *pathname, unsigned mode, int stage,
 		     void *cbdata)
 {
+	struct walk_tree_context *walk_tree_ctx = cbdata;
 	static char buffer[PATH_MAX];
 
-	if (state == 0) {
+	if (walk_tree_ctx->state == 0) {
 		memcpy(buffer, base, baselen);
 		strcpy(buffer + baselen, pathname);
-		if (strcmp(match_path, buffer))
+		if (strcmp(walk_tree_ctx->match_path, buffer))
 			return READ_TREE_RECURSIVE;
 
 		if (S_ISDIR(mode)) {
-			state = 1;
+			walk_tree_ctx->state = 1;
 			ls_head();
 			return READ_TREE_RECURSIVE;
 		} else {
-			print_object(sha1, buffer, pathname, curr_rev);
+			print_object(sha1, buffer, pathname, walk_tree_ctx->curr_rev);
 			return 0;
 		}
 	}
-	ls_item(sha1, base, baselen, pathname, mode, stage, NULL);
+	ls_item(sha1, base, baselen, pathname, mode, stage, walk_tree_ctx);
 	return 0;
 }
 
@@ -258,11 +263,15 @@ void cgit_print_tree(const char *rev, char *path)
 		.nr = path ? 1 : 0,
 		.items = &path_items
 	};
+	struct walk_tree_context walk_tree_ctx = {
+		.match_path = path,
+		.state = 0
+	};
 
 	if (!rev)
 		rev = ctx.qry.head;
 
-	curr_rev = xstrdup(rev);
+	walk_tree_ctx.curr_rev = xstrdup(rev);
 	if (get_sha1(rev, sha1)) {
 		cgit_print_error(fmt("Invalid revision name: %s", rev));
 		return;
@@ -274,13 +283,11 @@ void cgit_print_tree(const char *rev, char *path)
 	}
 
 	if (path == NULL) {
-		ls_tree(commit->tree->object.sha1, NULL);
+		ls_tree(commit->tree->object.sha1, NULL, &walk_tree_ctx);
 		return;
 	}
 
-	match_path = path;
-	state = 0;
-	read_tree_recursive(commit->tree, "", 0, 0, &paths, walk_tree, NULL);
-	if (state == 1)
+	read_tree_recursive(commit->tree, "", 0, 0, &paths, walk_tree, &walk_tree_ctx);
+	if (walk_tree_ctx.state == 1)
 		ls_tail();
 }
