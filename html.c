@@ -54,7 +54,7 @@ char *fmt(const char *format, ...)
 	va_start(args, format);
 	len = vsnprintf(buf[bufidx], sizeof(buf[bufidx]), format, args);
 	va_end(args);
-	if (len>sizeof(buf[bufidx])) {
+	if (len > sizeof(buf[bufidx])) {
 		fprintf(stderr, "[html.c] string truncated: %s\n", format);
 		exit(1);
 	}
@@ -94,19 +94,19 @@ void html_txt(const char *txt)
 	const char *t = txt;
 	while(t && *t){
 		int c = *t;
-		if (c=='<' || c=='>' || c=='&') {
+		if (c == '<' || c == '>' || c == '&') {
 			html_raw(txt, t - txt);
-			if (c=='>')
+			if (c == '>')
 				html("&gt;");
-			else if (c=='<')
+			else if (c == '<')
 				html("&lt;");
-			else if (c=='&')
+			else if (c == '&')
 				html("&amp;");
-			txt = t+1;
+			txt = t + 1;
 		}
 		t++;
 	}
-	if (t!=txt)
+	if (t != txt)
 		html(txt);
 }
 
@@ -115,21 +115,21 @@ void html_ntxt(int len, const char *txt)
 	const char *t = txt;
 	while(t && *t && len--){
 		int c = *t;
-		if (c=='<' || c=='>' || c=='&') {
+		if (c == '<' || c == '>' || c == '&') {
 			html_raw(txt, t - txt);
-			if (c=='>')
+			if (c == '>')
 				html("&gt;");
-			else if (c=='<')
+			else if (c == '<')
 				html("&lt;");
-			else if (c=='&')
+			else if (c == '&')
 				html("&amp;");
-			txt = t+1;
+			txt = t + 1;
 		}
 		t++;
 	}
-	if (t!=txt)
+	if (t != txt)
 		html_raw(txt, t - txt);
-	if (len<0)
+	if (len < 0)
 		html("...");
 }
 
@@ -138,23 +138,23 @@ void html_attr(const char *txt)
 	const char *t = txt;
 	while(t && *t){
 		int c = *t;
-		if (c=='<' || c=='>' || c=='\'' || c=='\"' || c=='&') {
+		if (c == '<' || c == '>' || c == '\'' || c == '\"' || c == '&') {
 			html_raw(txt, t - txt);
-			if (c=='>')
+			if (c == '>')
 				html("&gt;");
-			else if (c=='<')
+			else if (c == '<')
 				html("&lt;");
-			else if (c=='\'')
+			else if (c == '\'')
 				html("&#x27;");
-			else if (c=='"')
+			else if (c == '"')
 				html("&quot;");
-			else if (c=='&')
+			else if (c == '&')
 				html("&amp;");
-			txt = t+1;
+			txt = t + 1;
 		}
 		t++;
 	}
-	if (t!=txt)
+	if (t != txt)
 		html(txt);
 }
 
@@ -164,14 +164,14 @@ void html_url_path(const char *txt)
 	while(t && *t){
 		unsigned char c = *t;
 		const char *e = url_escape_table[c];
-		if (e && c!='+' && c!='&') {
+		if (e && c != '+' && c != '&') {
 			html_raw(txt, t - txt);
 			html(e);
-			txt = t+1;
+			txt = t + 1;
 		}
 		t++;
 	}
-	if (t!=txt)
+	if (t != txt)
 		html(txt);
 }
 
@@ -186,11 +186,11 @@ void html_url_arg(const char *txt)
 		if (e) {
 			html_raw(txt, t - txt);
 			html(e);
-			txt = t+1;
+			txt = t + 1;
 		}
 		t++;
 	}
-	if (t!=txt)
+	if (t != txt)
 		html(txt);
 }
 
@@ -286,14 +286,14 @@ char *convert_query_hexchar(char *txt)
 		*txt = '\0';
 		return txt-1;
 	}
-	d1 = hextoint(*(txt+1));
-	d2 = hextoint(*(txt+2));
-	if (d1<0 || d2<0) {
-		memmove(txt, txt+3, n-2);
+	d1 = hextoint(*(txt + 1));
+	d2 = hextoint(*(txt + 2));
+	if (d1 < 0 || d2 < 0) {
+		memmove(txt, txt + 3, n - 2);
 		return txt-1;
 	} else {
 		*txt = d1 * 16 + d2;
-		memmove(txt+1, txt+3, n-2);
+		memmove(txt + 1, txt + 3, n - 2);
 		return txt;
 	}
 }
@@ -311,22 +311,22 @@ int http_parse_querystring(const char *txt_, void (*fn)(const char *name, const 
 		exit(1);
 	}
 	while((c=*t) != '\0') {
-		if (c=='=') {
+		if (c == '=') {
 			*t = '\0';
-			value = t+1;
-		} else if (c=='+') {
+			value = t + 1;
+		} else if (c == '+') {
 			*t = ' ';
-		} else if (c=='%') {
+		} else if (c == '%') {
 			t = convert_query_hexchar(t);
-		} else if (c=='&') {
+		} else if (c == '&') {
 			*t = '\0';
 			(*fn)(txt, value);
-			txt = t+1;
+			txt = t + 1;
 			value = NULL;
 		}
 		t++;
 	}
-	if (t!=txt)
+	if (t != txt)
 		(*fn)(txt, value);
 	free(o);
 	return 0;

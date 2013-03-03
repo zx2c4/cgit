@@ -99,6 +99,6 @@ void cgit_print_tag(char *revname)
 		if (ctx.repo->snapshots)
 			print_download_links(revname);
 		html("</table>\n");
-        }
+	}
 	return;
 }

@@ -105,7 +105,7 @@ static int is_expired(struct cache_slot *slot)
 	if (slot->ttl < 0)
 		return 0;
 	else
-		return slot->cache_st.st_mtime + slot->ttl*60 < time(NULL);
+		return slot->cache_st.st_mtime + slot->ttl * 60 < time(NULL);
 }
 
 /* Check if the slot has been modified since we opened it.
@@ -141,8 +141,8 @@ static int close_lock(struct cache_slot *slot)
  */
 static int lock_slot(struct cache_slot *slot)
 {
-	slot->lock_fd = open(slot->lock_name, O_RDWR|O_CREAT|O_EXCL,
-			     S_IRUSR|S_IWUSR);
+	slot->lock_fd = open(slot->lock_name, O_RDWR | O_CREAT | O_EXCL,
+			     S_IRUSR | S_IWUSR);
 	if (slot->lock_fd == -1)
 		return errno;
 	if (xwrite(slot->lock_fd, slot->key, slot->keylen + 1) < 0)

@@ -23,7 +23,7 @@ static char *http_date(time_t t)
 		 "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
 	struct tm *tm = gmtime(&t);
 	return fmt("%s, %02d %s %04d %02d:%02d:%02d GMT", day[tm->tm_wday],
-		   tm->tm_mday, month[tm->tm_mon], 1900+tm->tm_year,
+		   tm->tm_mday, month[tm->tm_mon], 1900 + tm->tm_year,
 		   tm->tm_hour, tm->tm_min, tm->tm_sec);
 }
 
@@ -93,7 +93,7 @@ char *cgit_fileurl(const char *reponame, const char *pagename,
 char *cgit_pageurl(const char *reponame, const char *pagename,
 		   const char *query)
 {
-	return cgit_fileurl(reponame,pagename,0,query);
+	return cgit_fileurl(reponame, pagename, 0, query);
 }
 
 const char *cgit_repobasename(const char *reponame)
@@ -102,18 +102,18 @@ const char *cgit_repobasename(const char *reponame)
 	static char rvbuf[1024];
 	int p;
 	const char *rv;
-	strncpy(rvbuf,reponame,sizeof(rvbuf));
+	strncpy(rvbuf, reponame, sizeof(rvbuf));
 	if(rvbuf[sizeof(rvbuf)-1])
 		die("cgit_repobasename: truncated repository name '%s'", reponame);
 	p = strlen(rvbuf)-1;
 	/* strip trailing slashes */
-	while(p && rvbuf[p]=='/') rvbuf[p--]=0;
+	while(p && rvbuf[p] == '/') rvbuf[p--] = 0;
 	/* strip trailing .git */
-	if(p>=3 && !strncmp(&rvbuf[p-3],".git",4)) {
+	if(p >= 3 && !strncmp(&rvbuf[p-3], ".git", 4)) {
 		p -= 3; rvbuf[p--] = 0;
 	}
 	/* strip more trailing slashes if any */
-	while( p && rvbuf[p]=='/') rvbuf[p--]=0;
+	while( p && rvbuf[p] == '/') rvbuf[p--] = 0;
 	/* find last slash in the remaining string */
 	rv = strrchr(rvbuf,'/');
 	if(rv)
@@ -499,7 +499,7 @@ void cgit_object_link(struct object *obj)
 	shortrev = xstrdup(fullrev);
 	shortrev[10] = '\0';
 	if (obj->type == OBJ_COMMIT) {
-                cgit_commit_link(fmt("commit %s...", shortrev), NULL, NULL,
+		cgit_commit_link(fmt("commit %s...", shortrev), NULL, NULL,
 				 ctx.qry.head, fullrev, NULL, 0);
 		return;
 	} else if (obj->type == OBJ_TREE)
@@ -736,7 +736,7 @@ int print_archive_ref(const char *refname, const unsigned char *sha1,
 
 	if (prefixcmp(refname, "refs/archives"))
 		return 0;
-	strncpy(buf, refname+14, sizeof(buf));
+	strncpy(buf, refname + 14, sizeof(buf));
 	obj = parse_object(sha1);
 	if (!obj)
 		return 1;
@@ -968,7 +968,7 @@ void cgit_print_snapshot_links(const char *repo, const char *head,
 {
 	const struct cgit_snapshot_format* f;
 	char *prefix;
-    	char *filename;
+	char *filename;
 	unsigned char sha1[20];
 
 	if (get_sha1(fmt("refs/tags/%s", hex), sha1) == 0 &&

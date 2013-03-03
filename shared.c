@@ -28,8 +28,8 @@ int chk_positive(int result, char *msg)
 
 int chk_non_negative(int result, char *msg)
 {
-    	if (result < 0)
-	    	die("%s: %s",msg, strerror(errno));
+	if (result < 0)
+		die("%s: %s", msg, strerror(errno));
 	return result;
 }
 
@@ -80,7 +80,7 @@ struct cgit_repo *cgit_get_repoinfo(const char *url)
 	int i;
 	struct cgit_repo *repo;
 
-	for (i=0; i<cgit_repolist.count; i++) {
+	for (i = 0; i < cgit_repolist.count; i++) {
 		repo = &cgit_repolist.repos[i];
 		if (!strcmp(repo->url, url))
 			return repo;
@@ -207,7 +207,7 @@ static int load_mmfile(mmfile_t *file, const unsigned char *sha1)
 		file->ptr = (char *)"";
 		file->size = 0;
 	} else {
-		file->ptr = read_sha1_file(sha1, &type, 
+		file->ptr = read_sha1_file(sha1, &type,
 		                           (unsigned long *)&file->size);
 	}
 	return 1;
@@ -354,14 +354,14 @@ int cgit_parse_snapshots_mask(const char *str)
 	if(atoi(str))
 		return 1;
 	for(;;) {
-		str += strspn(str,delim);
-		tl = strcspn(str,delim);
+		str += strspn(str, delim);
+		tl = strcspn(str, delim);
 		if (!tl)
 			break;
 		for (f = cgit_snapshot_formats; f->suffix; f++) {
 			sl = strlen(f->suffix);
 			if((tl == sl && !strncmp(f->suffix, str, tl)) ||
-			   (tl == sl-1 && !strncmp(f->suffix+1, str, tl-1))) {
+			   (tl == sl - 1 && !strncmp(f->suffix + 1, str, tl - 1))) {
 				rv |= f->bit;
 				break;
 			}

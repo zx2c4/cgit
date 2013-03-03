@@ -106,7 +106,7 @@ static void add_repo(const char *base, const char *path, repo_config_fn fn)
 	config_fn = fn;
 	if (ctx.cfg.enable_git_config)
 		git_config_from_file(gitconfig_config, fmt("%s/config", path), NULL);
-	
+
 	if (ctx.cfg.remove_suffix)
 		if ((p = strrchr(repo->url, '.')) && !strcmp(p, ".git"))
 			*p = '\0';
@@ -222,7 +222,7 @@ void scan_projects(const char *path, const char *projectsfile, repo_config_fn fn
 	char line[MAX_PATH * 2], *z;
 	FILE *projects;
 	int err;
-	
+
 	projects = fopen(projectsfile, "r");
 	if (!projects) {
 		fprintf(stderr, "Error opening projectsfile %s: %s (%d)\n",

@@ -27,7 +27,7 @@ static void print_text_buffer(const char *name, char *buf, unsigned long size)
 		html("<tr><td class='linenumbers'><pre>");
 		idx = 0;
 		lineno = 0;
-	
+
 		if (size) {
 			htmlf(numberfmt, ++lineno);
 			while(idx < size - 1) { // skip absolute last newline
@@ -228,7 +228,7 @@ static int walk_tree(const unsigned char *sha1, const char *base, int baselen,
 
 	if (state == 0) {
 		memcpy(buffer, base, baselen);
-		strcpy(buffer+baselen, pathname);
+		strcpy(buffer + baselen, pathname);
 		if (strcmp(match_path, buffer))
 			return READ_TREE_RECURSIVE;
 

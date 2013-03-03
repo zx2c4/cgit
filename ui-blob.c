@@ -15,12 +15,12 @@ static char *match_path;
 static unsigned char *matched_sha1;
 static int found_path;
 
-static int walk_tree(const unsigned char *sha1, const char *base,int baselen,
+static int walk_tree(const unsigned char *sha1, const char *base, int baselen,
 	const char *pathname, unsigned mode, int stage, void *cbdata) {
-	if(strncmp(base,match_path,baselen)
-		|| strcmp(match_path+baselen,pathname) )
+	if(strncmp(base, match_path, baselen)
+		|| strcmp(match_path + baselen, pathname))
 		return READ_TREE_RECURSIVE;
-	memmove(matched_sha1,sha1,20);
+	memmove(matched_sha1, sha1, 20);
 	found_path = 1;
 	return 0;
 }
@@ -85,7 +85,7 @@ void cgit_print_blob(const char *hex, char *path, const char *head)
 			return;
 		}
 	} else {
-		if (get_sha1(head,sha1)) {
+		if (get_sha1(head, sha1)) {
 			cgit_print_error(fmt("Bad ref: %s", head));
 			return;
 		}

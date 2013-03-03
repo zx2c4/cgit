@@ -23,21 +23,21 @@ static void trunc_week(struct tm *tm)
 {
 	time_t t = timegm(tm);
 	t -= ((tm->tm_wday + 6) % 7) * DAY_SECS;
-	gmtime_r(&t, tm);	
+	gmtime_r(&t, tm);
 }
 
 static void dec_week(struct tm *tm)
 {
 	time_t t = timegm(tm);
 	t -= WEEK_SECS;
-	gmtime_r(&t, tm);	
+	gmtime_r(&t, tm);
 }
 
 static void inc_week(struct tm *tm)
 {
 	time_t t = timegm(tm);
 	t += WEEK_SECS;
-	gmtime_r(&t, tm);	
+	gmtime_r(&t, tm);
 }
 
 static char *pretty_week(struct tm *tm)
@@ -153,7 +153,7 @@ int cgit_find_stats_period(const char *expr, struct cgit_period **period)
 		if (periods[i].code == code || !strcmp(periods[i].name, expr)) {
 			if (period)
 				*period = &periods[i];
-			return i+1;
+			return i + 1;
 		}
 	return 0;
 }

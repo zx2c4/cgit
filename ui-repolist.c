@@ -131,8 +131,8 @@ void print_pager(int items, int pagelen, char *search, char *sort)
 	html("<div class='pager'>");
 	for(i = 0, ofs = 0; ofs < items; i++, ofs = i * pagelen) {
 		class = (ctx.qry.ofs == ofs) ? "current" : NULL;
-		cgit_index_link(fmt("[%d]", i+1), fmt("Page %d", i+1), class,
-				search, sort, ofs);
+		cgit_index_link(fmt("[%d]", i + 1), fmt("Page %d", i + 1),
+				class, search, sort, ofs);
 	}
 	html("</div>");
 }
@@ -264,7 +264,7 @@ void cgit_print_repolist()
 		sort_repolist("section");
 
 	html("<table summary='repository list' class='list nowrap'>");
-	for (i=0; i<cgit_repolist.count; i++) {
+	for (i = 0; i < cgit_repolist.count; i++) {
 		ctx.repo = &cgit_repolist.repos[i];
 		if (!(is_match(ctx.repo) && is_in_url(ctx.repo)))
 			continue;

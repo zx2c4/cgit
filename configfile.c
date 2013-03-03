@@ -13,9 +13,9 @@
 int next_char(FILE *f)
 {
 	int c = fgetc(f);
-	if (c=='\r') {
+	if (c == '\r') {
 		c = fgetc(f);
-		if (c!='\n') {
+		if (c != '\n') {
 			ungetc(c, f);
 			c = '\r';
 		}
@@ -27,7 +27,7 @@ void skip_line(FILE *f)
 {
 	int c;
 
-	while((c=next_char(f)) && c!='\n' && c!=EOF)
+	while((c = next_char(f)) && c != '\n' && c != EOF)
 		;
 }
 
@@ -36,31 +36,31 @@ int read_config_line(FILE *f, char *line, const char **value, int bufsize)
 	int i = 0, isname = 0;
 
 	*value = NULL;
-	while(i<bufsize-1) {
+	while(i < bufsize - 1) {
 		int c = next_char(f);
-		if (!isname && (c=='#' || c==';')) {
+		if (!isname && (c == '#' || c == ';')) {
 			skip_line(f);
 			continue;
 		}
 		if (!isname && isspace(c))
 			continue;
 
-		if (c=='=' && !*value) {
+		if (c == '=' && !*value) {
 			line[i] = 0;
-			*value = &line[i+1];
-		} else if (c=='\n' && !isname) {
+			*value = &line[i + 1];
+		} else if (c == '\n' && !isname) {
 			i = 0;
 			continue;
-		} else if (c=='\n' || c==EOF) {
+		} else if (c == '\n' || c == EOF) {
 			line[i] = 0;
 			break;
 		} else {
-			line[i]=c;
+			line[i] = c;
 		}
 		isname = 1;
 		i++;
 	}
-	line[i+1] = 0;
+	line[i + 1] = 0;
 	return i;
 }
 

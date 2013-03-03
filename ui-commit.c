@@ -39,7 +39,7 @@ void cgit_print_commit(char *hex, const char *prefix)
 	format_note(NULL, sha1, &notes, PAGE_ENCODING, 0);
 
 	load_ref_decorations(DECORATE_FULL_REFS);
-	
+
 	cgit_print_diff_ctrls();
 	html("<table summary='commit info' class='commit-info'>\n");
 	html("<tr><th>author</th><td>");
@@ -75,7 +75,7 @@ void cgit_print_commit(char *hex, const char *prefix)
 		cgit_tree_link(prefix, NULL, NULL, ctx.qry.head, tmp, prefix);
 	}
 	html("</td></tr>\n");
-      	for (p = commit->parents; p ; p = p->next) {
+	for (p = commit->parents; p; p = p->next) {
 		parent = lookup_commit_reference(p->item->object.sha1);
 		if (!parent) {
 			html("<tr><td colspan='3'>");

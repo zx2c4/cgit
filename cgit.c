@@ -741,7 +741,7 @@ static void cgit_parse_args(int argc, const char **argv)
 
 	for (i = 1; i < argc; i++) {
 		if (!strncmp(argv[i], "--cache=", 8)) {
-			ctx.cfg.cache_root = xstrdup(argv[i]+8);
+			ctx.cfg.cache_root = xstrdup(argv[i] + 8);
 		}
 		if (!strcmp(argv[i], "--nocache")) {
 			ctx.cfg.nocache = 1;
@@ -750,24 +750,24 @@ static void cgit_parse_args(int argc, const char **argv)
 			ctx.env.no_http = "1";
 		}
 		if (!strncmp(argv[i], "--query=", 8)) {
-			ctx.qry.raw = xstrdup(argv[i]+8);
+			ctx.qry.raw = xstrdup(argv[i] + 8);
 		}
 		if (!strncmp(argv[i], "--repo=", 7)) {
-			ctx.qry.repo = xstrdup(argv[i]+7);
+			ctx.qry.repo = xstrdup(argv[i] + 7);
 		}
 		if (!strncmp(argv[i], "--page=", 7)) {
-			ctx.qry.page = xstrdup(argv[i]+7);
+			ctx.qry.page = xstrdup(argv[i] + 7);
 		}
 		if (!strncmp(argv[i], "--head=", 7)) {
-			ctx.qry.head = xstrdup(argv[i]+7);
+			ctx.qry.head = xstrdup(argv[i] + 7);
 			ctx.qry.has_symref = 1;
 		}
 		if (!strncmp(argv[i], "--sha1=", 7)) {
-			ctx.qry.sha1 = xstrdup(argv[i]+7);
+			ctx.qry.sha1 = xstrdup(argv[i] + 7);
 			ctx.qry.has_sha1 = 1;
 		}
 		if (!strncmp(argv[i], "--ofs=", 6)) {
-			ctx.qry.ofs = atoi(argv[i]+6);
+			ctx.qry.ofs = atoi(argv[i] + 6);
 		}
 		if (!strncmp(argv[i], "--scan-tree=", 12) ||
 		    !strncmp(argv[i], "--scan-path=", 12)) {
@@ -834,7 +834,7 @@ int main(int argc, const char **argv)
 		ctx.cfg.virtual_root = trim_end(ctx.cfg.script_name, '/');
 		if (!ctx.cfg.virtual_root)
 			ctx.cfg.virtual_root = "";
-        }
+	}
 
 	/* If no url parameter is specified on the querystring, lets
 	 * use PATH_INFO as url. This allows cgit to work with virtual
@@ -856,7 +856,7 @@ int main(int argc, const char **argv)
 	}
 
 	ttl = calc_ttl();
-	ctx.page.expires += ttl*60;
+	ctx.page.expires += ttl * 60;
 	if (ctx.env.request_method && !strcmp(ctx.env.request_method, "HEAD"))
 		ctx.cfg.nocache = 1;
 	if (ctx.cfg.nocache)
