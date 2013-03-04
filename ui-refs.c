@@ -205,6 +205,8 @@ void cgit_print_branches(int maxcount)
 
 	if (maxcount < list.count)
 		print_refs_link("heads");
+
+	cgit_free_reflist_inner(&list);
 }
 
 void cgit_print_tags(int maxcount)
@@ -229,6 +231,8 @@ void cgit_print_tags(int maxcount)
 
 	if (maxcount < list.count)
 		print_refs_link("tags");
+
+	cgit_free_reflist_inner(&list);
 }
 
 void cgit_print_refs()

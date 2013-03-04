@@ -176,6 +176,42 @@ static struct refinfo *cgit_mk_refinfo(const char *refname, const unsigned char 
 	return ref;
 }
 
+static void cgit_free_taginfo(struct taginfo *tag)
+{
+	if (tag->tagger)
+		free(tag->tagger);
+	if (tag->tagger_email)
+		free(tag->tagger_email);
+	if (tag->msg)
+		free(tag->msg);
+	free(tag);
+}
+
+static void cgit_free_refinfo(struct refinfo *ref)
+{
+	if (ref->refname)
+		free((char *)ref->refname);
+	switch (ref->object->type) {
+	case OBJ_TAG:
+		cgit_free_taginfo(ref->tag);
+		break;
+	case OBJ_COMMIT:
+		cgit_free_commitinfo(ref->commit);
+		break;
+	}
+	free(ref);
+}
+
+void cgit_free_reflist_inner(struct reflist *list)
+{
+	int i;
+
+	for (i = 0; i < list->count; i++) {
+		cgit_free_refinfo(list->refs[i]);
+	}
+	free(list->refs);
+}
+
 int cgit_refs_cb(const char *refname, const unsigned char *sha1, int flags,
 		  void *cb_data)
 {

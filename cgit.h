@@ -304,6 +304,7 @@ extern char *strlpart(char *txt, int maxlen);
 extern char *strrpart(char *txt, int maxlen);
 
 extern void cgit_add_ref(struct reflist *list, struct refinfo *ref);
+extern void cgit_free_reflist_inner(struct reflist *list);
 extern int cgit_refs_cb(const char *refname, const unsigned char *sha1,
 			int flags, void *cb_data);
 
