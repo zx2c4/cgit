@@ -99,7 +99,7 @@ ifeq ($(uname_S),$(filter $(uname_S),FreeBSD OpenBSD))
 	NEEDS_LIBICONV = yes
 endif
 
-GIT_OPTIONS = prefix=/usr
+GIT_OPTIONS = prefix=/usr NO_GETTEXT=1
 OBJECTS =
 
 ifdef NO_ICONV
