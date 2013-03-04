@@ -12,7 +12,7 @@
 #include "ui-shared.h"
 #include <strings.h>
 
-time_t read_agefile(char *path)
+static time_t read_agefile(char *path)
 {
 	time_t result;
 	size_t size;
@@ -76,7 +76,7 @@ static void print_modtime(struct cgit_repo *repo)
 		cgit_print_age(t, -1, NULL);
 }
 
-int is_match(struct cgit_repo *repo)
+static int is_match(struct cgit_repo *repo)
 {
 	if (!ctx.qry.search)
 		return 1;
@@ -91,7 +91,7 @@ int is_match(struct cgit_repo *repo)
 	return 0;
 }
 
-int is_in_url(struct cgit_repo *repo)
+static int is_in_url(struct cgit_repo *repo)
 {
 	if (!ctx.qry.url)
 		return 1;
@@ -100,7 +100,7 @@ int is_in_url(struct cgit_repo *repo)
 	return 0;
 }
 
-void print_sort_header(const char *title, const char *sort)
+static void print_sort_header(const char *title, const char *sort)
 {
 	htmlf("<th class='left'><a href='%s?s=%s", cgit_rooturl(), sort);
 	if (ctx.qry.search) {
@@ -110,7 +110,7 @@ void print_sort_header(const char *title, const char *sort)
 	htmlf("'>%s</a></th>", title);
 }
 
-void print_header()
+static void print_header()
 {
 	html("<tr class='nohover'>");
 	print_sort_header("Name", "name");
@@ -124,7 +124,7 @@ void print_header()
 }
 
 
-void print_pager(int items, int pagelen, char *search, char *sort)
+static void print_pager(int items, int pagelen, char *search, char *sort)
 {
 	int i, ofs;
 	char *class = NULL;
@@ -223,7 +223,7 @@ struct sortcolumn sortcolumn[] = {
 	{NULL, NULL}
 };
 
-int sort_repolist(char *field)
+static int sort_repolist(char *field)
 {
 	struct sortcolumn *column;
 

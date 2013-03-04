@@ -39,7 +39,7 @@ static const char* url_escape_table[256] = {
 	"%fe", "%ff"
 };
 
-int htmlfd = STDOUT_FILENO;
+static int htmlfd = STDOUT_FILENO;
 
 char *fmt(const char *format, ...)
 {
@@ -266,7 +266,7 @@ int html_include(const char *filename)
 	return 0;
 }
 
-int hextoint(char c)
+static int hextoint(char c)
 {
 	if (c >= 'a' && c <= 'f')
 		return 10 + c - 'a';
@@ -278,7 +278,7 @@ int hextoint(char c)
 		return -1;
 }
 
-char *convert_query_hexchar(char *txt)
+static char *convert_query_hexchar(char *txt)
 {
 	int d1, d2, n;
 	n = strlen(txt);

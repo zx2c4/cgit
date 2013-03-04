@@ -166,8 +166,9 @@ static void inspect_filepair(struct diff_filepair *pair)
 	total_rems += lines_removed;
 }
 
-void cgit_print_diffstat(const unsigned char *old_sha1,
-			 const unsigned char *new_sha1, const char *prefix)
+static void cgit_print_diffstat(const unsigned char *old_sha1,
+				const unsigned char *new_sha1,
+				const char *prefix)
 {
 	int i;
 

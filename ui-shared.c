@@ -121,7 +121,7 @@ const char *cgit_repobasename(const char *reponame)
 	return rvbuf;
 }
 
-char *cgit_currurl()
+static char *cgit_currurl()
 {
 	if (!ctx.cfg.virtual_root)
 		return ctx.cfg.script_name;
@@ -433,8 +433,8 @@ void cgit_stats_link(const char *name, const char *title, const char *class,
 	reporevlink("stats", name, title, class, head, NULL, path);
 }
 
-void cgit_self_link(char *name, const char *title, const char *class,
-		    struct cgit_context *ctx)
+static void cgit_self_link(char *name, const char *title, const char *class,
+			   struct cgit_context *ctx)
 {
 	if (!strcmp(ctx->qry.page, "repolist"))
 		return cgit_index_link(name, title, class, ctx->qry.search, ctx->qry.sort,
@@ -512,8 +512,8 @@ void cgit_object_link(struct object *obj)
 	reporevlink(page, name, NULL, NULL, ctx.qry.head, fullrev, NULL);
 }
 
-struct string_list_item *lookup_path(struct string_list *list,
-				     const char *path)
+static struct string_list_item *lookup_path(struct string_list *list,
+					    const char *path)
 {
 	struct string_list_item *item;
 
@@ -716,16 +716,16 @@ void cgit_print_docend()
 	html("</body>\n</html>\n");
 }
 
-int print_branch_option(const char *refname, const unsigned char *sha1,
-			int flags, void *cb_data)
+static int print_branch_option(const char *refname, const unsigned char *sha1,
+			       int flags, void *cb_data)
 {
 	char *name = (char *)refname;
 	html_option(name, name, ctx.qry.head);
 	return 0;
 }
 
-int print_archive_ref(const char *refname, const unsigned char *sha1,
-		       int flags, void *cb_data)
+static int print_archive_ref(const char *refname, const unsigned char *sha1,
+			     int flags, void *cb_data)
 {
 	struct tag *tag;
 	struct taginfo *info;
