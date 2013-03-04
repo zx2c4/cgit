@@ -427,6 +427,12 @@ static int find_current_ref(const char *refname, const unsigned char *sha1,
 	return info->match;
 }
 
+static void free_refmatch_inner(struct refmatch *info)
+{
+	if (info->first_ref)
+		free(info->first_ref);
+}
+
 static char *find_default_branch(struct cgit_repo *repo)
 {
 	struct refmatch info;
@@ -442,6 +448,8 @@ static char *find_default_branch(struct cgit_repo *repo)
 		ref = info.first_ref;
 	if (ref)
 		ref = xstrdup(ref);
+	free_refmatch_inner(&info);
+
 	return ref;
 }
 
