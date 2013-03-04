@@ -121,18 +121,6 @@ const char *cgit_repobasename(const char *reponame)
 	return rvbuf;
 }
 
-static char *cgit_currurl()
-{
-	if (!ctx.cfg.virtual_root)
-		return ctx.cfg.script_name;
-	else if (ctx.qry.page)
-		return fmt("%s/%s/%s/", ctx.cfg.virtual_root, ctx.qry.repo, ctx.qry.page);
-	else if (ctx.qry.repo)
-		return fmt("%s/%s/", ctx.cfg.virtual_root, ctx.qry.repo);
-	else
-		return fmt("%s/", ctx.cfg.virtual_root);
-}
-
 static void site_url(const char *page, const char *search, const char *sort, int ofs)
 {
 	char *delim = "?";
