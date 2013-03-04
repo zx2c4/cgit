@@ -14,6 +14,7 @@
 static int write_archive_type(const char *format, const char *hex, const char *prefix)
 {
 	struct argv_array argv = ARGV_ARRAY_INIT;
+	argv_array_push(&argv, "snapshot");
 	argv_array_push(&argv, format);
 	if (prefix) {
 		argv_array_push(&argv, "--prefix");
