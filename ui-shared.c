@@ -712,45 +712,6 @@ static int print_branch_option(const char *refname, const unsigned char *sha1,
 	return 0;
 }
 
-static int print_archive_ref(const char *refname, const unsigned char *sha1,
-			     int flags, void *cb_data)
-{
-	struct tag *tag;
-	struct taginfo *info;
-	struct object *obj;
-	char buf[256], *url;
-	unsigned char fileid[20];
-	int *header = (int *)cb_data;
-
-	if (prefixcmp(refname, "refs/archives"))
-		return 0;
-	strncpy(buf, refname + 14, sizeof(buf));
-	obj = parse_object(sha1);
-	if (!obj)
-		return 1;
-	if (obj->type == OBJ_TAG) {
-		tag = lookup_tag(sha1);
-		if (!tag || parse_tag(tag) || !(info = cgit_parse_tag(tag)))
-			return 0;
-		hashcpy(fileid, tag->tagged->sha1);
-	} else if (obj->type != OBJ_BLOB) {
-		return 0;
-	} else {
-		hashcpy(fileid, sha1);
-	}
-	if (!*header) {
-		html("<h1>download</h1>\n");
-		*header = 1;
-	}
-	url = cgit_pageurl(ctx.qry.repo, "blob",
-			   fmt("id=%s&amp;path=%s", sha1_to_hex(fileid),
-			       buf));
-	html_link_open(url, NULL, "menu");
-	html_txt(strlpart(buf, 20));
-	html_link_close();
-	return 0;
-}
-
 void cgit_add_hidden_formfields(int incl_head, int incl_search,
 				const char *page)
 {
