@@ -10,17 +10,20 @@ run_test 'get foo/snapshot/master.tar.gz' '
 
 run_test 'check html headers' '
 	head -n 1 trash/tmp |
-	     grep "Content-Type: application/x-gzip" &&
+	grep "Content-Type: application/x-gzip" &&
 
 	head -n 2 trash/tmp |
-	     grep "Content-Disposition: inline; filename=.master.tar.gz."
+	grep "Content-Disposition: inline; filename=.master.tar.gz."
 '
 
 run_test 'strip off the header lines' '
-	 tail -n +6 trash/tmp > trash/master.tar.gz
+	tail -n +6 trash/tmp > trash/master.tar.gz
 '
 
-run_test 'verify gzip format' 'gunzip --test trash/master.tar.gz'
+run_test '
+	verify gzip format' 'gunzip --test trash/master.tar.gz
+'
+
 run_test 'untar' '
 	rm -rf trash/master &&
 	tar -xf trash/master.tar.gz -C trash
@@ -32,8 +35,8 @@ run_test 'count files' '
 '
 
 run_test 'verify untarred file-5' '
-	 grep "^5$" trash/master/file-5 &&
-	 test $(cat trash/master/file-5 | wc -l) = 1
+	grep "^5$" trash/master/file-5 &&
+	test $(cat trash/master/file-5 | wc -l) = 1
 '
 
 tests_done

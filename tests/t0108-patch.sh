@@ -21,7 +21,7 @@ run_test 'find `Subject:` line' '
 '
 
 run_test 'find `cgit` signature' '
-	 tail -1 trash/tmp | grep "^cgit"
+	tail -1 trash/tmp | grep "^cgit"
 '
 
 run_test 'find initial commit' '
