@@ -9,19 +9,19 @@ run_test 'generate foo/patch' '
 '
 
 run_test 'find `From:` line' '
-	grep -e "^From: " trash/tmp
+	grep "^From: " trash/tmp
 '
 
 run_test 'find `Date:` line' '
-	grep -e "^Date: " trash/tmp
+	grep "^Date: " trash/tmp
 '
 
 run_test 'find `Subject:` line' '
-	grep -e "^Subject: commit 5" trash/tmp
+	grep "^Subject: commit 5" trash/tmp
 '
 
 run_test 'find `cgit` signature' '
-	 tail -1 trash/tmp | grep -e "^cgit"
+	 tail -1 trash/tmp | grep "^cgit"
 '
 
 run_test 'find initial commit' '
@@ -33,7 +33,7 @@ run_test 'generate patch for initial commit' '
 '
 
 run_test 'find `cgit` signature' '
-	tail -1 trash/tmp | grep -e "^cgit"
+	tail -1 trash/tmp | grep "^cgit"
 '
 
 tests_done
