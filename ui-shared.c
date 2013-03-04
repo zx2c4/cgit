@@ -931,4 +931,5 @@ void cgit_print_snapshot_links(const char *repo, const char *head,
 		cgit_snapshot_link(filename, NULL, NULL, NULL, NULL, filename);
 		html("<br/>");
 	}
+	free(prefix);
 }
