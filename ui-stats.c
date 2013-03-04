@@ -83,7 +83,7 @@ static char *pretty_month(struct tm *tm)
 static void trunc_quarter(struct tm *tm)
 {
 	trunc_month(tm);
-	while(tm->tm_mon % 3 != 0)
+	while (tm->tm_mon % 3 != 0)
 		dec_month(tm);
 }
 

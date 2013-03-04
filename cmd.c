@@ -166,7 +166,7 @@ struct cgit_cmd *cgit_get_cmd(struct cgit_context *ctx)
 			ctx->qry.page = "repolist";
 	}
 
-	for(i = 0; i < sizeof(cmds)/sizeof(*cmds); i++)
+	for (i = 0; i < sizeof(cmds)/sizeof(*cmds); i++)
 		if (!strcmp(ctx->qry.page, cmds[i].name))
 			return &cmds[i];
 	return NULL;

@@ -92,7 +92,7 @@ void html_status(int code, const char *msg, int more_headers)
 void html_txt(const char *txt)
 {
 	const char *t = txt;
-	while(t && *t){
+	while (t && *t) {
 		int c = *t;
 		if (c == '<' || c == '>' || c == '&') {
 			html_raw(txt, t - txt);
@@ -113,7 +113,7 @@ void html_txt(const char *txt)
 void html_ntxt(int len, const char *txt)
 {
 	const char *t = txt;
-	while(t && *t && len--){
+	while (t && *t && len--) {
 		int c = *t;
 		if (c == '<' || c == '>' || c == '&') {
 			html_raw(txt, t - txt);
@@ -136,7 +136,7 @@ void html_ntxt(int len, const char *txt)
 void html_attr(const char *txt)
 {
 	const char *t = txt;
-	while(t && *t){
+	while (t && *t) {
 		int c = *t;
 		if (c == '<' || c == '>' || c == '\'' || c == '\"' || c == '&') {
 			html_raw(txt, t - txt);
@@ -161,7 +161,7 @@ void html_attr(const char *txt)
 void html_url_path(const char *txt)
 {
 	const char *t = txt;
-	while(t && *t){
+	while (t && *t) {
 		unsigned char c = *t;
 		const char *e = url_escape_table[c];
 		if (e && c != '+' && c != '&') {
@@ -178,7 +178,7 @@ void html_url_path(const char *txt)
 void html_url_arg(const char *txt)
 {
 	const char *t = txt;
-	while(t && *t){
+	while (t && *t) {
 		unsigned char c = *t;
 		const char *e = url_escape_table[c];
 		if (c == ' ')
@@ -260,7 +260,7 @@ int html_include(const char *filename)
 			filename, strerror(errno), errno);
 		return -1;
 	}
-	while((len = fread(buf, 1, 4096, f)) > 0)
+	while ((len = fread(buf, 1, 4096, f)) > 0)
 		html_raw(buf, len);
 	fclose(f);
 	return 0;
@@ -310,7 +310,7 @@ int http_parse_querystring(const char *txt_, void (*fn)(const char *name, const 
 		printf("Out of memory\n");
 		exit(1);
 	}
-	while((c=*t) != '\0') {
+	while ((c=*t) != '\0') {
 		if (c == '=') {
 			*t = '\0';
 			value = t + 1;

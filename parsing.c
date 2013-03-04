@@ -112,7 +112,7 @@ const char *reencode(char **txt, const char *src_enc, const char *dst_enc)
 		return *txt;
 
 	/* no encoding needed if src_enc equals dst_enc */
-	if(!strcasecmp(src_enc, dst_enc))
+	if (!strcasecmp(src_enc, dst_enc))
 		return *txt;
 
 	tmp = reencode_string(*txt, dst_enc, src_enc);
@@ -170,7 +170,7 @@ struct commitinfo *cgit_parse_commit(struct commit *commit)
 	}
 
 	/* if no special encoding is found, assume UTF-8 */
-	if(!ret->msg_encoding)
+	if (!ret->msg_encoding)
 		ret->msg_encoding = xstrdup("UTF-8");
 
 	// skip unknown header fields

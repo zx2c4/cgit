@@ -72,7 +72,7 @@ const struct cgit_snapshot_format cgit_snapshot_formats[] = {
 	{ ".tar.bz2", "application/x-bzip2", write_tar_bzip2_archive, 0x04 },
 	{ ".tar", "application/x-tar", write_tar_archive, 0x08 },
 	{ ".tar.xz", "application/x-xz", write_tar_xz_archive, 0x10 },
-	{}
+	{ NULL }
 };
 
 static const struct cgit_snapshot_format *get_format(const char *filename)
@@ -81,7 +81,7 @@ static const struct cgit_snapshot_format *get_format(const char *filename)
 	int fl, sl;
 
 	fl = strlen(filename);
-	for(fmt = cgit_snapshot_formats; fmt->suffix; fmt++) {
+	for (fmt = cgit_snapshot_formats; fmt->suffix; fmt++) {
 		sl = strlen(fmt->suffix);
 		if (sl >= fl)
 			continue;

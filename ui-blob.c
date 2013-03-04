@@ -17,7 +17,7 @@ static int found_path;
 
 static int walk_tree(const unsigned char *sha1, const char *base, int baselen,
 	const char *pathname, unsigned mode, int stage, void *cbdata) {
-	if(strncmp(base, match_path, baselen)
+	if (strncmp(base, match_path, baselen)
 		|| strcmp(match_path + baselen, pathname))
 		return READ_TREE_RECURSIVE;
 	memmove(matched_sha1, sha1, 20);
@@ -43,7 +43,7 @@ int cgit_print_file(char *path, const char *head)
 	if (get_sha1(head, sha1))
 		return -1;
 	type = sha1_object_info(sha1, &size);
-	if(type == OBJ_COMMIT && path) {
+	if (type == OBJ_COMMIT && path) {
 		commit = lookup_commit_reference(sha1);
 		match_path = path;
 		matched_sha1 = sha1;
@@ -80,7 +80,7 @@ void cgit_print_blob(const char *hex, char *path, const char *head)
 	};
 
 	if (hex) {
-		if (get_sha1_hex(hex, sha1)){
+		if (get_sha1_hex(hex, sha1)) {
 			cgit_print_error(fmt("Bad hex value: %s", hex));
 			return;
 		}
@@ -93,7 +93,7 @@ void cgit_print_blob(const char *hex, char *path, const char *head)
 
 	type = sha1_object_info(sha1, &size);
 
-	if((!hex) && type == OBJ_COMMIT && path) {
+	if ((!hex) && type == OBJ_COMMIT && path) {
 		commit = lookup_commit_reference(sha1);
 		match_path = path;
 		matched_sha1 = sha1;

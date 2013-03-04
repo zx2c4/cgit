@@ -27,7 +27,7 @@ void skip_line(FILE *f)
 {
 	int c;
 
-	while((c = next_char(f)) && c != '\n' && c != EOF)
+	while ((c = next_char(f)) && c != '\n' && c != EOF)
 		;
 }
 
@@ -36,7 +36,7 @@ int read_config_line(FILE *f, char *line, const char **value, int bufsize)
 	int i = 0, isname = 0;
 
 	*value = NULL;
-	while(i < bufsize - 1) {
+	while (i < bufsize - 1) {
 		int c = next_char(f);
 		if (!isname && (c == '#' || c == ';')) {
 			skip_line(f);
@@ -78,7 +78,7 @@ int parse_configfile(const char *filename, configfile_value_fn fn)
 	if (!(f = fopen(filename, "r")))
 		return -1;
 	nesting++;
-	while((len = read_config_line(f, line, &value, sizeof(line))) > 0)
+	while ((len = read_config_line(f, line, &value, sizeof(line))) > 0)
 		fn(line, value);
 	nesting--;
 	fclose(f);

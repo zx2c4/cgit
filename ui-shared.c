@@ -103,20 +103,20 @@ const char *cgit_repobasename(const char *reponame)
 	int p;
 	const char *rv;
 	strncpy(rvbuf, reponame, sizeof(rvbuf));
-	if(rvbuf[sizeof(rvbuf)-1])
+	if (rvbuf[sizeof(rvbuf)-1])
 		die("cgit_repobasename: truncated repository name '%s'", reponame);
 	p = strlen(rvbuf)-1;
 	/* strip trailing slashes */
-	while(p && rvbuf[p] == '/') rvbuf[p--] = 0;
+	while (p && rvbuf[p] == '/') rvbuf[p--] = 0;
 	/* strip trailing .git */
-	if(p >= 3 && !strncmp(&rvbuf[p-3], ".git", 4)) {
+	if (p >= 3 && !strncmp(&rvbuf[p-3], ".git", 4)) {
 		p -= 3; rvbuf[p--] = 0;
 	}
 	/* strip more trailing slashes if any */
-	while( p && rvbuf[p] == '/') rvbuf[p--] = 0;
+	while ( p && rvbuf[p] == '/') rvbuf[p--] = 0;
 	/* find last slash in the remaining string */
 	rv = strrchr(rvbuf,'/');
-	if(rv)
+	if (rv)
 		return ++rv;
 	return rvbuf;
 }
@@ -576,7 +576,7 @@ void cgit_print_date(time_t secs, const char *format, int local_time)
 
 	if (!secs)
 		return;
-	if(local_time)
+	if (local_time)
 		time = localtime(&secs);
 	else
 		time = gmtime(&secs);

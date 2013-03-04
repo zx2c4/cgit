@@ -214,7 +214,7 @@ unsigned long hash_str(const char *str)
 	if (!s)
 		return h;
 
-	while(*s) {
+	while (*s) {
 		h *= FNV_PRIME;
 		h ^= *s++;
 	}
@@ -342,7 +342,7 @@ int cache_process(int size, const char *path, const char *key, int ttl,
 	strcpy(filename, path);
 	if (filename[len - 1] != '/')
 		filename[len++] = '/';
-	for(i = 0; i < 8; i++) {
+	for (i = 0; i < 8; i++) {
 		sprintf(filename + len++, "%x",
 			(unsigned char)(hash & 0xf));
 		hash >>= 4;
@@ -407,7 +407,7 @@ int cache_ls(const char *path)
 		*name = '\0';
 	}
 	slot.cache_name = fullname;
-	while((ent = readdir(dir)) != NULL) {
+	while ((ent = readdir(dir)) != NULL) {
 		if (strlen(ent->d_name) != 8)
 			continue;
 		strcpy(name, ent->d_name);

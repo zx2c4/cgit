@@ -185,7 +185,7 @@ static void scan_path(const char *base, const char *path, repo_config_fn fn)
 		add_repo(base, fmt("%s/.git", path), fn);
 		goto end;
 	}
-	while((ent = readdir(dir)) != NULL) {
+	while ((ent = readdir(dir)) != NULL) {
 		if (ent->d_name[0] == '.') {
 			if (ent->d_name[1] == '\0')
 				continue;

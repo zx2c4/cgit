@@ -129,7 +129,7 @@ void print_pager(int items, int pagelen, char *search, char *sort)
 	int i, ofs;
 	char *class = NULL;
 	html("<div class='pager'>");
-	for(i = 0, ofs = 0; ofs < items; i++, ofs = i * pagelen) {
+	for (i = 0, ofs = 0; ofs < items; i++, ofs = i * pagelen) {
 		class = (ctx.qry.ofs == ofs) ? "current" : NULL;
 		cgit_index_link(fmt("[%d]", i + 1), fmt("Page %d", i + 1),
 				class, search, sort, ofs);
@@ -258,7 +258,7 @@ void cgit_print_repolist()
 	if (ctx.cfg.index_header)
 		html_include(ctx.cfg.index_header);
 
-	if(ctx.qry.sort)
+	if (ctx.qry.sort)
 		sorted = sort_repolist(ctx.qry.sort);
 	else if (ctx.cfg.section_sort)
 		sort_repolist("section");

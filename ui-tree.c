@@ -30,7 +30,7 @@ static void print_text_buffer(const char *name, char *buf, unsigned long size)
 
 		if (size) {
 			htmlf(numberfmt, ++lineno);
-			while(idx < size - 1) { // skip absolute last newline
+			while (idx < size - 1) { // skip absolute last newline
 				if (buf[idx] == '\n')
 					htmlf(numberfmt, ++lineno);
 				idx++;

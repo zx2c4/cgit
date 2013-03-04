@@ -315,7 +315,7 @@ static void querystring_cb(const char *name, const char *value)
 		ctx.qry.name = xstrdup(value);
 	} else if (!strcmp(name, "mimetype")) {
 		ctx.qry.mimetype = xstrdup(value);
-	} else if (!strcmp(name, "s")){
+	} else if (!strcmp(name, "s")) {
 		ctx.qry.sort = xstrdup(value);
 	} else if (!strcmp(name, "showmsg")) {
 		ctx.qry.showmsg = atoi(value);
@@ -653,7 +653,7 @@ void print_repolist(FILE *f, struct cgit_repolist *list, int start)
 {
 	int i;
 
-	for(i = start; i < list->count; i++)
+	for (i = start; i < list->count; i++)
 		print_repo(f, &list->repos[i]);
 }
 

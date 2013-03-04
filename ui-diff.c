@@ -184,7 +184,7 @@ void cgit_print_diffstat(const unsigned char *old_sha1,
 	max_changes = 0;
 	cgit_diff_tree(old_sha1, new_sha1, inspect_filepair, prefix,
 		       ctx.qry.ignorews);
-	for(i = 0; i<files; i++)
+	for (i = 0; i<files; i++)
 		print_fileinfo(&items[i]);
 	html("</table>");
 	html("<div class='diffstat-summary'>");

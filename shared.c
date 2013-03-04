@@ -108,7 +108,7 @@ char *trim_end(const char *str, char c)
 	if (str == NULL)
 		return NULL;
 	len = strlen(str);
-	while(len > 0 && str[len - 1] == c)
+	while (len > 0 && str[len - 1] == c)
 		len--;
 	if (len == 0)
 		return NULL;
@@ -351,16 +351,16 @@ int cgit_parse_snapshots_mask(const char *str)
 	int tl, sl, rv = 0;
 
 	/* favor legacy setting */
-	if(atoi(str))
+	if (atoi(str))
 		return 1;
-	for(;;) {
+	for (;;) {
 		str += strspn(str, delim);
 		tl = strcspn(str, delim);
 		if (!tl)
 			break;
 		for (f = cgit_snapshot_formats; f->suffix; f++) {
 			sl = strlen(f->suffix);
-			if((tl == sl && !strncmp(f->suffix, str, tl)) ||
+			if ((tl == sl && !strncmp(f->suffix, str, tl)) ||
 			   (tl == sl - 1 && !strncmp(f->suffix + 1, str, tl - 1))) {
 				rv |= f->bit;
 				break;

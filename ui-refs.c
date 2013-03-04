@@ -200,7 +200,7 @@ void cgit_print_branches(int maxcount)
 		qsort(list.refs, maxcount, sizeof(*list.refs), cmp_ref_name);
 	}
 
-	for(i = 0; i < maxcount; i++)
+	for (i = 0; i < maxcount; i++)
 		print_branch(list.refs[i]);
 
 	if (maxcount < list.count)
@@ -224,7 +224,7 @@ void cgit_print_tags(int maxcount)
 	else if (maxcount > list.count)
 		maxcount = list.count;
 	print_tag_header();
-	for(i = 0; i < maxcount; i++)
+	for (i = 0; i < maxcount; i++)
 		print_tag(list.refs[i]);
 
 	if (maxcount < list.count)
