@@ -17,15 +17,22 @@ int urls = 0;
 
 static void print_url(char *base, char *suffix)
 {
+	int columns = 3;
+
+	if (ctx.repo->enable_log_filecount)
+		columns++;
+	if (ctx.repo->enable_log_linecount)
+		columns++;
+
 	if (!base || !*base)
 		return;
 	if (urls++ == 0) {
-		html("<tr class='nohover'><td colspan='4'>&nbsp;</td></tr>");
-		html("<tr><th class='left' colspan='4'>Clone</th></tr>\n");
+		htmlf("<tr class='nohover'><td colspan='%d'>&nbsp;</td></tr>", columns);
+		htmlf("<tr><th class='left' colspan='%d'>Clone</th></tr>\n", columns);
 	}
 	if (suffix && *suffix)
 		base = fmt("%s/%s", base, suffix);
-	html("<tr><td colspan='4'><a href='");
+	htmlf("<tr><td colspan='%d'><a href='", columns);
 	html_url_path(base);
 	html("'>");
 	html_txt(base);
@@ -52,12 +59,19 @@ static void print_urls(char *txt, char *suffix)
 
 void cgit_print_summary()
 {
+	int columns = 3;
+
+	if (ctx.repo->enable_log_filecount)
+		columns++;
+	if (ctx.repo->enable_log_linecount)
+		columns++;
+
 	html("<table summary='repository info' class='list nowrap'>");
 	cgit_print_branches(ctx.cfg.summary_branches);
-	html("<tr class='nohover'><td colspan='4'>&nbsp;</td></tr>");
+	htmlf("<tr class='nohover'><td colspan='%d'>&nbsp;</td></tr>", columns);
 	cgit_print_tags(ctx.cfg.summary_tags);
 	if (ctx.cfg.summary_log > 0) {
-		html("<tr class='nohover'><td colspan='4'>&nbsp;</td></tr>");
+		htmlf("<tr class='nohover'><td colspan='%d'>&nbsp;</td></tr>", columns);
 		cgit_print_log(ctx.qry.head, 0, ctx.cfg.summary_log, NULL,
 			       NULL, NULL, 0, 0, 0);
 	}

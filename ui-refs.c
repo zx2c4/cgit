@@ -177,7 +177,7 @@ static int print_tag(struct refinfo *ref)
 
 static void print_refs_link(char *path)
 {
-	html("<tr class='nohover'><td colspan='4'>");
+	html("<tr class='nohover'><td colspan='5'>");
 	cgit_refs_link("[...]", NULL, NULL, ctx.qry.head, NULL, path);
 	html("</td></tr>");
 }
@@ -252,7 +252,7 @@ void cgit_print_refs()
 		cgit_print_tags(0);
 	else {
 		cgit_print_branches(0);
-		html("<tr class='nohover'><td colspan='4'>&nbsp;</td></tr>");
+		html("<tr class='nohover'><td colspan='5'>&nbsp;</td></tr>");
 		cgit_print_tags(0);
 	}
 	html("</table>");

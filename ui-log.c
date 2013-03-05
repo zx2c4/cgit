@@ -98,14 +98,14 @@ next:
 static void print_commit(struct commit *commit, struct rev_info *revs)
 {
 	struct commitinfo *info;
-	int cols = revs->graph ? 3 : 2;
+	int columns = revs->graph ? 4 : 3;
 	struct strbuf graphbuf = STRBUF_INIT;
 	struct strbuf msgbuf = STRBUF_INIT;
 
 	if (ctx.repo->enable_log_filecount)
-		cols++;
+		columns++;
 	if (ctx.repo->enable_log_linecount)
-		cols++;
+		columns++;
 
 	if (revs->graph) {
 		/* Advance graph until current commit */
@@ -113,7 +113,7 @@ static void print_commit(struct commit *commit, struct rev_info *revs)
 			/* Print graph segment in otherwise empty table row */
 			html("<tr class='nohover'><td class='commitgraph'>");
 			html(graphbuf.buf);
-			htmlf("</td><td colspan='%d' /></tr>\n", cols);
+			htmlf("</td><td colspan='%d' /></tr>\n", columns);
 			strbuf_setlen(&graphbuf, 0);
 		}
 		/* Current commit's graph segment is now ready in graphbuf */
@@ -232,7 +232,7 @@ static void print_commit(struct commit *commit, struct rev_info *revs)
 			html("<td/>"); /* Empty 'Age' column */
 
 		/* Print msgbuf into remainder of table row */
-		htmlf("<td colspan='%d'%s>\n", cols,
+		htmlf("<td colspan='%d'%s>\n", columns - (revs->graph ? 1 : 0),
 			ctx.qry.showmsg ? " class='logmsg'" : "");
 		html_txt(msgbuf.buf);
 		html("</td></tr>\n");
@@ -283,7 +283,7 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 	struct rev_info rev;
 	struct commit *commit;
 	struct vector vec = VECTOR_INIT(char *);
-	int i, columns = 3;
+	int i, columns = commit_graph ? 4 : 3;
 	char *arg;
 
 	/* First argv is NULL */
@@ -421,7 +421,7 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 		}
 		html("</div>");
 	} else if ((commit = get_revision(&rev)) != NULL) {
-		html("<tr class='nohover'><td colspan='3'>");
+		htmlf("<tr class='nohover'><td colspan='%d'>", columns);
 		cgit_log_link("[...]", NULL, NULL, ctx.qry.head, NULL,
 			      ctx.qry.vpath, 0, NULL, NULL, ctx.qry.showmsg);
 		html("</td></tr>\n");
