@@ -13,8 +13,6 @@
 #include "ui-refs.h"
 #include "ui-blob.h"
 
-int urls = 0;
-
 static void print_url(char *base, char *suffix)
 {
 	int columns = 3;
@@ -26,10 +24,6 @@ static void print_url(char *base, char *suffix)
 
 	if (!base || !*base)
 		return;
-	if (urls++ == 0) {
-		htmlf("<tr class='nohover'><td colspan='%d'>&nbsp;</td></tr>", columns);
-		htmlf("<tr><th class='left' colspan='%d'>Clone</th></tr>\n", columns);
-	}
 	if (suffix && *suffix)
 		base = fmt("%s/%s", base, suffix);
 	htmlf("<tr><td colspan='%d'><a href='", columns);
@@ -42,15 +36,29 @@ static void print_url(char *base, char *suffix)
 static void print_urls(char *txt, char *suffix)
 {
 	char *h = txt, *t, c;
+	int urls = 0;
+	int columns = 3;
+
+	if (ctx.repo->enable_log_filecount)
+		columns++;
+	if (ctx.repo->enable_log_linecount)
+		columns++;
+
 
 	while (h && *h) {
 		while (h && *h == ' ')
 			h++;
+		if (!*h)
+			break;
 		t = h;
 		while (t && *t && *t != ' ')
 			t++;
 		c = *t;
 		*t = 0;
+		if (urls++ == 0) {
+			htmlf("<tr class='nohover'><td colspan='%d'>&nbsp;</td></tr>", columns);
+			htmlf("<tr><th class='left' colspan='%d'>Clone</th></tr>\n", columns);
+		}
 		print_url(h, suffix);
 		*t = c;
 		h = t;
