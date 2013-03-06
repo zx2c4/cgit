@@ -131,6 +131,6 @@ void cgit_print_patch(char *hex, const char *prefix)
 		htmlf("(limited to '%s')\n\n", prefix);
 	cgit_diff_tree(old_sha1, sha1, filepair_cb, prefix, 0);
 	html("--\n");
-	htmlf("cgit %s\n", CGIT_VERSION);
+	htmlf("cgit %s\n", cgit_version);
 	cgit_free_commitinfo(info);
 }
