@@ -437,58 +437,59 @@ void cgit_self_link(char *name, const char *title, const char *class,
 		    struct cgit_context *ctx)
 {
 	if (!strcmp(ctx->qry.page, "repolist"))
-		return cgit_index_link(name, title, class, ctx->qry.search, ctx->qry.sort,
-				       ctx->qry.ofs);
+		cgit_index_link(name, title, class, ctx->qry.search, ctx->qry.sort,
+				ctx->qry.ofs);
 	else if (!strcmp(ctx->qry.page, "summary"))
-		return cgit_summary_link(name, title, class, ctx->qry.head);
+		cgit_summary_link(name, title, class, ctx->qry.head);
 	else if (!strcmp(ctx->qry.page, "tag"))
-		return cgit_tag_link(name, title, class, ctx->qry.head,
-				     ctx->qry.has_sha1 ? ctx->qry.sha1 : NULL);
+		cgit_tag_link(name, title, class, ctx->qry.head,
+			      ctx->qry.has_sha1 ? ctx->qry.sha1 : NULL);
 	else if (!strcmp(ctx->qry.page, "tree"))
-		return cgit_tree_link(name, title, class, ctx->qry.head,
-				      ctx->qry.has_sha1 ? ctx->qry.sha1 : NULL,
-				      ctx->qry.path);
+		cgit_tree_link(name, title, class, ctx->qry.head,
+			       ctx->qry.has_sha1 ? ctx->qry.sha1 : NULL,
+			       ctx->qry.path);
 	else if (!strcmp(ctx->qry.page, "plain"))
-		return cgit_plain_link(name, title, class, ctx->qry.head,
-				      ctx->qry.has_sha1 ? ctx->qry.sha1 : NULL,
-				      ctx->qry.path);
+		cgit_plain_link(name, title, class, ctx->qry.head,
+				ctx->qry.has_sha1 ? ctx->qry.sha1 : NULL,
+				ctx->qry.path);
 	else if (!strcmp(ctx->qry.page, "log"))
-		return cgit_log_link(name, title, class, ctx->qry.head,
-				      ctx->qry.has_sha1 ? ctx->qry.sha1 : NULL,
-				      ctx->qry.path, ctx->qry.ofs,
-				      ctx->qry.grep, ctx->qry.search,
-				      ctx->qry.showmsg);
+		cgit_log_link(name, title, class, ctx->qry.head,
+			      ctx->qry.has_sha1 ? ctx->qry.sha1 : NULL,
+			      ctx->qry.path, ctx->qry.ofs,
+			      ctx->qry.grep, ctx->qry.search,
+			      ctx->qry.showmsg);
 	else if (!strcmp(ctx->qry.page, "commit"))
-		return cgit_commit_link(name, title, class, ctx->qry.head,
-				      ctx->qry.has_sha1 ? ctx->qry.sha1 : NULL,
-				      ctx->qry.path, 0);
+		cgit_commit_link(name, title, class, ctx->qry.head,
+				 ctx->qry.has_sha1 ? ctx->qry.sha1 : NULL,
+				 ctx->qry.path, 0);
 	else if (!strcmp(ctx->qry.page, "patch"))
-		return cgit_patch_link(name, title, class, ctx->qry.head,
-				      ctx->qry.has_sha1 ? ctx->qry.sha1 : NULL,
-				      ctx->qry.path);
+		cgit_patch_link(name, title, class, ctx->qry.head,
+				ctx->qry.has_sha1 ? ctx->qry.sha1 : NULL,
+				ctx->qry.path);
 	else if (!strcmp(ctx->qry.page, "refs"))
-		return cgit_refs_link(name, title, class, ctx->qry.head,
-				      ctx->qry.has_sha1 ? ctx->qry.sha1 : NULL,
-				      ctx->qry.path);
+		cgit_refs_link(name, title, class, ctx->qry.head,
+			       ctx->qry.has_sha1 ? ctx->qry.sha1 : NULL,
+			       ctx->qry.path);
 	else if (!strcmp(ctx->qry.page, "snapshot"))
-		return cgit_snapshot_link(name, title, class, ctx->qry.head,
-				      ctx->qry.has_sha1 ? ctx->qry.sha1 : NULL,
-				      ctx->qry.path);
+		cgit_snapshot_link(name, title, class, ctx->qry.head,
+				   ctx->qry.has_sha1 ? ctx->qry.sha1 : NULL,
+				   ctx->qry.path);
 	else if (!strcmp(ctx->qry.page, "diff"))
-		return cgit_diff_link(name, title, class, ctx->qry.head,
-				      ctx->qry.sha1, ctx->qry.sha2,
-				      ctx->qry.path, 0);
+		cgit_diff_link(name, title, class, ctx->qry.head,
+			       ctx->qry.sha1, ctx->qry.sha2,
+			       ctx->qry.path, 0);
 	else if (!strcmp(ctx->qry.page, "stats"))
-		return cgit_stats_link(name, title, class, ctx->qry.head,
-				      ctx->qry.path);
-
-	/* Don't known how to make link for this page */
-	repolink(title, class, ctx->qry.page, ctx->qry.head, ctx->qry.path);
-	html("><!-- cgit_self_link() doesn't know how to make link for page '");
-	html_txt(ctx->qry.page);
-	html("' -->");
-	html_txt(name);
-	html("</a>");
+		cgit_stats_link(name, title, class, ctx->qry.head,
+				ctx->qry.path);
+	else {
+		/* Don't known how to make link for this page */
+		repolink(title, class, ctx->qry.page, ctx->qry.head, ctx->qry.path);
+		html("><!-- cgit_self_link() doesn't know how to make link for page '");
+		html_txt(ctx->qry.page);
+		html("' -->");
+		html_txt(name);
+		html("</a>");
+	}
 }
 
 void cgit_object_link(struct object *obj)
