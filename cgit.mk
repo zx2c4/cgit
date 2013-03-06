@@ -15,7 +15,6 @@ $(CGIT_PREFIX)VERSION: force-version
 
 # CGIT_CFLAGS is a separate variable so that we can track it separately
 # and avoid rebuilding all of Git when these variables change.
-CGIT_CFLAGS += -DCGIT_VERSION='"$(CGIT_VERSION)"'
 CGIT_CFLAGS += -DCGIT_CONFIG='"$(CGIT_CONFIG)"'
 CGIT_CFLAGS += -DCGIT_SCRIPT_NAME='"$(CGIT_SCRIPT_NAME)"'
 CGIT_CFLAGS += -DCGIT_CACHE_ROOT='"$(CACHE_ROOT)"'
@@ -52,6 +51,14 @@ CGIT_OBJ_NAMES += ui-tree.o
 CGIT_OBJ_NAMES += vector.o
 
 CGIT_OBJS := $(addprefix $(CGIT_PREFIX),$(CGIT_OBJ_NAMES))
+
+# Only cgit.c reference CGIT_VERSION so we only rebuild its objects when the
+# version changes.
+CGIT_VERSION_OBJS := $(addprefix $(CGIT_PREFIX),cgit.o)
+$(CGIT_VERSION_OBJS): $(CGIT_PREFIX)VERSION
+$(CGIT_VERSION_OBJS): EXTRA_CPPFLAGS = \
+	-DCGIT_VERSION='"$(CGIT_VERSION)"'
+
 
 ifeq ($(wildcard $(CGIT_PREFIX).depend),)
 missing_dep_dirs += $(CGIT_PREFIX).depend
