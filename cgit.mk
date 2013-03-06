@@ -9,7 +9,7 @@ CGIT_PREFIX = ../
 # main Makefile - they are defined there.
 
 $(CGIT_PREFIX)VERSION: force-version
-	@cd $(CGIT_PREFIX) && ./gen-version.sh "$(CGIT_VERSION)"
+	@cd $(CGIT_PREFIX) && '$(SHELL_PATH_SQ)' ./gen-version.sh "$(CGIT_VERSION)"
 -include $(CGIT_PREFIX)VERSION
 .PHONY: force-version
 
