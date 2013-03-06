@@ -1,6 +1,7 @@
 # Files I don't care to see in git-status/commit
 cgit
 cgit.conf
+CGIT-CFLAGS
 VERSION
 cgitrc.5
 cgitrc.5.fo

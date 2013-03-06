@@ -23,13 +23,6 @@ DOC_MAN5 = $(patsubst %.txt,%,$(MAN5_TXT))
 DOC_HTML = $(patsubst %.txt,%.html,$(MAN_TXT))
 DOC_PDF  = $(patsubst %.txt,%.pdf,$(MAN_TXT))
 
-# Define NO_STRCASESTR if you don't have strcasestr.
-#
-# Define NO_OPENSSL to disable linking with OpenSSL and use bundled SHA1
-# implementation (slower).
-#
-# Define NEEDS_LIBICONV if linking with libc is not enough (eg. Darwin).
-#
 # Define NO_C99_FORMAT if your formatted IO functions (printf/scanf et.al.)
 # do not support the 'size specifiers' introduced by C99, namely ll, hh,
 # j, z, t. (representing long long int, char, intmax_t, size_t, ptrdiff_t).
@@ -39,21 +32,11 @@ DOC_PDF  = $(patsubst %.txt,%.pdf,$(MAN_TXT))
 #-include config.mak
 
 #
-# Platform specific tweaks
-#
-
-VERSION: force-version
-	@./gen-version.sh "$(CGIT_VERSION)"
--include VERSION
-
-uname_S := $(shell sh -c 'uname -s 2>/dev/null || echo not')
-uname_O := $(shell sh -c 'uname -o 2>/dev/null || echo not')
-uname_R := $(shell sh -c 'uname -r 2>/dev/null || echo not')
-
-#
 # Let the user override the above settings.
 #
 -include cgit.conf
+
+export CGIT_SCRIPT_NAME CGIT_SCRIPT_PATH CGIT_DATA_PATH CGIT_CONFIG CACHE_ROOT
 
 #
 # Define a way to invoke make in subdirs quietly, shamelessly ripped
@@ -69,8 +52,6 @@ NO_SUBDIR = :
 endif
 
 ifndef V
-	QUIET_CC       = @echo '   ' CC $@;
-	QUIET_LINK     = @echo '   ' LINK $@;
 	QUIET_SUBDIR0  = +@subdir=
 	QUIET_SUBDIR1  = ;$(NO_SUBDIR) echo '   ' SUBDIR $$subdir; \
 			 $(MAKE) $(PRINT_DIR) -C $$subdir
@@ -78,107 +59,12 @@ ifndef V
 	export V
 endif
 
-LDFLAGS ?=
-CFLAGS ?= -g -Wall
-CFLAGS += -Igit
-CFLAGS += -DSHA1_HEADER='$(SHA1_HEADER)'
-CFLAGS += -DCGIT_VERSION='"$(CGIT_VERSION)"'
-CFLAGS += -DCGIT_CONFIG='"$(CGIT_CONFIG)"'
-CFLAGS += -DCGIT_SCRIPT_NAME='"$(CGIT_SCRIPT_NAME)"'
-CFLAGS += -DCGIT_CACHE_ROOT='"$(CACHE_ROOT)"'
-
-ifeq ($(uname_O),Cygwin)
-	NO_STRCASESTR = YesPlease
-	NEEDS_LIBICONV = YesPlease
-endif
-
-ifeq ($(uname_S),$(filter $(uname_S),FreeBSD OpenBSD))
-	# Apparantly libiconv is installed in /usr/local on BSD
-	LDFLAGS += -L/usr/local/lib
-	CFLAGS += -I/usr/local/include
-	NEEDS_LIBICONV = yes
-endif
-
-GIT_OPTIONS = prefix=/usr NO_GETTEXT=1
-OBJECTS =
-
-ifdef NO_ICONV
-	CFLAGS += -DNO_ICONV
-endif
-ifdef NO_STRCASESTR
-	CFLAGS += -DNO_STRCASESTR
-endif
-ifdef NO_C99_FORMAT
-	CFLAGS += -DNO_C99_FORMAT
-endif
-ifdef NO_OPENSSL
-	CFLAGS += -DNO_OPENSSL
-	GIT_OPTIONS += NO_OPENSSL=1
-else
-	LDLIBS += -lcrypto
-endif
-
-ifdef NEEDS_LIBICONV
-	LDLIBS += -liconv
-endif
-
-LDLIBS += git/libgit.a git/xdiff/lib.a -lz -lpthread
-
-OBJECTS += cgit.o
-OBJECTS += cache.o
-OBJECTS += cmd.o
-OBJECTS += configfile.o
-OBJECTS += html.o
-OBJECTS += parsing.o
-OBJECTS += scan-tree.o
-OBJECTS += shared.o
-OBJECTS += ui-atom.o
-OBJECTS += ui-blob.o
-OBJECTS += ui-clone.o
-OBJECTS += ui-commit.o
-OBJECTS += ui-diff.o
-OBJECTS += ui-log.o
-OBJECTS += ui-patch.o
-OBJECTS += ui-plain.o
-OBJECTS += ui-refs.o
-OBJECTS += ui-repolist.o
-OBJECTS += ui-shared.o
-OBJECTS += ui-snapshot.o
-OBJECTS += ui-ssdiff.o
-OBJECTS += ui-stats.o
-OBJECTS += ui-summary.o
-OBJECTS += ui-tag.o
-OBJECTS += ui-tree.o
-OBJECTS += vector.o
-
-dep_files := $(foreach f,$(OBJECTS),$(dir $f).deps/$(notdir $f).d)
-dep_dirs := $(addsuffix .deps,$(sort $(dir $OBJECTS)))
-
-$(dep_dirs):
-	@mkdir -p $@
-
-missing_dep_dirs := $(filter-out $(wildcard $(dep_dirs)),$(dep_dirs))
-dep_file = $(dir $@).deps/$(notdir $@).d
-dep_args = -MF $(dep_file) -MMD -MP
-
 .SUFFIXES:
-
-$(OBJECTS): %.o: %.c $(missing_dep_dirs)
-	$(QUIET_CC)$(CC) -o $*.o -c $(dep_args) $(CFLAGS) $<
-
-dep_files_present := $(wildcard $(dep_files))
-ifneq ($(dep_files_present),)
-include $(dep_files_present)
-endif
 
 all:: cgit
 
-cgit: VERSION $(OBJECTS) libgit
-	$(QUIET_LINK)$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(OBJECTS) $(LDLIBS)
-
-libgit:
-	$(QUIET_SUBDIR0)git $(QUIET_SUBDIR1) NO_CURL=1 $(GIT_OPTIONS) libgit.a
-	$(QUIET_SUBDIR0)git $(QUIET_SUBDIR1) NO_CURL=1 $(GIT_OPTIONS) xdiff/lib.a
+cgit:
+	$(QUIET_SUBDIR0)git $(QUIET_SUBDIR1) -f ../cgit.mk ../cgit NO_CURL=1
 
 test: all
 	$(QUIET_SUBDIR0)tests $(QUIET_SUBDIR1) all
@@ -259,7 +145,7 @@ get-git:
 tags:
 	$(QUIET_TAGS)find . -name '*.[ch]' | xargs ctags
 
-.PHONY: all cgit get-git libgit force-version
+.PHONY: all cgit get-git
 .PHONY: clean clean-doc cleanall
 .PHONY: doc doc-html doc-man doc-pdf
 .PHONY: install install-doc install-html install-man install-pdf
