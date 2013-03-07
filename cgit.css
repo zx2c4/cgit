@@ -538,17 +538,23 @@ div#cgit table.list td.sublevel-repo {
 	padding-left: 1.5em;
 }
 
-div#cgit div.pager {
+div#cgit ul.pager {
+	list-style-type: none;
 	text-align: center;
 	margin: 1em 0em 0em 0em;
+	padding: 0;
 }
 
-div#cgit div.pager a {
+div#cgit ul.pager li {
+	display: inline-block;
+	margin: 0.25em 0.5em;
+}
+
+div#cgit ul.pager a {
 	color: #777;
-	margin: 0em 0.5em;
 }
 
-div#cgit div.pager .current {
+div#cgit ul.pager .current {
 	font-weight: bold;
 }
 

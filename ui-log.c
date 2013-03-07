@@ -405,21 +405,24 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 		commit->parents = NULL;
 	}
 	if (pager) {
-		html("</table><div class='pager'>");
+		html("</table><ul class='pager'>");
 		if (ofs > 0) {
+			html("<li>");
 			cgit_log_link("[prev]", NULL, NULL, ctx.qry.head,
 				      ctx.qry.sha1, ctx.qry.vpath,
 				      ofs - cnt, ctx.qry.grep,
 				      ctx.qry.search, ctx.qry.showmsg);
-			html("&nbsp;");
+			html("</li>");
 		}
 		if ((commit = get_revision(&rev)) != NULL) {
+			html("<li>");
 			cgit_log_link("[next]", NULL, NULL, ctx.qry.head,
 				      ctx.qry.sha1, ctx.qry.vpath,
 				      ofs + cnt, ctx.qry.grep,
 				      ctx.qry.search, ctx.qry.showmsg);
+			html("</li>");
 		}
-		html("</div>");
+		html("</ul>");
 	} else if ((commit = get_revision(&rev)) != NULL) {
 		htmlf("<tr class='nohover'><td colspan='%d'>", columns);
 		cgit_log_link("[...]", NULL, NULL, ctx.qry.head, NULL,

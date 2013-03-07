@@ -128,13 +128,15 @@ static void print_pager(int items, int pagelen, char *search, char *sort)
 {
 	int i, ofs;
 	char *class = NULL;
-	html("<div class='pager'>");
+	html("<ul class='pager'>");
 	for (i = 0, ofs = 0; ofs < items; i++, ofs = i * pagelen) {
 		class = (ctx.qry.ofs == ofs) ? "current" : NULL;
+		html("<li>");
 		cgit_index_link(fmt("[%d]", i + 1), fmt("Page %d", i + 1),
 				class, search, sort, ofs);
+		html("</li>");
 	}
-	html("</div>");
+	html("</ul>");
 }
 
 static int cmp(const char *s1, const char *s2)
