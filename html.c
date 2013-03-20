@@ -63,12 +63,13 @@ char *fmt(const char *format, ...)
 
 void html_raw(const char *data, size_t size)
 {
-	write(htmlfd, data, size);
+	if (write(htmlfd, data, size) != size)
+		fprintf(stderr, "[html.c] html output truncated.\n");
 }
 
 void html(const char *txt)
 {
-	write(htmlfd, txt, strlen(txt));
+	html_raw(txt, strlen(txt));
 }
 
 void htmlf(const char *format, ...)
