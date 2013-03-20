@@ -130,7 +130,7 @@ $(DOC_PDF): %.pdf : %.txt
 	a2x -f pdf cgitrc.5.txt
 
 clean: clean-doc
-	$(RM) cgit VERSION *.o tags
+	$(RM) cgit VERSION CGIT-CFLAGS *.o tags
 	$(RM) -r .deps
 
 cleanall: clean
