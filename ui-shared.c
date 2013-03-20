@@ -121,18 +121,6 @@ const char *cgit_repobasename(const char *reponame)
 	return rvbuf;
 }
 
-char *cgit_currurl()
-{
-	if (!ctx.cfg.virtual_root)
-		return ctx.cfg.script_name;
-	else if (ctx.qry.page)
-		return fmt("%s/%s/%s/", ctx.cfg.virtual_root, ctx.qry.repo, ctx.qry.page);
-	else if (ctx.qry.repo)
-		return fmt("%s/%s/", ctx.cfg.virtual_root, ctx.qry.repo);
-	else
-		return fmt("%s/", ctx.cfg.virtual_root);
-}
-
 static void site_url(const char *page, const char *search, const char *sort, int ofs)
 {
 	char *delim = "?";
@@ -433,8 +421,8 @@ void cgit_stats_link(const char *name, const char *title, const char *class,
 	reporevlink("stats", name, title, class, head, NULL, path);
 }
 
-void cgit_self_link(char *name, const char *title, const char *class,
-		    struct cgit_context *ctx)
+static void cgit_self_link(char *name, const char *title, const char *class,
+			   struct cgit_context *ctx)
 {
 	if (!strcmp(ctx->qry.page, "repolist"))
 		cgit_index_link(name, title, class, ctx->qry.search, ctx->qry.sort,
@@ -513,8 +501,8 @@ void cgit_object_link(struct object *obj)
 	reporevlink(page, name, NULL, NULL, ctx.qry.head, fullrev, NULL);
 }
 
-struct string_list_item *lookup_path(struct string_list *list,
-				     const char *path)
+static struct string_list_item *lookup_path(struct string_list *list,
+					    const char *path)
 {
 	struct string_list_item *item;
 
@@ -717,50 +705,11 @@ void cgit_print_docend()
 	html("</body>\n</html>\n");
 }
 
-int print_branch_option(const char *refname, const unsigned char *sha1,
-			int flags, void *cb_data)
+static int print_branch_option(const char *refname, const unsigned char *sha1,
+			       int flags, void *cb_data)
 {
 	char *name = (char *)refname;
 	html_option(name, name, ctx.qry.head);
-	return 0;
-}
-
-int print_archive_ref(const char *refname, const unsigned char *sha1,
-		       int flags, void *cb_data)
-{
-	struct tag *tag;
-	struct taginfo *info;
-	struct object *obj;
-	char buf[256], *url;
-	unsigned char fileid[20];
-	int *header = (int *)cb_data;
-
-	if (prefixcmp(refname, "refs/archives"))
-		return 0;
-	strncpy(buf, refname + 14, sizeof(buf));
-	obj = parse_object(sha1);
-	if (!obj)
-		return 1;
-	if (obj->type == OBJ_TAG) {
-		tag = lookup_tag(sha1);
-		if (!tag || parse_tag(tag) || !(info = cgit_parse_tag(tag)))
-			return 0;
-		hashcpy(fileid, tag->tagged->sha1);
-	} else if (obj->type != OBJ_BLOB) {
-		return 0;
-	} else {
-		hashcpy(fileid, sha1);
-	}
-	if (!*header) {
-		html("<h1>download</h1>\n");
-		*header = 1;
-	}
-	url = cgit_pageurl(ctx.qry.repo, "blob",
-			   fmt("id=%s&amp;path=%s", sha1_to_hex(fileid),
-			       buf));
-	html_link_open(url, NULL, "menu");
-	html_txt(strlpart(buf, 20));
-	html_link_close();
 	return 0;
 }
 
@@ -983,4 +932,5 @@ void cgit_print_snapshot_links(const char *repo, const char *head,
 		cgit_snapshot_link(filename, NULL, NULL, NULL, NULL, filename);
 		html("<br/>");
 	}
+	free(prefix);
 }

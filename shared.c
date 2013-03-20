@@ -158,7 +158,7 @@ void cgit_add_ref(struct reflist *list, struct refinfo *ref)
 	list->refs[list->count++] = ref;
 }
 
-struct refinfo *cgit_mk_refinfo(const char *refname, const unsigned char *sha1)
+static struct refinfo *cgit_mk_refinfo(const char *refname, const unsigned char *sha1)
 {
 	struct refinfo *ref;
 
@@ -176,6 +176,42 @@ struct refinfo *cgit_mk_refinfo(const char *refname, const unsigned char *sha1)
 	return ref;
 }
 
+static void cgit_free_taginfo(struct taginfo *tag)
+{
+	if (tag->tagger)
+		free(tag->tagger);
+	if (tag->tagger_email)
+		free(tag->tagger_email);
+	if (tag->msg)
+		free(tag->msg);
+	free(tag);
+}
+
+static void cgit_free_refinfo(struct refinfo *ref)
+{
+	if (ref->refname)
+		free((char *)ref->refname);
+	switch (ref->object->type) {
+	case OBJ_TAG:
+		cgit_free_taginfo(ref->tag);
+		break;
+	case OBJ_COMMIT:
+		cgit_free_commitinfo(ref->commit);
+		break;
+	}
+	free(ref);
+}
+
+void cgit_free_reflist_inner(struct reflist *list)
+{
+	int i;
+
+	for (i = 0; i < list->count; i++) {
+		cgit_free_refinfo(list->refs[i]);
+	}
+	free(list->refs);
+}
+
 int cgit_refs_cb(const char *refname, const unsigned char *sha1, int flags,
 		  void *cb_data)
 {
@@ -187,8 +223,8 @@ int cgit_refs_cb(const char *refname, const unsigned char *sha1, int flags,
 	return 0;
 }
 
-void cgit_diff_tree_cb(struct diff_queue_struct *q,
-		       struct diff_options *options, void *data)
+static void cgit_diff_tree_cb(struct diff_queue_struct *q,
+			      struct diff_options *options, void *data)
 {
 	int i;
 
@@ -224,7 +260,7 @@ static int load_mmfile(mmfile_t *file, const unsigned char *sha1)
 char *diffbuf = NULL;
 int buflen = 0;
 
-int filediff_cb(void *priv, mmbuffer_t *mb, int nbuf)
+static int filediff_cb(void *priv, mmbuffer_t *mb, int nbuf)
 {
 	int i;
 
@@ -461,14 +497,14 @@ int readfile(const char *path, char **buf, size_t *size)
 	return (*size == st.st_size ? 0 : e);
 }
 
-int is_token_char(char c)
+static int is_token_char(char c)
 {
 	return isalnum(c) || c == '_';
 }
 
 /* Replace name with getenv(name), return pointer to zero-terminating char
  */
-char *expand_macro(char *name, int maxlength)
+static char *expand_macro(char *name, int maxlength)
 {
 	char *value;
 	int len;

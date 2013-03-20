@@ -18,7 +18,7 @@
 
 const char *cgit_version = CGIT_VERSION;
 
-void add_mimetype(const char *name, const char *value)
+static void add_mimetype(const char *name, const char *value)
 {
 	struct string_list_item *item;
 
@@ -26,7 +26,7 @@ void add_mimetype(const char *name, const char *value)
 	item->util = xstrdup(value);
 }
 
-struct cgit_filter *new_filter(const char *cmd, filter_type filtertype)
+static struct cgit_filter *new_filter(const char *cmd, filter_type filtertype)
 {
 	struct cgit_filter *f;
 	int args_size = 0;
@@ -58,7 +58,7 @@ struct cgit_filter *new_filter(const char *cmd, filter_type filtertype)
 
 static void process_cached_repolist(const char *path);
 
-void repo_config(struct cgit_repo *repo, const char *name, const char *value)
+static void repo_config(struct cgit_repo *repo, const char *name, const char *value)
 {
 	struct string_list_item *item;
 
@@ -114,7 +114,7 @@ void repo_config(struct cgit_repo *repo, const char *name, const char *value)
 	}
 }
 
-void config_cb(const char *name, const char *value)
+static void config_cb(const char *name, const char *value)
 {
 	if (!strcmp(name, "section") || !strcmp(name, "repo.group"))
 		ctx.cfg.section = xstrdup(value);
@@ -333,7 +333,7 @@ static void querystring_cb(const char *name, const char *value)
 	}
 }
 
-char *xstrdupn(const char *str)
+static char *xstrdupn(const char *str)
 {
 	return (str ? xstrdup(str) : NULL);
 }
@@ -414,8 +414,8 @@ struct refmatch {
 	int match;
 };
 
-int find_current_ref(const char *refname, const unsigned char *sha1,
-		     int flags, void *cb_data)
+static int find_current_ref(const char *refname, const unsigned char *sha1,
+			    int flags, void *cb_data)
 {
 	struct refmatch *info;
 
@@ -427,7 +427,13 @@ int find_current_ref(const char *refname, const unsigned char *sha1,
 	return info->match;
 }
 
-char *find_default_branch(struct cgit_repo *repo)
+static void free_refmatch_inner(struct refmatch *info)
+{
+	if (info->first_ref)
+		free(info->first_ref);
+}
+
+static char *find_default_branch(struct cgit_repo *repo)
 {
 	struct refmatch info;
 	char *ref;
@@ -442,6 +448,8 @@ char *find_default_branch(struct cgit_repo *repo)
 		ref = info.first_ref;
 	if (ref)
 		ref = xstrdup(ref);
+	free_refmatch_inner(&info);
+
 	return ref;
 }
 
@@ -569,13 +577,13 @@ static void process_request(void *cbdata)
 		cgit_print_docend();
 }
 
-int cmp_repos(const void *a, const void *b)
+static int cmp_repos(const void *a, const void *b)
 {
 	const struct cgit_repo *ra = a, *rb = b;
 	return strcmp(ra->url, rb->url);
 }
 
-char *build_snapshot_setting(int bitmap)
+static char *build_snapshot_setting(int bitmap)
 {
 	const struct cgit_snapshot_format *f;
 	char *result = xstrdup("");
@@ -595,7 +603,7 @@ char *build_snapshot_setting(int bitmap)
 	return result;
 }
 
-char *get_first_line(char *txt)
+static char *get_first_line(char *txt)
 {
 	char *t = xstrdup(txt);
 	char *p = strchr(t, '\n');
@@ -604,7 +612,7 @@ char *get_first_line(char *txt)
 	return t;
 }
 
-void print_repo(FILE *f, struct cgit_repo *repo)
+static void print_repo(FILE *f, struct cgit_repo *repo)
 {
 	fprintf(f, "repo.url=%s\n", repo->url);
 	fprintf(f, "repo.name=%s\n", repo->name);
@@ -649,7 +657,7 @@ void print_repo(FILE *f, struct cgit_repo *repo)
 	fprintf(f, "\n");
 }
 
-void print_repolist(FILE *f, struct cgit_repolist *list, int start)
+static void print_repolist(FILE *f, struct cgit_repolist *list, int start)
 {
 	int i;
 

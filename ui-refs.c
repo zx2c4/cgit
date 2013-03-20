@@ -103,6 +103,7 @@ static void print_tag_downloads(const struct cgit_repo *repo, const char *ref)
 	const struct cgit_snapshot_format* f;
     	char *filename;
 	const char *basename;
+	int free_ref = 0;
 
 	if (!ref || strlen(ref) < 2)
 		return;
@@ -111,8 +112,10 @@ static void print_tag_downloads(const struct cgit_repo *repo, const char *ref)
 	if (prefixcmp(ref, basename) != 0) {
 		if ((ref[0] == 'v' || ref[0] == 'V') && isdigit(ref[1]))
 			ref++;
-		if (isdigit(ref[0]))
+		if (isdigit(ref[0])) {
 			ref = xstrdup(fmt("%s-%s", basename, ref));
+			free_ref = 1;
+		}
 	}
 
 	for (f = cgit_snapshot_formats; f->suffix; f++) {
@@ -122,6 +125,9 @@ static void print_tag_downloads(const struct cgit_repo *repo, const char *ref)
 		cgit_snapshot_link(filename, NULL, NULL, NULL, NULL, filename);
 		html("&nbsp;&nbsp;");
 	}
+
+	if (free_ref)
+		free((char *)ref);
 }
 static int print_tag(struct refinfo *ref)
 {
@@ -205,6 +211,8 @@ void cgit_print_branches(int maxcount)
 
 	if (maxcount < list.count)
 		print_refs_link("heads");
+
+	cgit_free_reflist_inner(&list);
 }
 
 void cgit_print_tags(int maxcount)
@@ -229,6 +237,8 @@ void cgit_print_tags(int maxcount)
 
 	if (maxcount < list.count)
 		print_refs_link("tags");
+
+	cgit_free_reflist_inner(&list);
 }
 
 void cgit_print_refs()

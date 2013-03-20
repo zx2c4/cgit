@@ -363,7 +363,7 @@ int cache_process(int size, const char *path, const char *key, int ttl,
 /* Return a strftime formatted date/time
  * NB: the result from this function is to shared memory
  */
-char *sprintftime(const char *format, time_t time)
+static char *sprintftime(const char *format, time_t time)
 {
 	static char buf[64];
 	struct tm *tm;

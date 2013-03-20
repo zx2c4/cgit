@@ -52,7 +52,7 @@ void cgit_parse_url(const char *url)
 	}
 }
 
-char *substr(const char *head, const char *tail)
+static char *substr(const char *head, const char *tail)
 {
 	char *buf;
 
@@ -64,7 +64,7 @@ char *substr(const char *head, const char *tail)
 	return buf;
 }
 
-char *parse_user(char *t, char **name, char **email, unsigned long *date)
+static char *parse_user(char *t, char **name, char **email, unsigned long *date)
 {
 	char *p = t;
 	int mode = 1;
@@ -101,7 +101,7 @@ char *parse_user(char *t, char **name, char **email, unsigned long *date)
 #ifdef NO_ICONV
 #define reencode(a, b, c)
 #else
-const char *reencode(char **txt, const char *src_enc, const char *dst_enc)
+static const char *reencode(char **txt, const char *src_enc, const char *dst_enc)
 {
 	char *tmp;
 

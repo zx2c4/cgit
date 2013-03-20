@@ -74,6 +74,7 @@ void cgit_print_commit(char *hex, const char *prefix)
 		html(" /");
 		cgit_tree_link(prefix, NULL, NULL, ctx.qry.head, tmp, prefix);
 	}
+	free(tmp);
 	html("</td></tr>\n");
 	for (p = commit->parents; p; p = p->next) {
 		parent = lookup_commit_reference(p->item->object.sha1);

@@ -271,7 +271,6 @@ void cgit_print_tree(const char *rev, char *path)
 	if (!rev)
 		rev = ctx.qry.head;
 
-	walk_tree_ctx.curr_rev = xstrdup(rev);
 	if (get_sha1(rev, sha1)) {
 		cgit_print_error(fmt("Invalid revision name: %s", rev));
 		return;
@@ -282,12 +281,17 @@ void cgit_print_tree(const char *rev, char *path)
 		return;
 	}
 
+	walk_tree_ctx.curr_rev = xstrdup(rev);
+
 	if (path == NULL) {
 		ls_tree(commit->tree->object.sha1, NULL, &walk_tree_ctx);
-		return;
+		goto cleanup;
 	}
 
 	read_tree_recursive(commit->tree, "", 0, 0, &paths, walk_tree, &walk_tree_ctx);
 	if (walk_tree_ctx.state == 1)
 		ls_tail();
+
+cleanup:
+	free(walk_tree_ctx.curr_rev);
 }

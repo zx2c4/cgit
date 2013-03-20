@@ -211,8 +211,8 @@ static int cmp_total_commits(const void *a1, const void *a2)
 /* Walk the commit DAG and collect number of commits per author per
  * timeperiod into a nested string_list collection.
  */
-struct string_list collect_stats(struct cgit_context *ctx,
-	struct cgit_period *period)
+static struct string_list collect_stats(struct cgit_context *ctx,
+					struct cgit_period *period)
 {
 	struct string_list authors;
 	struct rev_info rev;
@@ -253,9 +253,12 @@ struct string_list collect_stats(struct cgit_context *ctx,
 	return authors;
 }
 
-void print_combined_authorrow(struct string_list *authors, int from, int to,
-	const char *name, const char *leftclass, const char *centerclass,
-	const char *rightclass, struct cgit_period *period)
+static void print_combined_authorrow(struct string_list *authors, int from,
+				     int to, const char *name,
+				     const char *leftclass,
+				     const char *centerclass,
+				     const char *rightclass,
+				     struct cgit_period *period)
 {
 	struct string_list_item *author;
 	struct authorstat *authorstat;
@@ -293,8 +296,8 @@ void print_combined_authorrow(struct string_list *authors, int from, int to,
 	htmlf("<td class='%s'>%ld</td></tr>", rightclass, total);
 }
 
-void print_authors(struct string_list *authors, int top,
-		   struct cgit_period *period)
+static void print_authors(struct string_list *authors, int top,
+			  struct cgit_period *period)
 {
 	struct string_list_item *author;
 	struct authorstat *authorstat;

@@ -10,7 +10,7 @@
 #include "html.h"
 #include "ui-shared.h"
 
-void add_entry(struct commit *commit, char *host)
+static void add_entry(struct commit *commit, char *host)
 {
 	char delim = '&';
 	char *hex;

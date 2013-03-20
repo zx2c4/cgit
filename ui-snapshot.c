@@ -153,7 +153,7 @@ static const char *get_ref_from_filename(const char *url, const char *filename,
 	return NULL;
 }
 
-void show_error(char *msg)
+static void show_error(char *msg)
 {
 	ctx.page.mimetype = "text/html";
 	cgit_print_http_headers(&ctx);

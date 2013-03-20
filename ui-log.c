@@ -28,7 +28,7 @@ static const char *column_colors_html[] = {
 
 #define COLUMN_COLORS_HTML_MAX (ARRAY_SIZE(column_colors_html) - 1)
 
-void count_lines(char *line, int size)
+static void count_lines(char *line, int size)
 {
 	if (size <= 0)
 		return;
@@ -40,7 +40,7 @@ void count_lines(char *line, int size)
 		rem_lines++;
 }
 
-void inspect_files(struct diff_filepair *pair)
+static void inspect_files(struct diff_filepair *pair)
 {
 	unsigned long old_size = 0;
 	unsigned long new_size = 0;
@@ -95,7 +95,7 @@ next:
 	}
 }
 
-void print_commit(struct commit *commit, struct rev_info *revs)
+static void print_commit(struct commit *commit, struct rev_info *revs)
 {
 	struct commitinfo *info;
 	int cols = revs->graph ? 3 : 2;

@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include "configfile.h"
 
-int next_char(FILE *f)
+static int next_char(FILE *f)
 {
 	int c = fgetc(f);
 	if (c == '\r') {
@@ -23,7 +23,7 @@ int next_char(FILE *f)
 	return c;
 }
 
-void skip_line(FILE *f)
+static void skip_line(FILE *f)
 {
 	int c;
 
@@ -31,7 +31,7 @@ void skip_line(FILE *f)
 		;
 }
 
-int read_config_line(FILE *f, char *line, const char **value, int bufsize)
+static int read_config_line(FILE *f, char *line, const char **value, int bufsize)
 {
 	int i = 0, isname = 0;
 

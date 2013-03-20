@@ -30,7 +30,7 @@ static void print_tag_content(char *buf)
 	}
 }
 
-void print_download_links(char *revname)
+static void print_download_links(char *revname)
 {
 	html("<tr><th>download</th><td class='sha1'>");
 	cgit_print_snapshot_links(ctx.qry.repo, ctx.qry.head,
