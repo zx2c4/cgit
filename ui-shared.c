@@ -523,6 +523,7 @@ void cgit_submodule_link(const char *class, char *path, const char *rev)
 	char tail, *dir;
 	size_t len;
 
+	len = 0;
 	tail = 0;
 	list = &ctx.repo->submodules;
 	item = lookup_path(list, path);
