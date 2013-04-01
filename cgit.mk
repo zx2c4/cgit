@@ -5,6 +5,8 @@ include Makefile
 
 CGIT_PREFIX = ../
 
+-include $(CGIT_PREFIX)cgit.conf
+
 # The CGIT_* variables are inherited when this file is called from the
 # main Makefile - they are defined there.
 
