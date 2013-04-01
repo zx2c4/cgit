@@ -333,11 +333,6 @@ static void querystring_cb(const char *name, const char *value)
 	}
 }
 
-static char *xstrdupn(const char *str)
-{
-	return (str ? xstrdup(str) : NULL);
-}
-
 static void prepare_context(struct cgit_context *ctx)
 {
 	memset(ctx, 0, sizeof(*ctx));
@@ -382,16 +377,16 @@ static void prepare_context(struct cgit_context *ctx)
 	ctx->cfg.summary_tags = 10;
 	ctx->cfg.max_atom_items = 10;
 	ctx->cfg.ssdiff = 0;
-	ctx->env.cgit_config = xstrdupn(getenv("CGIT_CONFIG"));
-	ctx->env.http_host = xstrdupn(getenv("HTTP_HOST"));
-	ctx->env.https = xstrdupn(getenv("HTTPS"));
-	ctx->env.no_http = xstrdupn(getenv("NO_HTTP"));
-	ctx->env.path_info = xstrdupn(getenv("PATH_INFO"));
-	ctx->env.query_string = xstrdupn(getenv("QUERY_STRING"));
-	ctx->env.request_method = xstrdupn(getenv("REQUEST_METHOD"));
-	ctx->env.script_name = xstrdupn(getenv("SCRIPT_NAME"));
-	ctx->env.server_name = xstrdupn(getenv("SERVER_NAME"));
-	ctx->env.server_port = xstrdupn(getenv("SERVER_PORT"));
+	ctx->env.cgit_config = getenv("CGIT_CONFIG");
+	ctx->env.http_host = getenv("HTTP_HOST");
+	ctx->env.https = getenv("HTTPS");
+	ctx->env.no_http = getenv("NO_HTTP");
+	ctx->env.path_info = getenv("PATH_INFO");
+	ctx->env.query_string = getenv("QUERY_STRING");
+	ctx->env.request_method = getenv("REQUEST_METHOD");
+	ctx->env.script_name = getenv("SCRIPT_NAME");
+	ctx->env.server_name = getenv("SERVER_NAME");
+	ctx->env.server_port = getenv("SERVER_PORT");
 	ctx->page.mimetype = "text/html";
 	ctx->page.charset = PAGE_ENCODING;
 	ctx->page.filename = NULL;
