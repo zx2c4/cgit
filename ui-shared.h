@@ -1,9 +1,9 @@
 #ifndef UI_SHARED_H
 #define UI_SHARED_H
 
-extern char *cgit_httpscheme();
-extern char *cgit_hosturl();
-extern char *cgit_rooturl();
+extern const char *cgit_httpscheme();
+extern const char *cgit_hosturl();
+extern const char *cgit_rooturl();
 extern char *cgit_repourl(const char *reponame);
 extern char *cgit_fileurl(const char *reponame, const char *pagename,
 			  const char *filename, const char *query);

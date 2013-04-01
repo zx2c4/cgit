@@ -34,7 +34,7 @@ void cgit_print_error(const char *msg)
 	html("</div>\n");
 }
 
-char *cgit_httpscheme()
+const char *cgit_httpscheme()
 {
 	if (ctx.env.https && !strcmp(ctx.env.https, "on"))
 		return "https://";
@@ -42,7 +42,7 @@ char *cgit_httpscheme()
 		return "http://";
 }
 
-char *cgit_hosturl()
+const char *cgit_hosturl()
 {
 	if (ctx.env.http_host)
 		return ctx.env.http_host;
@@ -53,7 +53,7 @@ char *cgit_hosturl()
 	return xstrdup(fmt("%s:%s", ctx.env.server_name, ctx.env.server_port));
 }
 
-char *cgit_rooturl()
+const char *cgit_rooturl()
 {
 	if (ctx.cfg.virtual_root)
 		return fmt("%s/", ctx.cfg.virtual_root);
@@ -651,7 +651,7 @@ void cgit_print_docstart(struct cgit_context *ctx)
 		return;
 	}
 
-	char *host = cgit_hosturl();
+	const char *host = cgit_hosturl();
 	html(cgit_doctype);
 	html("<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='en' lang='en'>\n");
 	html("<head>\n");

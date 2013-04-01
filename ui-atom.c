@@ -10,7 +10,7 @@
 #include "html.h"
 #include "ui-shared.h"
 
-static void add_entry(struct commit *commit, char *host)
+static void add_entry(struct commit *commit, const char *host)
 {
 	char delim = '&';
 	char *hex;
@@ -79,7 +79,7 @@ static void add_entry(struct commit *commit, char *host)
 
 void cgit_print_atom(char *tip, char *path, int max_count)
 {
-	char *host;
+	const char *host;
 	const char *argv[] = {NULL, tip, NULL, NULL, NULL};
 	struct commit *commit;
 	struct rev_info rev;
