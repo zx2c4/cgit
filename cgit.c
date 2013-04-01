@@ -155,9 +155,7 @@ static void config_cb(const char *name, const char *value)
 	else if (!strcmp(name, "strict-export"))
 		ctx.cfg.strict_export = xstrdup(value);
 	else if (!strcmp(name, "virtual-root")) {
-		ctx.cfg.virtual_root = trim_end(value, '/');
-		if (!ctx.cfg.virtual_root && (!strcmp(value, "/")))
-			ctx.cfg.virtual_root = "";
+		ctx.cfg.virtual_root = ensure_end(value, '/');
 	} else if (!strcmp(name, "nocache"))
 		ctx.cfg.nocache = atoi(value);
 	else if (!strcmp(name, "noplainemail"))
@@ -833,11 +831,8 @@ int main(int argc, const char **argv)
 	 * that virtual-root equals SCRIPT_NAME, minus any possibly
 	 * trailing slashes.
 	 */
-	if (!ctx.cfg.virtual_root && ctx.cfg.script_name) {
-		ctx.cfg.virtual_root = trim_end(ctx.cfg.script_name, '/');
-		if (!ctx.cfg.virtual_root)
-			ctx.cfg.virtual_root = "";
-	}
+	if (!ctx.cfg.virtual_root && ctx.cfg.script_name)
+		ctx.cfg.virtual_root = ensure_end(ctx.cfg.script_name, '/');
 
 	/* If no url parameter is specified on the querystring, lets
 	 * use PATH_INFO as url. This allows cgit to work with virtual

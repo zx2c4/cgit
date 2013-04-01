@@ -57,7 +57,7 @@ const char *cgit_hosturl()
 const char *cgit_rooturl()
 {
 	if (ctx.cfg.virtual_root)
-		return fmt("%s/", ctx.cfg.virtual_root);
+		return ctx.cfg.virtual_root;
 	else
 		return ctx.cfg.script_name;
 }
@@ -65,7 +65,7 @@ const char *cgit_rooturl()
 char *cgit_repourl(const char *reponame)
 {
 	if (ctx.cfg.virtual_root) {
-		return fmt("%s/%s/", ctx.cfg.virtual_root, reponame);
+		return fmt("%s%s/", ctx.cfg.virtual_root, reponame);
 	} else {
 		return fmt("?r=%s", reponame);
 	}
@@ -78,7 +78,7 @@ char *cgit_fileurl(const char *reponame, const char *pagename,
 	char *delim;
 
 	if (ctx.cfg.virtual_root) {
-		tmp = fmt("%s/%s/%s/%s", ctx.cfg.virtual_root, reponame,
+		tmp = fmt("%s%s/%s/%s", ctx.cfg.virtual_root, reponame,
 			  pagename, (filename ? filename:""));
 		delim = "?";
 	} else {
@@ -126,11 +126,9 @@ static void site_url(const char *page, const char *search, const char *sort, int
 {
 	char *delim = "?";
 
-	if (ctx.cfg.virtual_root) {
+	if (ctx.cfg.virtual_root)
 		html_attr(ctx.cfg.virtual_root);
-		if (ctx.cfg.virtual_root[strlen(ctx.cfg.virtual_root) - 1] != '/')
-			html("/");
-	} else
+	else
 		html(ctx.cfg.script_name);
 
 	if (page) {
@@ -201,8 +199,6 @@ static char *repolink(const char *title, const char *class, const char *page,
 	html(" href='");
 	if (ctx.cfg.virtual_root) {
 		html_url_path(ctx.cfg.virtual_root);
-		if (ctx.cfg.virtual_root[strlen(ctx.cfg.virtual_root) - 1] != '/')
-			html("/");
 		html_url_path(ctx.repo->url);
 		if (ctx.repo->url[strlen(ctx.repo->url) - 1] != '/')
 			html("/");

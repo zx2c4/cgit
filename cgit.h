@@ -190,7 +190,7 @@ struct cgit_config {
 	char *script_name;
 	char *section;
 	char *repository_sort;
-	char *virtual_root;
+	char *virtual_root;	/* Always ends with '/'. */
 	char *strict_export;
 	int cache_size;
 	int cache_dynamic_ttl;
@@ -300,6 +300,7 @@ extern int chk_positive(int result, char *msg);
 extern int chk_non_negative(int result, char *msg);
 
 extern char *trim_end(const char *str, char c);
+extern char *ensure_end(const char *str, char c);
 extern char *strlpart(char *txt, int maxlen);
 extern char *strrpart(char *txt, int maxlen);
 

@@ -115,6 +115,21 @@ char *trim_end(const char *str, char c)
 	return xstrndup(str, len);
 }
 
+char *ensure_end(const char *str, char c)
+{
+	size_t len = strlen(str);
+	char *result;
+
+	if (len && str[len - 1] == c)
+		return xstrndup(str, len);
+
+	result = xmalloc(len + 2);
+	memcpy(result, str, len);
+	result[len] = '/';
+	result[len + 1] = '\0';
+	return result;
+}
+
 char *strlpart(char *txt, int maxlen)
 {
 	char *result;
