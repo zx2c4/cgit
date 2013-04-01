@@ -1,26 +1,25 @@
 #!/bin/sh
 
+test_description='Check content on summary page'
 . ./setup.sh
 
-prepare_tests "Check content on summary page"
-
-run_test 'generate foo summary' 'cgit_url "foo" >trash/tmp'
-run_test 'find commit 1' 'grep "commit 1" trash/tmp'
-run_test 'find commit 5' 'grep "commit 5" trash/tmp'
-run_test 'find branch master' 'grep "master" trash/tmp'
-run_test 'no tags' '! grep "tags" trash/tmp'
-run_test 'clone-url expanded correctly' '
-	grep "git://example.org/foo.git" trash/tmp
+test_expect_success 'generate foo summary' 'cgit_url "foo" >tmp'
+test_expect_success 'find commit 1' 'grep "commit 1" tmp'
+test_expect_success 'find commit 5' 'grep "commit 5" tmp'
+test_expect_success 'find branch master' 'grep "master" tmp'
+test_expect_success 'no tags' '! grep "tags" tmp'
+test_expect_success 'clone-url expanded correctly' '
+	grep "git://example.org/foo.git" tmp
 '
 
-run_test 'generate bar summary' 'cgit_url "bar" >trash/tmp'
-run_test 'no commit 45' '! grep "commit 45" trash/tmp'
-run_test 'find commit 46' 'grep "commit 46" trash/tmp'
-run_test 'find commit 50' 'grep "commit 50" trash/tmp'
-run_test 'find branch master' 'grep "master" trash/tmp'
-run_test 'no tags' '! grep "tags" trash/tmp'
-run_test 'clone-url expanded correctly' '
-	grep "git://example.org/bar.git" trash/tmp
+test_expect_success 'generate bar summary' 'cgit_url "bar" >tmp'
+test_expect_success 'no commit 45' '! grep "commit 45" tmp'
+test_expect_success 'find commit 46' 'grep "commit 46" tmp'
+test_expect_success 'find commit 50' 'grep "commit 50" tmp'
+test_expect_success 'find branch master' 'grep "master" tmp'
+test_expect_success 'no tags' '! grep "tags" tmp'
+test_expect_success 'clone-url expanded correctly' '
+	grep "git://example.org/bar.git" tmp
 '
 
-tests_done
+test_done

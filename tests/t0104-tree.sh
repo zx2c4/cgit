@@ -1,33 +1,32 @@
 #!/bin/sh
 
+test_description='Check content on tree page'
 . ./setup.sh
 
-prepare_tests "Check content on tree page"
+test_expect_success 'generate bar/tree' 'cgit_url "bar/tree" >tmp'
+test_expect_success 'find file-1' 'grep "file-1" tmp'
+test_expect_success 'find file-50' 'grep "file-50" tmp'
 
-run_test 'generate bar/tree' 'cgit_url "bar/tree" >trash/tmp'
-run_test 'find file-1' 'grep "file-1" trash/tmp'
-run_test 'find file-50' 'grep "file-50" trash/tmp'
+test_expect_success 'generate bar/tree/file-50' 'cgit_url "bar/tree/file-50" >tmp'
 
-run_test 'generate bar/tree/file-50' 'cgit_url "bar/tree/file-50" >trash/tmp'
-
-run_test 'find line 1' '
-	grep "<a class=.no. id=.n1. name=.n1. href=.#n1.>1</a>" trash/tmp
+test_expect_success 'find line 1' '
+	grep "<a class=.no. id=.n1. name=.n1. href=.#n1.>1</a>" tmp
 '
 
-run_test 'no line 2' '
-	! grep "<a class=.no. id=.n2. name=.n2. href=.#n2.>2</a>" trash/tmp
+test_expect_success 'no line 2' '
+	! grep "<a class=.no. id=.n2. name=.n2. href=.#n2.>2</a>" tmp
 '
 
-run_test 'generate foo+bar/tree' 'cgit_url "foo%2bbar/tree" >trash/tmp'
+test_expect_success 'generate foo+bar/tree' 'cgit_url "foo%2bbar/tree" >tmp'
 
-run_test 'verify a+b link' '
-	grep "/foo+bar/tree/a+b" trash/tmp
+test_expect_success 'verify a+b link' '
+	grep "/foo+bar/tree/a+b" tmp
 '
 
-run_test 'generate foo+bar/tree?h=1+2' 'cgit_url "foo%2bbar/tree&h=1%2b2" >trash/tmp'
+test_expect_success 'generate foo+bar/tree?h=1+2' 'cgit_url "foo%2bbar/tree&h=1%2b2" >tmp'
 
-run_test 'verify a+b?h=1+2 link' '
-	grep "/foo+bar/tree/a+b?h=1%2b2" trash/tmp
+test_expect_success 'verify a+b?h=1+2 link' '
+	grep "/foo+bar/tree/a+b?h=1%2b2" tmp
 '
 
-tests_done
+test_done

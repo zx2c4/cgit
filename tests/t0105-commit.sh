@@ -1,37 +1,36 @@
 #!/bin/sh
 
+test_description='Check content on commit page'
 . ./setup.sh
 
-prepare_tests "Check content on commit page"
+test_expect_success 'generate foo/commit' 'cgit_url "foo/commit" >tmp'
+test_expect_success 'find tree link' 'grep "<a href=./foo/tree/.>" tmp'
+test_expect_success 'find parent link' 'grep -E "<a href=./foo/commit/\?id=.+>" tmp'
 
-run_test 'generate foo/commit' 'cgit_url "foo/commit" >trash/tmp'
-run_test 'find tree link' 'grep "<a href=./foo/tree/.>" trash/tmp'
-run_test 'find parent link' 'grep -E "<a href=./foo/commit/\?id=.+>" trash/tmp'
-
-run_test 'find commit subject' '
-	grep "<div class=.commit-subject.>commit 5<" trash/tmp
+test_expect_success 'find commit subject' '
+	grep "<div class=.commit-subject.>commit 5<" tmp
 '
 
-run_test 'find commit msg' 'grep "<div class=.commit-msg.></div>" trash/tmp'
-run_test 'find diffstat' 'grep "<table summary=.diffstat. class=.diffstat.>" trash/tmp'
+test_expect_success 'find commit msg' 'grep "<div class=.commit-msg.></div>" tmp'
+test_expect_success 'find diffstat' 'grep "<table summary=.diffstat. class=.diffstat.>" tmp'
 
-run_test 'find diff summary' '
-	grep "1 files changed, 1 insertions, 0 deletions" trash/tmp
+test_expect_success 'find diff summary' '
+	grep "1 files changed, 1 insertions, 0 deletions" tmp
 '
 
-run_test 'get root commit' '
-	root=$(cd trash/repos/foo && git rev-list --reverse HEAD | head -1) &&
-	cgit_url "foo/commit&id=$root" >trash/tmp &&
-	grep "</html>" trash/tmp
+test_expect_success 'get root commit' '
+	root=$(cd repos/foo && git rev-list --reverse HEAD | head -1) &&
+	cgit_url "foo/commit&id=$root" >tmp &&
+	grep "</html>" tmp
 '
 
-run_test 'root commit contains diffstat' '
-	grep "<a href=./foo/diff/file-1.id=[0-9a-f]\{40\}.>file-1</a>" trash/tmp
+test_expect_success 'root commit contains diffstat' '
+	grep "<a href=./foo/diff/file-1.id=[0-9a-f]\{40\}.>file-1</a>" tmp
 '
 
-run_test 'root commit contains diff' '
-	grep ">diff --git a/file-1 b/file-1<" trash/tmp &&
-	grep "<div class=.add.>+1</div>" trash/tmp
+test_expect_success 'root commit contains diff' '
+	grep ">diff --git a/file-1 b/file-1<" tmp &&
+	grep "<div class=.add.>+1</div>" tmp
 '
 
-tests_done
+test_done

@@ -66,7 +66,10 @@ all:: cgit
 cgit:
 	$(QUIET_SUBDIR0)git $(QUIET_SUBDIR1) -f ../cgit.mk ../cgit NO_CURL=1
 
-test: all
+git:
+	$(QUIET_SUBDIR0)git $(QUIET_SUBDIR1) NO_CURL=1
+
+test: all git
 	$(QUIET_SUBDIR0)tests $(QUIET_SUBDIR1) all
 
 install: all
@@ -145,7 +148,7 @@ get-git:
 tags:
 	$(QUIET_TAGS)find . -name '*.[ch]' | xargs ctags
 
-.PHONY: all cgit get-git
+.PHONY: all cgit git get-git
 .PHONY: clean clean-doc cleanall
 .PHONY: doc doc-html doc-man doc-pdf
 .PHONY: install install-doc install-html install-man install-pdf

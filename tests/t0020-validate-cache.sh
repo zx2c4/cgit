@@ -1,13 +1,12 @@
 #!/bin/sh
 
+test_description='Validate cache'
 . ./setup.sh
 
-prepare_tests 'Validate cache'
+test_expect_success 'verify cache-size=0' '
 
-run_test 'verify cache-size=0' '
-
-	rm -f trash/cache/* &&
-	sed -i -e "s/cache-size=1021$/cache-size=0/" trash/cgitrc &&
+	rm -f cache/* &&
+	sed -i -e "s/cache-size=1021$/cache-size=0/" cgitrc &&
 	cgit_url "" &&
 	cgit_url "foo" &&
 	cgit_url "foo/refs" &&
@@ -21,13 +20,14 @@ run_test 'verify cache-size=0' '
 	cgit_url "bar/log" &&
 	cgit_url "bar/diff" &&
 	cgit_url "bar/patch" &&
-	test 0 -eq $(ls trash/cache | wc -l)
+	ls cache >output &&
+	test_line_count = 0 output
 '
 
-run_test 'verify cache-size=1' '
+test_expect_success 'verify cache-size=1' '
 
-	rm -f trash/cache/* &&
-	sed -i -e "s/cache-size=0$/cache-size=1/" trash/cgitrc &&
+	rm -f cache/* &&
+	sed -i -e "s/cache-size=0$/cache-size=1/" cgitrc &&
 	cgit_url "" &&
 	cgit_url "foo" &&
 	cgit_url "foo/refs" &&
@@ -41,13 +41,14 @@ run_test 'verify cache-size=1' '
 	cgit_url "bar/log" &&
 	cgit_url "bar/diff" &&
 	cgit_url "bar/patch" &&
-	test 1 -eq $(ls trash/cache | wc -l)
+	ls cache >output &&
+	test_line_count = 1 output
 '
 
-run_test 'verify cache-size=1021' '
+test_expect_success 'verify cache-size=1021' '
 
-	rm -f trash/cache/* &&
-	sed -i -e "s/cache-size=1$/cache-size=1021/" trash/cgitrc &&
+	rm -f cache/* &&
+	sed -i -e "s/cache-size=1$/cache-size=1021/" cgitrc &&
 	cgit_url "" &&
 	cgit_url "foo" &&
 	cgit_url "foo/refs" &&
@@ -61,7 +62,8 @@ run_test 'verify cache-size=1021' '
 	cgit_url "bar/log" &&
 	cgit_url "bar/diff" &&
 	cgit_url "bar/patch" &&
-	test 13 -eq $(ls trash/cache | wc -l)
+	ls cache >output &&
+	test_line_count = 13 output
 '
 
-tests_done
+test_done

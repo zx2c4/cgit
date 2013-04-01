@@ -1,5 +1,6 @@
 #!/bin/sh
 
+test_description='Validate html with tidy'
 . ./setup.sh
 
 
@@ -7,9 +8,9 @@ test_url()
 {
 	tidy_opt="-eq"
 	test -z "$NO_TIDY_WARNINGS" || tidy_opt+=" --show-warnings no"
-	cgit_url "$1" >trash/tidy-$test_count || return
-	sed -ie "1,4d" trash/tidy-$test_count || return
-	"$tidy" $tidy_opt trash/tidy-$test_count
+	cgit_url "$1" >tidy-$test_count || return
+	sed -ie "1,4d" tidy-$test_count || return
+	"$tidy" $tidy_opt tidy-$test_count
 	rc=$?
 
 	# tidy returns with exitcode 1 on warnings, 2 on error
@@ -21,21 +22,19 @@ test_url()
 	fi
 }
 
-prepare_tests 'Validate html with tidy'
-
-tidy=`which tidy`
+tidy=`which tidy 2>/dev/null`
 test -n "$tidy" || {
-	echo "Skipping tests: tidy not found"
-	tests_done
+	skip_all='Skipping html validation tests: tidy not found'
+	test_done
 	exit
 }
 
-run_test 'index page' 'test_url ""'
-run_test 'foo' 'test_url "foo"'
-run_test 'foo/log' 'test_url "foo/log"'
-run_test 'foo/tree' 'test_url "foo/tree"'
-run_test 'foo/tree/file-1' 'test_url "foo/tree/file-1"'
-run_test 'foo/commit' 'test_url "foo/commit"'
-run_test 'foo/diff' 'test_url "foo/diff"'
+test_expect_success 'index page' 'test_url ""'
+test_expect_success 'foo' 'test_url "foo"'
+test_expect_success 'foo/log' 'test_url "foo/log"'
+test_expect_success 'foo/tree' 'test_url "foo/tree"'
+test_expect_success 'foo/tree/file-1' 'test_url "foo/tree/file-1"'
+test_expect_success 'foo/commit' 'test_url "foo/commit"'
+test_expect_success 'foo/diff' 'test_url "foo/diff"'
 
-tests_done
+test_done
