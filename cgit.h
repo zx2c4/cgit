@@ -255,16 +255,16 @@ struct cgit_page {
 };
 
 struct cgit_environment {
-	char *cgit_config;
-	char *http_host;
-	char *https;
-	char *no_http;
-	char *path_info;
-	char *query_string;
-	char *request_method;
-	char *script_name;
-	char *server_name;
-	char *server_port;
+	const char *cgit_config;
+	const char *http_host;
+	const char *https;
+	const char *no_http;
+	const char *path_info;
+	const char *query_string;
+	const char *request_method;
+	const char *script_name;
+	const char *server_name;
+	const char *server_port;
 };
 
 struct cgit_context {

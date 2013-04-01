@@ -401,9 +401,9 @@ static void prepare_context(struct cgit_context *ctx)
 	ctx->page.etag = NULL;
 	memset(&ctx->cfg.mimetypes, 0, sizeof(struct string_list));
 	if (ctx->env.script_name)
-		ctx->cfg.script_name = ctx->env.script_name;
+		ctx->cfg.script_name = xstrdup(ctx->env.script_name);
 	if (ctx->env.query_string)
-		ctx->qry.raw = ctx->env.query_string;
+		ctx->qry.raw = xstrdup(ctx->env.query_string);
 	if (!ctx->env.cgit_config)
 		ctx->env.cgit_config = CGIT_CONFIG;
 }
