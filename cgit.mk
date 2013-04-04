@@ -62,6 +62,14 @@ $(CGIT_VERSION_OBJS): EXTRA_CPPFLAGS = \
 	-DCGIT_VERSION='"$(CGIT_VERSION)"'
 
 
+# Git handles dependencies using ":=" so dependencies in CGIT_OBJ are not
+# handled by that and we must handle them ourselves.
+cgit_dep_files := $(foreach f,$(CGIT_OBJS),$(dir $f).depend/$(notdir $f).d)
+cgit_dep_files_present := $(wildcard $(cgit_dep_files))
+ifneq ($(cgit_dep_files_present),)
+include $(cgit_dep_files_present)
+endif
+
 ifeq ($(wildcard $(CGIT_PREFIX).depend),)
 missing_dep_dirs += $(CGIT_PREFIX).depend
 endif
