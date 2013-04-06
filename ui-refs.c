@@ -127,47 +127,45 @@ static void print_tag_downloads(const struct cgit_repo *repo, const char *ref)
 	if (free_ref)
 		free((char *)ref);
 }
+
 static int print_tag(struct refinfo *ref)
 {
-	struct tag *tag;
-	struct taginfo *info;
+	struct tag *tag = NULL;
+	struct taginfo *info = NULL;
 	char *name = (char *)ref->refname;
+	struct object *obj = ref->object;
 
-	if (ref->object->type == OBJ_TAG) {
-		tag = (struct tag *)ref->object;
+	if (obj->type == OBJ_TAG) {
+		tag = (struct tag *)obj;
+		obj = tag->tagged;
 		info = ref->tag;
 		if (!tag || !info)
 			return 1;
-		html("<tr><td>");
-		cgit_tag_link(name, NULL, NULL, ctx.qry.head, name);
-		html("</td><td>");
-		if (ctx.repo->snapshots && (tag->tagged->type == OBJ_COMMIT))
-			print_tag_downloads(ctx.repo, name);
-		else
-			cgit_object_link(tag->tagged);
-		html("</td><td>");
+	}
+
+	html("<tr><td>");
+	cgit_tag_link(name, NULL, NULL, ctx.qry.head, name);
+	html("</td><td>");
+	if (ctx.repo->snapshots && (obj->type == OBJ_COMMIT))
+		print_tag_downloads(ctx.repo, name);
+	else
+		cgit_object_link(obj);
+	html("</td><td>");
+	if (info) {
 		if (info->tagger)
 			html(info->tagger);
-		html("</td><td colspan='2'>");
+	} else if (ref->object->type == OBJ_COMMIT) {
+		html(ref->commit->author);
+	}
+	html("</td><td colspan='2'>");
+	if (info) {
 		if (info->tagger_date > 0)
 			cgit_print_age(info->tagger_date, -1, NULL);
-		html("</td></tr>\n");
-	} else {
-		html("<tr><td>");
-		cgit_tag_link(name, NULL, NULL, ctx.qry.head, name);
-		html("</td><td>");
-		if (ctx.repo->snapshots && (ref->object->type == OBJ_COMMIT))
-			print_tag_downloads(ctx.repo, name);
-		else
-			cgit_object_link(ref->object);
-		html("</td><td>");
-		if (ref->object->type == OBJ_COMMIT)
-			html(ref->commit->author);
-		html("</td><td colspan='2'>");
-		if (ref->object->type == OBJ_COMMIT)
-			cgit_print_age(ref->commit->commit->date, -1, NULL);
-		html("</td></tr>\n");
+	} else if (ref->object->type == OBJ_COMMIT) {
+		cgit_print_age(ref->commit->commit->date, -1, NULL);
 	}
+	html("</td></tr>\n");
+
 	return 0;
 }
 
