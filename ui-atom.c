@@ -7,6 +7,7 @@
  */
 
 #include "cgit.h"
+#include "ui-atom.h"
 #include "html.h"
 #include "ui-shared.h"
 

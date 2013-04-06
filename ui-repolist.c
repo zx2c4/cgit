@@ -8,6 +8,7 @@
  */
 
 #include "cgit.h"
+#include "ui-repolist.h"
 #include "html.h"
 #include "ui-shared.h"
 #include <strings.h>

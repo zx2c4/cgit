@@ -1,8 +1,8 @@
 #include "cgit.h"
+#include "ui-ssdiff.h"
 #include "html.h"
 #include "ui-shared.h"
 #include "ui-diff.h"
-#include "ui-ssdiff.h"
 
 extern int use_ssdiff;
 

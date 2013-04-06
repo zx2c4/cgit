@@ -8,6 +8,7 @@
 
 #include <stdio.h>
 #include "cgit.h"
+#include "ui-plain.h"
 #include "html.h"
 #include "ui-shared.h"
 

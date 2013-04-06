@@ -8,6 +8,7 @@
  */
 
 #include "cgit.h"
+#include "ui-summary.h"
 #include "html.h"
 #include "ui-log.h"
 #include "ui-refs.h"

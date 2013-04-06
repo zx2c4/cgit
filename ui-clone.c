@@ -8,6 +8,7 @@
  */
 
 #include "cgit.h"
+#include "ui-clone.h"
 #include "html.h"
 #include "ui-shared.h"
 

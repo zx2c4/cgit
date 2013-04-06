@@ -8,6 +8,7 @@
  */
 
 #include "cgit.h"
+#include "scan-tree.h"
 #include "configfile.h"
 #include "html.h"
 

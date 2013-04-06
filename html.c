@@ -6,6 +6,7 @@
  *   (see COPYING for full license text)
  */
 
+#include "html.h"
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>

@@ -8,6 +8,7 @@
 
 #include <ctype.h>
 #include "cgit.h"
+#include "ui-tree.h"
 #include "html.h"
 #include "ui-shared.h"
 

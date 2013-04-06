@@ -1,7 +1,7 @@
 #include "cgit.h"
+#include "ui-stats.h"
 #include "html.h"
 #include "ui-shared.h"
-#include "ui-stats.h"
 
 #ifdef NO_C99_FORMAT
 #define SZ_FMT "%u"

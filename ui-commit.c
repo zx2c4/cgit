@@ -7,6 +7,7 @@
  */
 
 #include "cgit.h"
+#include "ui-commit.h"
 #include "html.h"
 #include "ui-shared.h"
 #include "ui-diff.h"

@@ -47,8 +47,6 @@ extern void cgit_diff_link(const char *name, const char *title,
 extern void cgit_stats_link(const char *name, const char *title,
 			    const char *class, const char *head,
 			    const char *path);
-extern void cgit_self_link(char *name, const char *title,
-			   const char *class, struct cgit_context *ctx);
 extern void cgit_object_link(struct object *obj);
 
 extern void cgit_submodule_link(const char *class, char *path,

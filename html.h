@@ -1,7 +1,7 @@
 #ifndef HTML_H
 #define HTML_H
 
-extern int htmlfd;
+#include <stddef.h>
 
 extern void html_raw(const char *txt, size_t size);
 extern void html(const char *txt);
