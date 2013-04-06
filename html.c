@@ -6,6 +6,7 @@
  *   (see COPYING for full license text)
  */
 
+#include "cgit.h"
 #include "html.h"
 #include <unistd.h>
 #include <stdio.h>
@@ -307,11 +308,7 @@ int http_parse_querystring(const char *txt_, void (*fn)(const char *name, const 
 	if (!txt_)
 		return 0;
 
-	o = t = txt = strdup(txt_);
-	if (t == NULL) {
-		printf("Out of memory\n");
-		exit(1);
-	}
+	o = t = txt = xstrdup(txt_);
 	while ((c=*t) != '\0') {
 		if (c == '=') {
 			*t = '\0';
