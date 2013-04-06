@@ -100,11 +100,11 @@ static int make_snapshot(const struct cgit_snapshot_format *format,
 	unsigned char sha1[20];
 
 	if (get_sha1(hex, sha1)) {
-		cgit_print_error(fmt("Bad object id: %s", hex));
+		cgit_print_error("Bad object id: %s", hex);
 		return 1;
 	}
 	if (!lookup_commit_reference(sha1)) {
-		cgit_print_error(fmt("Not a commit reference: %s", hex));
+		cgit_print_error("Not a commit reference: %s", hex);
 		return 1;
 	}
 	ctx.page.mimetype = xstrdup(format->mimetype);
@@ -154,13 +154,18 @@ static const char *get_ref_from_filename(const char *url, const char *filename,
 	return NULL;
 }
 
-static void show_error(char *msg)
+__attribute__((format (printf, 1, 2)))
+static void show_error(char *fmt, ...)
 {
+	va_list ap;
+
 	ctx.page.mimetype = "text/html";
 	cgit_print_http_headers(&ctx);
 	cgit_print_docstart(&ctx);
 	cgit_print_pageheader(&ctx);
-	cgit_print_error(msg);
+	va_start(ap, fmt);
+	cgit_vprint_error(fmt, ap);
+	va_end(ap);
 	cgit_print_docend();
 }
 
@@ -177,8 +182,7 @@ void cgit_print_snapshot(const char *head, const char *hex,
 
 	f = get_format(filename);
 	if (!f) {
-		show_error(xstrdup(fmt("Unsupported snapshot format: %s",
-				       filename)));
+		show_error("Unsupported snapshot format: %s", filename);
 		return;
 	}
 

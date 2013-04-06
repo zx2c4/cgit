@@ -50,18 +50,18 @@ void cgit_print_tag(char *revname)
 		revname = ctx.qry.head;
 
 	if (get_sha1(fmt("refs/tags/%s", revname), sha1)) {
-		cgit_print_error(fmt("Bad tag reference: %s", revname));
+		cgit_print_error("Bad tag reference: %s", revname);
 		return;
 	}
 	obj = parse_object(sha1);
 	if (!obj) {
-		cgit_print_error(fmt("Bad object id: %s", sha1_to_hex(sha1)));
+		cgit_print_error("Bad object id: %s", sha1_to_hex(sha1));
 		return;
 	}
 	if (obj->type == OBJ_TAG) {
 		tag = lookup_tag(sha1);
 		if (!tag || parse_tag(tag) || !(info = cgit_parse_tag(tag))) {
-			cgit_print_error(fmt("Bad tag object: %s", revname));
+			cgit_print_error("Bad tag object: %s", revname);
 			return;
 		}
 		html("<table class='commit-info'>\n");

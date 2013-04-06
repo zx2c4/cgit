@@ -94,12 +94,12 @@ void cgit_print_blob(const char *hex, char *path, const char *head)
 
 	if (hex) {
 		if (get_sha1_hex(hex, sha1)) {
-			cgit_print_error(fmt("Bad hex value: %s", hex));
+			cgit_print_error("Bad hex value: %s", hex);
 			return;
 		}
 	} else {
 		if (get_sha1(head, sha1)) {
-			cgit_print_error(fmt("Bad ref: %s", head));
+			cgit_print_error("Bad ref: %s", head);
 			return;
 		}
 	}
@@ -113,13 +113,13 @@ void cgit_print_blob(const char *hex, char *path, const char *head)
 	}
 
 	if (type == OBJ_BAD) {
-		cgit_print_error(fmt("Bad object name: %s", hex));
+		cgit_print_error("Bad object name: %s", hex);
 		return;
 	}
 
 	buf = read_sha1_file(sha1, &type, &size);
 	if (!buf) {
-		cgit_print_error(fmt("Error reading object %s", hex));
+		cgit_print_error("Error reading object %s", hex);
 		return;
 	}
 

@@ -374,12 +374,11 @@ void cgit_show_stats(struct cgit_context *ctx)
 
 	i = cgit_find_stats_period(code, &period);
 	if (!i) {
-		cgit_print_error(fmt("Unknown statistics type: %c", code[0]));
+		cgit_print_error("Unknown statistics type: %c", code[0]);
 		return;
 	}
 	if (i > ctx->repo->max_stats) {
-		cgit_print_error(fmt("Statistics type disabled: %s",
-				     period->name));
+		cgit_print_error("Statistics type disabled: %s", period->name);
 		return;
 	}
 	authors = collect_stats(ctx, period);

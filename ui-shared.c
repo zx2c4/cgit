@@ -28,10 +28,21 @@ static char *http_date(time_t t)
 		   tm->tm_hour, tm->tm_min, tm->tm_sec);
 }
 
-void cgit_print_error(const char *msg)
+void cgit_print_error(const char *fmt, ...)
 {
+	va_list ap;
+	va_start(ap, fmt);
+	cgit_vprint_error(fmt, ap);
+	va_end(ap);
+}
+
+void cgit_vprint_error(const char *fmt, va_list ap)
+{
+	va_list cp;
 	html("<div class='error'>");
-	html_txt(msg);
+	va_copy(cp, ap);
+	html_vtxtf(fmt, cp);
+	va_end(cp);
 	html("</div>\n");
 }
 

@@ -459,7 +459,6 @@ static char *guess_defbranch(void)
 
 static int prepare_repo_cmd(struct cgit_context *ctx)
 {
-	char *tmp;
 	unsigned char sha1[20];
 	int nongit = 0;
 	int rc;
@@ -467,17 +466,16 @@ static int prepare_repo_cmd(struct cgit_context *ctx)
 	setenv("GIT_DIR", ctx->repo->path, 1);
 	setup_git_directory_gently(&nongit);
 	if (nongit) {
+		const char *name = ctx->repo->name;
 		rc = errno;
 		ctx->page.title = fmt("%s - %s", ctx->cfg.root_title,
 				      "config error");
-		tmp = fmt("Failed to open %s: %s",
-			  ctx->repo->name,
-			  rc ? strerror(rc) : "Not a valid git repository");
 		ctx->repo = NULL;
 		cgit_print_http_headers(ctx);
 		cgit_print_docstart(ctx);
 		cgit_print_pageheader(ctx);
-		cgit_print_error(tmp);
+		cgit_print_error("Failed to open %s: %s", name,
+				 rc ? strerror(rc) : "Not a valid git repository");
 		cgit_print_docend();
 		return 1;
 	}
@@ -501,14 +499,14 @@ static int prepare_repo_cmd(struct cgit_context *ctx)
 	}
 
 	if (get_sha1(ctx->qry.head, sha1)) {
-		tmp = xstrdup(ctx->qry.head);
+		char *tmp = xstrdup(ctx->qry.head);
 		ctx->qry.head = ctx->repo->defbranch;
 		ctx->page.status = 404;
 		ctx->page.statusmsg = "Not found";
 		cgit_print_http_headers(ctx);
 		cgit_print_docstart(ctx);
 		cgit_print_pageheader(ctx);
-		cgit_print_error(fmt("Invalid branch: %s", tmp));
+		cgit_print_error("Invalid branch: %s", tmp);
 		cgit_print_docend();
 		return 1;
 	}
@@ -550,7 +548,7 @@ static void process_request(void *cbdata)
 		cgit_print_http_headers(ctx);
 		cgit_print_docstart(ctx);
 		cgit_print_pageheader(ctx);
-		cgit_print_error(fmt("No repository selected"));
+		cgit_print_error("No repository selected");
 		cgit_print_docend();
 		return;
 	}
@@ -862,7 +860,7 @@ int main(int argc, const char **argv)
 	err = cache_process(ctx.cfg.cache_size, ctx.cfg.cache_root,
 			    ctx.qry.raw, ttl, process_request, &ctx);
 	if (err)
-		cgit_print_error(fmt("Error processing page: %s (%d)",
-				     strerror(err), err));
+		cgit_print_error("Error processing page: %s (%d)",
+				 strerror(err), err);
 	return err;
 }

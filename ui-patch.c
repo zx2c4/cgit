@@ -94,12 +94,12 @@ void cgit_print_patch(char *hex, const char *prefix)
 		hex = ctx.qry.head;
 
 	if (get_sha1(hex, sha1)) {
-		cgit_print_error(fmt("Bad object id: %s", hex));
+		cgit_print_error("Bad object id: %s", hex);
 		return;
 	}
 	commit = lookup_commit_reference(sha1);
 	if (!commit) {
-		cgit_print_error(fmt("Bad commit reference: %s", hex));
+		cgit_print_error("Bad commit reference: %s", hex);
 		return;
 	}
 	info = cgit_parse_commit(commit);

@@ -369,12 +369,12 @@ void cgit_print_diff(const char *new_rev, const char *old_rev,
 	get_sha1(new_rev, new_rev_sha1);
 	type = sha1_object_info(new_rev_sha1, &size);
 	if (type == OBJ_BAD) {
-		cgit_print_error(fmt("Bad object name: %s", new_rev));
+		cgit_print_error("Bad object name: %s", new_rev);
 		return;
 	}
 	commit = lookup_commit_reference(new_rev_sha1);
 	if (!commit || parse_commit(commit)) {
-		cgit_print_error(fmt("Bad commit: %s", sha1_to_hex(new_rev_sha1)));
+		cgit_print_error("Bad commit: %s", sha1_to_hex(new_rev_sha1));
 		return;
 	}
 
@@ -388,12 +388,12 @@ void cgit_print_diff(const char *new_rev, const char *old_rev,
 	if (!is_null_sha1(old_rev_sha1)) {
 		type = sha1_object_info(old_rev_sha1, &size);
 		if (type == OBJ_BAD) {
-			cgit_print_error(fmt("Bad object name: %s", sha1_to_hex(old_rev_sha1)));
+			cgit_print_error("Bad object name: %s", sha1_to_hex(old_rev_sha1));
 			return;
 		}
 		commit2 = lookup_commit_reference(old_rev_sha1);
 		if (!commit2 || parse_commit(commit2)) {
-			cgit_print_error(fmt("Bad commit: %s", sha1_to_hex(old_rev_sha1)));
+			cgit_print_error("Bad commit: %s", sha1_to_hex(old_rev_sha1));
 			return;
 		}
 	}

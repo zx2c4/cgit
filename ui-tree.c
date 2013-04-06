@@ -95,15 +95,13 @@ static void print_object(const unsigned char *sha1, char *path, const char *base
 
 	type = sha1_object_info(sha1, &size);
 	if (type == OBJ_BAD) {
-		cgit_print_error(fmt("Bad object name: %s",
-				     sha1_to_hex(sha1)));
+		cgit_print_error("Bad object name: %s", sha1_to_hex(sha1));
 		return;
 	}
 
 	buf = read_sha1_file(sha1, &type, &size);
 	if (!buf) {
-		cgit_print_error(fmt("Error reading object %s",
-				     sha1_to_hex(sha1)));
+		cgit_print_error("Error reading object %s", sha1_to_hex(sha1));
 		return;
 	}
 
@@ -209,8 +207,7 @@ static void ls_tree(const unsigned char *sha1, char *path, struct walk_tree_cont
 
 	tree = parse_tree_indirect(sha1);
 	if (!tree) {
-		cgit_print_error(fmt("Not a tree object: %s",
-				     sha1_to_hex(sha1)));
+		cgit_print_error("Not a tree object: %s", sha1_to_hex(sha1));
 		return;
 	}
 
@@ -273,12 +270,12 @@ void cgit_print_tree(const char *rev, char *path)
 		rev = ctx.qry.head;
 
 	if (get_sha1(rev, sha1)) {
-		cgit_print_error(fmt("Invalid revision name: %s", rev));
+		cgit_print_error("Invalid revision name: %s", rev);
 		return;
 	}
 	commit = lookup_commit_reference(sha1);
 	if (!commit || parse_commit(commit)) {
-		cgit_print_error(fmt("Invalid commit reference: %s", rev));
+		cgit_print_error("Invalid commit reference: %s", rev);
 		return;
 	}
 
