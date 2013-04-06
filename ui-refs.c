@@ -11,8 +11,6 @@
 #include "html.h"
 #include "ui-shared.h"
 
-static int header;
-
 static int cmp_age(int age1, int age2)
 {
 	if (age1 != 0 && age2 != 0)
@@ -96,7 +94,6 @@ static void print_tag_header()
 	     "<th class='left'>Download</th>"
 	     "<th class='left'>Author</th>"
 	     "<th class='left' colspan='2'>Age</th></tr>\n");
-	header = 1;
 }
 
 static void print_tag_downloads(const struct cgit_repo *repo, const char *ref)
@@ -156,8 +153,6 @@ static int print_tag(struct refinfo *ref)
 			cgit_print_age(info->tagger_date, -1, NULL);
 		html("</td></tr>\n");
 	} else {
-		if (!header)
-			print_tag_header();
 		html("<tr><td>");
 		cgit_tag_link(name, NULL, NULL, ctx.qry.head, name);
 		html("</td><td>");
@@ -221,7 +216,6 @@ void cgit_print_tags(int maxcount)
 	struct reflist list;
 	int i;
 
-	header = 0;
 	list.refs = NULL;
 	list.alloc = list.count = 0;
 	for_each_tag_ref(cgit_refs_cb, &list);
