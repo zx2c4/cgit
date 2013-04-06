@@ -468,8 +468,8 @@ static int prepare_repo_cmd(struct cgit_context *ctx)
 	if (nongit) {
 		const char *name = ctx->repo->name;
 		rc = errno;
-		ctx->page.title = fmt("%s - %s", ctx->cfg.root_title,
-				      "config error");
+		ctx->page.title = fmtalloc("%s - %s", ctx->cfg.root_title,
+						"config error");
 		ctx->repo = NULL;
 		cgit_print_http_headers(ctx);
 		cgit_print_docstart(ctx);
@@ -479,7 +479,7 @@ static int prepare_repo_cmd(struct cgit_context *ctx)
 		cgit_print_docend();
 		return 1;
 	}
-	ctx->page.title = fmt("%s - %s", ctx->repo->name, ctx->repo->desc);
+	ctx->page.title = fmtalloc("%s - %s", ctx->repo->name, ctx->repo->desc);
 
 	if (!ctx->repo->defbranch)
 		ctx->repo->defbranch = guess_defbranch();
@@ -577,21 +577,16 @@ static int cmp_repos(const void *a, const void *b)
 static char *build_snapshot_setting(int bitmap)
 {
 	const struct cgit_snapshot_format *f;
-	char *result = xstrdup("");
-	char *tmp;
-	int len;
+	struct strbuf result = STRBUF_INIT;
 
 	for (f = cgit_snapshot_formats; f->suffix; f++) {
 		if (f->bit & bitmap) {
-			tmp = result;
-			result = xstrdup(fmt("%s%s ", tmp, f->suffix));
-			free(tmp);
+			if (result.len)
+				strbuf_addch(&result, ' ');
+			strbuf_addstr(&result, f->suffix);
 		}
 	}
-	len = strlen(result);
-	if (len)
-		result[len - 1] = '\0';
-	return result;
+	return strbuf_detach(&result, NULL);
 }
 
 static char *get_first_line(char *txt)
@@ -639,7 +634,7 @@ static void print_repo(FILE *f, struct cgit_repo *repo)
 		fprintf(f, "repo.source-filter=%s\n", repo->source_filter->cmd);
 	if (repo->snapshots != ctx.cfg.snapshots) {
 		char *tmp = build_snapshot_setting(repo->snapshots);
-		fprintf(f, "repo.snapshots=%s\n", tmp);
+		fprintf(f, "repo.snapshots=%s\n", tmp ? tmp : "");
 		free(tmp);
 	}
 	if (repo->max_stats != ctx.cfg.max_stats)
@@ -661,20 +656,22 @@ static void print_repolist(FILE *f, struct cgit_repolist *list, int start)
  */
 static int generate_cached_repolist(const char *path, const char *cached_rc)
 {
-	char *locked_rc;
+	struct strbuf locked_rc = STRBUF_INIT;
+	int result = 0;
 	int idx;
 	FILE *f;
 
-	locked_rc = xstrdup(fmt("%s.lock", cached_rc));
-	f = fopen(locked_rc, "wx");
+	strbuf_addf(&locked_rc, "%s.lock", cached_rc);
+	f = fopen(locked_rc.buf, "wx");
 	if (!f) {
 		/* Inform about the error unless the lockfile already existed,
 		 * since that only means we've got concurrent requests.
 		 */
-		if (errno != EEXIST)
+		result = errno;
+		if (result != EEXIST)
 			fprintf(stderr, "[cgit] Error opening %s: %s (%d)\n",
-				locked_rc, strerror(errno), errno);
-		return errno;
+				locked_rc.buf, strerror(result), result);
+		goto out;
 	}
 	idx = cgit_repolist.count;
 	if (ctx.cfg.project_list)
@@ -682,55 +679,59 @@ static int generate_cached_repolist(const char *path, const char *cached_rc)
 	else
 		scan_tree(path, repo_config);
 	print_repolist(f, &cgit_repolist, idx);
-	if (rename(locked_rc, cached_rc))
+	if (rename(locked_rc.buf, cached_rc))
 		fprintf(stderr, "[cgit] Error renaming %s to %s: %s (%d)\n",
-			locked_rc, cached_rc, strerror(errno), errno);
+			locked_rc.buf, cached_rc, strerror(errno), errno);
 	fclose(f);
-	return 0;
+out:
+	strbuf_release(&locked_rc);
+	return result;
 }
 
 static void process_cached_repolist(const char *path)
 {
 	struct stat st;
-	char *cached_rc;
+	struct strbuf cached_rc = STRBUF_INIT;
 	time_t age;
 	unsigned long hash;
 
 	hash = hash_str(path);
 	if (ctx.cfg.project_list)
 		hash += hash_str(ctx.cfg.project_list);
-	cached_rc = xstrdup(fmt("%s/rc-%8lx", ctx.cfg.cache_root, hash));
+	strbuf_addf(&cached_rc, "%s/rc-%8lx", ctx.cfg.cache_root, hash);
 
-	if (stat(cached_rc, &st)) {
+	if (stat(cached_rc.buf, &st)) {
 		/* Nothing is cached, we need to scan without forking. And
 		 * if we fail to generate a cached repolist, we need to
 		 * invoke scan_tree manually.
 		 */
-		if (generate_cached_repolist(path, cached_rc)) {
+		if (generate_cached_repolist(path, cached_rc.buf)) {
 			if (ctx.cfg.project_list)
 				scan_projects(path, ctx.cfg.project_list,
 					      repo_config);
 			else
 				scan_tree(path, repo_config);
 		}
-		return;
+		goto out;
 	}
 
-	parse_configfile(cached_rc, config_cb);
+	parse_configfile(cached_rc.buf, config_cb);
 
 	/* If the cached configfile hasn't expired, lets exit now */
 	age = time(NULL) - st.st_mtime;
 	if (age <= (ctx.cfg.cache_scanrc_ttl * 60))
-		return;
+		goto out;
 
 	/* The cached repolist has been parsed, but it was old. So lets
 	 * rescan the specified path and generate a new cached repolist
 	 * in a child-process to avoid latency for the current request.
 	 */
 	if (fork())
-		return;
+		goto out;
 
-	exit(generate_cached_repolist(path, cached_rc));
+	exit(generate_cached_repolist(path, cached_rc.buf));
+out:
+	strbuf_release(&cached_rc);
 }
 
 static void cgit_parse_args(int argc, const char **argv)
@@ -812,7 +813,6 @@ static int calc_ttl()
 int main(int argc, const char **argv)
 {
 	const char *path;
-	char *qry;
 	int err, ttl;
 
 	prepare_context(&ctx);
@@ -843,9 +843,9 @@ int main(int argc, const char **argv)
 			path++;
 		ctx.qry.url = xstrdup(path);
 		if (ctx.qry.raw) {
-			qry = ctx.qry.raw;
-			ctx.qry.raw = xstrdup(fmt("%s?%s", path, qry));
-			free(qry);
+			char *newqry = fmtalloc("%s?%s", path, ctx.qry.raw);
+			free(ctx.qry.raw);
+			ctx.qry.raw = newqry;
 		} else
 			ctx.qry.raw = xstrdup(ctx.qry.url);
 		cgit_parse_url(ctx.qry.url);

@@ -312,9 +312,9 @@ int cache_process(int size, const char *path, const char *key, int ttl,
 		  cache_fill_fn fn, void *cbdata)
 {
 	unsigned long hash;
-	int len, i;
-	char filename[1024];
-	char lockname[1024 + 5];  /* 5 = ".lock" */
+	int i;
+	struct strbuf filename = STRBUF_INIT;
+	struct strbuf lockname = STRBUF_INIT;
 	struct cache_slot slot;
 
 	/* If the cache is disabled, just generate the content */
@@ -329,32 +329,22 @@ int cache_process(int size, const char *path, const char *key, int ttl,
 		fn(cbdata);
 		return 0;
 	}
-	len = strlen(path);
-	if (len > sizeof(filename) - 10) { /* 10 = "/01234567\0" */
-		cache_log("[cgit] Cache path too long, caching is disabled: %s\n",
-			  path);
-		fn(cbdata);
-		return 0;
-	}
 	if (!key)
 		key = "";
 	hash = hash_str(key) % size;
-	strcpy(filename, path);
-	if (filename[len - 1] != '/')
-		filename[len++] = '/';
+	strbuf_addstr(&filename, path);
+	strbuf_ensure_end(&filename, '/');
 	for (i = 0; i < 8; i++) {
-		sprintf(filename + len++, "%x",
-			(unsigned char)(hash & 0xf));
+		strbuf_addf(&filename, "%x", (unsigned char)(hash & 0xf));
 		hash >>= 4;
 	}
-	filename[len] = '\0';
-	strcpy(lockname, filename);
-	strcpy(lockname + len, ".lock");
+	strbuf_addbuf(&lockname, &filename);
+	strbuf_addstr(&lockname, ".lock");
 	slot.fn = fn;
 	slot.cbdata = cbdata;
 	slot.ttl = ttl;
-	slot.cache_name = filename;
-	slot.lock_name = lockname;
+	slot.cache_name = strbuf_detach(&filename, NULL);
+	slot.lock_name = strbuf_detach(&lockname, NULL);
 	slot.key = key;
 	slot.keylen = strlen(key);
 	return process_slot(&slot);
@@ -381,16 +371,11 @@ int cache_ls(const char *path)
 	struct dirent *ent;
 	int err = 0;
 	struct cache_slot slot;
-	char fullname[1024];
-	char *name;
+	struct strbuf fullname = STRBUF_INIT;
+	size_t prefixlen;
 
 	if (!path) {
 		cache_log("[cgit] cache path not specified\n");
-		return -1;
-	}
-	if (strlen(path) > 1024 - 10) {
-		cache_log("[cgit] cache path too long: %s\n",
-			  path);
 		return -1;
 	}
 	dir = opendir(path);
@@ -400,30 +385,28 @@ int cache_ls(const char *path)
 			  path, strerror(err), err);
 		return err;
 	}
-	strcpy(fullname, path);
-	name = fullname + strlen(path);
-	if (*(name - 1) != '/') {
-		*name++ = '/';
-		*name = '\0';
-	}
-	slot.cache_name = fullname;
+	strbuf_addstr(&fullname, path);
+	strbuf_ensure_end(&fullname, '/');
+	prefixlen = fullname.len;
 	while ((ent = readdir(dir)) != NULL) {
 		if (strlen(ent->d_name) != 8)
 			continue;
-		strcpy(name, ent->d_name);
+		strbuf_setlen(&fullname, prefixlen);
+		strbuf_addstr(&fullname, ent->d_name);
 		if ((err = open_slot(&slot)) != 0) {
 			cache_log("[cgit] unable to open path %s: %s (%d)\n",
-				  fullname, strerror(err), err);
+				  fullname.buf, strerror(err), err);
 			continue;
 		}
 		printf("%s %s %10"PRIuMAX" %s\n",
-		       name,
+		       fullname.buf,
 		       sprintftime("%Y-%m-%d %H:%M:%S",
 				   slot.cache_st.st_mtime),
 		       (uintmax_t)slot.cache_st.st_size,
 		       slot.buf);
 		close_slot(&slot);
 	}
+	slot.cache_name = strbuf_detach(&fullname, NULL);
 	closedir(dir);
 	return 0;
 }

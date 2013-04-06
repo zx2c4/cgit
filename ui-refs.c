@@ -99,7 +99,7 @@ static void print_tag_header()
 static void print_tag_downloads(const struct cgit_repo *repo, const char *ref)
 {
 	const struct cgit_snapshot_format* f;
-    	char *filename;
+	struct strbuf filename = STRBUF_INIT;
 	const char *basename;
 	int free_ref = 0;
 
@@ -111,7 +111,7 @@ static void print_tag_downloads(const struct cgit_repo *repo, const char *ref)
 		if ((ref[0] == 'v' || ref[0] == 'V') && isdigit(ref[1]))
 			ref++;
 		if (isdigit(ref[0])) {
-			ref = xstrdup(fmt("%s-%s", basename, ref));
+			ref = fmtalloc("%s-%s", basename, ref);
 			free_ref = 1;
 		}
 	}
@@ -119,13 +119,15 @@ static void print_tag_downloads(const struct cgit_repo *repo, const char *ref)
 	for (f = cgit_snapshot_formats; f->suffix; f++) {
 		if (!(repo->snapshots & f->bit))
 			continue;
-		filename = fmt("%s%s", ref, f->suffix);
-		cgit_snapshot_link(filename, NULL, NULL, NULL, NULL, filename);
+		strbuf_reset(&filename);
+		strbuf_addf(&filename, "%s%s", ref, f->suffix);
+		cgit_snapshot_link(filename.buf, NULL, NULL, NULL, NULL, filename.buf);
 		html("&nbsp;&nbsp;");
 	}
 
 	if (free_ref)
 		free((char *)ref);
+	strbuf_release(&filename);
 }
 
 static int print_tag(struct refinfo *ref)

@@ -17,6 +17,7 @@
 static void print_url(char *base, char *suffix)
 {
 	int columns = 3;
+	struct strbuf basebuf = STRBUF_INIT;
 
 	if (ctx.repo->enable_log_filecount)
 		columns++;
@@ -25,13 +26,16 @@ static void print_url(char *base, char *suffix)
 
 	if (!base || !*base)
 		return;
-	if (suffix && *suffix)
-		base = fmt("%s/%s", base, suffix);
+	if (suffix && *suffix) {
+		strbuf_addf(&basebuf, "%s/%s", base, suffix);
+		base = basebuf.buf;
+	}
 	htmlf("<tr><td colspan='%d'><a href='", columns);
 	html_url_path(base);
 	html("'>");
 	html_txt(base);
 	html("</a></td></tr>\n");
+	strbuf_release(&basebuf);
 }
 
 static void print_urls(char *txt, char *suffix)
@@ -112,8 +116,8 @@ void cgit_print_repo_readme(char *path)
 
 	/* Prepend repo path to relative readme path unless tracked. */
 	if (!ref && *ctx.repo->readme != '/')
-		ctx.repo->readme = xstrdup(fmt("%s/%s", ctx.repo->path,
-					       ctx.repo->readme));
+		ctx.repo->readme = fmtalloc("%s/%s", ctx.repo->path,
+						ctx.repo->readme);
 
 	/* If a subpath is specified for the about page, make it relative
 	 * to the directory containing the configured readme.

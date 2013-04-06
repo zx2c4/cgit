@@ -12,38 +12,38 @@
 #include "configfile.h"
 #include "html.h"
 
-#define MAX_PATH 4096
-
 /* return 1 if path contains a objects/ directory and a HEAD file */
 static int is_git_dir(const char *path)
 {
 	struct stat st;
-	static char buf[MAX_PATH];
+	struct strbuf pathbuf = STRBUF_INIT;
+	int result = 0;
 
-	if (snprintf(buf, MAX_PATH, "%s/objects", path) >= MAX_PATH) {
-		fprintf(stderr, "Insanely long path: %s\n", path);
-		return 0;
-	}
-	if (stat(buf, &st)) {
+	strbuf_addf(&pathbuf, "%s/objects", path);
+	if (stat(pathbuf.buf, &st)) {
 		if (errno != ENOENT)
 			fprintf(stderr, "Error checking path %s: %s (%d)\n",
 				path, strerror(errno), errno);
-		return 0;
+		goto out;
 	}
 	if (!S_ISDIR(st.st_mode))
-		return 0;
+		goto out;
 
-	sprintf(buf, "%s/HEAD", path);
-	if (stat(buf, &st)) {
+	strbuf_reset(&pathbuf);
+	strbuf_addf(&pathbuf, "%s/HEAD", path);
+	if (stat(pathbuf.buf, &st)) {
 		if (errno != ENOENT)
 			fprintf(stderr, "Error checking path %s: %s (%d)\n",
 				path, strerror(errno), errno);
-		return 0;
+		goto out;
 	}
 	if (!S_ISREG(st.st_mode))
-		return 0;
+		goto out;
 
-	return 1;
+	result = 1;
+out:
+	strbuf_release(&pathbuf);
+	return result;
 }
 
 struct cgit_repo *repo;
@@ -75,47 +75,61 @@ static char *xstrrchr(char *s, char *from, int c)
 	return from < s ? NULL : from;
 }
 
-static void add_repo(const char *base, const char *path, repo_config_fn fn)
+static void add_repo(const char *base, struct strbuf *path, repo_config_fn fn)
 {
 	struct stat st;
 	struct passwd *pwd;
-	char *rel, *p, *slash;
+	size_t pathlen;
+	struct strbuf rel = STRBUF_INIT;
+	char *p, *slash;
 	int n;
 	size_t size;
 
-	if (stat(path, &st)) {
+	if (stat(path->buf, &st)) {
 		fprintf(stderr, "Error accessing %s: %s (%d)\n",
-			path, strerror(errno), errno);
+			path->buf, strerror(errno), errno);
 		return;
 	}
 
-	if (ctx.cfg.strict_export && stat(fmt("%s/%s", path, ctx.cfg.strict_export), &st))
-		return;
+	strbuf_addch(path, '/');
+	pathlen = path->len;
 
-	if (!stat(fmt("%s/noweb", path), &st))
-		return;
+	if (ctx.cfg.strict_export) {
+		strbuf_addstr(path, ctx.cfg.strict_export);
+		if(stat(path->buf, &st))
+			return;
+		strbuf_setlen(path, pathlen);
+	}
 
-	if (base == path)
-		rel = xstrdup(path);
+	strbuf_addstr(path, "noweb");
+	if (!stat(path->buf, &st))
+		return;
+	strbuf_setlen(path, pathlen);
+
+	if (strncmp(base, path->buf, strlen(base)))
+		strbuf_addbuf(&rel, path);
 	else
-		rel = xstrdup(path + strlen(base) + 1);
+		strbuf_addstr(&rel, path->buf + strlen(base) + 1);
 
-	if (!strcmp(rel + strlen(rel) - 5, "/.git"))
-		rel[strlen(rel) - 5] = '\0';
+	if (!strcmp(rel.buf + rel.len - 5, "/.git"))
+		strbuf_setlen(&rel, rel.len - 5);
 
-	repo = cgit_add_repo(rel);
+	repo = cgit_add_repo(rel.buf);
 	config_fn = fn;
-	if (ctx.cfg.enable_git_config)
-		git_config_from_file(gitconfig_config, fmt("%s/config", path), NULL);
+	if (ctx.cfg.enable_git_config) {
+		strbuf_addstr(path, "config");
+		git_config_from_file(gitconfig_config, path->buf, NULL);
+		strbuf_setlen(path, pathlen);
+	}
 
 	if (ctx.cfg.remove_suffix)
 		if ((p = strrchr(repo->url, '.')) && !strcmp(p, ".git"))
 			*p = '\0';
-	repo->path = xstrdup(path);
+	repo->path = xstrdup(path->buf);
 	while (!repo->owner) {
 		if ((pwd = getpwuid(st.st_uid)) == NULL) {
 			fprintf(stderr, "Error reading owner-info for %s: %s (%d)\n",
-				path, strerror(errno), errno);
+				path->buf, strerror(errno), errno);
 			break;
 		}
 		if (pwd->pw_gecos)
@@ -125,30 +139,32 @@ static void add_repo(const char *base, const char *path, repo_config_fn fn)
 	}
 
 	if (repo->desc == cgit_default_repo_desc || !repo->desc) {
-		p = fmt("%s/description", path);
-		if (!stat(p, &st))
-			readfile(p, &repo->desc, &size);
+		strbuf_addstr(path, "description");
+		if (!stat(path->buf, &st))
+			readfile(path->buf, &repo->desc, &size);
+		strbuf_setlen(path, pathlen);
 	}
 
 	if (!repo->readme) {
-		p = fmt("%s/README.html", path);
-		if (!stat(p, &st))
+		strbuf_addstr(path, "README.html");
+		if (!stat(path->buf, &st))
 			repo->readme = "README.html";
+		strbuf_setlen(path, pathlen);
 	}
 	if (ctx.cfg.section_from_path) {
 		n  = ctx.cfg.section_from_path;
 		if (n > 0) {
-			slash = rel;
+			slash = rel.buf;
 			while (slash && n && (slash = strchr(slash, '/')))
 				n--;
 		} else {
-			slash = rel + strlen(rel);
-			while (slash && n && (slash = xstrrchr(rel, slash, '/')))
+			slash = rel.buf + rel.len;
+			while (slash && n && (slash = xstrrchr(rel.buf, slash, '/')))
 				n++;
 		}
 		if (slash && !n) {
 			*slash = '\0';
-			repo->section = xstrdup(rel);
+			repo->section = xstrdup(rel.buf);
 			*slash = '/';
 			if (!prefixcmp(repo->name, repo->section)) {
 				repo->name += strlen(repo->section);
@@ -158,19 +174,19 @@ static void add_repo(const char *base, const char *path, repo_config_fn fn)
 		}
 	}
 
-	p = fmt("%s/cgitrc", path);
-	if (!stat(p, &st))
-		parse_configfile(xstrdup(p), &repo_config);
+	strbuf_addstr(path, "cgitrc");
+	if (!stat(path->buf, &st))
+		parse_configfile(xstrdup(path->buf), &repo_config);
 
-
-	free(rel);
+	strbuf_release(&rel);
 }
 
 static void scan_path(const char *base, const char *path, repo_config_fn fn)
 {
 	DIR *dir = opendir(path);
 	struct dirent *ent;
-	char *buf;
+	struct strbuf pathbuf = STRBUF_INIT;
+	size_t pathlen = strlen(path);
 	struct stat st;
 
 	if (!dir) {
@@ -178,14 +194,22 @@ static void scan_path(const char *base, const char *path, repo_config_fn fn)
 			path, strerror(errno), errno);
 		return;
 	}
-	if (is_git_dir(path)) {
-		add_repo(base, path, fn);
+
+	strbuf_add(&pathbuf, path, strlen(path));
+	if (is_git_dir(pathbuf.buf)) {
+		add_repo(base, &pathbuf, fn);
 		goto end;
 	}
-	if (is_git_dir(fmt("%s/.git", path))) {
-		add_repo(base, fmt("%s/.git", path), fn);
+	strbuf_addstr(&pathbuf, "/.git");
+	if (is_git_dir(pathbuf.buf)) {
+		add_repo(base, &pathbuf, fn);
 		goto end;
 	}
+	/*
+	 * Add one because we don't want to lose the trailing '/' when we
+	 * reset the length of pathbuf in the loop below.
+	 */
+	pathlen++;
 	while ((ent = readdir(dir)) != NULL) {
 		if (ent->d_name[0] == '.') {
 			if (ent->d_name[1] == '\0')
@@ -195,24 +219,18 @@ static void scan_path(const char *base, const char *path, repo_config_fn fn)
 			if (!ctx.cfg.scan_hidden_path)
 				continue;
 		}
-		buf = malloc(strlen(path) + strlen(ent->d_name) + 2);
-		if (!buf) {
-			fprintf(stderr, "Alloc error on %s: %s (%d)\n",
-				path, strerror(errno), errno);
-			exit(1);
-		}
-		sprintf(buf, "%s/%s", path, ent->d_name);
-		if (stat(buf, &st)) {
+		strbuf_setlen(&pathbuf, pathlen);
+		strbuf_addstr(&pathbuf, ent->d_name);
+		if (stat(pathbuf.buf, &st)) {
 			fprintf(stderr, "Error checking path %s: %s (%d)\n",
-				buf, strerror(errno), errno);
-			free(buf);
+				pathbuf.buf, strerror(errno), errno);
 			continue;
 		}
 		if (S_ISDIR(st.st_mode))
-			scan_path(base, buf, fn);
-		free(buf);
+			scan_path(base, pathbuf.buf, fn);
 	}
 end:
+	strbuf_release(&pathbuf);
 	closedir(dir);
 }
 
@@ -220,7 +238,7 @@ end:
 
 void scan_projects(const char *path, const char *projectsfile, repo_config_fn fn)
 {
-	char line[MAX_PATH * 2], *z;
+	struct strbuf line = STRBUF_INIT;
 	FILE *projects;
 	int err;
 
@@ -230,19 +248,19 @@ void scan_projects(const char *path, const char *projectsfile, repo_config_fn fn
 			projectsfile, strerror(errno), errno);
 		return;
 	}
-	while (fgets(line, sizeof(line), projects) != NULL) {
-		for (z = &lastc(line);
-		     strlen(line) && strchr("\n\r", *z);
-		     z = &lastc(line))
-			*z = '\0';
-		if (strlen(line))
-			scan_path(path, fmt("%s/%s", path, line), fn);
+	while (strbuf_getline(&line, projects, '\n') != EOF) {
+		if (!line.len)
+			continue;
+		strbuf_insert(&line, 0, "/", 1);
+		strbuf_insert(&line, 0, path, strlen(path));
+		scan_path(path, line.buf, fn);
 	}
 	if ((err = ferror(projects))) {
 		fprintf(stderr, "Error reading from projectsfile %s: %s (%d)\n",
 			projectsfile, strerror(err), err);
 	}
 	fclose(projects);
+	strbuf_release(&line);
 }
 
 void scan_tree(const char *path, repo_config_fn fn)

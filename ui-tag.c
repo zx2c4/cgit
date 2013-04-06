@@ -41,6 +41,7 @@ static void print_download_links(char *revname)
 
 void cgit_print_tag(char *revname)
 {
+	struct strbuf fullref = STRBUF_INIT;
 	unsigned char sha1[20];
 	struct object *obj;
 	struct tag *tag;
@@ -49,20 +50,21 @@ void cgit_print_tag(char *revname)
 	if (!revname)
 		revname = ctx.qry.head;
 
-	if (get_sha1(fmt("refs/tags/%s", revname), sha1)) {
+	strbuf_addf(&fullref, "refs/tags/%s", revname);
+	if (get_sha1(fullref.buf, sha1)) {
 		cgit_print_error("Bad tag reference: %s", revname);
-		return;
+		goto cleanup;
 	}
 	obj = parse_object(sha1);
 	if (!obj) {
 		cgit_print_error("Bad object id: %s", sha1_to_hex(sha1));
-		return;
+		goto cleanup;
 	}
 	if (obj->type == OBJ_TAG) {
 		tag = lookup_tag(sha1);
 		if (!tag || parse_tag(tag) || !(info = cgit_parse_tag(tag))) {
 			cgit_print_error("Bad tag object: %s", revname);
-			return;
+			goto cleanup;
 		}
 		html("<table class='commit-info'>\n");
 		htmlf("<tr><td>tag name</td><td>");
@@ -101,5 +103,7 @@ void cgit_print_tag(char *revname)
 			print_download_links(revname);
 		html("</table>\n");
 	}
-	return;
+
+cleanup:
+	strbuf_release(&fullref);
 }

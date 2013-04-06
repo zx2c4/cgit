@@ -109,9 +109,9 @@ static int print_object(const unsigned char *sha1, const char *path)
 static char *buildpath(const char *base, int baselen, const char *path)
 {
 	if (path[0])
-		return fmt("%.*s%s/", baselen, base, path);
+		return fmtalloc("%.*s%s/", baselen, base, path);
 	else
-		return fmt("%.*s/", baselen, base);
+		return fmtalloc("%.*s/", baselen, base);
 }
 
 static void print_dir(const unsigned char *sha1, const char *base,
@@ -142,6 +142,7 @@ static void print_dir(const unsigned char *sha1, const char *base,
 				fullpath);
 		html("</li>\n");
 	}
+	free(fullpath);
 }
 
 static void print_dir_entry(const unsigned char *sha1, const char *base,
@@ -159,6 +160,7 @@ static void print_dir_entry(const unsigned char *sha1, const char *base,
 		cgit_plain_link(path, NULL, NULL, ctx.qry.head, ctx.qry.sha1,
 				fullpath);
 	html("</li>\n");
+	free(fullpath);
 }
 
 static void print_dir_tail(void)

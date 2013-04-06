@@ -129,14 +129,14 @@ static int ls_item(const unsigned char *sha1, const char *base, int baselen,
 {
 	struct walk_tree_context *walk_tree_ctx = cbdata;
 	char *name;
-	char *fullpath;
-	char *class;
+	struct strbuf fullpath = STRBUF_INIT;
+	struct strbuf class = STRBUF_INIT;
 	enum object_type type;
 	unsigned long size = 0;
 
 	name = xstrdup(pathname);
-	fullpath = fmt("%s%s%s", ctx.qry.path ? ctx.qry.path : "",
-		       ctx.qry.path ? "/" : "", name);
+	strbuf_addf(&fullpath, "%s%s%s", ctx.qry.path ? ctx.qry.path : "",
+		    ctx.qry.path ? "/" : "", name);
 
 	if (!S_ISGITLINK(mode)) {
 		type = sha1_object_info(sha1, &size);
@@ -152,33 +152,34 @@ static int ls_item(const unsigned char *sha1, const char *base, int baselen,
 	cgit_print_filemode(mode);
 	html("</td><td>");
 	if (S_ISGITLINK(mode)) {
-		cgit_submodule_link("ls-mod", fullpath, sha1_to_hex(sha1));
+		cgit_submodule_link("ls-mod", fullpath.buf, sha1_to_hex(sha1));
 	} else if (S_ISDIR(mode)) {
 		cgit_tree_link(name, NULL, "ls-dir", ctx.qry.head,
-			       walk_tree_ctx->curr_rev, fullpath);
+			       walk_tree_ctx->curr_rev, fullpath.buf);
 	} else {
-		class = strrchr(name, '.');
-		if (class != NULL) {
-			class = fmt("ls-blob %s", class + 1);
-		} else
-			class = "ls-blob";
-		cgit_tree_link(name, NULL, class, ctx.qry.head,
-			       walk_tree_ctx->curr_rev, fullpath);
+		char *ext = strrchr(name, '.');
+		strbuf_addstr(&class, "ls-blob");
+		if (ext)
+			strbuf_addf(&class, " %s", ext + 1);
+		cgit_tree_link(name, NULL, class.buf, ctx.qry.head,
+			       walk_tree_ctx->curr_rev, fullpath.buf);
 	}
 	htmlf("</td><td class='ls-size'>%li</td>", size);
 
 	html("<td>");
 	cgit_log_link("log", NULL, "button", ctx.qry.head,
-		      walk_tree_ctx->curr_rev, fullpath, 0, NULL, NULL,
+		      walk_tree_ctx->curr_rev, fullpath.buf, 0, NULL, NULL,
 		      ctx.qry.showmsg);
 	if (ctx.repo->max_stats)
 		cgit_stats_link("stats", NULL, "button", ctx.qry.head,
-				fullpath);
+				fullpath.buf);
 	if (!S_ISGITLINK(mode))
 		cgit_plain_link("plain", NULL, "button", ctx.qry.head,
-				walk_tree_ctx->curr_rev, fullpath);
+				walk_tree_ctx->curr_rev, fullpath.buf);
 	html("</td></tr>\n");
 	free(name);
+	strbuf_release(&fullpath);
+	strbuf_release(&class);
 	return 0;
 }
 

@@ -243,15 +243,19 @@ static void print_commit(struct commit *commit, struct rev_info *revs)
 	cgit_free_commitinfo(info);
 }
 
-static const char *disambiguate_ref(const char *ref)
+static const char *disambiguate_ref(const char *ref, int *must_free_result)
 {
 	unsigned char sha1[20];
-	const char *longref;
+	struct strbuf longref = STRBUF_INIT;
 
-	longref = fmt("refs/heads/%s", ref);
-	if (get_sha1(longref, sha1) == 0)
-		return longref;
+	strbuf_addf(&longref, "refs/heads/%s", ref);
+	if (get_sha1(longref.buf, sha1) == 0) {
+		*must_free_result = 1;
+		return strbuf_detach(&longref, NULL);
+	}
 
+	*must_free_result = 0;
+	strbuf_release(&longref);
 	return ref;
 }
 
@@ -284,24 +288,26 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 	struct commit *commit;
 	struct vector vec = VECTOR_INIT(char *);
 	int i, columns = commit_graph ? 4 : 3;
-	char *arg;
+	int must_free_tip = 0;
+	struct strbuf argbuf = STRBUF_INIT;
 
 	/* First argv is NULL */
 	vector_push(&vec, NULL, 0);
 
 	if (!tip)
 		tip = ctx.qry.head;
-	tip = disambiguate_ref(tip);
+	tip = disambiguate_ref(tip, &must_free_tip);
 	vector_push(&vec, &tip, 0);
 
 	if (grep && pattern && *pattern) {
 		pattern = xstrdup(pattern);
 		if (!strcmp(grep, "grep") || !strcmp(grep, "author") ||
 		    !strcmp(grep, "committer")) {
-			arg = fmt("--%s=%s", grep, pattern);
-			vector_push(&vec, &arg, 0);
+			strbuf_addf(&argbuf, "--%s=%s", grep, pattern);
+			vector_push(&vec, &argbuf.buf, 0);
 		}
 		if (!strcmp(grep, "range")) {
+			char *arg;
 			/* Split the pattern at whitespace and add each token
 			 * as a revision expression. Do not accept other
 			 * rev-list options. Also, replace the previously
@@ -336,8 +342,8 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 	}
 
 	if (path) {
-		arg = "--";
-		vector_push(&vec, &arg, 0);
+		static const char *double_dash_arg = "--";
+		vector_push(&vec, &double_dash_arg, 0);
 		vector_push(&vec, &path, 0);
 	}
 
@@ -430,4 +436,9 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 			      ctx.qry.vpath, 0, NULL, NULL, ctx.qry.showmsg);
 		html("</td></tr>\n");
 	}
+
+	/* If we allocated tip then it is safe to cast away const. */
+	if (must_free_tip)
+		free((char*) tip);
+	strbuf_release(&argbuf);
 }

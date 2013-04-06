@@ -33,7 +33,7 @@ static time_t read_agefile(char *path)
 
 static int get_repo_modtime(const struct cgit_repo *repo, time_t *mtime)
 {
-	char *path;
+	struct strbuf path = STRBUF_INIT;
 	struct stat s;
 	struct cgit_repo *r = (struct cgit_repo *)repo;
 
@@ -41,32 +41,36 @@ static int get_repo_modtime(const struct cgit_repo *repo, time_t *mtime)
 		*mtime = repo->mtime;
 		return 1;
 	}
-	path = fmt("%s/%s", repo->path, ctx.cfg.agefile);
-	if (stat(path, &s) == 0) {
-		*mtime = read_agefile(path);
+	strbuf_addf(&path, "%s/%s", repo->path, ctx.cfg.agefile);
+	if (stat(path.buf, &s) == 0) {
+		*mtime = read_agefile(path.buf);
 		if (*mtime) {
 			r->mtime = *mtime;
-			return 1;
+			goto end;
 		}
 	}
 
-	path = fmt("%s/refs/heads/%s", repo->path, repo->defbranch ?
-		   repo->defbranch : "master");
-	if (stat(path, &s) == 0) {
+	strbuf_reset(&path);
+	strbuf_addf(&path, "%s/refs/heads/%s", repo->path,
+		    repo->defbranch ? repo->defbranch : "master");
+	if (stat(path.buf, &s) == 0) {
 		*mtime = s.st_mtime;
 		r->mtime = *mtime;
-		return 1;
+		goto end;
 	}
 
-	path = fmt("%s/%s", repo->path, "packed-refs");
-	if (stat(path, &s) == 0) {
+	strbuf_reset(&path);
+	strbuf_addf(&path, "%s/%s", repo->path, "packed-refs");
+	if (stat(path.buf, &s) == 0) {
 		*mtime = s.st_mtime;
 		r->mtime = *mtime;
-		return 1;
+		goto end;
 	}
 
 	*mtime = 0;
 	r->mtime = *mtime;
+end:
+	strbuf_release(&path);
 	return (r->mtime != 0);
 }
 

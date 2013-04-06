@@ -62,7 +62,7 @@ const char *cgit_hosturl()
 		return NULL;
 	if (!ctx.env.server_port || atoi(ctx.env.server_port) == 80)
 		return ctx.env.server_name;
-	return xstrdup(fmt("%s:%s", ctx.env.server_name, ctx.env.server_port));
+	return fmtalloc("%s:%s", ctx.env.server_name, ctx.env.server_port);
 }
 
 const char *cgit_rooturl()
@@ -75,31 +75,30 @@ const char *cgit_rooturl()
 
 char *cgit_repourl(const char *reponame)
 {
-	if (ctx.cfg.virtual_root) {
-		return fmt("%s%s/", ctx.cfg.virtual_root, reponame);
-	} else {
-		return fmt("?r=%s", reponame);
-	}
+	if (ctx.cfg.virtual_root)
+		return fmtalloc("%s%s/", ctx.cfg.virtual_root, reponame);
+	else
+		return fmtalloc("?r=%s", reponame);
 }
 
 char *cgit_fileurl(const char *reponame, const char *pagename,
 		   const char *filename, const char *query)
 {
-	char *tmp;
+	struct strbuf sb = STRBUF_INIT;
 	char *delim;
 
 	if (ctx.cfg.virtual_root) {
-		tmp = fmt("%s%s/%s/%s", ctx.cfg.virtual_root, reponame,
-			  pagename, (filename ? filename:""));
+		strbuf_addf(&sb, "%s%s/%s/%s", ctx.cfg.virtual_root, reponame,
+			    pagename, (filename ? filename:""));
 		delim = "?";
 	} else {
-		tmp = fmt("?url=%s/%s/%s", reponame, pagename,
-			  (filename ? filename : ""));
+		strbuf_addf(&sb, "?url=%s/%s/%s", reponame, pagename,
+			    (filename ? filename : ""));
 		delim = "&amp;";
 	}
 	if (query)
-		tmp = fmt("%s%s%s", tmp, delim, query);
-	return tmp;
+		strbuf_addf(&sb, "%s%s", delim, query);
+	return strbuf_detach(&sb, NULL);
 }
 
 char *cgit_pageurl(const char *reponame, const char *pagename,
@@ -548,21 +547,21 @@ void cgit_submodule_link(const char *class, char *path, const char *rev)
 		htmlf("class='%s' ", class);
 	html("href='");
 	if (item) {
-		html_attr(fmt(item->util, rev));
+		html_attrf(item->util, rev);
 	} else if (ctx.repo->module_link) {
 		dir = strrchr(path, '/');
 		if (dir)
 			dir++;
 		else
 			dir = path;
-		html_attr(fmt(ctx.repo->module_link, dir, rev));
+		html_attrf(ctx.repo->module_link, dir, rev);
 	} else {
 		html("#");
 	}
 	html("'>");
 	html_txt(path);
 	html("</a>");
-	html_txt(fmt(" @ %.7s", rev));
+	html_txtf(" @ %.7s", rev);
 	if (item && tail)
 		path[len - 1] = tail;
 }
@@ -678,12 +677,16 @@ void cgit_print_docstart(struct cgit_context *ctx)
 		html("'/>\n");
 	}
 	if (host && ctx->repo && ctx->qry.head) {
+		struct strbuf sb = STRBUF_INIT;
+		strbuf_addf(&sb, "h=%s", ctx->qry.head);
+
 		html("<link rel='alternate' title='Atom feed' href='");
 		html(cgit_httpscheme());
 		html_attr(cgit_hosturl());
 		html_attr(cgit_fileurl(ctx->repo->url, "atom", ctx->qry.vpath,
-				       fmt("h=%s", ctx->qry.head)));
+				       sb.buf));
 		html("' type='application/atom+xml'/>\n");
+		strbuf_release(&sb);
 	}
 	if (ctx->cfg.head_include)
 		html_include(ctx->cfg.head_include);
@@ -725,13 +728,14 @@ static int print_branch_option(const char *refname, const unsigned char *sha1,
 void cgit_add_hidden_formfields(int incl_head, int incl_search,
 				const char *page)
 {
-	char *url;
-
 	if (!ctx.cfg.virtual_root) {
-		url = fmt("%s/%s", ctx.qry.repo, page);
+		struct strbuf url = STRBUF_INIT;
+
+		strbuf_addf(&url, "%s/%s", ctx.qry.repo, page);
 		if (ctx.qry.vpath)
-			url = fmt("%s/%s", url, ctx.qry.vpath);
-		html_hidden("url", url);
+			strbuf_addf(&url, "/%s", ctx.qry.vpath);
+		html_hidden("url", url.buf);
+		strbuf_release(&url);
 	}
 
 	if (incl_head && ctx.qry.head && ctx.repo->defbranch &&
@@ -926,20 +930,23 @@ void cgit_print_snapshot_links(const char *repo, const char *head,
 			       const char *hex, int snapshots)
 {
 	const struct cgit_snapshot_format* f;
-	char *prefix;
-	char *filename;
+	struct strbuf filename = STRBUF_INIT;
+	size_t prefixlen;
 	unsigned char sha1[20];
 
 	if (get_sha1(fmt("refs/tags/%s", hex), sha1) == 0 &&
 	    (hex[0] == 'v' || hex[0] == 'V') && isdigit(hex[1]))
 		hex++;
-	prefix = xstrdup(fmt("%s-%s", cgit_repobasename(repo), hex));
+	strbuf_addf(&filename, "%s-%s", cgit_repobasename(repo), hex);
+	prefixlen = filename.len;
 	for (f = cgit_snapshot_formats; f->suffix; f++) {
 		if (!(snapshots & f->bit))
 			continue;
-		filename = fmt("%s%s", prefix, f->suffix);
-		cgit_snapshot_link(filename, NULL, NULL, NULL, NULL, filename);
+		strbuf_setlen(&filename, prefixlen);
+		strbuf_addstr(&filename, f->suffix);
+		cgit_snapshot_link(filename.buf, NULL, NULL, NULL, NULL,
+				   filename.buf);
 		html("<br/>");
 	}
-	free(prefix);
+	strbuf_release(&filename);
 }

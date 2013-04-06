@@ -15,14 +15,33 @@
 static int write_archive_type(const char *format, const char *hex, const char *prefix)
 {
 	struct argv_array argv = ARGV_ARRAY_INIT;
+	const char **nargv;
+	int result;
 	argv_array_push(&argv, "snapshot");
 	argv_array_push(&argv, format);
 	if (prefix) {
+		struct strbuf buf = STRBUF_INIT;
+		strbuf_addstr(&buf, prefix);
+		strbuf_addch(&buf, '/');
 		argv_array_push(&argv, "--prefix");
-		argv_array_push(&argv, fmt("%s/", prefix));
+		argv_array_push(&argv, buf.buf);
+		strbuf_release(&buf);
 	}
 	argv_array_push(&argv, hex);
-	return write_archive(argv.argc, argv.argv, NULL, 1, NULL, 0);
+	/*
+	 * Now we need to copy the pointers to arguments into a new
+	 * structure because write_archive will rearrange its arguments
+	 * which may result in duplicated/missing entries causing leaks
+	 * or double-frees in argv_array_clear.
+	 */
+	nargv = xmalloc(sizeof(char *) * (argv.argc + 1));
+	/* argv_array guarantees a trailing NULL entry. */
+	memcpy(nargv, argv.argv, sizeof(char *) * (argv.argc + 1));
+
+	result = write_archive(argv.argc, nargv, NULL, 1, NULL, 0);
+	argv_array_clear(&argv);
+	free(nargv);
+	return result;
 }
 
 static int write_tar_archive(const char *hex, const char *prefix)
@@ -129,29 +148,36 @@ static const char *get_ref_from_filename(const char *url, const char *filename,
 {
 	const char *reponame;
 	unsigned char sha1[20];
-	char *snapshot;
+	struct strbuf snapshot = STRBUF_INIT;
+	int result = 1;
 
-	snapshot = xstrdup(filename);
-	snapshot[strlen(snapshot) - strlen(format->suffix)] = '\0';
+	strbuf_addstr(&snapshot, filename);
+	strbuf_setlen(&snapshot, snapshot.len - strlen(format->suffix));
 
-	if (get_sha1(snapshot, sha1) == 0)
-		return snapshot;
+	if (get_sha1(snapshot.buf, sha1) == 0)
+		goto out;
 
 	reponame = cgit_repobasename(url);
-	if (prefixcmp(snapshot, reponame) == 0) {
-		snapshot += strlen(reponame);
-		while (snapshot && (*snapshot == '-' || *snapshot == '_'))
-			snapshot++;
+	if (prefixcmp(snapshot.buf, reponame) == 0) {
+		const char *new_start = snapshot.buf;
+		new_start += strlen(reponame);
+		while (new_start && (*new_start == '-' || *new_start == '_'))
+			new_start++;
+		strbuf_splice(&snapshot, 0, new_start - snapshot.buf, "", 0);
 	}
 
-	if (get_sha1(snapshot, sha1) == 0)
-		return snapshot;
+	if (get_sha1(snapshot.buf, sha1) == 0)
+		goto out;
 
-	snapshot = fmt("v%s", snapshot);
-	if (get_sha1(snapshot, sha1) == 0)
-		return snapshot;
+	strbuf_insert(&snapshot, 0, "v", 1);
+	if (get_sha1(snapshot.buf, sha1) == 0)
+		goto out;
 
-	return NULL;
+	result = 0;
+	strbuf_release(&snapshot);
+
+out:
+	return result ? strbuf_detach(&snapshot, NULL) : NULL;
 }
 
 __attribute__((format (printf, 1, 2)))
