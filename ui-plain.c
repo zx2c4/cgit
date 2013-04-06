@@ -95,7 +95,7 @@ static int print_object(const unsigned char *sha1, const char *path)
 		else
 			ctx.page.mimetype = "text/plain";
 	}
-	ctx.page.filename = fmt("%s", path);
+	ctx.page.filename = path;
 	ctx.page.size = size;
 	ctx.page.etag = sha1_to_hex(sha1);
 	cgit_print_http_headers(&ctx);

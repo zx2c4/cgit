@@ -96,9 +96,9 @@ static void add_repo(const char *base, const char *path, repo_config_fn fn)
 		return;
 
 	if (base == path)
-		rel = xstrdup(fmt("%s", path));
+		rel = xstrdup(path);
 	else
-		rel = xstrdup(fmt("%s", path + strlen(base) + 1));
+		rel = xstrdup(path + strlen(base) + 1);
 
 	if (!strcmp(rel + strlen(rel) - 5, "/.git"))
 		rel[strlen(rel) - 5] = '\0';
