@@ -1,13 +1,22 @@
 #ifndef HTML_H
 #define HTML_H
 
-#include <stddef.h>
+#include "cgit.h"
 
 extern void html_raw(const char *txt, size_t size);
 extern void html(const char *txt);
 
 __attribute__((format (printf,1,2)))
 extern void htmlf(const char *format,...);
+
+__attribute__((format (printf,1,2)))
+extern void html_txtf(const char *format,...);
+
+__attribute__((format (printf,1,0)))
+extern void html_vtxtf(const char *format, va_list ap);
+
+__attribute__((format (printf,1,2)))
+extern void html_attrf(const char *format,...);
 
 extern void html_status(int code, const char *msg, int more_headers);
 extern void html_txt(const char *txt);

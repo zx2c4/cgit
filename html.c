@@ -63,6 +63,18 @@ char *fmt(const char *format, ...)
 	return buf[bufidx];
 }
 
+char *fmtalloc(const char *format, ...)
+{
+	struct strbuf sb = STRBUF_INIT;
+	va_list args;
+
+	va_start(args, format);
+	strbuf_vaddf(&sb, format, args);
+	va_end(args);
+
+	return strbuf_detach(&sb, NULL);
+}
+
 void html_raw(const char *data, size_t size)
 {
 	if (write(htmlfd, data, size) != size)
@@ -76,13 +88,35 @@ void html(const char *txt)
 
 void htmlf(const char *format, ...)
 {
-	static char buf[65536];
+	va_list args;
+	struct strbuf buf = STRBUF_INIT;
+
+	va_start(args, format);
+	strbuf_vaddf(&buf, format, args);
+	va_end(args);
+	html(buf.buf);
+	strbuf_release(&buf);
+}
+
+void html_txtf(const char *format, ...)
+{
 	va_list args;
 
 	va_start(args, format);
-	vsnprintf(buf, sizeof(buf), format, args);
+	html_vtxtf(format, args);
 	va_end(args);
-	html(buf);
+}
+
+void html_vtxtf(const char *format, va_list ap)
+{
+	va_list cp;
+	struct strbuf buf = STRBUF_INIT;
+
+	va_copy(cp, ap);
+	strbuf_vaddf(&buf, format, cp);
+	va_end(cp);
+	html_txt(buf.buf);
+	strbuf_release(&buf);
 }
 
 void html_status(int code, const char *msg, int more_headers)
@@ -134,6 +168,19 @@ void html_ntxt(int len, const char *txt)
 		html_raw(txt, t - txt);
 	if (len < 0)
 		html("...");
+}
+
+void html_attrf(const char *fmt, ...)
+{
+	va_list ap;
+	struct strbuf sb = STRBUF_INIT;
+
+	va_start(ap, fmt);
+	strbuf_vaddf(&sb, fmt, ap);
+	va_end(ap);
+
+	html_attr(sb.buf);
+	strbuf_release(&sb);
 }
 
 void html_attr(const char *txt)

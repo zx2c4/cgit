@@ -327,6 +327,9 @@ extern void cgit_diff_commit(struct commit *commit, filepair_fn fn,
 __attribute__((format (printf,1,2)))
 extern char *fmt(const char *format,...);
 
+__attribute__((format (printf,1,2)))
+extern char *fmtalloc(const char *format,...);
+
 extern struct commitinfo *cgit_parse_commit(struct commit *commit);
 extern struct taginfo *cgit_parse_tag(struct tag *tag);
 extern void cgit_parse_url(const char *url);
