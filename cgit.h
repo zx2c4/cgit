@@ -245,13 +245,13 @@ struct cgit_page {
 	time_t modified;
 	time_t expires;
 	size_t size;
-	char *mimetype;
-	char *charset;
-	char *filename;
-	char *etag;
-	char *title;
+	const char *mimetype;
+	const char *charset;
+	const char *filename;
+	const char *etag;
+	const char *title;
 	int status;
-	char *statusmsg;
+	const char *statusmsg;
 };
 
 struct cgit_environment {
