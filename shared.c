@@ -130,6 +130,12 @@ char *ensure_end(const char *str, char c)
 	return result;
 }
 
+void strbuf_ensure_end(struct strbuf *sb, char c)
+{
+	if (!sb->len || sb->buf[sb->len - 1] != c)
+		strbuf_addch(sb, c);
+}
+
 char *strlpart(char *txt, int maxlen)
 {
 	char *result;
