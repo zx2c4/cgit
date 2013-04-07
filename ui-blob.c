@@ -80,7 +80,7 @@ void cgit_print_blob(const char *hex, char *path, const char *head)
 	struct commit *commit;
 	struct pathspec_item path_items = {
 		.match = path,
-		.len = strlen(path)
+		.len = path ? strlen(path) : 0
 	};
 	struct pathspec paths = {
 		.nr = 1,
