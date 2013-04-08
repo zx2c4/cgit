@@ -15,13 +15,48 @@
 # run_test 'repo index' 'cgit_url "/" | tidy -e'
 # run_test 'repo summary' 'cgit_url "/foo" | tidy -e'
 
+# We don't want to run Git commands through Valgrind, so we filter out the
+# --valgrind option here and handle it ourselves.  We copy the arguments
+# assuming that none contain a newline, although other whitespace is
+# preserved.
+LF='
+'
+test_argv=
+
+while test $# != 0
+do
+	case "$1" in
+	--va|--val|--valg|--valgr|--valgri|--valgrin|--valgrind)
+		cgit_valgrind=t
+		test_argv="$test_argv${LF}--verbose"
+		;;
+	*)
+		test_argv="$test_argv$LF$1"
+		;;
+	esac
+	shift
+done
+
+OLDIFS=$IFS
+IFS=$LF
+set -- $test_argv
+IFS=$OLDIFS
+
 : ${TEST_DIRECTORY=$(pwd)/../git/t}
 : ${TEST_OUTPUT_DIRECTORY=$(pwd)}
 TEST_NO_CREATE_REPO=YesPlease
 . "$TEST_DIRECTORY"/test-lib.sh
 
 # Prepend the directory containing cgit to PATH.
-PATH="$(pwd)/../..:$PATH"
+if test -n "$cgit_valgrind"
+then
+	GIT_VALGRIND="$TEST_DIRECTORY/valgrind"
+	CGIT_VALGRIND=$(cd ../valgrind && pwd)
+	PATH="$CGIT_VALGRIND/bin:$PATH"
+	export GIT_VALGRIND CGIT_VALGRIND
+else
+	PATH="$(pwd)/../..:$PATH"
+fi
 
 mkrepo() {
 	name=$1

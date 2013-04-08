@@ -1,0 +1,12 @@
+#!/bin/sh
+
+# Note that we currently use Git's suppression file and there are variables
+# $GIT_VALGRIND and $CGIT_VALGRIND which point to different places.
+exec valgrind -q --error-exitcode=126 \
+	--suppressions="$GIT_VALGRIND/default.supp" \
+	--gen-suppressions=all \
+	--leak-check=no \
+	--track-origins=yes \
+	--log-fd=4 \
+	--input-fd=4 \
+	"$CGIT_VALGRIND/../../cgit" "$@"
