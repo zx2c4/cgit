@@ -25,7 +25,7 @@ test_expect_success 'verify gzip format' '
 
 test_expect_success 'untar' '
 	rm -rf master &&
-	tar -xf master.tar.gz
+	tar -xzf master.tar.gz
 '
 
 test_expect_success 'count files' '
