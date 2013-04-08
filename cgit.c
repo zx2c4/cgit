@@ -459,12 +459,36 @@ static char *guess_defbranch(void)
 
 static int prepare_repo_cmd(struct cgit_context *ctx)
 {
+	char *user_home;
+	char *xdg_home;
 	unsigned char sha1[20];
 	int nongit = 0;
 	int rc;
 
+	/* The path to the git repository. */
 	setenv("GIT_DIR", ctx->repo->path, 1);
+
+	/* Do not look in /etc/ for gitconfig and gitattributes. */
+	setenv("GIT_CONFIG_NOSYSTEM", "1", 1);
+	setenv("GIT_ATTR_NOSYSTEM", "1", 1);
+
+	/* We unset HOME and XDG_CONFIG_HOME before calling the git setup function
+	 * so that we don't make unneccessary filesystem accesses. */
+	user_home = getenv("HOME");
+	xdg_home = getenv("XDG_CONFIG_HOME");
+	unsetenv("HOME");
+	unsetenv("XDG_CONFIG_HOME");
+
+	/* Setup the git directory and initialize the notes system. Both of these
+	 * load local configuration from the git repository, so we do them both while
+	 * the HOME variables are unset. */
 	setup_git_directory_gently(&nongit);
+	init_display_notes(NULL);
+
+	/* We restore the unset variables afterward. */
+	setenv("HOME", user_home, 1);
+	setenv("XDG_CONFIG_HOME", xdg_home, 1);
+
 	if (nongit) {
 		const char *name = ctx->repo->name;
 		rc = errno;

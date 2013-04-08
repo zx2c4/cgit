@@ -403,7 +403,6 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 		commit->parents = NULL;
 	}
 
-	init_display_notes(NULL);
 	for (i = 0; i < cnt && (commit = get_revision(&rev)) != NULL; i++) {
 		print_commit(commit, &rev);
 		free(commit->buffer);
