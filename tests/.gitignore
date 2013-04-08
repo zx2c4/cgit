@@ -1,2 +1,2 @@
-trash
-test-output.log
+trash\ directory.t*
+test-results

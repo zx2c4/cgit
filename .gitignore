@@ -1,5 +1,5 @@
 # Files I don't care to see in git-status/commit
-cgit
+/cgit
 cgit.conf
 CGIT-CFLAGS
 VERSION
