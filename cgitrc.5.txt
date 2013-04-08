@@ -40,6 +40,11 @@ agefile::
 	function in libgit. Recommended timestamp-format is "yyyy-mm-dd
 	hh:mm:ss". Default value: "info/web/last-modified".
 
+branch-sort::
+	Flag which, when set to "age", enables date ordering in the branch ref
+	list, and when set to "name" enables ordering by branch name. Default
+	value: "name".
+
 cache-root::
 	Path used to store the cgit cache entries. Default value:
 	"/var/cache/cgit". See also: "MACRO EXPANSION".
@@ -91,6 +96,12 @@ commit-filter::
 	command will be included verbatim as the commit message, i.e. this can
 	be used to implement bugtracker integration. Default value: none.
 	See also: "FILTER API".
+
+commit-sort::
+	Flag which, when set to "date", enables strict date ordering in the
+	commit log, and when set to "topo" enables strict topological
+	ordering. If unset, the default ordering of "git log" is used. Default
+	value: unset.
 
 css::
 	Url which specifies the css document to include in all cgit pages.
@@ -196,12 +207,6 @@ local-time::
 	Flag which, if set to "1", makes cgit print commit and tag times in the
 	servers timezone. Default value: "0".
 
-commit-sort::
-	Flag which, when set to "date", enables strict date ordering in the
-	commit log, and when set to "topo" enables strict topological
-	ordering. If unset, the default ordering of "git log" is used. Default
-	value: unset.
-
 logo::
 	Url which specifies the source of an image which will be used as a logo
 	on all cgit pages. Default value: "/cgit.png".
@@ -299,6 +304,12 @@ repo.group::
 	Legacy alias for "section". This option is deprecated and will not be
 	supported in cgit-1.0.
 
+repository-sort::
+	The way in which repositories in each section are sorted. Valid values
+	are "name" for sorting by the repo name or "age" for sorting by the
+	most recently updated repository. Default value: "name". See also:
+	section, case-sensitive-sort, section-sort.
+
 robots::
 	Text used as content for the "robots" meta-tag. Default value:
 	"index, nofollow".
@@ -338,12 +349,6 @@ section::
 	The name of the current repository section - all repositories defined
 	after this option will inherit the current section name. Default value:
 	none.
-
-repository-sort::
-	The way in which repositories in each section are sorted. Valid values
-	are "name" for sorting by the repo name or "age" for sorting by the
-	most recently updated repository. Default value: "name". See also:
-	section, case-sensitive-sort, section-sort.
 
 section-sort::
 	Flag which, when set to "1", will sort the sections on the repository
@@ -409,6 +414,11 @@ repo.about-filter::
 	Override the default about-filter. Default value: none. See also:
 	"enable-filter-overrides". See also: "FILTER API".
 
+repo.branch-sort::
+	Flag which, when set to "age", enables date ordering in the branch ref
+	list, and when set to "name" enables ordering by branch name. Default
+	value: "name".
+
 repo.clone-url::
 	A list of space-separated urls which can be used to clone this repo.
 	Default value: none. See also: "MACRO EXPANSION".
@@ -416,6 +426,12 @@ repo.clone-url::
 repo.commit-filter::
 	Override the default commit-filter. Default value: none. See also:
 	"enable-filter-overrides". See also: "FILTER API".
+
+repo.commit-sort::
+	Flag which, when set to "date", enables strict date ordering in the
+	commit log, and when set to "topo" enables strict topological
+	ordering. If unset, the default ordering of "git log" is used. Default
+	value: unset.
 
 repo.defbranch::
 	The name of the default branch for this repository. If no such branch
@@ -445,12 +461,6 @@ repo.enable-remote-branches::
 repo.enable-subject-links::
 	A flag which can be used to override the global setting
 	`enable-subject-links'. Default value: none.
-
-repo.commit-sort::
-	Flag which, when set to "date", enables strict date ordering in the
-	commit log, and when set to "topo" enables strict topological
-	ordering. If unset, the default ordering of "git log" is used. Default
-	value: unset.
 
 repo.logo::
 	Url which specifies the source of an image which will be used as a logo

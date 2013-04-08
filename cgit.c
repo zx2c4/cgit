@@ -84,7 +84,12 @@ static void repo_config(struct cgit_repo *repo, const char *name, const char *va
 		repo->enable_remote_branches = atoi(value);
 	else if (!strcmp(name, "enable-subject-links"))
 		repo->enable_subject_links = atoi(value);
-	else if (!strcmp(name, "commit-sort")) {
+	else if (!strcmp(name, "branch-sort")) {
+		if (!strcmp(value, "age"))
+			repo->branch_sort = 1;
+		if (!strcmp(value, "name"))
+			repo->branch_sort = 0;
+	} else if (!strcmp(name, "commit-sort")) {
 		if (!strcmp(value, "date"))
 			repo->commit_sort = 1;
 		if (!strcmp(value, "topo"))
@@ -271,6 +276,11 @@ static void config_cb(const char *name, const char *value)
 			ctx.cfg.commit_sort = 1;
 		if (!strcmp(value, "topo"))
 			ctx.cfg.commit_sort = 2;
+	} else if (!strcmp(name, "branch-sort")) {
+		if (!strcmp(value, "age"))
+			ctx.cfg.branch_sort = 1;
+		if (!strcmp(value, "name"))
+			ctx.cfg.branch_sort = 0;
 	} else if (!prefixcmp(name, "mimetype."))
 		add_mimetype(name + 9, value);
 	else if (!strcmp(name, "include"))
@@ -345,6 +355,8 @@ static void prepare_context(struct cgit_context *ctx)
 	ctx->cfg.cache_scanrc_ttl = 15;
 	ctx->cfg.cache_static_ttl = -1;
 	ctx->cfg.case_sensitive_sort = 1;
+	ctx->cfg.branch_sort = 0;
+	ctx->cfg.commit_sort = 0;
 	ctx->cfg.css = "/cgit.css";
 	ctx->cfg.logo = "/cgit.png";
 	ctx->cfg.local_time = 0;

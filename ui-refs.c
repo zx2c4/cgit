@@ -197,10 +197,9 @@ void cgit_print_branches(int maxcount)
 	if (maxcount == 0 || maxcount > list.count)
 		maxcount = list.count;
 
-	if (maxcount < list.count) {
-		qsort(list.refs, list.count, sizeof(*list.refs), cmp_branch_age);
+	qsort(list.refs, list.count, sizeof(*list.refs), cmp_branch_age);
+	if (ctx.repo->branch_sort == 0)
 		qsort(list.refs, maxcount, sizeof(*list.refs), cmp_ref_name);
-	}
 
 	for (i = 0; i < maxcount; i++)
 		print_branch(list.refs[i]);
