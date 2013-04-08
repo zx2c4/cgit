@@ -195,9 +195,8 @@ static void print_commit(struct commit *commit, struct rev_info *revs)
 				strbuf_addstr(&msgbuf, info->msg);
 				strbuf_addch(&msgbuf, '\n');
 			}
-			format_note(NULL, commit->object.sha1, &msgbuf,
-			            PAGE_ENCODING,
-			            NOTES_SHOW_HEADER | NOTES_INDENT);
+			format_display_notes(commit->object.sha1,
+					     &msgbuf, PAGE_ENCODING, 0);
 			strbuf_addch(&msgbuf, '\n');
 			strbuf_ltrim(&msgbuf);
 		}
@@ -397,6 +396,7 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 		commit->parents = NULL;
 	}
 
+	init_display_notes(NULL);
 	for (i = 0; i < cnt && (commit = get_revision(&rev)) != NULL; i++) {
 		print_commit(commit, &rev);
 		free(commit->buffer);
