@@ -54,21 +54,27 @@ test_expect_success 'strip off the header lines (zip)' '
 	tail -n +6 tmp >master.zip
 '
 
-test_expect_success 'verify zip format' '
+if test -n "$(which unzip 2>/dev/null)"; then
+	test_set_prereq UNZIP
+else
+	say 'Skipping ZIP validation tests: unzip not found'
+fi
+
+test_expect_success UNZIP 'verify zip format' '
 	unzip -t master.zip
 '
 
-test_expect_success 'unzip' '
+test_expect_success UNZIP 'unzip' '
 	rm -rf master &&
 	unzip master.zip
 '
 
-test_expect_success 'count files (zip)' '
+test_expect_success UNZIP 'count files (zip)' '
 	ls master/ >output &&
 	test_line_count = 5 output
 '
 
-test_expect_success 'verify unzipped file-5' '
+test_expect_success UNZIP 'verify unzipped file-5' '
 	grep "^5$" master/file-5 &&
 	test_line_count = 1 master/file-5
 '
