@@ -8,8 +8,8 @@ test_url()
 {
 	tidy_opt="-eq"
 	test -z "$NO_TIDY_WARNINGS" || tidy_opt+=" --show-warnings no"
-	cgit_url "$1" >tidy-$test_count || return
-	sed -ie "1,4d" tidy-$test_count || return
+	cgit_url "$1" >tidy-$test_count.tmp || return
+	sed -e "1,4d" tidy-$test_count.tmp >tidy-$test_count || return
 	"$tidy" $tidy_opt tidy-$test_count
 	rc=$?
 

@@ -6,7 +6,8 @@ test_description='Validate cache'
 test_expect_success 'verify cache-size=0' '
 
 	rm -f cache/* &&
-	sed -i -e "s/cache-size=1021$/cache-size=0/" cgitrc &&
+	sed -e "s/cache-size=1021$/cache-size=0/" cgitrc >cgitrc.tmp &&
+	mv -f cgitrc.tmp cgitrc &&
 	cgit_url "" &&
 	cgit_url "foo" &&
 	cgit_url "foo/refs" &&
@@ -27,7 +28,8 @@ test_expect_success 'verify cache-size=0' '
 test_expect_success 'verify cache-size=1' '
 
 	rm -f cache/* &&
-	sed -i -e "s/cache-size=0$/cache-size=1/" cgitrc &&
+	sed -e "s/cache-size=0$/cache-size=1/" cgitrc >cgitrc.tmp &&
+	mv -f cgitrc.tmp cgitrc &&
 	cgit_url "" &&
 	cgit_url "foo" &&
 	cgit_url "foo/refs" &&
@@ -48,7 +50,8 @@ test_expect_success 'verify cache-size=1' '
 test_expect_success 'verify cache-size=1021' '
 
 	rm -f cache/* &&
-	sed -i -e "s/cache-size=1$/cache-size=1021/" cgitrc &&
+	sed -e "s/cache-size=1$/cache-size=1021/" cgitrc >cgitrc.tmp &&
+	mv -f cgitrc.tmp cgitrc &&
 	cgit_url "" &&
 	cgit_url "foo" &&
 	cgit_url "foo/refs" &&
