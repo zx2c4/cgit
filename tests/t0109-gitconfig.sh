@@ -18,7 +18,7 @@ test_expect_success 'no access to $HOME' '
 		-E HOME="$non_existant_path" \
 		-E CGIT_CONFIG="$PWD/cgitrc" \
 		-E QUERY_STRING="url=foo/commit" \
-		-e access -f -o strace.out cgit
+		-e access -f -o strace.out cgit &&
 	test_must_fail grep "$non_existant_path" strace.out
 '
 
