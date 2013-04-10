@@ -140,8 +140,8 @@ static int make_snapshot(const struct cgit_snapshot_format *format,
  * repo_basename(), we strip the basename and any following '-' and '_'
  * characters ("cgit-0.7.2" -> "0.7.2") and check the resulting name once
  * more. If this still isn't a valid commit object name, we check if pre-
- * pending a 'v' to the remaining snapshot name ("0.7.2" -> "v0.7.2") gives
- * us something valid.
+ * pending a 'v' or a 'V' to the remaining snapshot name ("0.7.2" ->
+ * "v0.7.2") gives us something valid.
  */
 static const char *get_ref_from_filename(const char *url, const char *filename,
 					 const struct cgit_snapshot_format *format)
@@ -170,6 +170,10 @@ static const char *get_ref_from_filename(const char *url, const char *filename,
 		goto out;
 
 	strbuf_insert(&snapshot, 0, "v", 1);
+	if (get_sha1(snapshot.buf, sha1) == 0)
+		goto out;
+
+	strbuf_splice(&snapshot, 0, 1, "V", 1);
 	if (get_sha1(snapshot.buf, sha1) == 0)
 		goto out;
 
