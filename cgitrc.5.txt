@@ -163,11 +163,12 @@ enable-tree-linenumbers::
 enable-git-config::
 	Flag which, when set to "1", will allow cgit to use git config to set
 	any repo specific settings. This option is used in conjunction with
-	"scan-path" to augment repo-specific settings. The keys gitweb.owner,
-	gitweb.category, and gitweb.description will map to the cgit keys
-	repo.owner, repo.section, and repo.desc, respectivly. All git config
-	keys that begin with "cgit." will be mapped to the corresponding "repo."
-	key in cgit. Default value: "0". See also: scan-path, section-from-path.
+	"scan-path", and must be defined prior, to augment repo-specific
+	settings. The keys gitweb.owner, gitweb.category, and gitweb.description
+	will map to the cgit keys repo.owner, repo.section, and repo.desc,
+	respectivly. All git config keys that begin with "cgit." will be mapped
+	to the corresponding "repo." key in cgit. Default value: "0". See also:
+	scan-path, section-from-path.
 
 favicon::
 	Url used as link to a shortcut icon for cgit. If specified, it is
@@ -293,7 +294,8 @@ readme::
 remove-suffix::
 	If set to "1" and scan-path is enabled, if any repositories are found
 	with a suffix of ".git", this suffix will be removed for the url and
-	name. Default value: "0". See also: scan-path.
+	name. This must be defined prior to scan-path. Default value: "0".
+	See also: scan-path.
 
 renamelimit::
 	Maximum number of files to consider when detecting renames. The value
@@ -357,7 +359,7 @@ section-sort::
 	case-sensitive-sort, repository-sort.
 
 section-from-path::
-	A number which, if specified before scan-path, specifies how many
+	A number which, if defined prior to scan-path, specifies how many
 	path elements from each repo path to use as a default section name.
 	If negative, cgit will discard the specified number of path elements
 	above the repo directory. Default value: "0".
@@ -396,8 +398,8 @@ strict-export::
 	Filename which, if specified, needs to be present within the repository
 	for cgit to allow access to that repository. This can be used to emulate
 	gitweb's EXPORT_OK and STRICT_EXPORT functionality and limit cgit's
-	repositories to match those exported by git-daemon. This option MUST come
-	before 'scan-path'.
+	repositories to match those exported by git-daemon. This option must
+	be defined prior to scan-path.
 
 virtual-root::
 	Url which, if specified, will be used as root for all cgit links. It
