@@ -486,8 +486,10 @@ static int prepare_repo_cmd(struct cgit_context *ctx)
 	init_display_notes(NULL);
 
 	/* We restore the unset variables afterward. */
-	setenv("HOME", user_home, 1);
-	setenv("XDG_CONFIG_HOME", xdg_home, 1);
+	if (user_home)
+		setenv("HOME", user_home, 1);
+	if (xdg_home)
+		setenv("XDG_CONFIG_HOME", xdg_home, 1);
 
 	if (nongit) {
 		const char *name = ctx->repo->name;
