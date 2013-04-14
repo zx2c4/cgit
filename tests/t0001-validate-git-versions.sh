@@ -13,7 +13,7 @@ test_expect_success 'extract Git version from Makefile' '
 
 test_expect_success 'test Git version matches Makefile' '
 	( cat ../../git/GIT-VERSION-FILE || echo "No GIT-VERSION-FILE" ) |
-	sed -e "s/GIT_VERSION[ 	]*=[ 	]*//" >git_version &&
+	sed -e "s/GIT_VERSION[ 	]*=[ 	]*//" -e "s/\\.dirty$//" >git_version &&
 	test_cmp git_version makefile_version
 '
 
