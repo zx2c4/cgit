@@ -16,6 +16,7 @@
 # run_test 'repo summary' 'cgit_url "/foo" | tidy -e'
 
 : ${TEST_DIRECTORY=$(pwd)/../git/t}
+: ${TEST_OUTPUT_DIRECTORY=$(pwd)}
 TEST_NO_CREATE_REPO=YesPlease
 . "$TEST_DIRECTORY"/test-lib.sh
 
