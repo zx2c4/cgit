@@ -113,6 +113,8 @@ static void add_repo(const char *base, struct strbuf *path, repo_config_fn fn)
 
 	if (!strcmp(rel.buf + rel.len - 5, "/.git"))
 		strbuf_setlen(&rel, rel.len - 5);
+	else if (rel.len && rel.buf[rel.len - 1] == '/')
+		strbuf_setlen(&rel, rel.len - 1);
 
 	repo = cgit_add_repo(rel.buf);
 	config_fn = fn;
