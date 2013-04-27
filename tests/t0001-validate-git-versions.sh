@@ -11,10 +11,15 @@ test_expect_success 'extract Git version from Makefile' '
 	}" ../../Makefile >makefile_version
 '
 
+# Note that Git's GIT-VERSION-GEN script applies "s/-/./g" to the version
+# string to produce the internal version in the GIT-VERSION-FILE, so we
+# must apply the same transformation to the version in the Makefile before
+# comparing them.
 test_expect_success 'test Git version matches Makefile' '
 	( cat ../../git/GIT-VERSION-FILE || echo "No GIT-VERSION-FILE" ) |
 	sed -e "s/GIT_VERSION[ 	]*=[ 	]*//" -e "s/\\.dirty$//" >git_version &&
-	test_cmp git_version makefile_version
+	sed -e "s/-/./g" makefile_version >makefile_git_version &&
+	test_cmp git_version makefile_git_version
 '
 
 test_expect_success 'test submodule version matches Makefile' '
