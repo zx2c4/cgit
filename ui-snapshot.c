@@ -16,6 +16,7 @@ static int write_archive_type(const char *format, const char *hex, const char *p
 {
 	struct argv_array argv = ARGV_ARRAY_INIT;
 	const char **nargv;
+	char *user_home, *xdg_home;
 	int result;
 	argv_array_push(&argv, "snapshot");
 	argv_array_push(&argv, format);
@@ -38,7 +39,15 @@ static int write_archive_type(const char *format, const char *hex, const char *p
 	/* argv_array guarantees a trailing NULL entry. */
 	memcpy(nargv, argv.argv, sizeof(char *) * (argv.argc + 1));
 
+	user_home = getenv("HOME");
+	xdg_home = getenv("XDG_CONFIG_HOME");
+	unsetenv("HOME");
+	unsetenv("XDG_CONFIG_HOME");
 	result = write_archive(argv.argc, nargv, NULL, 1, NULL, 0);
+	if (user_home)
+		setenv("HOME", user_home, 1);
+	if (xdg_home)
+		setenv("XDG_CONFIG_HOME", xdg_home, 1);
 	argv_array_clear(&argv);
 	free(nargv);
 	return result;

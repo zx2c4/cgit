@@ -37,5 +37,6 @@ test_no_home_access_success foo/tree/file-1
 test_no_home_access_success foo/commit
 test_no_home_access_success foo/diff
 test_no_home_access_success foo/patch
+test_no_home_access_success foo/snapshot/master.tar.gz
 
 test_done
