@@ -22,7 +22,7 @@ test_no_home_access () {
 	test_must_fail grep "$non_existant_path" strace.out
 }
 
-function test_no_home_access_success() {
+test_no_home_access_success() {
 	test_expect_success "do not access \$HOME: $1" "
 		test_no_home_access '$1'
 	"
