@@ -3,15 +3,16 @@ cgit quick facts
 
  * web interface ([cgi][]) for [git][] repositories, written in [C][]
  * licensed under [GPLv2][]
- * discussions, patches etc. goes to the [list][] ([archive][], [gmane][]).
+ * discussions, patches etc. goes to the [list][] ([signup][], [archive][], [gmane][]).
  * common questions are answered in the [faq][].
 
 [cgi]:     http://www.ietf.org/rfc/rfc3875.txt
 [git]:     http://git-scm.org
 [C]:       http://en.wikipedia.org/wiki/C_%28programming_language%29
 [GPLv2]:   http://www.gnu.org/licenses/gpl-2.0.html
-[list]:    mailto:cgit@hjemli.net
-[archive]: http://hjemli.net/pipermail/cgit/
+[list]:    mailto:cgit@lists.zx2c4.com
+[signup]:  http://lists.zx2c4.com/mailman/listinfo/cgit
+[archive]: http://lists.zx2c4.com/pipermail/cgit/
 [gmane]:   http://dir.gmane.org/gmane.comp.version-control.cgit
 [faq]:     faq
 
@@ -35,7 +36,7 @@ source code
 -----------
  * download current or past [releases][]
  * clone the repo using the http protocol:
-   * git clone http://git.zx2c4.com/cgit
+   * git clone git://git.zx2c4.com/cgit
  * see the [README][] for build instructions
 
 [releases]: /cgit/refs/tags
