@@ -78,7 +78,7 @@ char *fmtalloc(const char *format, ...)
 void html_raw(const char *data, size_t size)
 {
 	if (write(htmlfd, data, size) != size)
-		fprintf(stderr, "[html.c] html output truncated.\n");
+		die_errno("write error on html output");
 }
 
 void html(const char *txt)
