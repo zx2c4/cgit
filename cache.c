@@ -316,6 +316,7 @@ int cache_process(int size, const char *path, const char *key, int ttl,
 	struct strbuf filename = STRBUF_INIT;
 	struct strbuf lockname = STRBUF_INIT;
 	struct cache_slot slot;
+	int result;
 
 	/* If the cache is disabled, just generate the content */
 	if (size <= 0) {
@@ -343,11 +344,15 @@ int cache_process(int size, const char *path, const char *key, int ttl,
 	slot.fn = fn;
 	slot.cbdata = cbdata;
 	slot.ttl = ttl;
-	slot.cache_name = strbuf_detach(&filename, NULL);
-	slot.lock_name = strbuf_detach(&lockname, NULL);
+	slot.cache_name = filename.buf;
+	slot.lock_name = lockname.buf;
 	slot.key = key;
 	slot.keylen = strlen(key);
-	return process_slot(&slot);
+	result = process_slot(&slot);
+
+	strbuf_release(&filename);
+	strbuf_release(&lockname);
+	return result;
 }
 
 /* Return a strftime formatted date/time
@@ -393,6 +398,7 @@ int cache_ls(const char *path)
 			continue;
 		strbuf_setlen(&fullname, prefixlen);
 		strbuf_addstr(&fullname, ent->d_name);
+		slot.cache_name = fullname.buf;
 		if ((err = open_slot(&slot)) != 0) {
 			cache_log("[cgit] unable to open path %s: %s (%d)\n",
 				  fullname.buf, strerror(err), err);
@@ -406,8 +412,8 @@ int cache_ls(const char *path)
 		       slot.buf);
 		close_slot(&slot);
 	}
-	slot.cache_name = strbuf_detach(&fullname, NULL);
 	closedir(dir);
+	strbuf_release(&fullname);
 	return 0;
 }
 
