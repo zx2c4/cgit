@@ -64,12 +64,10 @@ endif
 all:: cgit
 
 cgit:
-	$(QUIET_SUBDIR0)git $(QUIET_SUBDIR1) -f ../cgit.mk ../cgit NO_CURL=1
+	$(QUIET_SUBDIR0)git $(QUIET_SUBDIR1) -f ../cgit.mk ../cgit $(EXTRA_GIT_TARGETS) NO_CURL=1
 
-git:
-	$(QUIET_SUBDIR0)git $(QUIET_SUBDIR1) NO_CURL=1
-
-test: all git
+test:
+	@$(MAKE) --no-print-directory cgit EXTRA_GIT_TARGETS=all
 	$(QUIET_SUBDIR0)tests $(QUIET_SUBDIR1) all
 
 install: all
