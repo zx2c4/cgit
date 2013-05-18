@@ -15,21 +15,21 @@ struct cgit_context ctx;
 int chk_zero(int result, char *msg)
 {
 	if (result != 0)
-		die("%s: %s", msg, strerror(errno));
+		die_errno("%s", msg);
 	return result;
 }
 
 int chk_positive(int result, char *msg)
 {
 	if (result <= 0)
-		die("%s: %s", msg, strerror(errno));
+		die_errno("%s", msg);
 	return result;
 }
 
 int chk_non_negative(int result, char *msg)
 {
 	if (result < 0)
-		die("%s: %s", msg, strerror(errno));
+		die_errno("%s", msg);
 	return result;
 }
 
@@ -468,8 +468,7 @@ int cgit_open_filter(struct cgit_filter *filter)
 		chk_non_negative(dup2(filter->pipe_fh[0], STDIN_FILENO),
 			"Unable to use pipe as STDIN");
 		execvp(filter->cmd, filter->argv);
-		die("Unable to exec subprocess %s: %s (%d)", filter->cmd,
-			strerror(errno), errno);
+		die_errno("Unable to exec subprocess %s", filter->cmd);
 	}
 	close(filter->pipe_fh[0]);
 	chk_non_negative(dup2(filter->pipe_fh[1], STDOUT_FILENO),
