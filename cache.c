@@ -15,6 +15,7 @@
 
 #include "cgit.h"
 #include "cache.h"
+#include "html.h"
 
 #define CACHE_BUFSIZE (1024 * 4)
 
@@ -404,12 +405,12 @@ int cache_ls(const char *path)
 				  fullname.buf, strerror(err), err);
 			continue;
 		}
-		printf("%s %s %10"PRIuMAX" %s\n",
-		       fullname.buf,
-		       sprintftime("%Y-%m-%d %H:%M:%S",
-				   slot.cache_st.st_mtime),
-		       (uintmax_t)slot.cache_st.st_size,
-		       slot.buf);
+		htmlf("%s %s %10"PRIuMAX" %s\n",
+		      fullname.buf,
+		      sprintftime("%Y-%m-%d %H:%M:%S",
+				  slot.cache_st.st_mtime),
+		      (uintmax_t)slot.cache_st.st_size,
+		      slot.buf);
 		close_slot(&slot);
 	}
 	closedir(dir);

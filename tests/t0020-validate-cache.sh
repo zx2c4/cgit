@@ -66,7 +66,13 @@ test_expect_success 'verify cache-size=1021' '
 	cgit_url "bar/diff" &&
 	cgit_url "bar/patch" &&
 	ls cache >output &&
-	test_line_count = 13 output
+	test_line_count = 13 output &&
+	cgit_url "foo/ls_cache" >output.full &&
+	strip_headers <output.full >output &&
+	test_line_count = 13 output &&
+	# Check that ls_cache output is cached correctly
+	cgit_url "foo/ls_cache" >output.second &&
+	test_cmp output.full output.second
 '
 
 test_done
