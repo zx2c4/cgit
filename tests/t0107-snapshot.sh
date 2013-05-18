@@ -16,7 +16,7 @@ test_expect_success 'check html headers' '
 '
 
 test_expect_success 'strip off the header lines' '
-	tail -n +6 tmp > master.tar.gz
+	strip_headers <tmp >master.tar.gz
 '
 
 test_expect_success 'verify gzip format' '
@@ -51,7 +51,7 @@ test_expect_success 'check HTML headers (zip)' '
 '
 
 test_expect_success 'strip off the header lines (zip)' '
-	tail -n +6 tmp >master.zip
+	strip_headers <tmp >master.zip
 '
 
 if test -n "$(which unzip 2>/dev/null)"; then

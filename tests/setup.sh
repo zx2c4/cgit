@@ -98,4 +98,12 @@ cgit_url()
 	CGIT_CONFIG="$PWD/cgitrc" QUERY_STRING="url=$1" cgit
 }
 
+strip_headers () {
+	while read -r line
+	do
+		test -z "$line" && break
+	done
+	cat
+}
+
 test -z "$CGIT_TEST_NO_CREATE_REPOS" && setup_repos
