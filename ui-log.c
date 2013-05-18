@@ -61,6 +61,7 @@ void show_commit_decorations(struct commit *commit)
 
 	buf[sizeof(buf) - 1] = 0;
 	deco = lookup_decoration(&name_decoration, &commit->object);
+	html("<span class='decoration'>");
 	while (deco) {
 		if (!prefixcmp(deco->name, "refs/heads/")) {
 			strncpy(buf, deco->name + 11, sizeof(buf) - 1);
@@ -94,6 +95,7 @@ void show_commit_decorations(struct commit *commit)
 next:
 		deco = deco->next;
 	}
+	html("</span>");
 }
 
 static void print_commit(struct commit *commit, struct rev_info *revs)
