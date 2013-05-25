@@ -542,9 +542,11 @@ config files, e.g. "repo.desc" becomes "desc".
 FILTER API
 ----------
 about filter::
-	This filter is given no arguments. The about text that is to be
-	filtered is available on standard input and the filtered text is
-	expected on standard output.
+	This filter is given a single parameter: the filename of the source
+	file to filter. The filter can use the filename to determine (for
+	example) the type of syntax to follow when formatting the readme file.
+	The about text that is to be filtered is available on standard input
+	and the filtered text is expected on standard output.
 
 commit filter::
 	This filter is given no arguments. The commit message text that is to

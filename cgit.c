@@ -37,10 +37,10 @@ static struct cgit_filter *new_filter(const char *cmd, filter_type filtertype)
 
 	switch (filtertype) {
 		case SOURCE:
+		case ABOUT:
 			extra_args = 1;
 			break;
 
-		case ABOUT:
 		case COMMIT:
 		default:
 			extra_args = 0;

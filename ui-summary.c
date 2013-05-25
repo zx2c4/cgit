@@ -98,6 +98,7 @@ void cgit_print_summary()
 void cgit_print_repo_readme(char *path)
 {
 	char *slash, *tmp, *colon, *ref;
+	int free_filename = 0;
 
 	if (!ctx.repo->readme || !(*ctx.repo->readme))
 		return;
@@ -134,6 +135,7 @@ void cgit_print_repo_readme(char *path)
 				return;
 			slash = colon;
 		}
+		free_filename = 1;
 		tmp = xmalloc(slash - ctx.repo->readme + 1 + strlen(path) + 1);
 		strncpy(tmp, ctx.repo->readme, slash - ctx.repo->readme + 1);
 		strcpy(tmp + (slash - ctx.repo->readme + 1), path);
@@ -144,13 +146,19 @@ void cgit_print_repo_readme(char *path)
 	 * filesystem, while applying the about-filter.
 	 */
 	html("<div id='summary'>");
-	if (ctx.repo->about_filter)
+	if (ctx.repo->about_filter) {
+		ctx.repo->about_filter->argv[1] = tmp;
 		cgit_open_filter(ctx.repo->about_filter);
+	}
 	if (ref)
 		cgit_print_file(tmp, ref);
 	else
 		html_include(tmp);
-	if (ctx.repo->about_filter)
+	if (ctx.repo->about_filter) {
 		cgit_close_filter(ctx.repo->about_filter);
+		ctx.repo->about_filter->argv[1] = NULL;
+	}
 	html("</div>");
+	if (free_filename)
+		free(tmp);
 }
