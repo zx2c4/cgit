@@ -29,9 +29,10 @@ GLOBAL SETTINGS
 about-filter::
 	Specifies a command which will be invoked to format the content of
 	about pages (both top-level and for each repository). The command will
-	get the content of the about-file on its STDIN, and the STDOUT from the
-	command will be included verbatim on the about page. Default value:
-	none. See also: "FILTER API".
+	get the content of the about-file on its STDIN, the name of the file
+	as the first argument, and the STDOUT from the command will be
+	included verbatim on the about page. Default value: none. See
+	also: "FILTER API".
 
 agefile::
 	Specifies a path, relative to each repository path, which can be used
@@ -288,8 +289,9 @@ project-list::
 	EXPANSION".
 
 readme::
-	Text which will be used as default value for "repo.readme". Default
-	value: none.
+	Text which will be used as default value for "repo.readme". Multiple
+	files may be specified, separated by a space, and cgit will use the
+	first found file in this list. Default value: none.
 
 remove-suffix::
 	If set to "1" and scan-path is enabled, if any repositories are found
@@ -507,7 +509,10 @@ repo.readme::
 	git refspec by head or by hash by prepending the refspec followed by
 	a colon. For example, "master:docs/readme.mkd". If the value begins
 	with a colon, i.e. ":docs/readme.rst", the default branch of the
-	repository will be used. Default value: <readme>.
+	repository will be used. Sharing any file will expose that entire
+	directory tree to the "/about/PATH" endpoints, so be sure that there
+	are no non-public files located in the same directory as the readme
+	file. Default value: <readme>.
 
 repo.snapshots::
 	A mask of allowed snapshot-formats for this repo, restricted by the
