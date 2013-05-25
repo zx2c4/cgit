@@ -678,6 +678,20 @@ static void print_repo(FILE *f, struct cgit_repo *repo)
 	if (repo->max_stats != ctx.cfg.max_stats)
 		fprintf(f, "repo.max-stats=%s\n",
 		        cgit_find_stats_periodname(repo->max_stats));
+	if (repo->logo)
+		fprintf(f, "repo.logo=%s\n", repo->logo);
+	if (repo->logo_link)
+		fprintf(f, "repo.logo-link=%s\n", repo->logo_link);
+	fprintf(f, "repo.enable-remote-branches=%d\n", repo->enable_remote_branches);
+	fprintf(f, "repo.enable-subject-links=%d\n", repo->enable_subject_links);
+	if (repo->branch_sort == 1)
+		fprintf(f, "repo.branch-sort=age\n");
+	if (repo->commit_sort) {
+		if (repo->commit_sort == 1)
+			fprintf(f, "repo.commit-sort=date\n");
+		else if (repo->commit_sort == 2)
+			fprintf(f, "repo.commit-sort=topo\n");
+	}
 	fprintf(f, "\n");
 }
 
