@@ -99,6 +99,7 @@ void cgit_print_summary()
 void cgit_parse_readme(const char *readme, const char *path, char **filename, char **ref, struct cgit_repo *repo)
 {
 	const char *slash, *colon;
+	char *resolved_base, *resolved_full;
 
 	*filename = NULL;
 	*ref = NULL;
@@ -133,7 +134,19 @@ void cgit_parse_readme(const char *readme, const char *path, char **filename, ch
 		}
 		*filename = xmalloc(slash - readme + 1 + strlen(path) + 1);
 		strncpy(*filename, readme, slash - readme + 1);
+		if (!(*ref))
+			resolved_base = realpath(*filename, NULL);
 		strcpy(*filename + (slash - readme + 1), path);
+		if (!(*ref))
+			resolved_full = realpath(*filename, NULL);
+		if (!(*ref) && (!resolved_base || !resolved_full || strstr(resolved_full, resolved_base) != resolved_full)) {
+			free(*filename);
+			*filename = NULL;
+		}
+		if (!(*ref)) {
+			free(resolved_base);
+			free(resolved_full);
+		}
 	} else
 		*filename = xstrdup(readme);
 }
@@ -142,6 +155,9 @@ void cgit_print_repo_readme(char *path)
 {
 	char *filename, *ref;
 	cgit_parse_readme(ctx.repo->readme, path, &filename, &ref, ctx.repo);
+
+	if (!filename)
+		return;
 
 	/* Print the calculated readme, either from the git repo or from the
 	 * filesystem, while applying the about-filter.
