@@ -13,7 +13,7 @@
 #include "ui-shared.h"
 
 struct walk_tree_context {
-	char *match_path;
+	const char *match_path;
 	unsigned char *matched_sha1;
 	int found_path;
 };
@@ -29,6 +29,32 @@ static int walk_tree(const unsigned char *sha1, const char *base, int baselen,
 	memmove(walk_tree_ctx->matched_sha1, sha1, 20);
 	walk_tree_ctx->found_path = 1;
 	return 0;
+}
+
+int cgit_ref_path_exists(const char *path, const char *ref)
+{
+        unsigned char sha1[20];
+        unsigned long size;
+        struct pathspec_item path_items = {
+                .match = path,
+                .len = strlen(path)
+        };
+        struct pathspec paths = {
+                .nr = 1,
+                .items = &path_items
+        };
+        struct walk_tree_context walk_tree_ctx = {
+                .match_path = path,
+                .matched_sha1 = sha1,
+                .found_path = 0
+        };
+
+        if (get_sha1(ref, sha1))
+                return 0;
+        if (sha1_object_info(sha1, &size) != OBJ_COMMIT) 
+                return 0;
+        read_tree_recursive(lookup_commit_reference(sha1)->tree, "", 0, 0, &paths, walk_tree, &walk_tree_ctx);
+        return walk_tree_ctx.found_path;
 }
 
 int cgit_print_file(char *path, const char *head)

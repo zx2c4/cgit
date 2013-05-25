@@ -14,6 +14,8 @@
 #include "html.h"
 #include "ui-shared.h"
 #include "ui-stats.h"
+#include "ui-blob.h"
+#include "ui-summary.h"
 #include "scan-tree.h"
 
 const char *cgit_version = CGIT_VERSION;
@@ -469,6 +471,38 @@ static char *guess_defbranch(void)
 	return xstrdup(ref + 11);
 }
 
+static void choose_readme(struct cgit_repo *repo)
+{
+	char *entry, *filename, *ref;
+
+	/* If there's no space, we skip the possibly expensive
+	 * selection process. */
+	if (!repo->readme || !strchr(repo->readme, ' '))
+		return;
+
+	for (entry = strtok(repo->readme, " "); entry; entry = strtok(NULL, " ")) {
+		cgit_parse_readme(entry, NULL, &filename, &ref, repo);
+		if (!(*filename)) {
+			free(filename);
+			free(ref);
+			continue;
+		}
+		if (*ref && cgit_ref_path_exists(filename, ref)) {
+			free(filename);
+			free(ref);
+			break;
+		}
+		if (!access(filename, R_OK)) {
+			free(filename);
+			free(ref);
+			break;
+		}
+		free(filename);
+		free(ref);
+	}
+	repo->readme = entry;
+}
+
 static int prepare_repo_cmd(struct cgit_context *ctx)
 {
 	unsigned char sha1[20];
@@ -537,6 +571,7 @@ static int prepare_repo_cmd(struct cgit_context *ctx)
 	}
 	sort_string_list(&ctx->repo->submodules);
 	cgit_prepare_repo_env(ctx->repo);
+	choose_readme(ctx->repo);
 	return 0;
 }
 

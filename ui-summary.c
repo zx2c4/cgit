@@ -95,70 +95,71 @@ void cgit_print_summary()
 	html("</table>");
 }
 
-void cgit_print_repo_readme(char *path)
+/* The caller must free filename and ref after calling this. */
+void cgit_parse_readme(const char *readme, const char *path, char **filename, char **ref, struct cgit_repo *repo)
 {
-	char *slash, *tmp, *colon, *ref;
-	int free_filename = 0;
+	const char *slash, *colon;
 
-	if (!ctx.repo->readme || !(*ctx.repo->readme))
+	*filename = NULL;
+	*ref = NULL;
+
+	if (!readme || !(*readme))
 		return;
 
-	ref = NULL;
-
 	/* Check if the readme is tracked in the git repo. */
-	colon = strchr(ctx.repo->readme, ':');
+	colon = strchr(readme, ':');
 	if (colon && strlen(colon) > 1) {
-		*colon = '\0';
 		/* If it starts with a colon, we want to use
 		 * the default branch */
-		if (colon == ctx.repo->readme && ctx.repo->defbranch)
-			ref = ctx.repo->defbranch;
+		if (colon == readme && repo->defbranch)
+			*ref = xstrdup(repo->defbranch);
 		else
-			ref = ctx.repo->readme;
-		ctx.repo->readme = colon + 1;
-		if (!(*ctx.repo->readme))
-			return;
+			*ref = xstrndup(readme, colon - readme);
+		readme = colon + 1;
 	}
 
 	/* Prepend repo path to relative readme path unless tracked. */
-	if (!ref && *ctx.repo->readme != '/')
-		ctx.repo->readme = fmtalloc("%s/%s", ctx.repo->path,
-						ctx.repo->readme);
+	if (!(*ref) && *readme != '/')
+		readme = fmtalloc("%s/%s", repo->path, readme);
 
 	/* If a subpath is specified for the about page, make it relative
-	 * to the directory containing the configured readme.
-	 */
+	 * to the directory containing the configured readme. */
 	if (path) {
-		slash = strrchr(ctx.repo->readme, '/');
+		slash = strrchr(readme, '/');
 		if (!slash) {
 			if (!colon)
 				return;
 			slash = colon;
 		}
-		free_filename = 1;
-		tmp = xmalloc(slash - ctx.repo->readme + 1 + strlen(path) + 1);
-		strncpy(tmp, ctx.repo->readme, slash - ctx.repo->readme + 1);
-		strcpy(tmp + (slash - ctx.repo->readme + 1), path);
+		*filename = xmalloc(slash - readme + 1 + strlen(path) + 1);
+		strncpy(*filename, readme, slash - readme + 1);
+		strcpy(*filename + (slash - readme + 1), path);
 	} else
-		tmp = ctx.repo->readme;
+		*filename = xstrdup(readme);
+}
+
+void cgit_print_repo_readme(char *path)
+{
+	char *filename, *ref;
+	cgit_parse_readme(ctx.repo->readme, path, &filename, &ref, ctx.repo);
 
 	/* Print the calculated readme, either from the git repo or from the
 	 * filesystem, while applying the about-filter.
 	 */
 	html("<div id='summary'>");
 	if (ctx.repo->about_filter) {
-		ctx.repo->about_filter->argv[1] = tmp;
+		ctx.repo->about_filter->argv[1] = filename;
 		cgit_open_filter(ctx.repo->about_filter);
 	}
 	if (ref)
-		cgit_print_file(tmp, ref);
+		cgit_print_file(filename, ref);
 	else
-		html_include(tmp);
+		html_include(filename);
 	if (ctx.repo->about_filter) {
 		cgit_close_filter(ctx.repo->about_filter);
 		ctx.repo->about_filter->argv[1] = NULL;
 	}
 	html("</div>");
-	if (free_filename)
-		free(tmp);
+	free(filename);
+	free(ref);
 }
