@@ -108,7 +108,12 @@ void cgit_print_repo_readme(char *path)
 	colon = strchr(ctx.repo->readme, ':');
 	if (colon && strlen(colon) > 1) {
 		*colon = '\0';
-		ref = ctx.repo->readme;
+		/* If it starts with a colon, we want to use
+		 * the default branch */
+		if (colon == ctx.repo->readme && ctx.repo->defbranch)
+			ref = ctx.repo->defbranch;
+		else
+			ref = ctx.repo->readme;
 		ctx.repo->readme = colon + 1;
 		if (!(*ctx.repo->readme))
 			return;

@@ -505,7 +505,9 @@ repo.readme::
 	A path (relative to <repo.path>) which specifies a file to include
 	verbatim as the "About" page for this repo. You may also specify a
 	git refspec by head or by hash by prepending the refspec followed by
-	a colon. For example, "master:docs/readme.mkd" Default value: <readme>.
+	a colon. For example, "master:docs/readme.mkd". If the value begins
+	with a colon, i.e. ":docs/readme.rst", the default branch of the
+	repository will be used. Default value: <readme>.
 
 repo.snapshots::
 	A mask of allowed snapshot-formats for this repo, restricted by the
