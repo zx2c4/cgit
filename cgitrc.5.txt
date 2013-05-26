@@ -290,8 +290,9 @@ project-list::
 
 readme::
 	Text which will be used as default value for "repo.readme". Multiple
-	files may be specified, separated by a space, and cgit will use the
-	first found file in this list. Default value: none.
+	config keys may be specified, and cgit will use the first found file
+	in this list. This is useful in conjunction with scan-path. Default
+	value: none. See also: scan-path, repo.readme.
 
 remove-suffix::
 	If set to "1" and scan-path is enabled, if any repositories are found

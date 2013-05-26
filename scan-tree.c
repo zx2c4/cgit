@@ -1,7 +1,7 @@
 /* scan-tree.c
  * 
  * Copyright (C) 2008-2009 Lars Hjemli
- * Copyright (C) 2010, 2012 Jason A. Donenfeld <Jason@zx2c4.com>
+ * Copyright (C) 2010-2013 Jason A. Donenfeld <Jason@zx2c4.com>
  *
  * Licensed under GNU General Public License v2
  *   (see COPYING for full license text)
@@ -147,12 +147,6 @@ static void add_repo(const char *base, struct strbuf *path, repo_config_fn fn)
 		strbuf_setlen(path, pathlen);
 	}
 
-	if (!repo->readme) {
-		strbuf_addstr(path, "README.html");
-		if (!stat(path->buf, &st))
-			repo->readme = "README.html";
-		strbuf_setlen(path, pathlen);
-	}
 	if (ctx.cfg.section_from_path) {
 		n  = ctx.cfg.section_from_path;
 		if (n > 0) {

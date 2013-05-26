@@ -73,7 +73,7 @@ struct cgit_repo {
 	char *owner;
 	char *defbranch;
 	char *module_link;
-	char *readme;
+	struct string_list readme;
 	char *section;
 	char *clone_url;
 	char *logo;
@@ -183,7 +183,7 @@ struct cgit_config {
 	char *mimetype_file;
 	char *module_link;
 	char *project_list;
-	char *readme;
+	struct string_list readme;
 	char *robots;
 	char *root_title;
 	char *root_desc;

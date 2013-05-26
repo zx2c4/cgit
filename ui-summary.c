@@ -1,7 +1,7 @@
 /* ui-summary.c: functions for generating repo summary page
  *
  * Copyright (C) 2006 Lars Hjemli
- * Copyright (C) 2010 Jason A. Donenfeld <Jason@zx2c4.com>
+ * Copyright (C) 2010-2013 Jason A. Donenfeld <Jason@zx2c4.com>
  *
  * Licensed under GNU General Public License v2
  *   (see COPYING for full license text)
@@ -13,6 +13,7 @@
 #include "ui-log.h"
 #include "ui-refs.h"
 #include "ui-blob.h"
+#include <libgen.h>
 
 static void print_url(char *base, char *suffix)
 {
@@ -95,69 +96,57 @@ void cgit_print_summary()
 	html("</table>");
 }
 
-/* The caller must free filename and ref after calling this. */
-void cgit_parse_readme(const char *readme, const char *path, char **filename, char **ref, struct cgit_repo *repo)
+/* The caller must free the return value. */
+static char* append_readme_path(const char *filename, const char *ref, const char *path)
 {
-	const char *slash, *colon;
-	char *resolved_base, *resolved_full;
-
-	*filename = NULL;
-	*ref = NULL;
-
-	if (!readme || !(*readme))
-		return;
-
-	/* Check if the readme is tracked in the git repo. */
-	colon = strchr(readme, ':');
-	if (colon && strlen(colon) > 1) {
-		/* If it starts with a colon, we want to use
-		 * the default branch */
-		if (colon == readme && repo->defbranch)
-			*ref = xstrdup(repo->defbranch);
-		else
-			*ref = xstrndup(readme, colon - readme);
-		readme = colon + 1;
-	}
-
-	/* Prepend repo path to relative readme path unless tracked. */
-	if (!(*ref) && *readme != '/')
-		readme = fmtalloc("%s/%s", repo->path, readme);
-
+	char *file, *base_dir, *full_path, *resolved_base = NULL, *resolved_full = NULL;
 	/* If a subpath is specified for the about page, make it relative
 	 * to the directory containing the configured readme. */
-	if (path) {
-		slash = strrchr(readme, '/');
-		if (!slash) {
-			if (!colon)
-				return;
-			slash = colon;
+
+	file = xstrdup(filename);
+	base_dir = dirname(file);
+	if (!strcmp(base_dir, ".") || !strcmp(base_dir, "..")) {
+		if (!ref) {
+			free(file);
+			return NULL;
 		}
-		*filename = xmalloc(slash - readme + 1 + strlen(path) + 1);
-		strncpy(*filename, readme, slash - readme + 1);
-		if (!(*ref))
-			resolved_base = realpath(*filename, NULL);
-		strcpy(*filename + (slash - readme + 1), path);
-		if (!(*ref))
-			resolved_full = realpath(*filename, NULL);
-		if (!(*ref) && (!resolved_base || !resolved_full || strstr(resolved_full, resolved_base) != resolved_full)) {
-			free(*filename);
-			*filename = NULL;
-		}
-		if (!(*ref)) {
-			free(resolved_base);
-			free(resolved_full);
-		}
+		full_path = xstrdup(path);
 	} else
-		*filename = xstrdup(readme);
+		full_path = fmtalloc("%s/%s", base_dir, path);
+	
+	if (!ref) {
+		resolved_base = realpath(base_dir, NULL);
+		resolved_full = realpath(full_path, NULL);
+		if (!resolved_base || !resolved_full || strncmp(resolved_base, resolved_full, strlen(resolved_base))) {
+			free(full_path);
+			full_path = NULL;
+		}
+	}
+
+	free(file);
+	free(resolved_base);
+	free(resolved_full);
+
+	return full_path;
 }
 
 void cgit_print_repo_readme(char *path)
 {
 	char *filename, *ref;
-	cgit_parse_readme(ctx.repo->readme, path, &filename, &ref, ctx.repo);
+	int free_filename = 0;
 
-	if (!filename)
+	if (ctx.repo->readme.nr == 0)
 		return;
+	
+	filename = ctx.repo->readme.items[0].string;
+	ref = ctx.repo->readme.items[0].util;
+
+	if (path) {
+		free_filename = 1;
+		filename = append_readme_path(filename, ref, path);
+		if (!filename)
+			return;
+	}
 
 	/* Print the calculated readme, either from the git repo or from the
 	 * filesystem, while applying the about-filter.
@@ -168,14 +157,15 @@ void cgit_print_repo_readme(char *path)
 		cgit_open_filter(ctx.repo->about_filter);
 	}
 	if (ref)
-		cgit_print_file(filename, ref);
+		cgit_print_file(filename, ref, 1);
 	else
 		html_include(filename);
 	if (ctx.repo->about_filter) {
 		cgit_close_filter(ctx.repo->about_filter);
 		ctx.repo->about_filter->argv[1] = NULL;
+	free(ref);
 	}
 	html("</div>");
-	free(filename);
-	free(ref);
+	if (free_filename)
+		free(filename);
 }

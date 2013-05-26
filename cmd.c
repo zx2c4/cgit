@@ -1,6 +1,7 @@
 /* cmd.c: the cgit command dispatcher
  *
  * Copyright (C) 2008 Lars Hjemli
+ * Copyright (C) 2013 Jason A. Donenfeld <Jason@zx2c4.com>.
  *
  * Licensed under GNU General Public License v2
  *   (see COPYING for full license text)
@@ -46,7 +47,7 @@ static void about_fn(struct cgit_context *ctx)
 
 static void blob_fn(struct cgit_context *ctx)
 {
-	cgit_print_blob(ctx->qry.sha1, ctx->qry.path, ctx->qry.head);
+	cgit_print_blob(ctx->qry.sha1, ctx->qry.path, ctx->qry.head, 0);
 }
 
 static void commit_fn(struct cgit_context *ctx)

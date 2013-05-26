@@ -864,7 +864,7 @@ void cgit_print_pageheader(struct cgit_context *ctx)
 		if (ctx->repo->max_stats)
 			cgit_stats_link("stats", NULL, hc(ctx, "stats"),
 					ctx->qry.head, ctx->qry.vpath);
-		if (ctx->repo->readme)
+		if (ctx->repo->readme.nr)
 			reporevlink("about", "about", NULL,
 				    hc(ctx, "about"), ctx->qry.head, NULL,
 				    NULL);

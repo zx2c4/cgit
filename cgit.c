@@ -1,7 +1,7 @@
 /* cgit.c: cgi for the git scm
  *
  * Copyright (C) 2006 Lars Hjemli
- * Copyright (C) 2010, 2012 Jason A. Donenfeld <Jason@zx2c4.com>
+ * Copyright (C) 2010-2013 Jason A. Donenfeld <Jason@zx2c4.com>
  *
  * Licensed under GNU General Public License v2
  *   (see COPYING for full license text)
@@ -101,13 +101,15 @@ static void repo_config(struct cgit_repo *repo, const char *name, const char *va
 	else if (!strcmp(name, "module-link"))
 		repo->module_link= xstrdup(value);
 	else if (!prefixcmp(name, "module-link.")) {
-		item = string_list_append(&repo->submodules, name + 12);
+		item = string_list_append(&repo->submodules, xstrdup(name + 12));
 		item->util = xstrdup(value);
 	} else if (!strcmp(name, "section"))
 		repo->section = xstrdup(value);
-	else if (!strcmp(name, "readme") && value != NULL)
-		repo->readme = xstrdup(value);
-	else if (!strcmp(name, "logo") && value != NULL)
+	else if (!strcmp(name, "readme") && value != NULL) {
+		if (repo->readme.items == ctx.cfg.readme.items)
+			memset(&repo->readme, 0, sizeof(repo->readme));
+		string_list_append(&repo->readme, xstrdup(value));
+	} else if (!strcmp(name, "logo") && value != NULL)
 		repo->logo = xstrdup(value);
 	else if (!strcmp(name, "logo-link") && value != NULL)
 		repo->logo_link = xstrdup(value);
@@ -131,8 +133,8 @@ static void config_cb(const char *name, const char *value)
 		ctx.repo->path = trim_end(value, '/');
 	else if (ctx.repo && !prefixcmp(name, "repo."))
 		repo_config(ctx.repo, name + 5, value);
-	else if (!strcmp(name, "readme"))
-		ctx.cfg.readme = xstrdup(value);
+	else if (!strcmp(name, "readme") && value != NULL)
+		string_list_append(&ctx.cfg.readme, xstrdup(value));
 	else if (!strcmp(name, "root-title"))
 		ctx.cfg.root_title = xstrdup(value);
 	else if (!strcmp(name, "root-desc"))
@@ -470,37 +472,76 @@ static char *guess_defbranch(void)
 		return "master";
 	return xstrdup(ref + 11);
 }
-
-static void choose_readme(struct cgit_repo *repo)
+/* The caller must free filename and ref after calling this. */
+static inline void parse_readme(const char *readme, char **filename, char **ref, struct cgit_repo *repo)
 {
-	char *entry, *filename, *ref;
+	const char *colon;
 
-	/* If there's no space, we skip the possibly expensive
-	 * selection process. */
-	if (!repo->readme || !strchr(repo->readme, ' '))
+	*filename = NULL;
+	*ref = NULL;
+
+	if (!readme || !readme[0])
 		return;
 
-	for (entry = strtok(repo->readme, " "); entry; entry = strtok(NULL, " ")) {
-		cgit_parse_readme(entry, NULL, &filename, &ref, repo);
-		if (!(*filename)) {
+	/* Check if the readme is tracked in the git repo. */
+	colon = strchr(readme, ':');
+	if (colon && strlen(colon) > 1) {
+		/* If it starts with a colon, we want to use
+		 * the default branch */
+		if (colon == readme && repo->defbranch)
+			*ref = xstrdup(repo->defbranch);
+		else
+			*ref = xstrndup(readme, colon - readme);
+		readme = colon + 1;
+	}
+
+	/* Prepend repo path to relative readme path unless tracked. */
+	if (!(*ref) && readme[0] != '/')
+		*filename = fmtalloc("%s/%s", repo->path, readme);
+	else
+		*filename = xstrdup(readme);
+}
+static void choose_readme(struct cgit_repo *repo)
+{
+	int found;
+	char *filename, *ref;
+	struct string_list_item *entry;
+
+	if (!repo->readme.nr)
+		return;
+
+	found = 0;
+	for_each_string_list_item(entry, &repo->readme) {
+		parse_readme(entry->string, &filename, &ref, repo);
+		if (!filename) {
 			free(filename);
 			free(ref);
 			continue;
 		}
-		if (*ref && cgit_ref_path_exists(filename, ref)) {
-			free(filename);
-			free(ref);
+		/* If there's only one item, we skip the possibly expensive
+		 * selection process. */
+		if (repo->readme.nr == 1) {
+			found = 1;
 			break;
 		}
-		if (!access(filename, R_OK)) {
-			free(filename);
-			free(ref);
+		if (ref) {
+			if (cgit_ref_path_exists(filename, ref, 1)) {
+				found = 1;
+				break;
+			}
+		}
+		else if (!access(filename, R_OK)) {
+			found = 1;
 			break;
 		}
 		free(filename);
 		free(ref);
 	}
-	repo->readme = entry;
+	repo->readme.strdup_strings = 1;
+	string_list_clear(&repo->readme, 0);
+	repo->readme.strdup_strings = 0;
+	if (found)
+		string_list_append(&repo->readme, filename)->util = ref;
 }
 
 static int prepare_repo_cmd(struct cgit_context *ctx)
@@ -660,6 +701,7 @@ static char *get_first_line(char *txt)
 
 static void print_repo(FILE *f, struct cgit_repo *repo)
 {
+	struct string_list_item *item;
 	fprintf(f, "repo.url=%s\n", repo->url);
 	fprintf(f, "repo.name=%s\n", repo->name);
 	fprintf(f, "repo.path=%s\n", repo->path);
@@ -670,8 +712,12 @@ static void print_repo(FILE *f, struct cgit_repo *repo)
 		fprintf(f, "repo.desc=%s\n", tmp);
 		free(tmp);
 	}
-	if (repo->readme)
-		fprintf(f, "repo.readme=%s\n", repo->readme);
+	for_each_string_list_item(item, &repo->readme) {
+		if (item->util)
+			fprintf(f, "repo.readme=%s:%s\n", (char *)item->util, item->string);
+		else
+			fprintf(f, "repo.readme=%s\n", item->string);
+	}
 	if (repo->defbranch)
 		fprintf(f, "repo.defbranch=%s\n", repo->defbranch);
 	if (repo->module_link)
