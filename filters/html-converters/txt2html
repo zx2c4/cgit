@@ -1,0 +1,4 @@
+#!/bin/sh
+echo "<pre>"
+cat
+echo "</pre>"

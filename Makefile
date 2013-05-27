@@ -17,6 +17,7 @@ SHA1_HEADER = <openssl/sha.h>
 GIT_VER = 1.8.3
 GIT_URL = https://git-core.googlecode.com/files/git-$(GIT_VER).tar.gz
 INSTALL = install
+COPYTREE = cp -r
 MAN5_TXT = $(wildcard *.5.txt)
 MAN_TXT  = $(MAN5_TXT)
 DOC_MAN5 = $(patsubst %.txt,%,$(MAN5_TXT))
@@ -77,7 +78,7 @@ install: all
 	$(INSTALL) -m 0644 cgit.css $(DESTDIR)$(CGIT_DATA_PATH)/cgit.css
 	$(INSTALL) -m 0644 cgit.png $(DESTDIR)$(CGIT_DATA_PATH)/cgit.png
 	$(INSTALL) -m 0755 -d $(DESTDIR)$(filterdir)
-	$(INSTALL) -m 0755 filters/* $(DESTDIR)$(filterdir)
+	$(COPYTREE)  filters/* $(DESTDIR)$(filterdir)
 
 install-doc: install-man install-html install-pdf
 

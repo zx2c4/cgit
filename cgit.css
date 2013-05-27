@@ -800,17 +800,3 @@ div#cgit table.ssdiff td.space {
 div#cgit table.ssdiff td.space div {
 	min-height: 3em;
 }
-
-/* Syntax highlighting */
-div#cgit table.blob .num  { color:#2928ff; }
-div#cgit table.blob .esc  { color:#ff00ff; }
-div#cgit table.blob .str  { color:#ff0000; }
-div#cgit table.blob .dstr { color:#818100; }
-div#cgit table.blob .slc  { color:#838183; font-style:italic; }
-div#cgit table.blob .com  { color:#838183; font-style:italic; }
-div#cgit table.blob .dir  { color:#008200; }
-div#cgit table.blob .sym  { color:#000000; }
-div#cgit table.blob .kwa  { color:#000000; font-weight:bold; }
-div#cgit table.blob .kwb  { color:#830000; }
-div#cgit table.blob .kwc  { color:#000000; font-weight:bold; }
-div#cgit table.blob .kwd  { color:#010181; }
