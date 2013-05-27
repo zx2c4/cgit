@@ -622,6 +622,14 @@ clone-url=git://foo.org/$CGIT_REPO_URL git@foo.org:$CGIT_REPO_URL
 css=/css/cgit.css
 
 
+# Show owner on index page
+enable-index-owner=1
+
+
+# Allow http transport git clone
+enable-git-clone=1
+
+
 # Show extra links for each repository on the index page
 enable-index-links=1
 
@@ -636,6 +644,10 @@ enable-log-filecount=1
 
 # Show number of added/removed lines per commit on the log pages
 enable-log-linecount=1
+
+
+# Sort branches by date
+branch-sort=age
 
 
 # Add a cgit favicon
@@ -677,6 +689,47 @@ mimetype.jpeg=image/jpeg
 mimetype.pdf=application/pdf
 mimetype.png=image/png
 mimetype.svg=image/svg+xml
+
+
+# Highlight source code with python pygments-based highligher
+source-filter=/var/www/cgit/filters/syntax-highlighting.py
+
+# Format markdown, restructuredtext, manpages, text files, and html files
+# through the right converters
+about-filter=/var/www/cgit/filters/about-formatting.sh
+
+##
+## Search for these files in the root of the default branch of repositories
+## for coming up with the about page:
+##
+readme=:README.md
+readme=:readme.md
+readme=:README.mkd
+readme=:readme.mkd
+readme=:README.rst
+readme=:readme.rst
+readme=:README.html
+readme=:readme.html
+readme=:README.htm
+readme=:readme.htm
+readme=:README.txt
+readme=:readme.txt
+readme=:README
+readme=:readme
+readme=:INSTALL.md
+readme=:install.md
+readme=:INSTALL.mkd
+readme=:install.mkd
+readme=:INSTALL.rst
+readme=:install.rst
+readme=:INSTALL.html
+readme=:install.html
+readme=:INSTALL.htm
+readme=:install.htm
+readme=:INSTALL.txt
+readme=:install.txt
+readme=:INSTALL
+readme=:install
 
 
 ##
