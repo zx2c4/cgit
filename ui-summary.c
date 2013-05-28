@@ -163,7 +163,6 @@ void cgit_print_repo_readme(char *path)
 	if (ctx.repo->about_filter) {
 		cgit_close_filter(ctx.repo->about_filter);
 		ctx.repo->about_filter->argv[1] = NULL;
-	free(ref);
 	}
 	html("</div>");
 	if (free_filename)
