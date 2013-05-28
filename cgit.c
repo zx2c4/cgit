@@ -211,6 +211,8 @@ static void config_cb(const char *name, const char *value)
 		ctx.cfg.cache_static_ttl = atoi(value);
 	else if (!strcmp(name, "cache-dynamic-ttl"))
 		ctx.cfg.cache_dynamic_ttl = atoi(value);
+	else if (!strcmp(name, "cache-about-ttl"))
+		ctx.cfg.cache_about_ttl = atoi(value);
 	else if (!strcmp(name, "case-sensitive-sort"))
 		ctx.cfg.case_sensitive_sort = atoi(value);
 	else if (!strcmp(name, "about-filter"))
@@ -351,12 +353,13 @@ static void prepare_context(struct cgit_context *ctx)
 	ctx->cfg.agefile = "info/web/last-modified";
 	ctx->cfg.nocache = 0;
 	ctx->cfg.cache_size = 0;
-	ctx->cfg.cache_dynamic_ttl = 5;
 	ctx->cfg.cache_max_create_time = 5;
-	ctx->cfg.cache_repo_ttl = 5;
 	ctx->cfg.cache_root = CGIT_CACHE_ROOT;
+	ctx->cfg.cache_about_ttl = 15;
+	ctx->cfg.cache_repo_ttl = 5;
 	ctx->cfg.cache_root_ttl = 5;
 	ctx->cfg.cache_scanrc_ttl = 15;
+	ctx->cfg.cache_dynamic_ttl = 5;
 	ctx->cfg.cache_static_ttl = -1;
 	ctx->cfg.case_sensitive_sort = 1;
 	ctx->cfg.branch_sort = 0;
@@ -922,6 +925,9 @@ static int calc_ttl()
 	if (!ctx.qry.page)
 		return ctx.cfg.cache_repo_ttl;
 
+	if (!strcmp(ctx.qry.page, "about"))
+		return ctx.cfg.cache_about_ttl;
+
 	if (ctx.qry.has_symref)
 		return ctx.cfg.cache_dynamic_ttl;
 
@@ -973,7 +979,10 @@ int main(int argc, const char **argv)
 	}
 
 	ttl = calc_ttl();
-	ctx.page.expires += ttl * 60;
+	if (ttl < 0)
+		ctx.page.expires += 10 * 365 * 24 * 60 * 60; /* 10 years */
+	else
+		ctx.page.expires += ttl * 60;
 	if (ctx.env.request_method && !strcmp(ctx.env.request_method, "HEAD"))
 		ctx.cfg.nocache = 1;
 	if (ctx.cfg.nocache)

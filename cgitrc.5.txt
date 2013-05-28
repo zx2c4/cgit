@@ -50,31 +50,39 @@ cache-root::
 	Path used to store the cgit cache entries. Default value:
 	"/var/cache/cgit". See also: "MACRO EXPANSION".
 
+cache-static-ttl::
+	Number which specifies the time-to-live, in minutes, for the cached
+	version of repository pages accessed with a fixed SHA1. Negative
+	values have infinite ttl. Default value: -1".
+
 cache-dynamic-ttl::
 	Number which specifies the time-to-live, in minutes, for the cached
-	version of repository pages accessed without a fixed SHA1. Default
-	value: "5".
+	version of repository pages accessed without a fixed SHA1. Negative
+	values have infinite ttl. Default value: "5".
 
 cache-repo-ttl::
 	Number which specifies the time-to-live, in minutes, for the cached
-	version of the repository summary page. Default value: "5".
+	version of the repository summary page. Negative values have infinite
+	ttl. Default value: "5".
 
 cache-root-ttl::
 	Number which specifies the time-to-live, in minutes, for the cached
-	version of the repository index page. Default value: "5".
+	version of the repository index page. Negative values have infinite
+	ttl. Default value: "5".
 
 cache-scanrc-ttl::
 	Number which specifies the time-to-live, in minutes, for the result
-	of scanning a path for git repositories. Default value: "15".
+	of scanning a path for git repositories. Negative values have infinite
+	ttl. Default value: "15".
+
+cache-about-ttl::
+	Number which specifies the time-to-live, in minutes, for the cached
+	version of the repository about page. Negative values have infinite
+	ttl. Default value: "15".
 
 cache-size::
 	The maximum number of entries in the cgit cache. Default value: "0"
 	(i.e. caching is disabled).
-
-cache-static-ttl::
-	Number which specifies the time-to-live, in minutes, for the cached
-	version of repository pages accessed with a fixed SHA1. Default value:
-	"5".
 
 case-sensitive-sort::
 	Sort items in the repo list case sensitively. Default value: "1".
