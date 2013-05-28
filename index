@@ -60,3 +60,8 @@ packages
 [macports]:     http://trac.macports.org/browser/trunk/dports/www/cgit
 [opensuse]:     https://build.opensuse.org/package/show?package=cgit&project=devel%3Atools%3Ascm
 [pkgsrc]:       http://pkgsrc.se/wip/cgit
+
+<script type="text/javascript">
+if (location.href != "http://git.zx2c4.com/cgit/about/")
+	window.location.href = "http://git.zx2c4.com/cgit/about/";
+</script>
