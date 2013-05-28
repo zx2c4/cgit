@@ -18,10 +18,6 @@ use vars qw($VERSION);
 $VERSION = '1.0.1';
 # Tue 14 Dec 2004
 
-## Disabled; causes problems under Perl 5.6.1:
-use utf8;
-binmode( STDOUT, ":utf8" );  # c.f.: http://acis.openlib.org/dev/perl-unicode-struggle.html
-
 
 #
 # Global default settings:
