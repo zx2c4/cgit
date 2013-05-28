@@ -928,11 +928,11 @@ static int calc_ttl()
 	if (!strcmp(ctx.qry.page, "about"))
 		return ctx.cfg.cache_about_ttl;
 
-	if (ctx.qry.has_symref)
-		return ctx.cfg.cache_dynamic_ttl;
-
 	if (ctx.qry.has_sha1)
 		return ctx.cfg.cache_static_ttl;
+
+	if (ctx.qry.has_symref)
+		return ctx.cfg.cache_dynamic_ttl;
 
 	return ctx.cfg.cache_repo_ttl;
 }
