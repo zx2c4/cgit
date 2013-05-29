@@ -77,6 +77,7 @@ install: all
 	$(INSTALL) -m 0755 -d $(DESTDIR)$(CGIT_DATA_PATH)
 	$(INSTALL) -m 0644 cgit.css $(DESTDIR)$(CGIT_DATA_PATH)/cgit.css
 	$(INSTALL) -m 0644 cgit.png $(DESTDIR)$(CGIT_DATA_PATH)/cgit.png
+	$(INSTALL) -m 0644 favicon.ico $(DESTDIR)$(CGIT_DATA_PATH)/favicon.ico
 	$(INSTALL) -m 0755 -d $(DESTDIR)$(filterdir)
 	$(COPYTREE)  filters/* $(DESTDIR)$(filterdir)
 
@@ -98,6 +99,7 @@ uninstall:
 	rm -f $(DESTDIR)$(CGIT_SCRIPT_PATH)/$(CGIT_SCRIPT_NAME)
 	rm -f $(DESTDIR)$(CGIT_DATA_PATH)/cgit.css
 	rm -f $(DESTDIR)$(CGIT_DATA_PATH)/cgit.png
+	rm -f $(DESTDIR)$(CGIT_DATA_PATH)/favicon.ico
 
 uninstall-doc: uninstall-man uninstall-html uninstall-pdf
 
