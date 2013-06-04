@@ -31,45 +31,45 @@ static void skip_line(FILE *f)
 		;
 }
 
-static int read_config_line(FILE *f, char *line, const char **value, int bufsize)
+static int read_config_line(FILE *f, struct strbuf *name, struct strbuf *value)
 {
-	int i = 0, isname = 0;
+	int c = next_char(f);
 
-	*value = NULL;
-	while (i < bufsize - 1) {
-		int c = next_char(f);
-		if (!isname && (c == '#' || c == ';')) {
+	strbuf_reset(name);
+	strbuf_reset(value);
+
+	/* Skip comments and preceding spaces. */
+	for(;;) {
+		if (c == '#' || c == ';')
 			skip_line(f);
-			continue;
-		}
-		if (!isname && isspace(c))
-			continue;
-
-		if (c == '=' && !*value) {
-			line[i] = 0;
-			*value = &line[i + 1];
-		} else if (c == '\n' && !isname) {
-			i = 0;
-			continue;
-		} else if (c == '\n' || c == EOF) {
-			line[i] = 0;
+		else if (!isspace(c))
 			break;
-		} else {
-			line[i] = c;
-		}
-		isname = 1;
-		i++;
+		c = next_char(f);
 	}
-	line[i + 1] = 0;
-	return i;
+
+	/* Read variable name. */
+	while (c != '=') {
+		if (c == '\n' || c == EOF)
+			return 0;
+		strbuf_addch(name, c);
+		c = next_char(f);
+	}
+
+	/* Read variable value. */
+	c = next_char(f);
+	while (c != '\n' && c != EOF) {
+		strbuf_addch(value, c);
+		c = next_char(f);
+	}
+
+	return 1;
 }
 
 int parse_configfile(const char *filename, configfile_value_fn fn)
 {
 	static int nesting;
-	int len;
-	char line[256];
-	const char *value;
+	struct strbuf name = STRBUF_INIT;
+	struct strbuf value = STRBUF_INIT;
 	FILE *f;
 
 	/* cancel deeply nested include-commands */
@@ -78,10 +78,12 @@ int parse_configfile(const char *filename, configfile_value_fn fn)
 	if (!(f = fopen(filename, "r")))
 		return -1;
 	nesting++;
-	while ((len = read_config_line(f, line, &value, sizeof(line))) > 0)
-		fn(line, value);
+	while (read_config_line(f, &name, &value))
+		fn(name.buf, value.buf);
 	nesting--;
 	fclose(f);
+	strbuf_release(&name);
+	strbuf_release(&value);
 	return 0;
 }
 
