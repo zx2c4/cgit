@@ -148,14 +148,14 @@ static void add_repo(const char *base, struct strbuf *path, repo_config_fn fn)
 	}
 
 	if (ctx.cfg.section_from_path) {
-		n  = ctx.cfg.section_from_path;
+		n = ctx.cfg.section_from_path;
 		if (n > 0) {
-			slash = rel.buf;
-			while (slash && n && (slash = strchr(slash, '/')))
+			slash = rel.buf - 1;
+			while (slash && n && (slash = strchr(slash + 1, '/')))
 				n--;
 		} else {
 			slash = rel.buf + rel.len;
-			while (slash && n && (slash = xstrrchr(rel.buf, slash, '/')))
+			while (slash && n && (slash = xstrrchr(rel.buf, slash - 1, '/')))
 				n++;
 		}
 		if (slash && !n) {
