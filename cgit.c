@@ -363,6 +363,7 @@ static void prepare_context(struct cgit_context *ctx)
 	ctx->cfg.commit_sort = 0;
 	ctx->cfg.css = "/cgit.css";
 	ctx->cfg.logo = "/cgit.png";
+	ctx->cfg.favicon = "/favicon.ico";
 	ctx->cfg.local_time = 0;
 	ctx->cfg.enable_http_clone = 1;
 	ctx->cfg.enable_index_owner = 1;

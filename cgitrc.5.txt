@@ -172,9 +172,9 @@ enable-git-config::
 	scan-path, section-from-path.
 
 favicon::
-	Url used as link to a shortcut icon for cgit. If specified, it is
-	suggested to use the value "/favicon.ico" since certain browsers will
-	ignore other values. Default value: none.
+	Url used as link to a shortcut icon for cgit. It is suggested to use
+	the value "/favicon.ico" since certain browsers will ignore other
+	values. Default value: "/favicon.ico".
 
 footer::
 	The content of the file specified with this option will be included
