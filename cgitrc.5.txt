@@ -39,7 +39,8 @@ agefile::
 	to specify the date and time of the youngest commit in the repository.
 	The first line in the file is used as input to the "parse_date"
 	function in libgit. Recommended timestamp-format is "yyyy-mm-dd
-	hh:mm:ss". Default value: "info/web/last-modified".
+	hh:mm:ss". You may want to generate this file from a post-receive
+	hook. Default value: "info/web/last-modified".
 
 branch-sort::
 	Flag which, when set to "age", enables date ordering in the branch ref
