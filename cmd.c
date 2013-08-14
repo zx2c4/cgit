@@ -60,6 +60,11 @@ static void diff_fn(struct cgit_context *ctx)
 	cgit_print_diff(ctx->qry.sha1, ctx->qry.sha2, ctx->qry.path, 1, 0);
 }
 
+static void rawdiff_fn(struct cgit_context *ctx)
+{
+	cgit_print_diff(ctx->qry.sha1, ctx->qry.sha2, ctx->qry.path, 1, 1);
+}
+
 static void info_fn(struct cgit_context *ctx)
 {
 	cgit_clone_info(ctx);
@@ -150,6 +155,7 @@ struct cgit_cmd *cgit_get_cmd(struct cgit_context *ctx)
 		def_cmd(objects, 1, 0, 0, 1),
 		def_cmd(patch, 1, 0, 1, 0),
 		def_cmd(plain, 1, 0, 0, 0),
+		def_cmd(rawdiff, 1, 0, 1, 0),
 		def_cmd(refs, 1, 1, 0, 0),
 		def_cmd(repolist, 0, 0, 0, 0),
 		def_cmd(snapshot, 1, 0, 0, 0),
