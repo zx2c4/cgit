@@ -57,7 +57,7 @@ static void commit_fn(struct cgit_context *ctx)
 
 static void diff_fn(struct cgit_context *ctx)
 {
-	cgit_print_diff(ctx->qry.sha1, ctx->qry.sha2, ctx->qry.path, 1);
+	cgit_print_diff(ctx->qry.sha1, ctx->qry.sha2, ctx->qry.path, 1, 0);
 }
 
 static void info_fn(struct cgit_context *ctx)

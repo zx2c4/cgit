@@ -358,7 +358,7 @@ void cgit_print_diff_ctrls()
 }
 
 void cgit_print_diff(const char *new_rev, const char *old_rev,
-		     const char *prefix, int show_ctrls)
+		     const char *prefix, int show_ctrls, int raw)
 {
 	enum object_type type;
 	unsigned long size;
@@ -396,6 +396,14 @@ void cgit_print_diff(const char *new_rev, const char *old_rev,
 			cgit_print_error("Bad commit: %s", sha1_to_hex(old_rev_sha1));
 			return;
 		}
+	}
+
+	if (raw) {
+		ctx.page.mimetype = "text/plain";
+		cgit_print_http_headers(&ctx);
+		cgit_diff_tree(old_rev_sha1, new_rev_sha1, filepair_cb_raw,
+			       prefix, 0);
+		return;
 	}
 
 	use_ssdiff = ctx.qry.has_ssdiff ? ctx.qry.ssdiff : ctx.cfg.ssdiff;

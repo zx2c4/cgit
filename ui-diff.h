@@ -4,7 +4,7 @@
 extern void cgit_print_diff_ctrls();
 
 extern void cgit_print_diff(const char *new_hex, const char *old_hex,
-			    const char *prefix, int show_ctrls);
+			    const char *prefix, int show_ctrls, int raw);
 
 extern struct diff_filespec *cgit_get_current_old_file(void);
 extern struct diff_filespec *cgit_get_current_new_file(void);
