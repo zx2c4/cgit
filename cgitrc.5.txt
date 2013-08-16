@@ -284,7 +284,7 @@ nocache::
 	value: "0".
 
 noplainemail::
-	If set to "1" showing full author email adresses will be disabled.
+	If set to "1" showing full author email addresses will be disabled.
 	Default value: "0".
 
 noheader::
