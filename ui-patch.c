@@ -13,9 +13,11 @@
 
 void cgit_print_patch(char *hex, const char *prefix)
 {
+	struct rev_info rev;
 	struct commit *commit;
-	struct commitinfo *info;
 	unsigned char sha1[20], old_sha1[20];
+	char rev_range[2 * 40 + 3];
+	char *rev_argv[] = { NULL, "--reverse", "--format=email", rev_range };
 	char *patchname;
 
 	if (!hex)
@@ -30,36 +32,39 @@ void cgit_print_patch(char *hex, const char *prefix)
 		cgit_print_error("Bad commit reference: %s", hex);
 		return;
 	}
-	info = cgit_parse_commit(commit);
 
-	if (commit->parents && commit->parents->item)
+	if (commit->parents && commit->parents->item) {
 		hashcpy(old_sha1, commit->parents->item->object.sha1);
-	else
+		sprintf(rev_range, "%s..%s", sha1_to_hex(old_sha1),
+			sha1_to_hex(sha1));
+	} else {
 		hashclr(old_sha1);
+		memcpy(rev_range, sha1_to_hex(sha1), 41);
+	}
 
 	patchname = fmt("%s.patch", sha1_to_hex(sha1));
 	ctx.page.mimetype = "text/plain";
 	ctx.page.filename = patchname;
 	cgit_print_http_headers(&ctx);
-	htmlf("From %s Mon Sep 17 00:00:00 2001\n", sha1_to_hex(sha1));
-	htmlf("From: %s", info->author);
-	if (!ctx.cfg.noplainemail) {
-		htmlf(" %s", info->author_email);
+
+	if (ctx.cfg.noplainemail) {
+		rev_argv[2] = "--format=format:From %H Mon Sep 17 00:00:00 "
+			      "2001%nFrom: %an%nDate: %aD%n%w(78,0,1)Subject: "
+			      "%s%n%n%w(0)%b";
 	}
-	html("\n");
-	html("Date: ");
-	cgit_print_date(info->author_date, "%a, %d %b %Y %H:%M:%S %z%n", ctx.cfg.local_time);
-	htmlf("Subject: %s\n\n", info->subject);
-	if (info->msg && *info->msg) {
-		htmlf("%s", info->msg);
-		if (info->msg[strlen(info->msg) - 1] != '\n')
-			html("\n");
+
+	init_revisions(&rev, NULL);
+	rev.abbrev = DEFAULT_ABBREV;
+	rev.verbose_header = 1;
+	rev.diff = 1;
+	rev.show_root_diff = 1;
+	rev.diffopt.output_format |= DIFF_FORMAT_PATCH;
+	setup_revisions(ARRAY_SIZE(rev_argv), (const char **)rev_argv, &rev,
+			NULL);
+	prepare_revision_walk(&rev);
+
+	while ((commit = get_revision(&rev)) != NULL) {
+		log_tree_commit(&rev, commit);
+		printf("--\ncgit %s\n", cgit_version);
 	}
-	html("---\n");
-	if (prefix)
-		htmlf("(limited to '%s')\n\n", prefix);
-	cgit_diff_tree(old_sha1, sha1, filepair_cb_raw, prefix, 0);
-	html("--\n");
-	htmlf("cgit %s\n", cgit_version);
-	cgit_free_commitinfo(info);
 }
