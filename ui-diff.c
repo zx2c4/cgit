@@ -360,15 +360,11 @@ void cgit_print_diff_ctrls()
 void cgit_print_diff(const char *new_rev, const char *old_rev,
 		     const char *prefix, int show_ctrls, int raw)
 {
-	enum object_type type;
-	unsigned long size;
 	struct commit *commit, *commit2;
 
 	if (!new_rev)
 		new_rev = ctx.qry.head;
-	get_sha1(new_rev, new_rev_sha1);
-	type = sha1_object_info(new_rev_sha1, &size);
-	if (type == OBJ_BAD) {
+	if (get_sha1(new_rev, new_rev_sha1)) {
 		cgit_print_error("Bad object name: %s", new_rev);
 		return;
 	}
@@ -378,19 +374,18 @@ void cgit_print_diff(const char *new_rev, const char *old_rev,
 		return;
 	}
 
-	if (old_rev)
-		get_sha1(old_rev, old_rev_sha1);
-	else if (commit->parents && commit->parents->item)
-		hashcpy(old_rev_sha1, commit->parents->item->object.sha1);
-	else
-		hashclr(old_rev_sha1);
-
-	if (!is_null_sha1(old_rev_sha1)) {
-		type = sha1_object_info(old_rev_sha1, &size);
-		if (type == OBJ_BAD) {
-			cgit_print_error("Bad object name: %s", sha1_to_hex(old_rev_sha1));
+	if (old_rev) {
+		if (get_sha1(old_rev, old_rev_sha1)) {
+			cgit_print_error("Bad object name: %s", old_rev);
 			return;
 		}
+	} else if (commit->parents && commit->parents->item) {
+		hashcpy(old_rev_sha1, commit->parents->item->object.sha1);
+	} else {
+		hashclr(old_rev_sha1);
+	}
+
+	if (!is_null_sha1(old_rev_sha1)) {
 		commit2 = lookup_commit_reference(old_rev_sha1);
 		if (!commit2 || parse_commit(commit2)) {
 			cgit_print_error("Bad commit: %s", sha1_to_hex(old_rev_sha1));
