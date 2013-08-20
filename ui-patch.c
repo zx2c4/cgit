@@ -11,48 +11,49 @@
 #include "html.h"
 #include "ui-shared.h"
 
-void cgit_print_patch(char *hex, const char *old_rev, const char *prefix)
+void cgit_print_patch(const char *new_rev, const char *old_rev,
+		      const char *prefix)
 {
 	struct rev_info rev;
 	struct commit *commit;
-	unsigned char sha1[20], old_sha1[20];
+	unsigned char new_rev_sha1[20], old_rev_sha1[20];
 	char rev_range[2 * 40 + 3];
 	char *rev_argv[] = { NULL, "--reverse", "--format=email", rev_range };
 	char *patchname;
 
-	if (!hex)
-		hex = ctx.qry.head;
+	if (!new_rev)
+		new_rev = ctx.qry.head;
 
-	if (get_sha1(hex, sha1)) {
-		cgit_print_error("Bad object id: %s", hex);
+	if (get_sha1(new_rev, new_rev_sha1)) {
+		cgit_print_error("Bad object id: %s", new_rev);
 		return;
 	}
-	commit = lookup_commit_reference(sha1);
+	commit = lookup_commit_reference(new_rev_sha1);
 	if (!commit) {
-		cgit_print_error("Bad commit reference: %s", hex);
+		cgit_print_error("Bad commit reference: %s", new_rev);
 		return;
 	}
 
 	if (old_rev) {
-		if (get_sha1(old_rev, old_sha1)) {
+		if (get_sha1(old_rev, old_rev_sha1)) {
 			cgit_print_error("Bad object id: %s", old_rev);
 			return;
 		}
-		if (!lookup_commit_reference(old_sha1)) {
+		if (!lookup_commit_reference(old_rev_sha1)) {
 			cgit_print_error("Bad commit reference: %s", old_rev);
 			return;
 		}
 	} else if (commit->parents && commit->parents->item) {
-		hashcpy(old_sha1, commit->parents->item->object.sha1);
+		hashcpy(old_rev_sha1, commit->parents->item->object.sha1);
 	} else {
-		hashclr(old_sha1);
+		hashclr(old_rev_sha1);
 	}
 
-	if (is_null_sha1(old_sha1)) {
-		memcpy(rev_range, sha1_to_hex(sha1), 41);
+	if (is_null_sha1(old_rev_sha1)) {
+		memcpy(rev_range, sha1_to_hex(new_rev_sha1), 41);
 	} else {
-		sprintf(rev_range, "%s..%s", sha1_to_hex(old_sha1),
-			sha1_to_hex(sha1));
+		sprintf(rev_range, "%s..%s", sha1_to_hex(old_rev_sha1),
+			sha1_to_hex(new_rev_sha1));
 	}
 
 	patchname = fmt("%s.patch", rev_range);
