@@ -98,7 +98,7 @@ static void repolist_fn(struct cgit_context *ctx)
 
 static void patch_fn(struct cgit_context *ctx)
 {
-	cgit_print_patch(ctx->qry.sha1, ctx->qry.path);
+	cgit_print_patch(ctx->qry.sha1, ctx->qry.sha2, ctx->qry.path);
 }
 
 static void plain_fn(struct cgit_context *ctx)

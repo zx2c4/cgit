@@ -11,7 +11,7 @@
 #include "html.h"
 #include "ui-shared.h"
 
-void cgit_print_patch(char *hex, const char *prefix)
+void cgit_print_patch(char *hex, const char *old_rev, const char *prefix)
 {
 	struct rev_info rev;
 	struct commit *commit;
@@ -33,16 +33,29 @@ void cgit_print_patch(char *hex, const char *prefix)
 		return;
 	}
 
-	if (commit->parents && commit->parents->item) {
+	if (old_rev) {
+		if (get_sha1(old_rev, old_sha1)) {
+			cgit_print_error("Bad object id: %s", old_rev);
+			return;
+		}
+		if (!lookup_commit_reference(old_sha1)) {
+			cgit_print_error("Bad commit reference: %s", old_rev);
+			return;
+		}
+	} else if (commit->parents && commit->parents->item) {
 		hashcpy(old_sha1, commit->parents->item->object.sha1);
-		sprintf(rev_range, "%s..%s", sha1_to_hex(old_sha1),
-			sha1_to_hex(sha1));
 	} else {
 		hashclr(old_sha1);
-		memcpy(rev_range, sha1_to_hex(sha1), 41);
 	}
 
-	patchname = fmt("%s.patch", sha1_to_hex(sha1));
+	if (is_null_sha1(old_sha1)) {
+		memcpy(rev_range, sha1_to_hex(sha1), 41);
+	} else {
+		sprintf(rev_range, "%s..%s", sha1_to_hex(old_sha1),
+			sha1_to_hex(sha1));
+	}
+
+	patchname = fmt("%s.patch", rev_range);
 	ctx.page.mimetype = "text/plain";
 	ctx.page.filename = patchname;
 	cgit_print_http_headers(&ctx);
