@@ -72,6 +72,7 @@ void cgit_print_patch(const char *new_rev, const char *old_rev,
 	rev.verbose_header = 1;
 	rev.diff = 1;
 	rev.show_root_diff = 1;
+	rev.max_parents = 1;
 	rev.diffopt.output_format |= DIFF_FORMAT_PATCH;
 	setup_revisions(ARRAY_SIZE(rev_argv), (const char **)rev_argv, &rev,
 			NULL);
