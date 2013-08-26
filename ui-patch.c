@@ -80,6 +80,6 @@ void cgit_print_patch(const char *new_rev, const char *old_rev,
 
 	while ((commit = get_revision(&rev)) != NULL) {
 		log_tree_commit(&rev, commit);
-		printf("--\ncgit %s\n", cgit_version);
+		printf("-- \ncgit %s\n", cgit_version);
 	}
 }
