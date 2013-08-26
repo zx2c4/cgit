@@ -20,7 +20,7 @@ test_expect_success 'find `Subject:` line' '
 '
 
 test_expect_success 'find `cgit` signature' '
-	tail -1 tmp | grep "^cgit"
+	tail -2 tmp | head -1 | grep "^cgit"
 '
 
 test_expect_success 'find initial commit' '
@@ -32,7 +32,7 @@ test_expect_success 'generate patch for initial commit' '
 '
 
 test_expect_success 'find `cgit` signature' '
-	tail -1 tmp | grep "^cgit"
+	tail -2 tmp | head -1 | grep "^cgit"
 '
 
 test_done
