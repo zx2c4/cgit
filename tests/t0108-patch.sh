@@ -23,6 +23,13 @@ test_expect_success 'find `cgit` signature' '
 	tail -2 tmp | head -1 | grep "^cgit"
 '
 
+test_expect_success 'compare with output of git-format-patch(1)' '
+	CGIT_VERSION=$(sed -n "s/CGIT_VERSION = //p" ../../VERSION)
+	git --git-dir="$PWD/repos/foo/.git" format-patch -p --subject-prefix="" --signature="cgit $CGIT_VERSION" --stdout HEAD^ >tmp2
+	sed "1,5d" tmp >tmp_
+	cmp tmp_ tmp2
+'
+
 test_expect_success 'find initial commit' '
 	root=$(git --git-dir="$PWD/repos/foo/.git" rev-list --max-parents=0 HEAD)
 '
