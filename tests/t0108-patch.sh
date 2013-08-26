@@ -24,7 +24,7 @@ test_expect_success 'find `cgit` signature' '
 '
 
 test_expect_success 'find initial commit' '
-	root=$(git --git-dir="$PWD/repos/foo/.git" rev-list HEAD | tail -1)
+	root=$(git --git-dir="$PWD/repos/foo/.git" rev-list --max-parents=0 HEAD)
 '
 
 test_expect_success 'generate patch for initial commit' '
