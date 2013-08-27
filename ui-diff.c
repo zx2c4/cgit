@@ -361,6 +361,7 @@ void cgit_print_diff(const char *new_rev, const char *old_rev,
 		     const char *prefix, int show_ctrls, int raw)
 {
 	struct commit *commit, *commit2;
+	const unsigned char *old_tree_sha1, *new_tree_sha1;
 
 	if (!new_rev)
 		new_rev = ctx.qry.head;
@@ -373,6 +374,7 @@ void cgit_print_diff(const char *new_rev, const char *old_rev,
 		cgit_print_error("Bad commit: %s", sha1_to_hex(new_rev_sha1));
 		return;
 	}
+	new_tree_sha1 = commit->tree->object.sha1;
 
 	if (old_rev) {
 		if (get_sha1(old_rev, old_rev_sha1)) {
@@ -391,13 +393,30 @@ void cgit_print_diff(const char *new_rev, const char *old_rev,
 			cgit_print_error("Bad commit: %s", sha1_to_hex(old_rev_sha1));
 			return;
 		}
+		old_tree_sha1 = commit2->tree->object.sha1;
+	} else {
+		old_tree_sha1 = NULL;
 	}
 
 	if (raw) {
+		struct diff_options diffopt;
+
+		diff_setup(&diffopt);
+		diffopt.output_format = DIFF_FORMAT_PATCH;
+		DIFF_OPT_SET(&diffopt, RECURSIVE);
+		diff_setup_done(&diffopt);
+
 		ctx.page.mimetype = "text/plain";
 		cgit_print_http_headers(&ctx);
-		cgit_diff_tree(old_rev_sha1, new_rev_sha1, filepair_cb_raw,
-			       prefix, 0);
+		if (old_tree_sha1) {
+			diff_tree_sha1(old_tree_sha1, new_tree_sha1, "",
+				       &diffopt);
+		} else {
+			diff_root_tree_sha1(new_tree_sha1, "", &diffopt);
+		}
+		diffcore_std(&diffopt);
+		diff_flush(&diffopt);
+
 		return;
 	}
 
