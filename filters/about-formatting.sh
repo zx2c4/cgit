@@ -18,7 +18,7 @@
 # CGIT_REPO_CLONE_URL  ( = repo.clone-url setting )
 
 cd "$(dirname $0)/html-converters/"
-case "$(tr '[:upper:]' '[:lower:]' <<<"$1")" in
+case "$(printf '%s' "$1" | tr '[:upper:]' '[:lower:]')" in
 	*.md|*.mkd) exec ./md2html; ;;
 	*.rst) exec ./rst2html; ;;
 	*.[1-9]) exec ./man2html; ;;
