@@ -636,7 +636,7 @@ enable-index-owner=1
 
 
 # Allow http transport git clone
-enable-git-clone=1
+enable-http-clone=1
 
 
 # Show extra links for each repository on the index page
