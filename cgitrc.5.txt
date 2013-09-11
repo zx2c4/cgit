@@ -133,8 +133,9 @@ enable-filter-overrides::
 
 enable-http-clone::
 	If set to "1", cgit will act as an dumb HTTP endpoint for git clones.
-	If you use an alternate way of serving git repositories, you may wish
-	to disable this. Default value: "1".
+	You can add "http://$HTTP_HOST$SCRIPT_NAME/$CGIT_REPO_URL" to clone-url
+	to expose this feature. If you use an alternate way of serving git
+	repositories, you may wish to disable this. Default value: "1".
 
 enable-index-links::
 	Flag which, when set to "1", will make cgit generate extra links for
