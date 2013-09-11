@@ -176,7 +176,7 @@ enable-git-config::
 	"scan-path", and must be defined prior, to augment repo-specific
 	settings. The keys gitweb.owner, gitweb.category, and gitweb.description
 	will map to the cgit keys repo.owner, repo.section, and repo.desc,
-	respectivly. All git config keys that begin with "cgit." will be mapped
+	respectively. All git config keys that begin with "cgit." will be mapped
 	to the corresponding "repo." key in cgit. Default value: "0". See also:
 	scan-path, section-from-path.
 
@@ -592,8 +592,8 @@ environment variable will be unset.
 
 MACRO EXPANSION
 ---------------
-The following cgitrc options supports a simple macro expansion feature,
-where tokens prefixed with "$" are replaced with the value of a similary
+The following cgitrc options support a simple macro expansion feature,
+where tokens prefixed with "$" are replaced with the value of a similarly
 named environment variable:
 
 - cache-root
@@ -620,7 +620,7 @@ EXAMPLE CGITRC FILE
 -------------------
 
 ....
-# Enable caching of up to 1000 output entriess
+# Enable caching of up to 1000 output entries
 cache-size=1000
 
 
@@ -700,7 +700,7 @@ mimetype.png=image/png
 mimetype.svg=image/svg+xml
 
 
-# Highlight source code with python pygments-based highligher
+# Highlight source code with python pygments-based highlighter
 source-filter=/var/www/cgit/filters/syntax-highlighting.py
 
 # Format markdown, restructuredtext, manpages, text files, and html files
