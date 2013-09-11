@@ -25,6 +25,7 @@ from pygments import highlight
 from pygments.formatters import HtmlFormatter
 
 sys.stdin = codecs.getreader("utf-8")(sys.stdin.detach())
+sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
 doc = sys.stdin.read()
 try:
 	lexer = get_lexer_for_filename(sys.argv[1])
