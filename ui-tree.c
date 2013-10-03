@@ -21,8 +21,7 @@ struct walk_tree_context {
 static void print_text_buffer(const char *name, char *buf, unsigned long size)
 {
 	unsigned long lineno, idx;
-	const char *numberfmt =
-		"<a class='no' id='n%1$d' name='n%1$d' href='#n%1$d'>%1$d</a>\n";
+	const char *numberfmt = "<a id='n%1$d' href='#n%1$d'>%1$d</a>\n";
 
 	html("<table summary='blob content' class='blob'>\n");
 

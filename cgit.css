@@ -291,13 +291,15 @@ div#cgit table.blob pre {
 	padding: 0; margin: 0;
 }
 
-div#cgit table.blob a.no, div#cgit table.ssdiff a.no {
+div#cgit table.blob td.linenumbers a,
+div#cgit table.ssdiff td.lineno a {
 	color: gray;
 	text-align: right;
 	text-decoration: none;
 }
 
-div#cgit table.blob a.no a:hover {
+div#cgit table.blob td.linenumbers a:hover,
+div#cgit table.ssdiff td.lineno a:hover {
 	color: black;
 }
 

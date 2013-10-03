@@ -10,11 +10,11 @@ test_expect_success 'find file-50' 'grep "file-50" tmp'
 test_expect_success 'generate bar/tree/file-50' 'cgit_url "bar/tree/file-50" >tmp'
 
 test_expect_success 'find line 1' '
-	grep "<a class=.no. id=.n1. name=.n1. href=.#n1.>1</a>" tmp
+	grep "<a id=.n1. href=.#n1.>1</a>" tmp
 '
 
 test_expect_success 'no line 2' '
-	! grep "<a class=.no. id=.n2. name=.n2. href=.#n2.>2</a>" tmp
+	! grep "<a id=.n2. href=.#n2.>2</a>" tmp
 '
 
 test_expect_success 'generate foo+bar/tree' 'cgit_url "foo%2bbar/tree" >tmp'
