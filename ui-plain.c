@@ -83,17 +83,22 @@ static int print_object(const unsigned char *sha1, const char *path)
 		mime = string_list_lookup(&ctx.cfg.mimetypes, ext);
 		if (mime) {
 			ctx.page.mimetype = (char *)mime->util;
+			ctx.page.charset = NULL;
 		} else {
 			ctx.page.mimetype = get_mimetype_from_file(ctx.cfg.mimetype_file, ext);
-			if (ctx.page.mimetype)
+			if (ctx.page.mimetype) {
 				freemime = 1;
+				ctx.page.charset = NULL;
+			}
 		}
 	}
 	if (!ctx.page.mimetype) {
-		if (buffer_is_binary(buf, size))
+		if (buffer_is_binary(buf, size)) {
 			ctx.page.mimetype = "application/octet-stream";
-		else
+			ctx.page.charset = NULL;
+		} else {
 			ctx.page.mimetype = "text/plain";
+		}
 	}
 	ctx.page.filename = path;
 	ctx.page.size = size;
