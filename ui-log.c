@@ -291,7 +291,6 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 	struct argv_array rev_argv = ARGV_ARRAY_INIT;
 	int i, columns = commit_graph ? 4 : 3;
 	int must_free_tip = 0;
-	struct strbuf argbuf = STRBUF_INIT;
 
 	/* rev_argv.argv[0] will be ignored by setup_revisions */
 	argv_array_push(&rev_argv, "log_rev_setup");
@@ -305,10 +304,8 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 		pattern = xstrdup(pattern);
 		if (!strcmp(grep, "grep") || !strcmp(grep, "author") ||
 		    !strcmp(grep, "committer")) {
-			strbuf_addf(&argbuf, "--%s=%s", grep, pattern);
-			argv_array_push(&rev_argv, argbuf.buf);
-		}
-		if (!strcmp(grep, "range")) {
+			argv_array_pushf(&rev_argv, "--%s=%s", grep, pattern);
+		} else if (!strcmp(grep, "range")) {
 			char *arg;
 			/* Split the pattern at whitespace and add each token
 			 * as a revision expression. Do not accept other
@@ -327,25 +324,19 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 		}
 	}
 	if (commit_graph) {
-		static const char *graph_arg = "--graph";
-		static const char *color_arg = "--color";
-		argv_array_push(&rev_argv, graph_arg);
-		argv_array_push(&rev_argv, color_arg);
+		argv_array_push(&rev_argv, "--graph");
+		argv_array_push(&rev_argv, "--color");
 		graph_set_column_colors(column_colors_html,
 					COLUMN_COLORS_HTML_MAX);
 	}
 
-	if (commit_sort == 1) {
-		static const char *date_order_arg = "--date-order";
-		argv_array_push(&rev_argv, date_order_arg);
-	} else if (commit_sort == 2) {
-		static const char *topo_order_arg = "--topo-order";
-		argv_array_push(&rev_argv, topo_order_arg);
-	}
+	if (commit_sort == 1)
+		argv_array_push(&rev_argv, "--date-order");
+	else if (commit_sort == 2)
+		argv_array_push(&rev_argv, "--topo-order");
 
 	if (path) {
-		static const char *double_dash_arg = "--";
-		argv_array_push(&rev_argv, double_dash_arg);
+		argv_array_push(&rev_argv, "--");
 		argv_array_push(&rev_argv, path);
 	}
 
@@ -437,5 +428,4 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 	/* If we allocated tip then it is safe to cast away const. */
 	if (must_free_tip)
 		free((char*) tip);
-	strbuf_release(&argbuf);
 }
