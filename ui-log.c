@@ -10,7 +10,7 @@
 #include "ui-log.h"
 #include "html.h"
 #include "ui-shared.h"
-#include "vector.h"
+#include "argv-array.h"
 
 int files, add_lines, rem_lines;
 
@@ -288,25 +288,25 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 {
 	struct rev_info rev;
 	struct commit *commit;
-	struct vector vec = VECTOR_INIT(char *);
+	struct argv_array rev_argv = ARGV_ARRAY_INIT;
 	int i, columns = commit_graph ? 4 : 3;
 	int must_free_tip = 0;
 	struct strbuf argbuf = STRBUF_INIT;
 
-	/* First argv is NULL */
-	vector_push(&vec, NULL, 0);
+	/* rev_argv.argv[0] will be ignored by setup_revisions */
+	argv_array_push(&rev_argv, "log_rev_setup");
 
 	if (!tip)
 		tip = ctx.qry.head;
 	tip = disambiguate_ref(tip, &must_free_tip);
-	vector_push(&vec, &tip, 0);
+	argv_array_push(&rev_argv, tip);
 
 	if (grep && pattern && *pattern) {
 		pattern = xstrdup(pattern);
 		if (!strcmp(grep, "grep") || !strcmp(grep, "author") ||
 		    !strcmp(grep, "committer")) {
 			strbuf_addf(&argbuf, "--%s=%s", grep, pattern);
-			vector_push(&vec, &argbuf.buf, 0);
+			argv_array_push(&rev_argv, argbuf.buf);
 		}
 		if (!strcmp(grep, "range")) {
 			char *arg;
@@ -315,50 +315,46 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 			 * rev-list options. Also, replace the previously
 			 * pushed tip (it's no longer relevant).
 			 */
-			vec.count--;
+			argv_array_pop(&rev_argv);
 			while ((arg = next_token(&pattern))) {
 				if (*arg == '-') {
 					fprintf(stderr, "Bad range expr: %s\n",
 						arg);
 					break;
 				}
-				vector_push(&vec, &arg, 0);
+				argv_array_push(&rev_argv, arg);
 			}
 		}
 	}
 	if (commit_graph) {
 		static const char *graph_arg = "--graph";
 		static const char *color_arg = "--color";
-		vector_push(&vec, &graph_arg, 0);
-		vector_push(&vec, &color_arg, 0);
+		argv_array_push(&rev_argv, graph_arg);
+		argv_array_push(&rev_argv, color_arg);
 		graph_set_column_colors(column_colors_html,
 					COLUMN_COLORS_HTML_MAX);
 	}
 
 	if (commit_sort == 1) {
 		static const char *date_order_arg = "--date-order";
-		vector_push(&vec, &date_order_arg, 0);
+		argv_array_push(&rev_argv, date_order_arg);
 	} else if (commit_sort == 2) {
 		static const char *topo_order_arg = "--topo-order";
-		vector_push(&vec, &topo_order_arg, 0);
+		argv_array_push(&rev_argv, topo_order_arg);
 	}
 
 	if (path) {
 		static const char *double_dash_arg = "--";
-		vector_push(&vec, &double_dash_arg, 0);
-		vector_push(&vec, &path, 0);
+		argv_array_push(&rev_argv, double_dash_arg);
+		argv_array_push(&rev_argv, path);
 	}
-
-	/* Make sure the vector is NULL-terminated */
-	vector_push(&vec, NULL, 0);
-	vec.count--;
 
 	init_revisions(&rev, NULL);
 	rev.abbrev = DEFAULT_ABBREV;
 	rev.commit_format = CMIT_FMT_DEFAULT;
 	rev.verbose_header = 1;
 	rev.show_root_diff = 0;
-	setup_revisions(vec.count, vec.data, &rev, NULL);
+	setup_revisions(rev_argv.argc, rev_argv.argv, &rev, NULL);
 	load_ref_decorations(DECORATE_FULL_REFS);
 	rev.show_decorations = 1;
 	rev.grep_filter.regflags |= REG_ICASE;
