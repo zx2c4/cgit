@@ -9,8 +9,6 @@
 #define SZ_FMT "%zu"
 #endif
 
-#define MONTHS 6
-
 struct authorstat {
 	long total;
 	struct string_list list;
