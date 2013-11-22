@@ -230,8 +230,6 @@ end:
 	closedir(dir);
 }
 
-#define lastc(s) s[strlen(s) - 1]
-
 void scan_projects(const char *path, const char *projectsfile, repo_config_fn fn)
 {
 	struct strbuf line = STRBUF_INIT;
