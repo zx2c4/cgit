@@ -50,7 +50,7 @@ Packages
  * [OpenSUSE][OpenSUSE]
  * [NetBSD][pkgsrc]
 
-[archlinux]:    https://www.archlinux.org/packages/community/x86_64/cgit/
+[archlinux]:    https://www.archlinux.org/packages/?name=cgit
 [fedora]:       https://admin.fedoraproject.org/pkgdb/acls/name/cgit
 [gentoo]:       http://packages.gentoo.org/package/www-apps/cgit
 [macports]:     http://trac.macports.org/browser/trunk/dports/www/cgit
