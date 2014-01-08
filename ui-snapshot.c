@@ -1,7 +1,6 @@
 /* ui-snapshot.c: generate snapshot of a commit
  *
- * Copyright (C) 2006 Lars Hjemli
- * Copyright (C) 2012 Jason A. Donenfeld <Jason@zx2c4.com>
+ * Copyright (C) 2006-2014 cgit Development Team <cgit@lists.zx2c4.com>
  *
  * Licensed under GNU General Public License v2
  *   (see COPYING for full license text)

@@ -1,6 +1,6 @@
 /* ui-tag.c: display a tag
  *
- * Copyright (C) 2007 Lars Hjemli
+ * Copyright (C) 2006-2014 cgit Development Team <cgit@lists.zx2c4.com>
  *
  * Licensed under GNU General Public License v2
  *   (see COPYING for full license text)

@@ -1,6 +1,6 @@
 /* ui-plain.c: functions for output of plain blobs by path
  *
- * Copyright (C) 2008 Lars Hjemli
+ * Copyright (C) 2006-2014 cgit Development Team <cgit@lists.zx2c4.com>
  *
  * Licensed under GNU General Public License v2
  *   (see COPYING for full license text)
