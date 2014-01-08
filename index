@@ -53,7 +53,7 @@ packages
  * [opensuse][]
  * [pkgsrc][]
 
-[archlinux]:    http://aur.archlinux.org/packages.php?ID=22790
+[archlinux]:    https://www.archlinux.org/packages/community/x86_64/cgit/
 [darwinports]:  http://cgit.darwinports.com/
 [fedora]:       https://admin.fedoraproject.org/pkgdb/acls/name/cgit
 [gentoo]:       http://packages.gentoo.org/package/www-apps/cgit
