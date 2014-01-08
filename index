@@ -1,10 +1,10 @@
 cgit Quick Facts
 ----------------
 
- * web interface ([cgi][]) for [Git][] repositories, written in [C][]
+ * web interface ([cgi][]) for [Git][git] repositories, written in [C][]
  * licensed under [GPLv2][]
  * discussions, patches etc. go to the [list][] ([signup][], [archive][], [gmane][]).
- * common questions are answered in the [faq][FAQ].
+ * common questions are answered in the [FAQ][faq].
 
 [cgi]:     http://www.ietf.org/rfc/rfc3875.txt
 [git]:     http://git-scm.org
@@ -43,12 +43,12 @@ Source Code
 
 Packages
 --------
- * [archlinux][Arch Linux]
- * [fedora][Fedora]
- * [gentoo][Gentoo]
- * [macports][OS X]
- * [opensuse][OpenSUSE]
- * [pkgsrc][NetBSD]
+ * [Arch Linux][archlinux]
+ * [Gentoo][gentoo]
+ * [Fedora][fedora]
+ * [OS X][macports]
+ * [OpenSUSE][OpenSUSE]
+ * [NetBSD][pkgsrc]
 
 [archlinux]:    https://www.archlinux.org/packages/community/x86_64/cgit/
 [fedora]:       https://admin.fedoraproject.org/pkgdb/acls/name/cgit
