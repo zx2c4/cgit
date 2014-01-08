@@ -1,10 +1,10 @@
-cgit quick facts
+cgit Quick Facts
 ----------------
 
- * web interface ([cgi][]) for [git][] repositories, written in [C][]
+ * web interface ([cgi][]) for [Git][] repositories, written in [C][]
  * licensed under [GPLv2][]
- * discussions, patches etc. goes to the [list][] ([signup][], [archive][], [gmane][]).
- * common questions are answered in the [faq][].
+ * discussions, patches etc. go to the [list][] ([signup][], [archive][], [gmane][]).
+ * common questions are answered in the [faq][FAQ].
 
 [cgi]:     http://www.ietf.org/rfc/rfc3875.txt
 [git]:     http://git-scm.org
@@ -16,45 +16,41 @@ cgit quick facts
 [gmane]:   http://dir.gmane.org/gmane.comp.version-control.cgit
 [faq]:     faq
 
-
-features
+Features
 --------
  * basic repository browsing (logs, diffs, trees...)
- * caching of generated html
- * cloneable urls (implements dumb http transport)
+ * caching of generated HTML
+ * cloneable URLs (implements dumb HTTP transport)
  * commit feeds (atom format)
- * discovery of git repositories
+ * discovery of Git repositories
  * on-the-fly archives for tags and commits
- * plugin-support for e.g. syntax highlighting
+ * plugin support for e.g. syntax highlighting
  * side-by-side diffs
  * simple time/author statistics
  * simple virtual hosting support (macro expansion)
- * understands gitweb project-lists
- * understands gitweb.owner in git config files
+ * understands GitWeb project-lists
+ * understands gitweb.owner in Git config files
 
-source code
+Source Code
 -----------
  * download current or past [releases][]
- * clone the repo using the http protocol:
+ * clone the repo using the Git protocol:
    * git clone git://git.zx2c4.com/cgit
  * see the [README][] for build instructions
 
 [releases]: /cgit/refs/tags
 [README]:   /cgit/tree/README
 
-
-packages
+Packages
 --------
- * [archlinux][]
- * [darwinports][]
- * [fedora][]
- * [gentoo][]
- * [macports][]
- * [opensuse][]
- * [pkgsrc][]
+ * [archlinux][Arch Linux]
+ * [fedora][Fedora]
+ * [gentoo][Gentoo]
+ * [macports][OS X]
+ * [opensuse][OpenSUSE]
+ * [pkgsrc][NetBSD]
 
 [archlinux]:    https://www.archlinux.org/packages/community/x86_64/cgit/
-[darwinports]:  http://cgit.darwinports.com/
 [fedora]:       https://admin.fedoraproject.org/pkgdb/acls/name/cgit
 [gentoo]:       http://packages.gentoo.org/package/www-apps/cgit
 [macports]:     http://trac.macports.org/browser/trunk/dports/www/cgit
