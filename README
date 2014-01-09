@@ -35,10 +35,9 @@ file (see the Makefile for details).
 Dependencies
 ------------
 
-* git 1.7.4
-* zip lib
-* crypto lib
-* openssl lib
+* libzip
+* libcrypto (OpenSSL)
+* libssl (OpenSSL)
 
 Apache configuration
 --------------------
