@@ -105,7 +105,7 @@ static void add_repo(const char *base, struct strbuf *path, repo_config_fn fn)
 		return;
 	strbuf_setlen(path, pathlen);
 
-	if (strncmp(base, path->buf, strlen(base)))
+	if (prefixcmp(path->buf, base))
 		strbuf_addbuf(&rel, path);
 	else
 		strbuf_addstr(&rel, path->buf + strlen(base) + 1);

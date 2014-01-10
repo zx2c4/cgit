@@ -142,25 +142,25 @@ struct commitinfo *cgit_parse_commit(struct commit *commit)
 	if (p == NULL)
 		return ret;
 
-	if (strncmp(p, "tree ", 5))
+	if (prefixcmp(p, "tree "))
 		die("Bad commit: %s", sha1_to_hex(commit->object.sha1));
 	else
 		p += 46; // "tree " + hex[40] + "\n"
 
-	while (!strncmp(p, "parent ", 7))
+	while (!prefixcmp(p, "parent "))
 		p += 48; // "parent " + hex[40] + "\n"
 
-	if (p && !strncmp(p, "author ", 7)) {
+	if (p && !prefixcmp(p, "author ")) {
 		p = parse_user(p + 7, &ret->author, &ret->author_email,
 			&ret->author_date);
 	}
 
-	if (p && !strncmp(p, "committer ", 9)) {
+	if (p && !prefixcmp(p, "committer ")) {
 		p = parse_user(p + 9, &ret->committer, &ret->committer_email,
 			&ret->committer_date);
 	}
 
-	if (p && !strncmp(p, "encoding ", 9)) {
+	if (p && !prefixcmp(p, "encoding ")) {
 		p += 9;
 		t = strchr(p, '\n');
 		if (t) {
@@ -239,7 +239,7 @@ struct taginfo *cgit_parse_tag(struct tag *tag)
 		if (*p == '\n')
 			break;
 
-		if (!strncmp(p, "tagger ", 7)) {
+		if (!prefixcmp(p, "tagger ")) {
 			p = parse_user(p + 7, &ret->tagger, &ret->tagger_email,
 				&ret->tagger_date);
 		} else {
