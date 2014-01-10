@@ -405,7 +405,7 @@ void cgit_diff_commit(struct commit *commit, filepair_fn fn, const char *prefix)
 int cgit_parse_snapshots_mask(const char *str)
 {
 	const struct cgit_snapshot_format *f;
-	static const char *delim = " \t,:/|;";
+	static const char *delim = " ";
 	int tl, sl, rv = 0;
 
 	/* favor legacy setting */
