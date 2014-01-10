@@ -29,6 +29,7 @@ CGIT_OBJ_NAMES += cgit.o
 CGIT_OBJ_NAMES += cache.o
 CGIT_OBJ_NAMES += cmd.o
 CGIT_OBJ_NAMES += configfile.o
+CGIT_OBJ_NAMES += filter.o
 CGIT_OBJ_NAMES += html.o
 CGIT_OBJ_NAMES += parsing.o
 CGIT_OBJ_NAMES += scan-tree.o

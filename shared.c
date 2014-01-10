@@ -457,41 +457,6 @@ void cgit_prepare_repo_env(struct cgit_repo * repo)
 			fprintf(stderr, warn, p->name, p->value);
 }
 
-int cgit_open_filter(struct cgit_filter *filter)
-{
-	filter->old_stdout = chk_positive(dup(STDOUT_FILENO),
-		"Unable to duplicate STDOUT");
-	chk_zero(pipe(filter->pipe_fh), "Unable to create pipe to subprocess");
-	filter->pid = chk_non_negative(fork(), "Unable to create subprocess");
-	if (filter->pid == 0) {
-		close(filter->pipe_fh[1]);
-		chk_non_negative(dup2(filter->pipe_fh[0], STDIN_FILENO),
-			"Unable to use pipe as STDIN");
-		execvp(filter->cmd, filter->argv);
-		die_errno("Unable to exec subprocess %s", filter->cmd);
-	}
-	close(filter->pipe_fh[0]);
-	chk_non_negative(dup2(filter->pipe_fh[1], STDOUT_FILENO),
-		"Unable to use pipe as STDOUT");
-	close(filter->pipe_fh[1]);
-	return 0;
-}
-
-int cgit_close_filter(struct cgit_filter *filter)
-{
-	int exit_status;
-
-	chk_non_negative(dup2(filter->old_stdout, STDOUT_FILENO),
-		"Unable to restore STDOUT");
-	close(filter->old_stdout);
-	if (filter->pid < 0)
-		return 0;
-	waitpid(filter->pid, &exit_status, 0);
-	if (WIFEXITED(exit_status) && !WEXITSTATUS(exit_status))
-		return 0;
-	die("Subprocess %s exited abnormally", filter->cmd);
-}
-
 /* Read the content of the specified file into a newly allocated buffer,
  * zeroterminate the buffer and return 0 on success, errno otherwise.
  */

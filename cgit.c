@@ -27,36 +27,6 @@ static void add_mimetype(const char *name, const char *value)
 	item->util = xstrdup(value);
 }
 
-static struct cgit_filter *new_filter(const char *cmd, filter_type filtertype)
-{
-	struct cgit_filter *f;
-	int args_size = 0;
-	int extra_args;
-
-	if (!cmd || !cmd[0])
-		return NULL;
-
-	switch (filtertype) {
-		case SOURCE:
-		case ABOUT:
-			extra_args = 1;
-			break;
-
-		case COMMIT:
-		default:
-			extra_args = 0;
-			break;
-	}
-
-	f = xmalloc(sizeof(struct cgit_filter));
-	f->cmd = xstrdup(cmd);
-	args_size = (2 + extra_args) * sizeof(char *);
-	f->argv = xmalloc(args_size);
-	memset(f->argv, 0, args_size);
-	f->argv[0] = f->cmd;
-	return f;
-}
-
 static void process_cached_repolist(const char *path);
 
 static void repo_config(struct cgit_repo *repo, const char *name, const char *value)
@@ -114,11 +84,11 @@ static void repo_config(struct cgit_repo *repo, const char *name, const char *va
 		repo->logo_link = xstrdup(value);
 	else if (ctx.cfg.enable_filter_overrides) {
 		if (!strcmp(name, "about-filter"))
-			repo->about_filter = new_filter(value, ABOUT);
+			repo->about_filter = cgit_new_filter(value, ABOUT);
 		else if (!strcmp(name, "commit-filter"))
-			repo->commit_filter = new_filter(value, COMMIT);
+			repo->commit_filter = cgit_new_filter(value, COMMIT);
 		else if (!strcmp(name, "source-filter"))
-			repo->source_filter = new_filter(value, SOURCE);
+			repo->source_filter = cgit_new_filter(value, SOURCE);
 	}
 }
 
@@ -215,9 +185,9 @@ static void config_cb(const char *name, const char *value)
 	else if (!strcmp(name, "case-sensitive-sort"))
 		ctx.cfg.case_sensitive_sort = atoi(value);
 	else if (!strcmp(name, "about-filter"))
-		ctx.cfg.about_filter = new_filter(value, ABOUT);
+		ctx.cfg.about_filter = cgit_new_filter(value, ABOUT);
 	else if (!strcmp(name, "commit-filter"))
-		ctx.cfg.commit_filter = new_filter(value, COMMIT);
+		ctx.cfg.commit_filter = cgit_new_filter(value, COMMIT);
 	else if (!strcmp(name, "embedded"))
 		ctx.cfg.embedded = atoi(value);
 	else if (!strcmp(name, "max-atom-items"))
@@ -251,7 +221,7 @@ static void config_cb(const char *name, const char *value)
 	else if (!strcmp(name, "section-sort"))
 		ctx.cfg.section_sort = atoi(value);
 	else if (!strcmp(name, "source-filter"))
-		ctx.cfg.source_filter = new_filter(value, SOURCE);
+		ctx.cfg.source_filter = cgit_new_filter(value, SOURCE);
 	else if (!strcmp(name, "summary-log"))
 		ctx.cfg.summary_log = atoi(value);
 	else if (!strcmp(name, "summary-branches"))
