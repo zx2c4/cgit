@@ -885,14 +885,16 @@ static void cgit_parse_args(int argc, const char **argv)
 			ctx.qry.ofs = atoi(argv[i] + 6);
 		} else if (!prefixcmp(argv[i], "--scan-tree=") ||
 		           !prefixcmp(argv[i], "--scan-path=")) {
-			/* HACK: the global snapshot bitmask defines the
-			 * set of allowed snapshot formats, but the config
-			 * file hasn't been parsed yet so the mask is
-			 * currently 0. By setting all bits high before
-			 * scanning we make sure that any in-repo cgitrc
-			 * snapshot setting is respected by scan_tree().
-			 * BTW: we assume that there'll never be more than
-			 * 255 different snapshot formats supported by cgit...
+			/*
+			 * HACK: The global snapshot bit mask defines the set
+			 * of allowed snapshot formats, but the config file
+			 * hasn't been parsed yet so the mask is currently 0.
+			 * By setting all bits high before scanning we make
+			 * sure that any in-repo cgitrc snapshot setting is
+			 * respected by scan_tree().
+			 *
+			 * NOTE: We assume that there aren't more than 8
+			 * different snapshot formats supported by cgit...
 			 */
 			ctx.cfg.snapshots = 0xFF;
 			scan++;
