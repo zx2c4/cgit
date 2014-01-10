@@ -98,14 +98,9 @@ const struct cgit_snapshot_format cgit_snapshot_formats[] = {
 static const struct cgit_snapshot_format *get_format(const char *filename)
 {
 	const struct cgit_snapshot_format *fmt;
-	int fl, sl;
 
-	fl = strlen(filename);
 	for (fmt = cgit_snapshot_formats; fmt->suffix; fmt++) {
-		sl = strlen(fmt->suffix);
-		if (sl >= fl)
-			continue;
-		if (!strcmp(fmt->suffix, filename + fl - sl))
+		if (!suffixcmp(filename, fmt->suffix))
 			return fmt;
 	}
 	return NULL;
