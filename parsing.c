@@ -1,4 +1,4 @@
-/* config.c: parsing of config files
+/* parsing.c: parsing of config files
  *
  * Copyright (C) 2006-2014 cgit Development Team <cgit@lists.zx2c4.com>
  *
