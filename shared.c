@@ -404,28 +404,29 @@ void cgit_diff_commit(struct commit *commit, filepair_fn fn, const char *prefix)
 
 int cgit_parse_snapshots_mask(const char *str)
 {
+	struct string_list tokens = STRING_LIST_INIT_DUP;
+	struct string_list_item *item;
 	const struct cgit_snapshot_format *f;
-	static const char *delim = " ";
-	int tl, sl, rv = 0;
+	int rv = 0;
 
 	/* favor legacy setting */
 	if (atoi(str))
 		return 1;
-	for (;;) {
-		str += strspn(str, delim);
-		tl = strcspn(str, delim);
-		if (!tl)
-			break;
+
+	string_list_split(&tokens, str, ' ', -1);
+	string_list_remove_empty_items(&tokens, 0);
+
+	for_each_string_list_item(item, &tokens) {
 		for (f = cgit_snapshot_formats; f->suffix; f++) {
-			sl = strlen(f->suffix);
-			if ((tl == sl && !strncmp(f->suffix, str, tl)) ||
-			   (tl == sl - 1 && !strncmp(f->suffix + 1, str, tl - 1))) {
+			if (!strcmp(item->string, f->suffix) ||
+			    !strcmp(item->string, f->suffix + 1)) {
 				rv |= f->bit;
 				break;
 			}
 		}
-		str += tl;
 	}
+
+	string_list_clear(&tokens, 0);
 	return rv;
 }
 
