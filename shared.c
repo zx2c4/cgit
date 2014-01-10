@@ -459,7 +459,6 @@ void cgit_prepare_repo_env(struct cgit_repo * repo)
 
 int cgit_open_filter(struct cgit_filter *filter)
 {
-
 	filter->old_stdout = chk_positive(dup(STDOUT_FILENO),
 		"Unable to duplicate STDOUT");
 	chk_zero(pipe(filter->pipe_fh), "Unable to create pipe to subprocess");
@@ -480,13 +479,15 @@ int cgit_open_filter(struct cgit_filter *filter)
 
 int cgit_close_filter(struct cgit_filter *filter)
 {
+	int exit_status;
+
 	chk_non_negative(dup2(filter->old_stdout, STDOUT_FILENO),
 		"Unable to restore STDOUT");
 	close(filter->old_stdout);
 	if (filter->pid < 0)
 		return 0;
-	waitpid(filter->pid, &filter->exitstatus, 0);
-	if (WIFEXITED(filter->exitstatus) && !WEXITSTATUS(filter->exitstatus))
+	waitpid(filter->pid, &exit_status, 0);
+	if (WIFEXITED(exit_status) && !WEXITSTATUS(exit_status))
 		return 0;
 	die("Subprocess %s exited abnormally", filter->cmd);
 }

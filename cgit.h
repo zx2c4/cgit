@@ -62,7 +62,6 @@ struct cgit_filter {
 	int old_stdout;
 	int pipe_fh[2];
 	int pid;
-	int exitstatus;
 };
 
 struct cgit_repo {
