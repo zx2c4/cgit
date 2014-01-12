@@ -41,8 +41,6 @@ static const char* url_escape_table[256] = {
 	"%fe", "%ff"
 };
 
-static int htmlfd = STDOUT_FILENO;
-
 char *fmt(const char *format, ...)
 {
 	static char buf[8][1024];
@@ -77,7 +75,7 @@ char *fmtalloc(const char *format, ...)
 
 void html_raw(const char *data, size_t size)
 {
-	if (write(htmlfd, data, size) != size)
+	if (write(STDOUT_FILENO, data, size) != size)
 		die_errno("write error on html output");
 }
 
