@@ -58,10 +58,10 @@ static int write_compressed_tar_archive(const char *hex,
 					char *filter_argv[])
 {
 	int rv;
-	struct cgit_filter f;
-
-	f.cmd = filter_argv[0];
-	f.argv = filter_argv;
+	struct cgit_filter f = {
+		.cmd = filter_argv[0],
+		.argv = filter_argv,
+	};
 	cgit_open_filter(&f);
 	rv = write_tar_archive(hex, prefix);
 	cgit_close_filter(&f);
