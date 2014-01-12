@@ -155,9 +155,9 @@ static int print_tag(struct refinfo *ref)
 	html("</td><td>");
 	if (info) {
 		if (info->tagger)
-			html(info->tagger);
+			html_txt(info->tagger);
 	} else if (ref->object->type == OBJ_COMMIT) {
-		html(ref->commit->author);
+		html_txt(ref->commit->author);
 	}
 	html("</td><td colspan='2'>");
 	if (info) {
