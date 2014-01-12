@@ -951,6 +951,7 @@ int main(int argc, const char **argv)
 		ctx.cfg.cache_size = 0;
 	err = cache_process(ctx.cfg.cache_size, ctx.cfg.cache_root,
 			    ctx.qry.raw, ttl, process_request, &ctx);
+	cgit_cleanup_filters();
 	if (err)
 		cgit_print_error("Error processing page: %s (%d)",
 				 strerror(err), err);

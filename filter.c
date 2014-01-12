@@ -13,6 +13,25 @@
 #include <string.h>
 #include <stdlib.h>
 
+static inline void reap_filter(struct cgit_filter *filter)
+{
+	if (filter && filter->cleanup)
+		filter->cleanup(filter);
+}
+
+void cgit_cleanup_filters(void)
+{
+	int i;
+	reap_filter(ctx.cfg.about_filter);
+	reap_filter(ctx.cfg.commit_filter);
+	reap_filter(ctx.cfg.source_filter);
+	for (i = 0; i < cgit_repolist.count; ++i) {
+		reap_filter(cgit_repolist.repos[i].about_filter);
+		reap_filter(cgit_repolist.repos[i].commit_filter);
+		reap_filter(cgit_repolist.repos[i].source_filter);
+	}
+}
+
 static int open_exec_filter(struct cgit_filter *base, va_list ap)
 {
 	struct cgit_exec_filter *filter = (struct cgit_exec_filter *) base;
@@ -67,34 +86,17 @@ static void fprintf_exec_filter(struct cgit_filter *base, FILE *f, const char *p
 	fprintf(f, "%sexec:%s\n", prefix, filter->cmd);
 }
 
-int cgit_open_filter(struct cgit_filter *filter, ...)
+static void cleanup_exec_filter(struct cgit_filter *base)
 {
-	int result;
-	va_list ap;
-	va_start(ap, filter);
-	result = filter->open(filter, ap);
-	va_end(ap);
-	return result;
-}
-
-int cgit_close_filter(struct cgit_filter *filter)
-{
-	return filter->close(filter);
-}
-
-void cgit_fprintf_filter(struct cgit_filter *filter, FILE *f, const char *prefix)
-{
-	filter->fprintf(filter, f, prefix);
-}
-
-void cgit_exec_filter_init(struct cgit_exec_filter *filter, char *cmd, char **argv)
-{
-	memset(filter, 0, sizeof(*filter));
-	filter->base.open = open_exec_filter;
-	filter->base.close = close_exec_filter;
-	filter->base.fprintf = fprintf_exec_filter;
-	filter->cmd = cmd;
-	filter->argv = argv;
+	struct cgit_exec_filter *filter = (struct cgit_exec_filter *) base;
+	if (filter->argv) {
+		free(filter->argv);
+		filter->argv = NULL;
+	}
+	if (filter->cmd) {
+		free(filter->cmd);
+		filter->cmd = NULL;
+	}
 }
 
 static struct cgit_filter *new_exec_filter(const char *cmd, filter_type filtertype)
@@ -124,6 +126,39 @@ static struct cgit_filter *new_exec_filter(const char *cmd, filter_type filterty
 	f->argv[0] = f->cmd;
 	return &f->base;
 }
+
+void cgit_exec_filter_init(struct cgit_exec_filter *filter, char *cmd, char **argv)
+{
+	memset(filter, 0, sizeof(*filter));
+	filter->base.open = open_exec_filter;
+	filter->base.close = close_exec_filter;
+	filter->base.fprintf = fprintf_exec_filter;
+	filter->base.cleanup = cleanup_exec_filter;
+	filter->cmd = cmd;
+	filter->argv = argv;
+}
+
+int cgit_open_filter(struct cgit_filter *filter, ...)
+{
+	int result;
+	va_list ap;
+	va_start(ap, filter);
+	result = filter->open(filter, ap);
+	va_end(ap);
+	return result;
+}
+
+int cgit_close_filter(struct cgit_filter *filter)
+{
+	return filter->close(filter);
+}
+
+void cgit_fprintf_filter(struct cgit_filter *filter, FILE *f, const char *prefix)
+{
+	filter->fprintf(filter, f, prefix);
+}
+
+
 
 static const struct {
 	const char *prefix;
@@ -161,3 +196,4 @@ struct cgit_filter *cgit_new_filter(const char *cmd, filter_type filtertype)
 
 	die("Invalid filter type: %.*s", (int) len, cmd);
 }
+
