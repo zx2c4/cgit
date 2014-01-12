@@ -57,6 +57,13 @@ typedef enum {
 } filter_type;
 
 struct cgit_filter {
+	int (*open)(struct cgit_filter *, va_list ap);
+	int (*close)(struct cgit_filter *);
+	void (*fprintf)(struct cgit_filter *, FILE *, const char *prefix);
+};
+
+struct cgit_exec_filter {
+	struct cgit_filter base;
 	char *cmd;
 	char **argv;
 	int extra_args;
@@ -346,6 +353,7 @@ extern int cgit_parse_snapshots_mask(const char *str);
 extern int cgit_open_filter(struct cgit_filter *filter, ...);
 extern int cgit_close_filter(struct cgit_filter *filter);
 extern void cgit_fprintf_filter(struct cgit_filter *filter, FILE *f, const char *prefix);
+extern void cgit_exec_filter_init(struct cgit_exec_filter *filter, char *cmd, char **argv);
 extern struct cgit_filter *cgit_new_filter(const char *cmd, filter_type filtertype);
 
 extern void cgit_prepare_repo_env(struct cgit_repo * repo);

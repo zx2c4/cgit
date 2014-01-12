@@ -13,15 +13,13 @@
 #include <string.h>
 #include <stdlib.h>
 
-int cgit_open_filter(struct cgit_filter *filter, ...)
+static int open_exec_filter(struct cgit_filter *base, va_list ap)
 {
+	struct cgit_exec_filter *filter = (struct cgit_exec_filter *) base;
 	int i;
-	va_list ap;
 
-	va_start(ap, filter);
 	for (i = 0; i < filter->extra_args; i++)
 		filter->argv[i+1] = va_arg(ap, char *);
-	va_end(ap);
 
 	filter->old_stdout = chk_positive(dup(STDOUT_FILENO),
 		"Unable to duplicate STDOUT");
@@ -41,9 +39,9 @@ int cgit_open_filter(struct cgit_filter *filter, ...)
 	return 0;
 }
 
-
-int cgit_close_filter(struct cgit_filter *filter)
+static int close_exec_filter(struct cgit_filter *base)
 {
+	struct cgit_exec_filter *filter = (struct cgit_exec_filter *) base;
 	int i, exit_status;
 
 	chk_non_negative(dup2(filter->old_stdout, STDOUT_FILENO),
@@ -63,21 +61,50 @@ done:
 
 }
 
-void cgit_fprintf_filter(struct cgit_filter *filter, FILE *f, const char *prefix)
+static void fprintf_exec_filter(struct cgit_filter *base, FILE *f, const char *prefix)
 {
+	struct cgit_exec_filter *filter = (struct cgit_exec_filter *) base;
 	fprintf(f, "%s%s\n", prefix, filter->cmd);
 }
 
-struct cgit_filter *cgit_new_filter(const char *cmd, filter_type filtertype)
+int cgit_open_filter(struct cgit_filter *filter, ...)
 {
-	struct cgit_filter *f;
+	int result;
+	va_list ap;
+	va_start(ap, filter);
+	result = filter->open(filter, ap);
+	va_end(ap);
+	return result;
+}
+
+int cgit_close_filter(struct cgit_filter *filter)
+{
+	return filter->close(filter);
+}
+
+void cgit_fprintf_filter(struct cgit_filter *filter, FILE *f, const char *prefix)
+{
+	filter->fprintf(filter, f, prefix);
+}
+
+void cgit_exec_filter_init(struct cgit_exec_filter *filter, char *cmd, char **argv)
+{
+	memset(filter, 0, sizeof(*filter));
+	filter->base.open = open_exec_filter;
+	filter->base.close = close_exec_filter;
+	filter->base.fprintf = fprintf_exec_filter;
+	filter->cmd = cmd;
+	filter->argv = argv;
+}
+
+static struct cgit_filter *new_exec_filter(const char *cmd, filter_type filtertype)
+{
+	struct cgit_exec_filter *f;
 	int args_size = 0;
 
-	if (!cmd || !cmd[0])
-		return NULL;
-
-	f = xmalloc(sizeof(struct cgit_filter));
-	memset(f, 0, sizeof(struct cgit_filter));
+	f = xmalloc(sizeof(*f));
+	/* We leave argv for now and assign it below. */
+	cgit_exec_filter_init(f, xstrdup(cmd), NULL);
 
 	switch (filtertype) {
 		case SOURCE:
@@ -91,10 +118,17 @@ struct cgit_filter *cgit_new_filter(const char *cmd, filter_type filtertype)
 			break;
 	}
 
-	f->cmd = xstrdup(cmd);
 	args_size = (2 + f->extra_args) * sizeof(char *);
 	f->argv = xmalloc(args_size);
 	memset(f->argv, 0, args_size);
 	f->argv[0] = f->cmd;
-	return f;
+	return &f->base;
+}
+
+struct cgit_filter *cgit_new_filter(const char *cmd, filter_type filtertype)
+{
+	if (!cmd || !cmd[0])
+		return NULL;
+
+	return new_exec_filter(cmd, filtertype);
 }
