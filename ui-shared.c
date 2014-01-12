@@ -139,7 +139,7 @@ static void site_url(const char *page, const char *search, const char *sort, int
 	if (ctx.cfg.virtual_root)
 		html_attr(ctx.cfg.virtual_root);
 	else
-		html(ctx.cfg.script_name);
+		html_url_path(ctx.cfg.script_name);
 
 	if (page) {
 		htmlf("?p=%s", page);
@@ -219,7 +219,7 @@ static char *repolink(const char *title, const char *class, const char *page,
 				html_url_path(path);
 		}
 	} else {
-		html(ctx.cfg.script_name);
+		html_url_path(ctx.cfg.script_name);
 		html("?url=");
 		html_url_arg(ctx.repo->url);
 		if (ctx.repo->url[strlen(ctx.repo->url) - 1] != '/')
