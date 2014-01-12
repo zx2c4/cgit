@@ -63,6 +63,11 @@ done:
 
 }
 
+void cgit_fprintf_filter(struct cgit_filter *filter, FILE *f, const char *prefix)
+{
+	fprintf(f, "%s%s\n", prefix, filter->cmd);
+}
+
 struct cgit_filter *cgit_new_filter(const char *cmd, filter_type filtertype)
 {
 	struct cgit_filter *f;

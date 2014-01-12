@@ -345,6 +345,7 @@ extern int cgit_parse_snapshots_mask(const char *str);
 
 extern int cgit_open_filter(struct cgit_filter *filter, ...);
 extern int cgit_close_filter(struct cgit_filter *filter);
+extern void cgit_fprintf_filter(struct cgit_filter *filter, FILE *f, const char *prefix);
 extern struct cgit_filter *cgit_new_filter(const char *cmd, filter_type filtertype);
 
 extern void cgit_prepare_repo_env(struct cgit_repo * repo);

@@ -706,11 +706,11 @@ static void print_repo(FILE *f, struct cgit_repo *repo)
 	fprintf(f, "repo.enable-log-linecount=%d\n",
 	        repo->enable_log_linecount);
 	if (repo->about_filter && repo->about_filter != ctx.cfg.about_filter)
-		fprintf(f, "repo.about-filter=%s\n", repo->about_filter->cmd);
+		cgit_fprintf_filter(repo->about_filter, f, "repo.about-filter=");
 	if (repo->commit_filter && repo->commit_filter != ctx.cfg.commit_filter)
-		fprintf(f, "repo.commit-filter=%s\n", repo->commit_filter->cmd);
+		cgit_fprintf_filter(repo->commit_filter, f, "repo.commit-filter=");
 	if (repo->source_filter && repo->source_filter != ctx.cfg.source_filter)
-		fprintf(f, "repo.source-filter=%s\n", repo->source_filter->cmd);
+		cgit_fprintf_filter(repo->source_filter, f, "repo.source-filter=");
 	if (repo->snapshots != ctx.cfg.snapshots) {
 		char *tmp = build_snapshot_setting(repo->snapshots);
 		fprintf(f, "repo.snapshots=%s\n", tmp ? tmp : "");
