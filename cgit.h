@@ -59,6 +59,7 @@ typedef enum {
 struct cgit_filter {
 	char *cmd;
 	char **argv;
+	int extra_args;
 	int old_stdout;
 	int pipe_fh[2];
 	int pid;
@@ -342,7 +343,7 @@ extern const char *cgit_repobasename(const char *reponame);
 
 extern int cgit_parse_snapshots_mask(const char *str);
 
-extern int cgit_open_filter(struct cgit_filter *filter);
+extern int cgit_open_filter(struct cgit_filter *filter, ...);
 extern int cgit_close_filter(struct cgit_filter *filter);
 extern struct cgit_filter *cgit_new_filter(const char *cmd, filter_type filtertype);
 
