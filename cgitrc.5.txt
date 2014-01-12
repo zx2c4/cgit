@@ -557,6 +557,15 @@ config files, e.g. "repo.desc" becomes "desc".
 
 FILTER API
 ----------
+By default, filters are separate processes that are executed each time they
+are needed.  Alternative technologies may be used by prefixing the filter
+specification with the relevant string; available values are:
+
+'exec:'::
+	The default "one process per filter" mode.
+
+Parameters are provided to filters as follows.
+
 about filter::
 	This filter is given a single parameter: the filename of the source
 	file to filter. The filter can use the filename to determine (for

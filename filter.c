@@ -64,7 +64,7 @@ done:
 static void fprintf_exec_filter(struct cgit_filter *base, FILE *f, const char *prefix)
 {
 	struct cgit_exec_filter *filter = (struct cgit_exec_filter *) base;
-	fprintf(f, "%s%s\n", prefix, filter->cmd);
+	fprintf(f, "%sexec:%s\n", prefix, filter->cmd);
 }
 
 int cgit_open_filter(struct cgit_filter *filter, ...)
@@ -125,10 +125,39 @@ static struct cgit_filter *new_exec_filter(const char *cmd, filter_type filterty
 	return &f->base;
 }
 
+static const struct {
+	const char *prefix;
+	struct cgit_filter *(*ctor)(const char *cmd, filter_type filtertype);
+} filter_specs[] = {
+	{ "exec", new_exec_filter },
+};
+
 struct cgit_filter *cgit_new_filter(const char *cmd, filter_type filtertype)
 {
+	char *colon;
+	int i;
+	size_t len;
 	if (!cmd || !cmd[0])
 		return NULL;
 
-	return new_exec_filter(cmd, filtertype);
+	colon = strchr(cmd, ':');
+	len = colon - cmd;
+	/*
+	 * In case we're running on Windows, don't allow a single letter before
+	 * the colon.
+	 */
+	if (len == 1)
+		colon = NULL;
+
+	/* If no prefix is given, exec filter is the default. */
+	if (!colon)
+		return new_exec_filter(cmd, filtertype);
+
+	for (i = 0; i < ARRAY_SIZE(filter_specs); i++) {
+		if (len == strlen(filter_specs[i].prefix) &&
+		    !strncmp(filter_specs[i].prefix, cmd, len))
+			return filter_specs[i].ctor(colon + 1, filtertype);
+	}
+
+	die("Invalid filter type: %.*s", (int) len, cmd);
 }
