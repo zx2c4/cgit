@@ -79,11 +79,11 @@ static inline void unhook_write()
 
 static int open_exec_filter(struct cgit_filter *base, va_list ap)
 {
-	struct cgit_exec_filter *filter = (struct cgit_exec_filter *) base;
+	struct cgit_exec_filter *filter = (struct cgit_exec_filter *)base;
 	int i;
 
 	for (i = 0; i < filter->base.argument_count; i++)
-		filter->argv[i+1] = va_arg(ap, char *);
+		filter->argv[i + 1] = va_arg(ap, char *);
 
 	filter->old_stdout = chk_positive(dup(STDOUT_FILENO),
 		"Unable to duplicate STDOUT");
@@ -105,7 +105,7 @@ static int open_exec_filter(struct cgit_filter *base, va_list ap)
 
 static int close_exec_filter(struct cgit_filter *base)
 {
-	struct cgit_exec_filter *filter = (struct cgit_exec_filter *) base;
+	struct cgit_exec_filter *filter = (struct cgit_exec_filter *)base;
 	int i, exit_status;
 
 	chk_non_negative(dup2(filter->old_stdout, STDOUT_FILENO),
@@ -120,20 +120,20 @@ static int close_exec_filter(struct cgit_filter *base)
 
 done:
 	for (i = 0; i < filter->base.argument_count; i++)
-		filter->argv[i+1] = NULL;
+		filter->argv[i + 1] = NULL;
 	return 0;
 
 }
 
 static void fprintf_exec_filter(struct cgit_filter *base, FILE *f, const char *prefix)
 {
-	struct cgit_exec_filter *filter = (struct cgit_exec_filter *) base;
+	struct cgit_exec_filter *filter = (struct cgit_exec_filter *)base;
 	fprintf(f, "%sexec:%s\n", prefix, filter->cmd);
 }
 
 static void cleanup_exec_filter(struct cgit_filter *base)
 {
-	struct cgit_exec_filter *filter = (struct cgit_exec_filter *) base;
+	struct cgit_exec_filter *filter = (struct cgit_exec_filter *)base;
 	if (filter->argv) {
 		free(filter->argv);
 		filter->argv = NULL;
@@ -188,7 +188,7 @@ static void error_lua_filter(struct lua_filter *filter)
 
 static ssize_t write_lua_filter(struct cgit_filter *base, const void *buf, size_t count)
 {
-	struct lua_filter *filter = (struct lua_filter *) base;
+	struct lua_filter *filter = (struct lua_filter *)base;
 
 	lua_getglobal(filter->lua_state, "filter_write");
 	lua_pushlstring(filter->lua_state, buf, count);
@@ -246,7 +246,7 @@ static int html_url_arg_lua_filter(lua_State *lua_state)
 
 static void cleanup_lua_filter(struct cgit_filter *base)
 {
-	struct lua_filter *filter = (struct lua_filter *) base;
+	struct lua_filter *filter = (struct lua_filter *)base;
 
 	if (!filter->lua_state)
 		return;
@@ -291,7 +291,7 @@ static int init_lua_filter(struct lua_filter *filter)
 
 static int open_lua_filter(struct cgit_filter *base, va_list ap)
 {
-	struct lua_filter *filter = (struct lua_filter *) base;
+	struct lua_filter *filter = (struct lua_filter *)base;
 	int i;
 
 	if (init_lua_filter(filter))
@@ -311,7 +311,7 @@ static int open_lua_filter(struct cgit_filter *base, va_list ap)
 
 static int close_lua_filter(struct cgit_filter *base)
 {
-	struct lua_filter *filter = (struct lua_filter *) base;
+	struct lua_filter *filter = (struct lua_filter *)base;
 	int ret = 0;
 
 	lua_getglobal(filter->lua_state, "filter_close");
@@ -325,7 +325,7 @@ static int close_lua_filter(struct cgit_filter *base)
 
 static void fprintf_lua_filter(struct cgit_filter *base, FILE *f, const char *prefix)
 {
-	struct lua_filter *filter = (struct lua_filter *) base;
+	struct lua_filter *filter = (struct lua_filter *)base;
 	fprintf(f, "%slua:%s\n", prefix, filter->script_file);
 }
 
