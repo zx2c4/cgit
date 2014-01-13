@@ -89,6 +89,8 @@ static void repo_config(struct cgit_repo *repo, const char *name, const char *va
 			repo->commit_filter = cgit_new_filter(value, COMMIT);
 		else if (!strcmp(name, "source-filter"))
 			repo->source_filter = cgit_new_filter(value, SOURCE);
+		else if (!strcmp(name, "email-filter"))
+			repo->email_filter = cgit_new_filter(value, EMAIL);
 	}
 }
 
@@ -188,6 +190,8 @@ static void config_cb(const char *name, const char *value)
 		ctx.cfg.about_filter = cgit_new_filter(value, ABOUT);
 	else if (!strcmp(name, "commit-filter"))
 		ctx.cfg.commit_filter = cgit_new_filter(value, COMMIT);
+	else if (!strcmp(name, "email-filter"))
+		ctx.cfg.email_filter = cgit_new_filter(value, EMAIL);
 	else if (!strcmp(name, "embedded"))
 		ctx.cfg.embedded = atoi(value);
 	else if (!strcmp(name, "max-atom-items"))
@@ -711,6 +715,8 @@ static void print_repo(FILE *f, struct cgit_repo *repo)
 		cgit_fprintf_filter(repo->commit_filter, f, "repo.commit-filter=");
 	if (repo->source_filter && repo->source_filter != ctx.cfg.source_filter)
 		cgit_fprintf_filter(repo->source_filter, f, "repo.source-filter=");
+	if (repo->email_filter && repo->email_filter != ctx.cfg.email_filter)
+		cgit_fprintf_filter(repo->email_filter, f, "repo.email-filter=");
 	if (repo->snapshots != ctx.cfg.snapshots) {
 		char *tmp = build_snapshot_setting(repo->snapshots);
 		fprintf(f, "repo.snapshots=%s\n", tmp ? tmp : "");

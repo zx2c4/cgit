@@ -168,7 +168,9 @@ static void print_commit(struct commit *commit, struct rev_info *revs)
 			 sha1_to_hex(commit->object.sha1), ctx.qry.vpath, 0);
 	show_commit_decorations(commit);
 	html("</td><td>");
+	cgit_open_filter(ctx.repo->email_filter, info->author_email);
 	html_txt(info->author);
+	cgit_close_filter(ctx.repo->email_filter);
 
 	if (revs->graph) {
 		html("</td><td>");

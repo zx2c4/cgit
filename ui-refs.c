@@ -77,7 +77,9 @@ static int print_branch(struct refinfo *ref)
 	if (ref->object->type == OBJ_COMMIT) {
 		cgit_commit_link(info->subject, NULL, NULL, name, NULL, NULL, 0);
 		html("</td><td>");
+		cgit_open_filter(ctx.repo->email_filter, info->author_email);
 		html_txt(info->author);
+		cgit_close_filter(ctx.repo->email_filter);
 		html("</td><td colspan='2'>");
 		cgit_print_age(info->commit->date, -1, NULL);
 	} else {
@@ -154,10 +156,15 @@ static int print_tag(struct refinfo *ref)
 		cgit_object_link(obj);
 	html("</td><td>");
 	if (info) {
-		if (info->tagger)
+		if (info->tagger) {
+			cgit_open_filter(ctx.repo->email_filter, info->tagger_email);
 			html_txt(info->tagger);
+			cgit_close_filter(ctx.repo->email_filter);
+		}
 	} else if (ref->object->type == OBJ_COMMIT) {
+		cgit_open_filter(ctx.repo->email_filter, ref->commit->author_email);
 		html_txt(ref->commit->author);
+		cgit_close_filter(ctx.repo->email_filter);
 	}
 	html("</td><td colspan='2'>");
 	if (info) {

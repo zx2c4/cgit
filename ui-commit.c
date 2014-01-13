@@ -44,20 +44,24 @@ void cgit_print_commit(char *hex, const char *prefix)
 	cgit_print_diff_ctrls();
 	html("<table summary='commit info' class='commit-info'>\n");
 	html("<tr><th>author</th><td>");
+	cgit_open_filter(ctx.repo->email_filter, info->author_email);
 	html_txt(info->author);
 	if (!ctx.cfg.noplainemail) {
 		html(" ");
 		html_txt(info->author_email);
 	}
+	cgit_close_filter(ctx.repo->email_filter);
 	html("</td><td class='right'>");
 	cgit_print_date(info->author_date, FMT_LONGDATE, ctx.cfg.local_time);
 	html("</td></tr>\n");
 	html("<tr><th>committer</th><td>");
+	cgit_open_filter(ctx.repo->email_filter, info->committer_email);
 	html_txt(info->committer);
 	if (!ctx.cfg.noplainemail) {
 		html(" ");
 		html_txt(info->committer_email);
 	}
+	cgit_close_filter(ctx.repo->email_filter);
 	html("</td><td class='right'>");
 	cgit_print_date(info->committer_date, FMT_LONGDATE, ctx.cfg.local_time);
 	html("</td></tr>\n");

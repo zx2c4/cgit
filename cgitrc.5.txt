@@ -117,6 +117,14 @@ css::
 	Url which specifies the css document to include in all cgit pages.
 	Default value: "/cgit.css".
 
+email-filter::
+	Specifies a command which will be invoked to format names and email
+	address of committers, authors, and taggers, as represented in various
+	places throughout the cgit interface. This command will receive an
+	email address as its only command line argument, and the text to
+	format on STDIN. It is to write the formatted text back out onto
+	STDOUT. Default value: none. See also: "FILTER API".
+
 embedded::
 	Flag which, when set to "1", will make cgit generate a html fragment
 	suitable for embedding in other html pages. Default value: none. See
@@ -457,6 +465,10 @@ repo.defbranch::
 repo.desc::
 	The value to show as repository description. Default value: none.
 
+repo.email-filter::
+	Override the default email-filter. Default value: none. See also:
+	"enable-filter-overrides". See also: "FILTER API".
+
 repo.enable-commit-graph::
 	A flag which can be used to disable the global setting
 	`enable-commit-graph'. Default value: none.
@@ -606,6 +618,12 @@ commit filter::
 	This filter is given no arguments. The commit message text that is to
 	be filtered is available on standard input and the filtered text is
 	expected on standard output.
+
+email filter::
+	This filter is given a single parameter: the email address of the
+	relevent user. The filter will then receive the text string to format
+	on standard input and is expected to write to standard output the
+	formatted text to be included in the page.
 
 source filter::
 	This filter is given a single parameter: the filename of the source

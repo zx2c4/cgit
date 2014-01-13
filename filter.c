@@ -37,10 +37,12 @@ void cgit_cleanup_filters(void)
 	reap_filter(ctx.cfg.about_filter);
 	reap_filter(ctx.cfg.commit_filter);
 	reap_filter(ctx.cfg.source_filter);
+	reap_filter(ctx.cfg.email_filter);
 	for (i = 0; i < cgit_repolist.count; ++i) {
 		reap_filter(cgit_repolist.repos[i].about_filter);
 		reap_filter(cgit_repolist.repos[i].commit_filter);
 		reap_filter(cgit_repolist.repos[i].source_filter);
+		reap_filter(cgit_repolist.repos[i].email_filter);
 	}
 }
 
@@ -403,6 +405,7 @@ struct cgit_filter *cgit_new_filter(const char *cmd, filter_type filtertype)
 		colon = NULL;
 
 	switch (filtertype) {
+		case EMAIL:
 		case SOURCE:
 		case ABOUT:
 			argument_count = 1;
