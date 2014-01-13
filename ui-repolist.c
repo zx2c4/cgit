@@ -333,9 +333,7 @@ void cgit_print_site_readme()
 {
 	if (!ctx.cfg.root_readme)
 		return;
-	if (ctx.cfg.about_filter)
-		cgit_open_filter(ctx.cfg.about_filter, ctx.cfg.root_readme);
+	cgit_open_filter(ctx.cfg.about_filter, ctx.cfg.root_readme);
 	html_include(ctx.cfg.root_readme);
-	if (ctx.cfg.about_filter)
-		cgit_close_filter(ctx.cfg.about_filter);
+	cgit_close_filter(ctx.cfg.about_filter);
 }

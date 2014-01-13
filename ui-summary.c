@@ -151,16 +151,12 @@ void cgit_print_repo_readme(char *path)
 	 * filesystem, while applying the about-filter.
 	 */
 	html("<div id='summary'>");
-	if (ctx.repo->about_filter)
-		cgit_open_filter(ctx.repo->about_filter, filename);
-
+	cgit_open_filter(ctx.repo->about_filter, filename);
 	if (ref)
 		cgit_print_file(filename, ref, 1);
 	else
 		html_include(filename);
-
-	if (ctx.repo->about_filter)
-		cgit_close_filter(ctx.repo->about_filter);
+	cgit_close_filter(ctx.repo->about_filter);
 
 	html("</div>");
 	if (free_filename)

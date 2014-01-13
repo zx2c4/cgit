@@ -351,6 +351,8 @@ int cgit_open_filter(struct cgit_filter *filter, ...)
 {
 	int result;
 	va_list ap;
+	if (!filter)
+		return 0;
 	va_start(ap, filter);
 	result = filter->open(filter, ap);
 	va_end(ap);
@@ -359,6 +361,8 @@ int cgit_open_filter(struct cgit_filter *filter, ...)
 
 int cgit_close_filter(struct cgit_filter *filter)
 {
+	if (!filter)
+		return 0;
 	return filter->close(filter);
 }
 
