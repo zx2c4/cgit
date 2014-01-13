@@ -61,6 +61,8 @@ $(CGIT_VERSION_OBJS): $(CGIT_PREFIX)VERSION
 $(CGIT_VERSION_OBJS): EXTRA_CPPFLAGS = \
 	-DCGIT_VERSION='"$(CGIT_VERSION)"'
 
+CGIT_LIBS += -ldl
+
 
 # Git handles dependencies using ":=" so dependencies in CGIT_OBJ are not
 # handled by that and we must handle them ourselves.
@@ -88,4 +90,4 @@ $(CGIT_OBJS): %.o: %.c GIT-CFLAGS $(CGIT_PREFIX)CGIT-CFLAGS $(missing_dep_dirs)
 	$(QUIET_CC)$(CC) -o $*.o -c $(dep_args) $(ALL_CFLAGS) $(EXTRA_CPPFLAGS) $(CGIT_CFLAGS) $<
 
 $(CGIT_PREFIX)cgit: $(CGIT_OBJS) GIT-LDFLAGS $(GITLIBS)
-	$(QUIET_LINK)$(CC) $(ALL_CFLAGS) -o $@ $(ALL_LDFLAGS) $(filter %.o,$^) $(LIBS)
+	$(QUIET_LINK)$(CC) $(ALL_CFLAGS) -o $@ $(ALL_LDFLAGS) $(filter %.o,$^) $(LIBS) $(CGIT_LIBS)

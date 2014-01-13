@@ -904,6 +904,8 @@ int main(int argc, const char **argv)
 	const char *path;
 	int err, ttl;
 
+	cgit_init_filters();
+
 	prepare_context(&ctx);
 	cgit_repolist.length = 0;
 	cgit_repolist.count = 0;

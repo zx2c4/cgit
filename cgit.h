@@ -61,13 +61,13 @@ struct cgit_filter {
 	int (*close)(struct cgit_filter *);
 	void (*fprintf)(struct cgit_filter *, FILE *, const char *prefix);
 	void (*cleanup)(struct cgit_filter *);
+	int argument_count;
 };
 
 struct cgit_exec_filter {
 	struct cgit_filter base;
 	char *cmd;
 	char **argv;
-	int extra_args;
 	int old_stdout;
 	int pipe_fh[2];
 	int pid;
@@ -357,6 +357,7 @@ extern void cgit_fprintf_filter(struct cgit_filter *filter, FILE *f, const char 
 extern void cgit_exec_filter_init(struct cgit_exec_filter *filter, char *cmd, char **argv);
 extern struct cgit_filter *cgit_new_filter(const char *cmd, filter_type filtertype);
 extern void cgit_cleanup_filters(void);
+extern void cgit_init_filters(void);
 
 extern void cgit_prepare_repo_env(struct cgit_repo * repo);
 

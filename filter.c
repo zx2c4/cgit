@@ -12,6 +12,11 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
+#include <dlfcn.h>
+
+static ssize_t (*libc_write)(int fd, const void *buf, size_t count);
+static ssize_t (*filter_write)(struct cgit_filter *base, const void *buf, size_t count) = NULL;
+static struct cgit_filter *current_write_filter = NULL;
 
 static inline void reap_filter(struct cgit_filter *filter)
 {
@@ -32,12 +37,43 @@ void cgit_cleanup_filters(void)
 	}
 }
 
+void cgit_init_filters(void)
+{
+	libc_write = dlsym(RTLD_NEXT, "write");
+	if (!libc_write)
+		die("Could not locate libc's write function");
+}
+
+ssize_t write(int fd, const void *buf, size_t count)
+{
+	if (fd != STDOUT_FILENO || !filter_write)
+		return libc_write(fd, buf, count);
+	return filter_write(current_write_filter, buf, count);
+}
+
+static inline void hook_write(struct cgit_filter *filter, ssize_t (*new_write)(struct cgit_filter *base, const void *buf, size_t count))
+{
+	/* We want to avoid buggy nested patterns. */
+	assert(filter_write == NULL);
+	assert(current_write_filter == NULL);
+	current_write_filter = filter;
+	filter_write = new_write;
+}
+
+static inline void unhook_write()
+{
+	assert(filter_write != NULL);
+	assert(current_write_filter != NULL);
+	filter_write = NULL;
+	current_write_filter = NULL;
+}
+
 static int open_exec_filter(struct cgit_filter *base, va_list ap)
 {
 	struct cgit_exec_filter *filter = (struct cgit_exec_filter *) base;
 	int i;
 
-	for (i = 0; i < filter->extra_args; i++)
+	for (i = 0; i < filter->base.argument_count; i++)
 		filter->argv[i+1] = va_arg(ap, char *);
 
 	filter->old_stdout = chk_positive(dup(STDOUT_FILENO),
@@ -74,7 +110,7 @@ static int close_exec_filter(struct cgit_filter *base)
 	die("Subprocess %s exited abnormally", filter->cmd);
 
 done:
-	for (i = 0; i < filter->extra_args; i++)
+	for (i = 0; i < filter->base.argument_count; i++)
 		filter->argv[i+1] = NULL;
 	return 0;
 
@@ -99,7 +135,7 @@ static void cleanup_exec_filter(struct cgit_filter *base)
 	}
 }
 
-static struct cgit_filter *new_exec_filter(const char *cmd, filter_type filtertype)
+static struct cgit_filter *new_exec_filter(const char *cmd, int argument_count)
 {
 	struct cgit_exec_filter *f;
 	int args_size = 0;
@@ -107,20 +143,8 @@ static struct cgit_filter *new_exec_filter(const char *cmd, filter_type filterty
 	f = xmalloc(sizeof(*f));
 	/* We leave argv for now and assign it below. */
 	cgit_exec_filter_init(f, xstrdup(cmd), NULL);
-
-	switch (filtertype) {
-		case SOURCE:
-		case ABOUT:
-			f->extra_args = 1;
-			break;
-
-		case COMMIT:
-		default:
-			f->extra_args = 0;
-			break;
-	}
-
-	args_size = (2 + f->extra_args) * sizeof(char *);
+	f->base.argument_count = argument_count;
+	args_size = (2 + argument_count) * sizeof(char *);
 	f->argv = xmalloc(args_size);
 	memset(f->argv, 0, args_size);
 	f->argv[0] = f->cmd;
@@ -136,6 +160,8 @@ void cgit_exec_filter_init(struct cgit_exec_filter *filter, char *cmd, char **ar
 	filter->base.cleanup = cleanup_exec_filter;
 	filter->cmd = cmd;
 	filter->argv = argv;
+	/* The argument count for open_filter is zero by default, unless called from new_filter, above. */
+	filter->base.argument_count = 0;
 }
 
 int cgit_open_filter(struct cgit_filter *filter, ...)
@@ -162,7 +188,7 @@ void cgit_fprintf_filter(struct cgit_filter *filter, FILE *f, const char *prefix
 
 static const struct {
 	const char *prefix;
-	struct cgit_filter *(*ctor)(const char *cmd, filter_type filtertype);
+	struct cgit_filter *(*ctor)(const char *cmd, int argument_count);
 } filter_specs[] = {
 	{ "exec", new_exec_filter },
 };
@@ -172,6 +198,8 @@ struct cgit_filter *cgit_new_filter(const char *cmd, filter_type filtertype)
 	char *colon;
 	int i;
 	size_t len;
+	int argument_count;
+
 	if (!cmd || !cmd[0])
 		return NULL;
 
@@ -184,16 +212,27 @@ struct cgit_filter *cgit_new_filter(const char *cmd, filter_type filtertype)
 	if (len == 1)
 		colon = NULL;
 
+	switch (filtertype) {
+		case SOURCE:
+		case ABOUT:
+			argument_count = 1;
+			break;
+
+		case COMMIT:
+		default:
+			argument_count = 0;
+			break;
+	}
+
 	/* If no prefix is given, exec filter is the default. */
 	if (!colon)
-		return new_exec_filter(cmd, filtertype);
+		return new_exec_filter(cmd, argument_count);
 
 	for (i = 0; i < ARRAY_SIZE(filter_specs); i++) {
 		if (len == strlen(filter_specs[i].prefix) &&
 		    !strncmp(filter_specs[i].prefix, cmd, len))
-			return filter_specs[i].ctor(colon + 1, filtertype);
+			return filter_specs[i].ctor(colon + 1, argument_count);
 	}
 
 	die("Invalid filter type: %.*s", (int) len, cmd);
 }
-
