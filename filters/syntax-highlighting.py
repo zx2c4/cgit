@@ -1,13 +1,16 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python2
 
-# This script uses Pygments and Python3. You must have both installed for this to work.
+# This script uses Pygments and Python2. You must have both installed
+# for this to work.
+#
 # http://pygments.org/
 # http://python.org/
 #
-# It may be used with the source-filter or repo.source-filter settings in cgitrc.
+# It may be used with the source-filter or repo.source-filter settings
+# in cgitrc.
 #
-# The following environment variables can be used to retrieve the configuration
-# of the repository for which this script is called:
+# The following environment variables can be used to retrieve the
+# configuration of the repository for which this script is called:
 # CGIT_REPO_URL        ( = repo.url       setting )
 # CGIT_REPO_NAME       ( = repo.name      setting )
 # CGIT_REPO_PATH       ( = repo.path      setting )
@@ -18,22 +21,33 @@
 
 
 import sys
-import cgi
-import codecs
-from pygments.lexers import get_lexer_for_filename
 from pygments import highlight
+from pygments.util import ClassNotFound
+from pygments.lexers import TextLexer
+from pygments.lexers import guess_lexer
+from pygments.lexers import guess_lexer_for_filename
 from pygments.formatters import HtmlFormatter
 
-sys.stdin = codecs.getreader("utf-8")(sys.stdin.detach())
-sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
-doc = sys.stdin.read()
-try:
-	lexer = get_lexer_for_filename(sys.argv[1])
-	formatter = HtmlFormatter(style='pastie')
-	sys.stdout.write("<style>")
-	sys.stdout.write(formatter.get_style_defs('.highlight'))
-	sys.stdout.write("</style>")
 
-	highlight(doc, lexer, formatter, sys.stdout)
-except:
-	sys.stdout.write(str(cgi.escape(doc).encode("ascii", "xmlcharrefreplace"), "ascii"))
+# read stdin and decode to utf-8. ignore any unkown signs.
+data = sys.stdin.read().decode(encoding='utf-8', errors='ignore')
+filename = sys.argv[1]
+formatter = HtmlFormatter(encoding='utf-8', style='pastie')
+
+try:
+	lexer = guess_lexer_for_filename(filename, data, encoding='utf-8')
+except ClassNotFound:
+	# check if there is any shebang
+	if data[0:2] == '#!':
+		lexer = guess_lexer(data, encoding='utf-8')
+	else:
+		lexer = TextLexer(encoding='utf-8')
+except TypeError:
+	lexer = TextLexer(encoding='utf-8')
+
+# highlight! :-)
+# printout pygments' css definitions as well
+sys.stdout.write('<style>')
+sys.stdout.write(formatter.get_style_defs('.highlight'))
+sys.stdout.write('</style>')
+highlight(data, lexer, formatter, outfile=sys.stdout)
