@@ -379,30 +379,18 @@ static const struct {
 	const char *prefix;
 	struct cgit_filter *(*ctor)(const char *cmd, int argument_count);
 } filter_specs[] = {
-	{ "exec", new_exec_filter },
+	{ "exec:", new_exec_filter },
 #ifndef NO_LUA
-	{ "lua", new_lua_filter },
+	{ "lua:", new_lua_filter },
 #endif
 };
 
 struct cgit_filter *cgit_new_filter(const char *cmd, filter_type filtertype)
 {
-	char *colon;
-	int i;
-	size_t len;
-	int argument_count;
+	int argument_count, i;
 
 	if (!cmd || !cmd[0])
 		return NULL;
-
-	colon = strchr(cmd, ':');
-	len = colon - cmd;
-	/*
-	 * In case we're running on Windows, don't allow a single letter before
-	 * the colon.
-	 */
-	if (len == 1)
-		colon = NULL;
 
 	switch (filtertype) {
 		case EMAIL:
@@ -420,15 +408,11 @@ struct cgit_filter *cgit_new_filter(const char *cmd, filter_type filtertype)
 			break;
 	}
 
-	/* If no prefix is given, exec filter is the default. */
-	if (!colon)
-		return new_exec_filter(cmd, argument_count);
-
 	for (i = 0; i < ARRAY_SIZE(filter_specs); i++) {
-		if (len == strlen(filter_specs[i].prefix) &&
-		    !strncmp(filter_specs[i].prefix, cmd, len))
-			return filter_specs[i].ctor(colon + 1, argument_count);
+		if (!prefixcmp(cmd, filter_specs[i].prefix))
+			return filter_specs[i].ctor(strchr(cmd, ':') + 1, argument_count);
 	}
 
-	die("Invalid filter type: %.*s", (int) len, cmd);
+	/* If no valid prefix is given, exec filter is the default. */
+	return new_exec_filter(cmd, argument_count);
 }
