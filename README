@@ -38,6 +38,7 @@ Dependencies
 * libzip
 * libcrypto (OpenSSL)
 * libssl (OpenSSL)
+* optional: luajit or lua
 
 Apache configuration
 --------------------

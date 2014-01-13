@@ -564,6 +564,35 @@ specification with the relevant string; available values are:
 'exec:'::
 	The default "one process per filter" mode.
 
+'lua:'::
+	Executes the script using a built-in Lua interpreter. The script is
+	loaded once per execution of cgit, and may be called multiple times
+	during cgit's lifetime, making it a good choice for repeated filters
+	such as the 'email filter'. It responds to three functions:
+
+	'filter_open(argument1, argument2, argument3, ...)'::
+		This is called upon activation of the filter for a particular
+		set of data.
+	'filter_write(buffer)'::
+		This is called whenever cgit writes data to the webpage.
+	'filter_close()'::
+		This is called when the current filtering operation is
+		completed.
+	
+	Additionally, cgit exposes to the Lua the following built-in functions:
+
+	'html(str)'::
+		Writes 'str' to the webpage.
+	'html_txt(str)'::
+		HTML escapes and writes 'str' to the webpage.
+	'html_attr(str)'::
+		HTML escapes for an attribute and writes "str' to the webpage.
+	'html_url_path(str)'::
+		URL escapes for a path and writes 'str' to the webpage.
+	'html_url_arg(str)'::
+		URL escapes for an argument and writes 'str' to the webpage.
+
+
 Parameters are provided to filters as follows.
 
 about filter::

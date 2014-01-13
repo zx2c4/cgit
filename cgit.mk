@@ -25,6 +25,25 @@ ifdef NO_C99_FORMAT
 	CFLAGS += -DNO_C99_FORMAT
 endif
 
+ifdef NO_LUA
+	CFLAGS += -DNO_LUA
+else
+
+ifeq (VANILLA,$(LUA_IMPLEMENTATION))
+	CFLAGS += -llua
+else
+	LUAJIT_LIBS := $(shell pkg-config --libs luajit)
+	LUAJIT_CFLAGS := $(shell pkg-config --cflags luajit)
+	CGIT_LIBS += $(LUAJIT_LIBS)
+	CFLAGS += $(LUAJIT_CFLAGS)
+endif
+
+endif
+
+CGIT_LIBS += -ldl
+
+
+
 CGIT_OBJ_NAMES += cgit.o
 CGIT_OBJ_NAMES += cache.o
 CGIT_OBJ_NAMES += cmd.o
@@ -60,9 +79,6 @@ CGIT_VERSION_OBJS := $(addprefix $(CGIT_PREFIX),cgit.o)
 $(CGIT_VERSION_OBJS): $(CGIT_PREFIX)VERSION
 $(CGIT_VERSION_OBJS): EXTRA_CPPFLAGS = \
 	-DCGIT_VERSION='"$(CGIT_VERSION)"'
-
-CGIT_LIBS += -ldl
-
 
 # Git handles dependencies using ":=" so dependencies in CGIT_OBJ are not
 # handled by that and we must handle them ourselves.
