@@ -406,6 +406,9 @@ struct cgit_filter *cgit_new_filter(const char *cmd, filter_type filtertype)
 
 	switch (filtertype) {
 		case EMAIL:
+			argument_count = 2;
+			break;
+
 		case SOURCE:
 		case ABOUT:
 			argument_count = 1;

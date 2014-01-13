@@ -9,7 +9,7 @@
 
 require("crypto")
 
-function filter_open(email)
+function filter_open(email, page)
 	buffer = ""
 	md5 = crypto.digest("md5", email:sub(2, -2):lower())
 end

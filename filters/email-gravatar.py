@@ -27,6 +27,8 @@ if email[0] == '<':
 if email[-1] == '>':
         email = email[0:-1]
 
+page = sys.argv[2]
+
 md5 = hashlib.md5(email.encode()).hexdigest()
 text = sys.stdin.read().strip()
 

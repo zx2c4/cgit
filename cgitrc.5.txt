@@ -121,9 +121,9 @@ email-filter::
 	Specifies a command which will be invoked to format names and email
 	address of committers, authors, and taggers, as represented in various
 	places throughout the cgit interface. This command will receive an
-	email address as its only command line argument, and the text to
-	format on STDIN. It is to write the formatted text back out onto
-	STDOUT. Default value: none. See also: "FILTER API".
+	email address and an origin page string as its command line arguments,
+	and the text to format on STDIN. It is to write the formatted text back
+	out onto STDOUT. Default value: none. See also: "FILTER API".
 
 embedded::
 	Flag which, when set to "1", will make cgit generate a html fragment
@@ -620,10 +620,11 @@ commit filter::
 	expected on standard output.
 
 email filter::
-	This filter is given a single parameter: the email address of the
-	relevent user. The filter will then receive the text string to format
-	on standard input and is expected to write to standard output the
-	formatted text to be included in the page.
+	This filter is given two parameters: the email address of the relevent
+	author and a string indicating the originating page. The filter will
+	then receive the text string to format on standard input and is
+	expected to write to standard output the formatted text to be included
+	in the page.
 
 source filter::
 	This filter is given a single parameter: the filename of the source
