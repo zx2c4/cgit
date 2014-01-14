@@ -53,7 +53,7 @@ typedef void (*filepair_fn)(struct diff_filepair *pair);
 typedef void (*linediff_fn)(char *line, int len);
 
 typedef enum {
-	ABOUT, COMMIT, SOURCE, EMAIL
+	ABOUT, COMMIT, SOURCE, EMAIL, AUTH
 } filter_type;
 
 struct cgit_filter {
@@ -252,6 +252,7 @@ struct cgit_config {
 	struct cgit_filter *commit_filter;
 	struct cgit_filter *source_filter;
 	struct cgit_filter *email_filter;
+	struct cgit_filter *auth_filter;
 };
 
 struct cgit_page {
@@ -278,6 +279,10 @@ struct cgit_environment {
 	const char *script_name;
 	const char *server_name;
 	const char *server_port;
+	const char *http_cookie;
+	const char *http_referer;
+	unsigned int content_length;
+	int authenticated;
 };
 
 struct cgit_context {

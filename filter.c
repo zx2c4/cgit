@@ -244,6 +244,11 @@ static int html_url_arg_lua_filter(lua_State *lua_state)
 	return hook_lua_filter(lua_state, html_url_arg);
 }
 
+static int html_include_lua_filter(lua_State *lua_state)
+{
+	return hook_lua_filter(lua_state, (void (*)(const char *))html_include);
+}
+
 static void cleanup_lua_filter(struct cgit_filter *base)
 {
 	struct lua_filter *filter = (struct lua_filter *)base;
@@ -279,6 +284,8 @@ static int init_lua_filter(struct lua_filter *filter)
 	lua_setglobal(filter->lua_state, "html_url_path");
 	lua_pushcfunction(filter->lua_state, html_url_arg_lua_filter);
 	lua_setglobal(filter->lua_state, "html_url_arg");
+	lua_pushcfunction(filter->lua_state, html_include_lua_filter);
+	lua_setglobal(filter->lua_state, "html_include");
 
 	if (luaL_dofile(filter->lua_state, filter->script_file)) {
 		error_lua_filter(filter);
@@ -409,6 +416,10 @@ struct cgit_filter *cgit_new_filter(const char *cmd, filter_type filtertype)
 		colon = NULL;
 
 	switch (filtertype) {
+		case AUTH:
+			argument_count = 11;
+			break;
+
 		case EMAIL:
 			argument_count = 2;
 			break;

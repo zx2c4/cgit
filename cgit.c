@@ -192,6 +192,8 @@ static void config_cb(const char *name, const char *value)
 		ctx.cfg.commit_filter = cgit_new_filter(value, COMMIT);
 	else if (!strcmp(name, "email-filter"))
 		ctx.cfg.email_filter = cgit_new_filter(value, EMAIL);
+	else if (!strcmp(name, "auth-filter"))
+		ctx.cfg.auth_filter = cgit_new_filter(value, AUTH);
 	else if (!strcmp(name, "embedded"))
 		ctx.cfg.embedded = atoi(value);
 	else if (!strcmp(name, "max-atom-items"))
@@ -378,6 +380,10 @@ static void prepare_context(struct cgit_context *ctx)
 	ctx->env.script_name = getenv("SCRIPT_NAME");
 	ctx->env.server_name = getenv("SERVER_NAME");
 	ctx->env.server_port = getenv("SERVER_PORT");
+	ctx->env.http_cookie = getenv("HTTP_COOKIE");
+	ctx->env.http_referer = getenv("HTTP_REFERER");
+	ctx->env.content_length = getenv("CONTENT_LENGTH") ? strtoul(getenv("CONTENT_LENGTH"), NULL, 10) : 0;
+	ctx->env.authenticated = 0;
 	ctx->page.mimetype = "text/html";
 	ctx->page.charset = PAGE_ENCODING;
 	ctx->page.filename = NULL;
@@ -593,10 +599,91 @@ static int prepare_repo_cmd(struct cgit_context *ctx)
 	return 0;
 }
 
+static inline void open_auth_filter(struct cgit_context *ctx, const char *function)
+{
+	cgit_open_filter(ctx->cfg.auth_filter, function,
+		ctx->env.http_cookie ? ctx->env.http_cookie : "",
+		ctx->env.request_method ? ctx->env.request_method : "",
+		ctx->env.query_string ? ctx->env.query_string : "",
+		ctx->env.http_referer ? ctx->env.http_referer : "",
+		ctx->env.path_info ? ctx->env.path_info : "",
+		ctx->env.http_host ? ctx->env.http_host : "",
+		ctx->env.https ? ctx->env.https : "",
+		ctx->qry.repo ? ctx->qry.repo : "",
+		ctx->qry.page ? ctx->qry.page : "",
+		ctx->qry.url ? ctx->qry.url : "");
+}
+
+#define MAX_AUTHENTICATION_POST_BYTES 4096
+static inline void authenticate_post(struct cgit_context *ctx)
+{
+	if (ctx->env.http_referer && strlen(ctx->env.http_referer) > 0) {
+		html("Status: 302 Redirect\n");
+		html("Cache-Control: no-cache, no-store\n");
+		htmlf("Location: %s\n", ctx->env.http_referer);
+	} else {
+		html("Status: 501 Missing Referer\n");
+		html("Cache-Control: no-cache, no-store\n\n");
+		exit(0);
+	}
+
+	open_auth_filter(ctx, "authenticate-post");
+	char buffer[MAX_AUTHENTICATION_POST_BYTES];
+	int len;
+	len = ctx->env.content_length;
+	if (len > MAX_AUTHENTICATION_POST_BYTES)
+		len = MAX_AUTHENTICATION_POST_BYTES;
+	if (read(STDIN_FILENO, buffer, len) < 0)
+		die_errno("Could not read POST from stdin");
+	if (write(STDOUT_FILENO, buffer, len) < 0)
+		die_errno("Could not write POST to stdout");
+	/* The filter may now spit out a Set-Cookie: ... */
+	cgit_close_filter(ctx->cfg.auth_filter);
+
+	html("\n");
+	exit(0);
+}
+
+static inline void authenticate_cookie(struct cgit_context *ctx)
+{
+	/* If we don't have an auth_filter, consider all cookies valid, and thus return early. */
+	if (!ctx->cfg.auth_filter) {
+		ctx->env.authenticated = 1;
+		return;
+	}
+
+	/* If we're having something POST'd to /login, we're authenticating POST,
+	 * instead of the cookie, so call authenticate_post and bail out early.
+	 * This pattern here should match /?p=login with POST. */
+	if (ctx->env.request_method && ctx->qry.page && !ctx->repo && \
+	    !strcmp(ctx->env.request_method, "POST") && !strcmp(ctx->qry.page, "login")) {
+		authenticate_post(ctx);
+		return;
+	}
+
+	/* If we've made it this far, we're authenticating the cookie for real, so do that. */
+	open_auth_filter(ctx, "authenticate-cookie");
+	ctx->env.authenticated = cgit_close_filter(ctx->cfg.auth_filter);
+}
+
 static void process_request(void *cbdata)
 {
 	struct cgit_context *ctx = cbdata;
 	struct cgit_cmd *cmd;
+
+	/* If we're not yet authenticated, no matter what page we're on,
+	 * display the authentication body from the auth_filter. This should
+	 * never be cached. */
+	if (!ctx->env.authenticated) {
+		ctx->page.title = "Authentication Required";
+		cgit_print_http_headers(ctx);
+		cgit_print_docstart(ctx);
+		cgit_print_pageheader(ctx);
+		open_auth_filter(ctx, "body");
+		cgit_close_filter(ctx->cfg.auth_filter);
+		cgit_print_docend();
+		return;
+	}
 
 	cmd = cgit_get_cmd(ctx);
 	if (!cmd) {
@@ -911,6 +998,7 @@ int main(int argc, const char **argv)
 	int err, ttl;
 
 	cgit_init_filters();
+	atexit(cgit_cleanup_filters);
 
 	prepare_context(&ctx);
 	cgit_repolist.length = 0;
@@ -948,18 +1036,22 @@ int main(int argc, const char **argv)
 		cgit_parse_url(ctx.qry.url);
 	}
 
+	/* Before we go any further, we set ctx.env.authenticated by checking to see
+	 * if the supplied cookie is valid. All cookies are valid if there is no
+	 * auth_filter. If there is an auth_filter, the filter decides. */
+	authenticate_cookie(&ctx);
+
 	ttl = calc_ttl();
 	if (ttl < 0)
 		ctx.page.expires += 10 * 365 * 24 * 60 * 60; /* 10 years */
 	else
 		ctx.page.expires += ttl * 60;
-	if (ctx.env.request_method && !strcmp(ctx.env.request_method, "HEAD"))
+	if (!ctx.env.authenticated || (ctx.env.request_method && !strcmp(ctx.env.request_method, "HEAD")))
 		ctx.cfg.nocache = 1;
 	if (ctx.cfg.nocache)
 		ctx.cfg.cache_size = 0;
 	err = cache_process(ctx.cfg.cache_size, ctx.cfg.cache_root,
 			    ctx.qry.raw, ttl, process_request, &ctx);
-	cgit_cleanup_filters();
 	if (err)
 		cgit_print_error("Error processing page: %s (%d)",
 				 strerror(err), err);

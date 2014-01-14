@@ -42,6 +42,13 @@ agefile::
 	hh:mm:ss". You may want to generate this file from a post-receive
 	hook. Default value: "info/web/last-modified".
 
+auth-filter::
+	Specifies a command that will be invoked for authenticating repository
+	access. Receives quite a few arguments, and data on both stdin and
+	stdout for authentication processing. Details follow later in this
+	document. If no auth-filter is specified, no authentication is
+	performed. Default value: none. See also: "FILTER API".
+
 branch-sort::
 	Flag which, when set to "age", enables date ordering in the branch ref
 	list, and when set to "name" enables ordering by branch name. Default
@@ -605,6 +612,8 @@ specification with the relevant string; available values are:
 		URL escapes for a path and writes 'str' to the webpage.
 	'html_url_arg(str)'::
 		URL escapes for an argument and writes 'str' to the webpage.
+	'html_include(file)'::
+		Includes 'file' in webpage.
 
 
 Parameters are provided to filters as follows.
@@ -635,7 +644,32 @@ source filter::
 	file that is to be filtered is available on standard input and the
 	filtered contents is expected on standard output.
 
-Also, all filters are handed the following environment variables:
+auth filter::
+	The authentication filter receives 11 parameters:
+	  - filter action, explained below, which specifies which action the
+	    filter is called for
+	  - http cookie
+	  - http method
+	  - http referer
+	  - http path
+	  - http https flag
+	  - cgit repo
+	  - cgit page
+	  - cgit url
+	When the filter action is "body", this filter must write to output the
+	HTML for displaying the login form, which POSTs to "/?p=login". When
+	the filter action is "authenticate-cookie", this filter must validate
+	the http cookie and return a 0 if it is invalid or 1 if it is invalid,
+	in the exit code / close function. If the filter action is
+	"authenticate-post", this filter receives POST'd parameters on
+	standard input, and should write to output one or more "Set-Cookie"
+	HTTP headers, each followed by a newline.
+
+	Please see `filters/simple-authentication.lua` for a clear example
+	script that may be modified.
+
+
+All filters are handed the following environment variables:
 
 - CGIT_REPO_URL (from repo.url)
 - CGIT_REPO_NAME (from repo.name)

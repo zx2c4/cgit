@@ -641,6 +641,8 @@ void cgit_print_http_headers(struct cgit_context *ctx)
 	if (ctx->page.filename)
 		htmlf("Content-Disposition: inline; filename=\"%s\"\n",
 		      ctx->page.filename);
+	if (!ctx->env.authenticated)
+		html("Cache-Control: no-cache, no-store\n");
 	htmlf("Last-Modified: %s\n", http_date(ctx->page.modified));
 	htmlf("Expires: %s\n", http_date(ctx->page.expires));
 	if (ctx->page.etag)
@@ -814,14 +816,16 @@ static void print_header(struct cgit_context *ctx)
 		cgit_index_link("index", NULL, NULL, NULL, NULL, 0);
 		html(" : ");
 		cgit_summary_link(ctx->repo->name, ctx->repo->name, NULL, NULL);
-		html("</td><td class='form'>");
-		html("<form method='get' action=''>\n");
-		cgit_add_hidden_formfields(0, 1, ctx->qry.page);
-		html("<select name='h' onchange='this.form.submit();'>\n");
-		for_each_branch_ref(print_branch_option, ctx->qry.head);
-		html("</select> ");
-		html("<input type='submit' name='' value='switch'/>");
-		html("</form>");
+		if (ctx->env.authenticated) {
+			html("</td><td class='form'>");
+			html("<form method='get' action=''>\n");
+			cgit_add_hidden_formfields(0, 1, ctx->qry.page);
+			html("<select name='h' onchange='this.form.submit();'>\n");
+			for_each_branch_ref(print_branch_option, ctx->qry.head);
+			html("</select> ");
+			html("<input type='submit' name='' value='switch'/>");
+			html("</form>");
+		}
 	} else
 		html_txt(ctx->cfg.root_title);
 	html("</td></tr>\n");
@@ -843,11 +847,11 @@ static void print_header(struct cgit_context *ctx)
 void cgit_print_pageheader(struct cgit_context *ctx)
 {
 	html("<div id='cgit'>");
-	if (!ctx->cfg.noheader)
+	if (!ctx->env.authenticated || !ctx->cfg.noheader)
 		print_header(ctx);
 
 	html("<table class='tabs'><tr><td>\n");
-	if (ctx->repo) {
+	if (ctx->env.authenticated && ctx->repo) {
 		cgit_summary_link("summary", NULL, hc(ctx, "summary"),
 				  ctx->qry.head);
 		cgit_refs_link("refs", NULL, hc(ctx, "refs"), ctx->qry.head,
@@ -886,7 +890,7 @@ void cgit_print_pageheader(struct cgit_context *ctx)
 		html("'/>\n");
 		html("<input type='submit' value='search'/>\n");
 		html("</form>\n");
-	} else {
+	} else if (ctx->env.authenticated) {
 		site_link(NULL, "index", NULL, hc(ctx, "repolist"), NULL, NULL, 0);
 		if (ctx->cfg.root_readme)
 			site_link("about", "about", NULL, hc(ctx, "about"),
@@ -902,7 +906,7 @@ void cgit_print_pageheader(struct cgit_context *ctx)
 		html("</form>");
 	}
 	html("</td></tr></table>\n");
-	if (ctx->qry.vpath) {
+	if (ctx->env.authenticated && ctx->qry.vpath) {
 		html("<div class='path'>");
 		html("path: ");
 		cgit_print_path_crumbs(ctx, ctx->qry.vpath);
