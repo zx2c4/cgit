@@ -106,7 +106,7 @@ static int open_exec_filter(struct cgit_filter *base, va_list ap)
 static int close_exec_filter(struct cgit_filter *base)
 {
 	struct cgit_exec_filter *filter = (struct cgit_exec_filter *)base;
-	int i, exit_status;
+	int i, exit_status = 0;
 
 	chk_non_negative(dup2(filter->old_stdout, STDOUT_FILENO),
 		"Unable to restore STDOUT");
@@ -114,14 +114,14 @@ static int close_exec_filter(struct cgit_filter *base)
 	if (filter->pid < 0)
 		goto done;
 	waitpid(filter->pid, &exit_status, 0);
-	if (WIFEXITED(exit_status) && !WEXITSTATUS(exit_status))
+	if (WIFEXITED(exit_status))
 		goto done;
 	die("Subprocess %s exited abnormally", filter->cmd);
 
 done:
 	for (i = 0; i < filter->base.argument_count; i++)
 		filter->argv[i + 1] = NULL;
-	return 0;
+	return WEXITSTATUS(exit_status);
 
 }
 
@@ -315,10 +315,14 @@ static int close_lua_filter(struct cgit_filter *base)
 	int ret = 0;
 
 	lua_getglobal(filter->lua_state, "filter_close");
-	if (lua_pcall(filter->lua_state, 0, 0, 0)) {
+	if (lua_pcall(filter->lua_state, 0, 1, 0)) {
 		error_lua_filter(filter);
-		ret = 1;
+		ret = -1;
+	} else {
+		ret = lua_tonumber(filter->lua_state, -1);
+		lua_pop(filter->lua_state, 1);
 	}
+
 	unhook_write();
 	return ret;
 }

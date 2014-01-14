@@ -16,6 +16,7 @@ end
 
 function filter_close()
 	html("<img src='//www.gravatar.com/avatar/" .. md5 .. "?s=13&amp;d=retro' style='height:10pt;width:10pt' alt='Gravatar' /> " .. buffer)
+	return 0
 end
 
 function filter_write(str)
