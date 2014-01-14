@@ -58,6 +58,8 @@ else
 	PATH="$(pwd)/../..:$PATH"
 fi
 
+FILTER_DIRECTORY=$(cd ../filters && pwd)
+
 mkrepo() {
 	name=$1
 	count=$2
@@ -90,6 +92,7 @@ setup_repos()
 	mkrepo repos/bar 50 >/dev/null
 	mkrepo repos/foo+bar 10 testplus >/dev/null
 	mkrepo "repos/with space" 2 >/dev/null
+	mkrepo repos/filter 5 testplus >/dev/null
 	cat >cgitrc <<EOF
 virtual-root=/
 cache-root=$PWD/cache
@@ -102,6 +105,7 @@ summary-log=5
 summary-branches=5
 summary-tags=5
 clone-url=git://example.org/\$CGIT_REPO_URL.git
+enable-filter-overrides=1
 
 repo.url=foo
 repo.path=$PWD/repos/foo/.git
@@ -120,6 +124,15 @@ repo.desc=the foo+bar repo
 repo.url=with space
 repo.path=$PWD/repos/with space/.git
 repo.desc=spaced repo
+
+repo.url=filter
+repo.path=$PWD/repos/filter/.git
+repo.desc=filtered repo
+repo.about-filter=exec:$FILTER_DIRECTORY/capitalize-stdin.sh
+repo.commit-filter=exec:$FILTER_DIRECTORY/capitalize-stdin.sh
+repo.email-filter=exec:$FILTER_DIRECTORY/capitalize-argv1.sh
+repo.source-filter=exec:$FILTER_DIRECTORY/capitalize-stdin.sh
+repo.readme=master:a+b
 EOF
 }
 
