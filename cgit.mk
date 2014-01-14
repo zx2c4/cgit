@@ -25,10 +25,8 @@ ifdef NO_C99_FORMAT
 	CFLAGS += -DNO_C99_FORMAT
 endif
 
-nullstring :=
-fourspace := $(nullstring)    
 ifdef NO_LUA
- 	$(info $(fourspace)* building without specified Lua support)
+	LUA_MESSAGE := linking without specified Lua support
 	CGIT_CFLAGS += -DNO_LUA
 else
 LUAJIT_CFLAGS := $(shell pkg-config --cflags luajit 2>/dev/null)
@@ -39,26 +37,26 @@ ifeq (JIT,$(LUA_IMPLEMENTATION))
 	ifeq ($(strip $(LUAJIT_LIBS)),)
  		$(error LuaJIT specified via LUA_IMPLEMENTATION=JIT, but library could not be found.)
 	endif
- 	$(info $(fourspace)* building with selected LuaJIT)
+	LUA_MESSAGE := linking with selected LuaJIT
 	CGIT_LIBS += $(LUAJIT_LIBS)
 	CGIT_CFLAGS += $(LUAJIT_CFLAGS)
 else ifeq (VANILLA,$(LUA_IMPLEMENTATION))
 	ifeq ($(strip $(LUA_LIBS)),)
  		$(error Lua specified via LUA_IMPLEMENTATION=VANILLA, but library could not be found.)
 	endif
- 	$(info $(fourspace)* building with selected Lua)
+	LUA_MESSAGE := linking with selected Lua
 	CGIT_LIBS += $(LUA_LIBS)
 	CGIT_LIBS += $(LUA_CFLAGS)
 else ifneq ($(strip $(LUAJIT_LIBS)),)
- 	$(info $(fourspace)* building with autodetected LuaJIT)
+	LUA_MESSAGE := linking with autodetected LuaJIT
 	CGIT_LIBS += $(LUAJIT_LIBS)
 	CGIT_CFLAGS += $(LUAJIT_CFLAGS)
 else ifneq ($(strip $(LUA_LIBS)),)
- 	$(info $(fourspace)* building with autodetected Lua)
+	LUA_MESSAGE := linking with autodetected Lua
 	CGIT_LIBS += $(LUA_LIBS)
 	CGIT_CFLAGS += $(LUA_CFLAGS)
 else
- 	$(info $(fourspace)* building without autodetected Lua support)
+	LUA_MESSAGE := linking without autodetected Lua support
 	NO_LUA := YesPlease
 	CGIT_CFLAGS += -DNO_LUA
 endif
@@ -133,4 +131,5 @@ $(CGIT_OBJS): %.o: %.c GIT-CFLAGS $(CGIT_PREFIX)CGIT-CFLAGS $(missing_dep_dirs)
 	$(QUIET_CC)$(CC) -o $*.o -c $(dep_args) $(ALL_CFLAGS) $(EXTRA_CPPFLAGS) $(CGIT_CFLAGS) $<
 
 $(CGIT_PREFIX)cgit: $(CGIT_OBJS) GIT-LDFLAGS $(GITLIBS)
+	@echo 1>&1 "    * $(LUA_MESSAGE)"
 	$(QUIET_LINK)$(CC) $(ALL_CFLAGS) -o $@ $(ALL_LDFLAGS) $(filter %.o,$^) $(LIBS) $(CGIT_LIBS)
