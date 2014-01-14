@@ -32,6 +32,22 @@ This will install `cgit.cgi` and `cgit.css` into `/var/www/htdocs/cgit`. You
 can configure this location (and a few other things) by providing a `cgit.conf`
 file (see the Makefile for details).
 
+If you'd like to compile without Lua support, you may use:
+
+    $ make NO_LUA=1
+
+And if you'd like to specify a Lua implementation, you may use:
+
+    $ make LUA_IMPLEMENTATION=JIT
+
+for using the LuaJIT project. Or:
+
+    $ make LUA_IMPLEMENTATION=VANILLA
+
+for the mainline Lua project. If you specify neither implementation, it will
+be auto-detected, preferring LuaJIT if both are present.
+
+
 Dependencies
 ------------
 
