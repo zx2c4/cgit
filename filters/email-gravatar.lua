@@ -7,7 +7,7 @@
 -- 	<http://mkottman.github.io/luacrypto/>
 --
 
-require("crypto")
+local crypto = require("crypto")
 
 function filter_open(email, page)
 	buffer = ""
