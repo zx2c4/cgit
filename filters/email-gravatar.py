@@ -36,4 +36,4 @@ sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
 md5 = hashlib.md5(email.encode()).hexdigest()
 text = sys.stdin.read().strip()
 
-print("<img src='//www.gravatar.com/avatar/" + md5 + "?s=13&amp;d=retro' style='height:10pt;width:10pt' alt='Gravatar' /> " + text)
+print("<img src='//www.gravatar.com/avatar/" + md5 + "?s=13&amp;d=retro' width=13 height=13 alt='Gravatar' /> " + text)
