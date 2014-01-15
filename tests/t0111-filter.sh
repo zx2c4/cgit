@@ -30,11 +30,11 @@ do
 	'
 
 	test_expect_success "check whether the $prefix email filter works for authors" '
-		grep "A U THOR &LT;AUTHOR@EXAMPLE.COM&GT;" tmp
+		grep "<author@example.com> commit A U THOR &LT;AUTHOR@EXAMPLE.COM&GT;" tmp
 	'
 
 	test_expect_success "check whether the $prefix email filter works for committers" '
-		grep "C O MITTER &LT;COMMITTER@EXAMPLE.COM&GT;" tmp
+		grep "<committer@example.com> commit C O MITTER &LT;COMMITTER@EXAMPLE.COM&GT;" tmp
 	'
 done
 

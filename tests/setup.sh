@@ -128,19 +128,19 @@ repo.desc=spaced repo
 repo.url=filter-exec
 repo.path=$PWD/repos/filter/.git
 repo.desc=filtered repo
-repo.about-filter=exec:$FILTER_DIRECTORY/capitalize-stdin.sh
-repo.commit-filter=exec:$FILTER_DIRECTORY/capitalize-stdin.sh
-repo.email-filter=exec:$FILTER_DIRECTORY/capitalize-stdin.sh
-repo.source-filter=exec:$FILTER_DIRECTORY/capitalize-stdin.sh
+repo.about-filter=exec:$FILTER_DIRECTORY/dump.sh
+repo.commit-filter=exec:$FILTER_DIRECTORY/dump.sh
+repo.email-filter=exec:$FILTER_DIRECTORY/dump.sh
+repo.source-filter=exec:$FILTER_DIRECTORY/dump.sh
 repo.readme=master:a+b
 
 repo.url=filter-lua
 repo.path=$PWD/repos/filter/.git
 repo.desc=filtered repo
-repo.about-filter=lua:$FILTER_DIRECTORY/capitalize-buffer.lua
-repo.commit-filter=lua:$FILTER_DIRECTORY/capitalize-buffer.lua
-repo.email-filter=lua:$FILTER_DIRECTORY/capitalize-buffer.lua
-repo.source-filter=lua:$FILTER_DIRECTORY/capitalize-buffer.lua
+repo.about-filter=lua:$FILTER_DIRECTORY/dump.lua
+repo.commit-filter=lua:$FILTER_DIRECTORY/dump.lua
+repo.email-filter=lua:$FILTER_DIRECTORY/dump.lua
+repo.source-filter=lua:$FILTER_DIRECTORY/dump.lua
 repo.readme=master:a+b
 EOF
 }
