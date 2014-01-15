@@ -407,7 +407,7 @@ void cgit_print_diff(const char *new_rev, const char *old_rev,
 		diff_setup_done(&diffopt);
 
 		ctx.page.mimetype = "text/plain";
-		cgit_print_http_headers(&ctx);
+		cgit_print_http_headers();
 		if (old_tree_sha1) {
 			diff_tree_sha1(old_tree_sha1, new_tree_sha1, "",
 				       &diffopt);

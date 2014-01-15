@@ -108,7 +108,7 @@ void cgit_print_atom(char *tip, char *path, int max_count)
 	host = cgit_hosturl();
 	ctx.page.mimetype = "text/xml";
 	ctx.page.charset = "utf-8";
-	cgit_print_http_headers(&ctx);
+	cgit_print_http_headers();
 	html("<feed xmlns='http://www.w3.org/2005/Atom'>\n");
 	html("<title>");
 	html_txt(ctx.repo->name);

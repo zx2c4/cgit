@@ -6,7 +6,7 @@
 #ifndef CGIT_CACHE_H
 #define CGIT_CACHE_H
 
-typedef void (*cache_fill_fn)(void *cbdata);
+typedef void (*cache_fill_fn)(void);
 
 
 /* Print cached content to stdout, generate the content if necessary.
@@ -17,13 +17,12 @@ typedef void (*cache_fill_fn)(void *cbdata);
  *   key     the key used to lookup cache files
  *   ttl     max cache time in seconds for this key
  *   fn      content generator function for this key
- *   cbdata  user-supplied data to the content generator function
  *
  * Return value
  *   0 indicates success, everyting else is an error
  */
 extern int cache_process(int size, const char *path, const char *key, int ttl,
-			 cache_fill_fn fn, void *cbdata);
+			 cache_fill_fn fn);
 
 
 /* List info about all cache entries on stdout */

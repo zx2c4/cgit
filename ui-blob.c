@@ -164,6 +164,6 @@ void cgit_print_blob(const char *hex, char *path, const char *head, int file_onl
 			ctx.page.mimetype = "text/plain";
 	}
 	ctx.page.filename = path;
-	cgit_print_http_headers(&ctx);
+	cgit_print_http_headers();
 	html_raw(buf, size);
 }

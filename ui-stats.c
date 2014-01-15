@@ -209,13 +209,12 @@ static int cmp_total_commits(const void *a1, const void *a2)
 /* Walk the commit DAG and collect number of commits per author per
  * timeperiod into a nested string_list collection.
  */
-static struct string_list collect_stats(struct cgit_context *ctx,
-					struct cgit_period *period)
+static struct string_list collect_stats(struct cgit_period *period)
 {
 	struct string_list authors;
 	struct rev_info rev;
 	struct commit *commit;
-	const char *argv[] = {NULL, ctx->qry.head, NULL, NULL, NULL, NULL};
+	const char *argv[] = {NULL, ctx.qry.head, NULL, NULL, NULL, NULL};
 	int argc = 3;
 	time_t now;
 	long i;
@@ -229,9 +228,9 @@ static struct string_list collect_stats(struct cgit_context *ctx,
 		period->dec(tm);
 	strftime(tmp, sizeof(tmp), "%Y-%m-%d", tm);
 	argv[2] = xstrdup(fmt("--since=%s", tmp));
-	if (ctx->qry.path) {
+	if (ctx.qry.path) {
 		argv[3] = "--";
-		argv[4] = ctx->qry.path;
+		argv[4] = ctx.qry.path;
 		argc += 2;
 	}
 	init_revisions(&rev, NULL);
@@ -360,30 +359,30 @@ static void print_authors(struct string_list *authors, int top,
  * for each author is another string_list which is used to calculate the
  * number of commits per time-interval.
  */
-void cgit_show_stats(struct cgit_context *ctx)
+void cgit_show_stats(void)
 {
 	struct string_list authors;
 	struct cgit_period *period;
 	int top, i;
 	const char *code = "w";
 
-	if (ctx->qry.period)
-		code = ctx->qry.period;
+	if (ctx.qry.period)
+		code = ctx.qry.period;
 
 	i = cgit_find_stats_period(code, &period);
 	if (!i) {
 		cgit_print_error("Unknown statistics type: %c", code[0]);
 		return;
 	}
-	if (i > ctx->repo->max_stats) {
+	if (i > ctx.repo->max_stats) {
 		cgit_print_error("Statistics type disabled: %s", period->name);
 		return;
 	}
-	authors = collect_stats(ctx, period);
+	authors = collect_stats(period);
 	qsort(authors.items, authors.nr, sizeof(struct string_list_item),
 		cmp_total_commits);
 
-	top = ctx->qry.ofs;
+	top = ctx.qry.ofs;
 	if (!top)
 		top = 10;
 
@@ -392,10 +391,10 @@ void cgit_show_stats(struct cgit_context *ctx)
 	html("<form method='get' action=''>");
 	cgit_add_hidden_formfields(1, 0, "stats");
 	html("<table><tr><td colspan='2'/></tr>");
-	if (ctx->repo->max_stats > 1) {
+	if (ctx.repo->max_stats > 1) {
 		html("<tr><td class='label'>Period:</td>");
 		html("<td class='ctrl'><select name='period' onchange='this.form.submit();'>");
-		for (i = 0; i < ctx->repo->max_stats; i++)
+		for (i = 0; i < ctx.repo->max_stats; i++)
 			html_option(fmt("%c", periods[i].code),
 				    periods[i].name, fmt("%c", period->code));
 		html("</select></td></tr>");
@@ -414,9 +413,9 @@ void cgit_show_stats(struct cgit_context *ctx)
 	html("</form>");
 	html("</div>");
 	htmlf("<h2>Commits per author per %s", period->name);
-	if (ctx->qry.path) {
+	if (ctx.qry.path) {
 		html(" (path '");
-		html_txt(ctx->qry.path);
+		html_txt(ctx.qry.path);
 		html("')");
 	}
 	html("</h2>");

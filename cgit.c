@@ -322,82 +322,82 @@ static void querystring_cb(const char *name, const char *value)
 	}
 }
 
-static void prepare_context(struct cgit_context *ctx)
+static void prepare_context(void)
 {
-	memset(ctx, 0, sizeof(*ctx));
-	ctx->cfg.agefile = "info/web/last-modified";
-	ctx->cfg.nocache = 0;
-	ctx->cfg.cache_size = 0;
-	ctx->cfg.cache_max_create_time = 5;
-	ctx->cfg.cache_root = CGIT_CACHE_ROOT;
-	ctx->cfg.cache_about_ttl = 15;
-	ctx->cfg.cache_repo_ttl = 5;
-	ctx->cfg.cache_root_ttl = 5;
-	ctx->cfg.cache_scanrc_ttl = 15;
-	ctx->cfg.cache_dynamic_ttl = 5;
-	ctx->cfg.cache_static_ttl = -1;
-	ctx->cfg.case_sensitive_sort = 1;
-	ctx->cfg.branch_sort = 0;
-	ctx->cfg.commit_sort = 0;
-	ctx->cfg.css = "/cgit.css";
-	ctx->cfg.logo = "/cgit.png";
-	ctx->cfg.favicon = "/favicon.ico";
-	ctx->cfg.local_time = 0;
-	ctx->cfg.enable_http_clone = 1;
-	ctx->cfg.enable_index_owner = 1;
-	ctx->cfg.enable_tree_linenumbers = 1;
-	ctx->cfg.enable_git_config = 0;
-	ctx->cfg.max_repo_count = 50;
-	ctx->cfg.max_commit_count = 50;
-	ctx->cfg.max_lock_attempts = 5;
-	ctx->cfg.max_msg_len = 80;
-	ctx->cfg.max_repodesc_len = 80;
-	ctx->cfg.max_blob_size = 0;
-	ctx->cfg.max_stats = 0;
-	ctx->cfg.project_list = NULL;
-	ctx->cfg.renamelimit = -1;
-	ctx->cfg.remove_suffix = 0;
-	ctx->cfg.robots = "index, nofollow";
-	ctx->cfg.root_title = "Git repository browser";
-	ctx->cfg.root_desc = "a fast webinterface for the git dscm";
-	ctx->cfg.scan_hidden_path = 0;
-	ctx->cfg.script_name = CGIT_SCRIPT_NAME;
-	ctx->cfg.section = "";
-	ctx->cfg.repository_sort = "name";
-	ctx->cfg.section_sort = 1;
-	ctx->cfg.summary_branches = 10;
-	ctx->cfg.summary_log = 10;
-	ctx->cfg.summary_tags = 10;
-	ctx->cfg.max_atom_items = 10;
-	ctx->cfg.ssdiff = 0;
-	ctx->env.cgit_config = getenv("CGIT_CONFIG");
-	ctx->env.http_host = getenv("HTTP_HOST");
-	ctx->env.https = getenv("HTTPS");
-	ctx->env.no_http = getenv("NO_HTTP");
-	ctx->env.path_info = getenv("PATH_INFO");
-	ctx->env.query_string = getenv("QUERY_STRING");
-	ctx->env.request_method = getenv("REQUEST_METHOD");
-	ctx->env.script_name = getenv("SCRIPT_NAME");
-	ctx->env.server_name = getenv("SERVER_NAME");
-	ctx->env.server_port = getenv("SERVER_PORT");
-	ctx->env.http_cookie = getenv("HTTP_COOKIE");
-	ctx->env.http_referer = getenv("HTTP_REFERER");
-	ctx->env.content_length = getenv("CONTENT_LENGTH") ? strtoul(getenv("CONTENT_LENGTH"), NULL, 10) : 0;
-	ctx->env.authenticated = 0;
-	ctx->page.mimetype = "text/html";
-	ctx->page.charset = PAGE_ENCODING;
-	ctx->page.filename = NULL;
-	ctx->page.size = 0;
-	ctx->page.modified = time(NULL);
-	ctx->page.expires = ctx->page.modified;
-	ctx->page.etag = NULL;
-	memset(&ctx->cfg.mimetypes, 0, sizeof(struct string_list));
-	if (ctx->env.script_name)
-		ctx->cfg.script_name = xstrdup(ctx->env.script_name);
-	if (ctx->env.query_string)
-		ctx->qry.raw = xstrdup(ctx->env.query_string);
-	if (!ctx->env.cgit_config)
-		ctx->env.cgit_config = CGIT_CONFIG;
+	memset(&ctx, 0, sizeof(ctx));
+	ctx.cfg.agefile = "info/web/last-modified";
+	ctx.cfg.nocache = 0;
+	ctx.cfg.cache_size = 0;
+	ctx.cfg.cache_max_create_time = 5;
+	ctx.cfg.cache_root = CGIT_CACHE_ROOT;
+	ctx.cfg.cache_about_ttl = 15;
+	ctx.cfg.cache_repo_ttl = 5;
+	ctx.cfg.cache_root_ttl = 5;
+	ctx.cfg.cache_scanrc_ttl = 15;
+	ctx.cfg.cache_dynamic_ttl = 5;
+	ctx.cfg.cache_static_ttl = -1;
+	ctx.cfg.case_sensitive_sort = 1;
+	ctx.cfg.branch_sort = 0;
+	ctx.cfg.commit_sort = 0;
+	ctx.cfg.css = "/cgit.css";
+	ctx.cfg.logo = "/cgit.png";
+	ctx.cfg.favicon = "/favicon.ico";
+	ctx.cfg.local_time = 0;
+	ctx.cfg.enable_http_clone = 1;
+	ctx.cfg.enable_index_owner = 1;
+	ctx.cfg.enable_tree_linenumbers = 1;
+	ctx.cfg.enable_git_config = 0;
+	ctx.cfg.max_repo_count = 50;
+	ctx.cfg.max_commit_count = 50;
+	ctx.cfg.max_lock_attempts = 5;
+	ctx.cfg.max_msg_len = 80;
+	ctx.cfg.max_repodesc_len = 80;
+	ctx.cfg.max_blob_size = 0;
+	ctx.cfg.max_stats = 0;
+	ctx.cfg.project_list = NULL;
+	ctx.cfg.renamelimit = -1;
+	ctx.cfg.remove_suffix = 0;
+	ctx.cfg.robots = "index, nofollow";
+	ctx.cfg.root_title = "Git repository browser";
+	ctx.cfg.root_desc = "a fast webinterface for the git dscm";
+	ctx.cfg.scan_hidden_path = 0;
+	ctx.cfg.script_name = CGIT_SCRIPT_NAME;
+	ctx.cfg.section = "";
+	ctx.cfg.repository_sort = "name";
+	ctx.cfg.section_sort = 1;
+	ctx.cfg.summary_branches = 10;
+	ctx.cfg.summary_log = 10;
+	ctx.cfg.summary_tags = 10;
+	ctx.cfg.max_atom_items = 10;
+	ctx.cfg.ssdiff = 0;
+	ctx.env.cgit_config = getenv("CGIT_CONFIG");
+	ctx.env.http_host = getenv("HTTP_HOST");
+	ctx.env.https = getenv("HTTPS");
+	ctx.env.no_http = getenv("NO_HTTP");
+	ctx.env.path_info = getenv("PATH_INFO");
+	ctx.env.query_string = getenv("QUERY_STRING");
+	ctx.env.request_method = getenv("REQUEST_METHOD");
+	ctx.env.script_name = getenv("SCRIPT_NAME");
+	ctx.env.server_name = getenv("SERVER_NAME");
+	ctx.env.server_port = getenv("SERVER_PORT");
+	ctx.env.http_cookie = getenv("HTTP_COOKIE");
+	ctx.env.http_referer = getenv("HTTP_REFERER");
+	ctx.env.content_length = getenv("CONTENT_LENGTH") ? strtoul(getenv("CONTENT_LENGTH"), NULL, 10) : 0;
+	ctx.env.authenticated = 0;
+	ctx.page.mimetype = "text/html";
+	ctx.page.charset = PAGE_ENCODING;
+	ctx.page.filename = NULL;
+	ctx.page.size = 0;
+	ctx.page.modified = time(NULL);
+	ctx.page.expires = ctx.page.modified;
+	ctx.page.etag = NULL;
+	memset(&ctx.cfg.mimetypes, 0, sizeof(struct string_list));
+	if (ctx.env.script_name)
+		ctx.cfg.script_name = xstrdup(ctx.env.script_name);
+	if (ctx.env.query_string)
+		ctx.qry.raw = xstrdup(ctx.env.query_string);
+	if (!ctx.env.cgit_config)
+		ctx.env.cgit_config = CGIT_CONFIG;
 }
 
 struct refmatch {
@@ -527,14 +527,14 @@ static void choose_readme(struct cgit_repo *repo)
 		string_list_append(&repo->readme, filename)->util = ref;
 }
 
-static int prepare_repo_cmd(struct cgit_context *ctx)
+static int prepare_repo_cmd(void)
 {
 	unsigned char sha1[20];
 	int nongit = 0;
 	int rc;
 
 	/* The path to the git repository. */
-	setenv("GIT_DIR", ctx->repo->path, 1);
+	setenv("GIT_DIR", ctx.repo->path, 1);
 
 	/* Do not look in /etc/ for gitconfig and gitattributes. */
 	setenv("GIT_CONFIG_NOSYSTEM", "1", 1);
@@ -549,69 +549,69 @@ static int prepare_repo_cmd(struct cgit_context *ctx)
 	init_display_notes(NULL);
 
 	if (nongit) {
-		const char *name = ctx->repo->name;
+		const char *name = ctx.repo->name;
 		rc = errno;
-		ctx->page.title = fmtalloc("%s - %s", ctx->cfg.root_title,
+		ctx.page.title = fmtalloc("%s - %s", ctx.cfg.root_title,
 						"config error");
-		ctx->repo = NULL;
-		cgit_print_http_headers(ctx);
-		cgit_print_docstart(ctx);
-		cgit_print_pageheader(ctx);
+		ctx.repo = NULL;
+		cgit_print_http_headers();
+		cgit_print_docstart();
+		cgit_print_pageheader();
 		cgit_print_error("Failed to open %s: %s", name,
 				 rc ? strerror(rc) : "Not a valid git repository");
 		cgit_print_docend();
 		return 1;
 	}
-	ctx->page.title = fmtalloc("%s - %s", ctx->repo->name, ctx->repo->desc);
+	ctx.page.title = fmtalloc("%s - %s", ctx.repo->name, ctx.repo->desc);
 
-	if (!ctx->repo->defbranch)
-		ctx->repo->defbranch = guess_defbranch();
+	if (!ctx.repo->defbranch)
+		ctx.repo->defbranch = guess_defbranch();
 
-	if (!ctx->qry.head) {
-		ctx->qry.nohead = 1;
-		ctx->qry.head = find_default_branch(ctx->repo);
+	if (!ctx.qry.head) {
+		ctx.qry.nohead = 1;
+		ctx.qry.head = find_default_branch(ctx.repo);
 	}
 
-	if (!ctx->qry.head) {
-		cgit_print_http_headers(ctx);
-		cgit_print_docstart(ctx);
-		cgit_print_pageheader(ctx);
+	if (!ctx.qry.head) {
+		cgit_print_http_headers();
+		cgit_print_docstart();
+		cgit_print_pageheader();
 		cgit_print_error("Repository seems to be empty");
 		cgit_print_docend();
 		return 1;
 	}
 
-	if (get_sha1(ctx->qry.head, sha1)) {
-		char *tmp = xstrdup(ctx->qry.head);
-		ctx->qry.head = ctx->repo->defbranch;
-		ctx->page.status = 404;
-		ctx->page.statusmsg = "Not found";
-		cgit_print_http_headers(ctx);
-		cgit_print_docstart(ctx);
-		cgit_print_pageheader(ctx);
+	if (get_sha1(ctx.qry.head, sha1)) {
+		char *tmp = xstrdup(ctx.qry.head);
+		ctx.qry.head = ctx.repo->defbranch;
+		ctx.page.status = 404;
+		ctx.page.statusmsg = "Not found";
+		cgit_print_http_headers();
+		cgit_print_docstart();
+		cgit_print_pageheader();
 		cgit_print_error("Invalid branch: %s", tmp);
 		cgit_print_docend();
 		return 1;
 	}
-	sort_string_list(&ctx->repo->submodules);
-	cgit_prepare_repo_env(ctx->repo);
-	choose_readme(ctx->repo);
+	sort_string_list(&ctx.repo->submodules);
+	cgit_prepare_repo_env(ctx.repo);
+	choose_readme(ctx.repo);
 	return 0;
 }
 
-static inline void open_auth_filter(struct cgit_context *ctx, const char *function)
+static inline void open_auth_filter(const char *function)
 {
-	cgit_open_filter(ctx->cfg.auth_filter, function,
-		ctx->env.http_cookie ? ctx->env.http_cookie : "",
-		ctx->env.request_method ? ctx->env.request_method : "",
-		ctx->env.query_string ? ctx->env.query_string : "",
-		ctx->env.http_referer ? ctx->env.http_referer : "",
-		ctx->env.path_info ? ctx->env.path_info : "",
-		ctx->env.http_host ? ctx->env.http_host : "",
-		ctx->env.https ? ctx->env.https : "",
-		ctx->qry.repo ? ctx->qry.repo : "",
-		ctx->qry.page ? ctx->qry.page : "",
-		ctx->qry.url ? ctx->qry.url : "",
+	cgit_open_filter(ctx.cfg.auth_filter, function,
+		ctx.env.http_cookie ? ctx.env.http_cookie : "",
+		ctx.env.request_method ? ctx.env.request_method : "",
+		ctx.env.query_string ? ctx.env.query_string : "",
+		ctx.env.http_referer ? ctx.env.http_referer : "",
+		ctx.env.path_info ? ctx.env.path_info : "",
+		ctx.env.http_host ? ctx.env.http_host : "",
+		ctx.env.https ? ctx.env.https : "",
+		ctx.qry.repo ? ctx.qry.repo : "",
+		ctx.qry.page ? ctx.qry.page : "",
+		ctx.qry.url ? ctx.qry.url : "",
 		cgit_loginurl());
 }
 
@@ -622,107 +622,106 @@ static inline void open_auth_filter(struct cgit_context *ctx, const char *functi
  * will complain on the mailing list, and we'll increase it as needed. */
 #define MAX_AUTHENTICATION_POST_BYTES 4096
 /* The filter is expected to spit out "Status: " and all headers. */
-static inline void authenticate_post(struct cgit_context *ctx)
+static inline void authenticate_post(void)
 {
 	char buffer[MAX_AUTHENTICATION_POST_BYTES];
 	int len;
 
-	open_auth_filter(ctx, "authenticate-post");
-	len = ctx->env.content_length;
+	open_auth_filter("authenticate-post");
+	len = ctx.env.content_length;
 	if (len > MAX_AUTHENTICATION_POST_BYTES)
 		len = MAX_AUTHENTICATION_POST_BYTES;
 	if (read(STDIN_FILENO, buffer, len) < 0)
 		die_errno("Could not read POST from stdin");
 	if (write(STDOUT_FILENO, buffer, len) < 0)
 		die_errno("Could not write POST to stdout");
-	cgit_close_filter(ctx->cfg.auth_filter);
+	cgit_close_filter(ctx.cfg.auth_filter);
 	exit(0);
 }
 
-static inline void authenticate_cookie(struct cgit_context *ctx)
+static inline void authenticate_cookie(void)
 {
 	/* If we don't have an auth_filter, consider all cookies valid, and thus return early. */
-	if (!ctx->cfg.auth_filter) {
-		ctx->env.authenticated = 1;
+	if (!ctx.cfg.auth_filter) {
+		ctx.env.authenticated = 1;
 		return;
 	}
 
 	/* If we're having something POST'd to /login, we're authenticating POST,
 	 * instead of the cookie, so call authenticate_post and bail out early.
 	 * This pattern here should match /?p=login with POST. */
-	if (ctx->env.request_method && ctx->qry.page && !ctx->repo && \
-	    !strcmp(ctx->env.request_method, "POST") && !strcmp(ctx->qry.page, "login")) {
-		authenticate_post(ctx);
+	if (ctx.env.request_method && ctx.qry.page && !ctx.repo && \
+	    !strcmp(ctx.env.request_method, "POST") && !strcmp(ctx.qry.page, "login")) {
+		authenticate_post();
 		return;
 	}
 
 	/* If we've made it this far, we're authenticating the cookie for real, so do that. */
-	open_auth_filter(ctx, "authenticate-cookie");
-	ctx->env.authenticated = cgit_close_filter(ctx->cfg.auth_filter);
+	open_auth_filter("authenticate-cookie");
+	ctx.env.authenticated = cgit_close_filter(ctx.cfg.auth_filter);
 }
 
-static void process_request(void *cbdata)
+static void process_request(void)
 {
-	struct cgit_context *ctx = cbdata;
 	struct cgit_cmd *cmd;
 
 	/* If we're not yet authenticated, no matter what page we're on,
 	 * display the authentication body from the auth_filter. This should
 	 * never be cached. */
-	if (!ctx->env.authenticated) {
-		ctx->page.title = "Authentication Required";
-		cgit_print_http_headers(ctx);
-		cgit_print_docstart(ctx);
-		cgit_print_pageheader(ctx);
-		open_auth_filter(ctx, "body");
-		cgit_close_filter(ctx->cfg.auth_filter);
+	if (!ctx.env.authenticated) {
+		ctx.page.title = "Authentication Required";
+		cgit_print_http_headers();
+		cgit_print_docstart();
+		cgit_print_pageheader();
+		open_auth_filter("body");
+		cgit_close_filter(ctx.cfg.auth_filter);
 		cgit_print_docend();
 		return;
 	}
 
-	cmd = cgit_get_cmd(ctx);
+	cmd = cgit_get_cmd();
 	if (!cmd) {
-		ctx->page.title = "cgit error";
-		ctx->page.status = 404;
-		ctx->page.statusmsg = "Not found";
-		cgit_print_http_headers(ctx);
-		cgit_print_docstart(ctx);
-		cgit_print_pageheader(ctx);
+		ctx.page.title = "cgit error";
+		ctx.page.status = 404;
+		ctx.page.statusmsg = "Not found";
+		cgit_print_http_headers();
+		cgit_print_docstart();
+		cgit_print_pageheader();
 		cgit_print_error("Invalid request");
 		cgit_print_docend();
 		return;
 	}
 
-	if (!ctx->cfg.enable_http_clone && cmd->is_clone) {
+	if (!ctx.cfg.enable_http_clone && cmd->is_clone) {
 		html_status(404, "Not found", 0);
 		return;
 	}
 
-	/* If cmd->want_vpath is set, assume ctx->qry.path contains a "virtual"
-	 * in-project path limit to be made available at ctx->qry.vpath.
-	 * Otherwise, no path limit is in effect (ctx->qry.vpath = NULL).
+	/* If cmd->want_vpath is set, assume ctx.qry.path contains a "virtual"
+	 * in-project path limit to be made available at ctx.qry.vpath.
+	 * Otherwise, no path limit is in effect (ctx.qry.vpath = NULL).
 	 */
-	ctx->qry.vpath = cmd->want_vpath ? ctx->qry.path : NULL;
+	ctx.qry.vpath = cmd->want_vpath ? ctx.qry.path : NULL;
 
-	if (cmd->want_repo && !ctx->repo) {
-		cgit_print_http_headers(ctx);
-		cgit_print_docstart(ctx);
-		cgit_print_pageheader(ctx);
+	if (cmd->want_repo && !ctx.repo) {
+		cgit_print_http_headers();
+		cgit_print_docstart();
+		cgit_print_pageheader();
 		cgit_print_error("No repository selected");
 		cgit_print_docend();
 		return;
 	}
 
-	if (ctx->repo && prepare_repo_cmd(ctx))
+	if (ctx.repo && prepare_repo_cmd())
 		return;
 
 	if (cmd->want_layout) {
-		cgit_print_http_headers(ctx);
-		cgit_print_docstart(ctx);
-		cgit_print_pageheader(ctx);
+		cgit_print_http_headers();
+		cgit_print_docstart();
+		cgit_print_pageheader();
 	}
 
-	cmd->fn(ctx);
+	cmd->fn();
 
 	if (cmd->want_layout)
 		cgit_print_docend();
@@ -995,7 +994,7 @@ int main(int argc, const char **argv)
 	cgit_init_filters();
 	atexit(cgit_cleanup_filters);
 
-	prepare_context(&ctx);
+	prepare_context();
 	cgit_repolist.length = 0;
 	cgit_repolist.count = 0;
 	cgit_repolist.repos = NULL;
@@ -1034,7 +1033,7 @@ int main(int argc, const char **argv)
 	/* Before we go any further, we set ctx.env.authenticated by checking to see
 	 * if the supplied cookie is valid. All cookies are valid if there is no
 	 * auth_filter. If there is an auth_filter, the filter decides. */
-	authenticate_cookie(&ctx);
+	authenticate_cookie();
 
 	ttl = calc_ttl();
 	if (ttl < 0)
@@ -1046,7 +1045,8 @@ int main(int argc, const char **argv)
 	if (ctx.cfg.nocache)
 		ctx.cfg.cache_size = 0;
 	err = cache_process(ctx.cfg.cache_size, ctx.cfg.cache_root,
-			    ctx.qry.raw, ttl, process_request, &ctx);
+			    ctx.qry.raw, ttl, process_request);
+	cgit_cleanup_filters();
 	if (err)
 		cgit_print_error("Error processing page: %s (%d)",
 				 strerror(err), err);

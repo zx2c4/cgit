@@ -59,10 +59,10 @@ __attribute__((format (printf,1,0)))
 extern void cgit_vprint_error(const char *fmt, va_list ap);
 extern void cgit_print_date(time_t secs, const char *format, int local_time);
 extern void cgit_print_age(time_t t, time_t max_relative, const char *format);
-extern void cgit_print_http_headers(struct cgit_context *ctx);
-extern void cgit_print_docstart(struct cgit_context *ctx);
+extern void cgit_print_http_headers(void);
+extern void cgit_print_docstart(void);
 extern void cgit_print_docend();
-extern void cgit_print_pageheader(struct cgit_context *ctx);
+extern void cgit_print_pageheader(void);
 extern void cgit_print_filemode(unsigned short mode);
 extern void cgit_print_snapshot_links(const char *repo, const char *head,
 				      const char *hex, int snapshots);

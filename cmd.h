@@ -1,7 +1,7 @@
 #ifndef CMD_H
 #define CMD_H
 
-typedef void (*cgit_cmd_fn)(struct cgit_context *ctx);
+typedef void (*cgit_cmd_fn)(void);
 
 struct cgit_cmd {
 	const char *name;
@@ -12,6 +12,6 @@ struct cgit_cmd {
 		is_clone:1;
 };
 
-extern struct cgit_cmd *cgit_get_cmd(struct cgit_context *ctx);
+extern struct cgit_cmd *cgit_get_cmd(void);
 
 #endif /* CMD_H */

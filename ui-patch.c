@@ -59,7 +59,7 @@ void cgit_print_patch(const char *new_rev, const char *old_rev,
 	patchname = fmt("%s.patch", rev_range);
 	ctx.page.mimetype = "text/plain";
 	ctx.page.filename = patchname;
-	cgit_print_http_headers(&ctx);
+	cgit_print_http_headers();
 
 	if (ctx.cfg.noplainemail) {
 		rev_argv[2] = "--format=format:From %H Mon Sep 17 00:00:00 "

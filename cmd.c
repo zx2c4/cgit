@@ -26,120 +26,120 @@
 #include "ui-tag.h"
 #include "ui-tree.h"
 
-static void HEAD_fn(struct cgit_context *ctx)
+static void HEAD_fn(void)
 {
-	cgit_clone_head(ctx);
+	cgit_clone_head();
 }
 
-static void atom_fn(struct cgit_context *ctx)
+static void atom_fn(void)
 {
-	cgit_print_atom(ctx->qry.head, ctx->qry.path, ctx->cfg.max_atom_items);
+	cgit_print_atom(ctx.qry.head, ctx.qry.path, ctx.cfg.max_atom_items);
 }
 
-static void about_fn(struct cgit_context *ctx)
+static void about_fn(void)
 {
-	if (ctx->repo)
-		cgit_print_repo_readme(ctx->qry.path);
+	if (ctx.repo)
+		cgit_print_repo_readme(ctx.qry.path);
 	else
 		cgit_print_site_readme();
 }
 
-static void blob_fn(struct cgit_context *ctx)
+static void blob_fn(void)
 {
-	cgit_print_blob(ctx->qry.sha1, ctx->qry.path, ctx->qry.head, 0);
+	cgit_print_blob(ctx.qry.sha1, ctx.qry.path, ctx.qry.head, 0);
 }
 
-static void commit_fn(struct cgit_context *ctx)
+static void commit_fn(void)
 {
-	cgit_print_commit(ctx->qry.sha1, ctx->qry.path);
+	cgit_print_commit(ctx.qry.sha1, ctx.qry.path);
 }
 
-static void diff_fn(struct cgit_context *ctx)
+static void diff_fn(void)
 {
-	cgit_print_diff(ctx->qry.sha1, ctx->qry.sha2, ctx->qry.path, 1, 0);
+	cgit_print_diff(ctx.qry.sha1, ctx.qry.sha2, ctx.qry.path, 1, 0);
 }
 
-static void rawdiff_fn(struct cgit_context *ctx)
+static void rawdiff_fn(void)
 {
-	cgit_print_diff(ctx->qry.sha1, ctx->qry.sha2, ctx->qry.path, 1, 1);
+	cgit_print_diff(ctx.qry.sha1, ctx.qry.sha2, ctx.qry.path, 1, 1);
 }
 
-static void info_fn(struct cgit_context *ctx)
+static void info_fn(void)
 {
-	cgit_clone_info(ctx);
+	cgit_clone_info();
 }
 
-static void log_fn(struct cgit_context *ctx)
+static void log_fn(void)
 {
-	cgit_print_log(ctx->qry.sha1, ctx->qry.ofs, ctx->cfg.max_commit_count,
-		       ctx->qry.grep, ctx->qry.search, ctx->qry.path, 1,
-		       ctx->repo->enable_commit_graph,
-		       ctx->repo->commit_sort);
+	cgit_print_log(ctx.qry.sha1, ctx.qry.ofs, ctx.cfg.max_commit_count,
+		       ctx.qry.grep, ctx.qry.search, ctx.qry.path, 1,
+		       ctx.repo->enable_commit_graph,
+		       ctx.repo->commit_sort);
 }
 
-static void ls_cache_fn(struct cgit_context *ctx)
+static void ls_cache_fn(void)
 {
-	ctx->page.mimetype = "text/plain";
-	ctx->page.filename = "ls-cache.txt";
-	cgit_print_http_headers(ctx);
-	cache_ls(ctx->cfg.cache_root);
+	ctx.page.mimetype = "text/plain";
+	ctx.page.filename = "ls-cache.txt";
+	cgit_print_http_headers();
+	cache_ls(ctx.cfg.cache_root);
 }
 
-static void objects_fn(struct cgit_context *ctx)
+static void objects_fn(void)
 {
-	cgit_clone_objects(ctx);
+	cgit_clone_objects();
 }
 
-static void repolist_fn(struct cgit_context *ctx)
+static void repolist_fn(void)
 {
 	cgit_print_repolist();
 }
 
-static void patch_fn(struct cgit_context *ctx)
+static void patch_fn(void)
 {
-	cgit_print_patch(ctx->qry.sha1, ctx->qry.sha2, ctx->qry.path);
+	cgit_print_patch(ctx.qry.sha1, ctx.qry.sha2, ctx.qry.path);
 }
 
-static void plain_fn(struct cgit_context *ctx)
+static void plain_fn(void)
 {
-	cgit_print_plain(ctx);
+	cgit_print_plain();
 }
 
-static void refs_fn(struct cgit_context *ctx)
+static void refs_fn(void)
 {
 	cgit_print_refs();
 }
 
-static void snapshot_fn(struct cgit_context *ctx)
+static void snapshot_fn(void)
 {
-	cgit_print_snapshot(ctx->qry.head, ctx->qry.sha1, ctx->qry.path,
-			    ctx->repo->snapshots, ctx->qry.nohead);
+	cgit_print_snapshot(ctx.qry.head, ctx.qry.sha1, ctx.qry.path,
+			    ctx.repo->snapshots, ctx.qry.nohead);
 }
 
-static void stats_fn(struct cgit_context *ctx)
+static void stats_fn(void)
 {
-	cgit_show_stats(ctx);
+	cgit_show_stats();
 }
 
-static void summary_fn(struct cgit_context *ctx)
+static void summary_fn(void)
 {
 	cgit_print_summary();
 }
 
-static void tag_fn(struct cgit_context *ctx)
+static void tag_fn(void)
 {
-	cgit_print_tag(ctx->qry.sha1);
+	cgit_print_tag(ctx.qry.sha1);
 }
 
-static void tree_fn(struct cgit_context *ctx)
+static void tree_fn(void)
 {
-	cgit_print_tree(ctx->qry.sha1, ctx->qry.path);
+	cgit_print_tree(ctx.qry.sha1, ctx.qry.path);
 }
 
 #define def_cmd(name, want_repo, want_layout, want_vpath, is_clone) \
 	{#name, name##_fn, want_repo, want_layout, want_vpath, is_clone}
 
-struct cgit_cmd *cgit_get_cmd(struct cgit_context *ctx)
+struct cgit_cmd *cgit_get_cmd(void)
 {
 	static struct cgit_cmd cmds[] = {
 		def_cmd(HEAD, 1, 0, 0, 1),
@@ -165,15 +165,15 @@ struct cgit_cmd *cgit_get_cmd(struct cgit_context *ctx)
 	};
 	int i;
 
-	if (ctx->qry.page == NULL) {
-		if (ctx->repo)
-			ctx->qry.page = "summary";
+	if (ctx.qry.page == NULL) {
+		if (ctx.repo)
+			ctx.qry.page = "summary";
 		else
-			ctx->qry.page = "repolist";
+			ctx.qry.page = "repolist";
 	}
 
 	for (i = 0; i < sizeof(cmds)/sizeof(*cmds); i++)
-		if (!strcmp(ctx->qry.page, cmds[i].name))
+		if (!strcmp(ctx.qry.page, cmds[i].name))
 			return &cmds[i];
 	return NULL;
 }

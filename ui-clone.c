@@ -29,22 +29,22 @@ static int print_ref_info(const char *refname, const unsigned char *sha1,
 	return 0;
 }
 
-static void print_pack_info(struct cgit_context *ctx)
+static void print_pack_info(void)
 {
 	struct packed_git *pack;
 	int ofs;
 
-	ctx->page.mimetype = "text/plain";
-	ctx->page.filename = "objects/info/packs";
-	cgit_print_http_headers(ctx);
-	ofs = strlen(ctx->repo->path) + strlen("/objects/pack/");
+	ctx.page.mimetype = "text/plain";
+	ctx.page.filename = "objects/info/packs";
+	cgit_print_http_headers();
+	ofs = strlen(ctx.repo->path) + strlen("/objects/pack/");
 	prepare_packed_git();
 	for (pack = packed_git; pack; pack = pack->next)
 		if (pack->pack_local)
 			htmlf("P %s\n", pack->pack_name + ofs);
 }
 
-static void send_file(struct cgit_context *ctx, char *path)
+static void send_file(char *path)
 {
 	struct stat st;
 
@@ -61,41 +61,41 @@ static void send_file(struct cgit_context *ctx, char *path)
 		}
 		return;
 	}
-	ctx->page.mimetype = "application/octet-stream";
-	ctx->page.filename = path;
-	if (prefixcmp(ctx->repo->path, path))
-		ctx->page.filename += strlen(ctx->repo->path) + 1;
-	cgit_print_http_headers(ctx);
+	ctx.page.mimetype = "application/octet-stream";
+	ctx.page.filename = path;
+	if (prefixcmp(ctx.repo->path, path))
+		ctx.page.filename += strlen(ctx.repo->path) + 1;
+	cgit_print_http_headers();
 	html_include(path);
 }
 
-void cgit_clone_info(struct cgit_context *ctx)
+void cgit_clone_info(void)
 {
-	if (!ctx->qry.path || strcmp(ctx->qry.path, "refs"))
+	if (!ctx.qry.path || strcmp(ctx.qry.path, "refs"))
 		return;
 
-	ctx->page.mimetype = "text/plain";
-	ctx->page.filename = "info/refs";
-	cgit_print_http_headers(ctx);
-	for_each_ref(print_ref_info, ctx);
+	ctx.page.mimetype = "text/plain";
+	ctx.page.filename = "info/refs";
+	cgit_print_http_headers();
+	for_each_ref(print_ref_info, NULL);
 }
 
-void cgit_clone_objects(struct cgit_context *ctx)
+void cgit_clone_objects(void)
 {
-	if (!ctx->qry.path) {
+	if (!ctx.qry.path) {
 		html_status(400, "Bad request", 0);
 		return;
 	}
 
-	if (!strcmp(ctx->qry.path, "info/packs")) {
-		print_pack_info(ctx);
+	if (!strcmp(ctx.qry.path, "info/packs")) {
+		print_pack_info();
 		return;
 	}
 
-	send_file(ctx, git_path("objects/%s", ctx->qry.path));
+	send_file(git_path("objects/%s", ctx.qry.path));
 }
 
-void cgit_clone_head(struct cgit_context *ctx)
+void cgit_clone_head(void)
 {
-	send_file(ctx, git_path("%s", "HEAD"));
+	send_file(git_path("%s", "HEAD"));
 }

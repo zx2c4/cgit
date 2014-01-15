@@ -24,7 +24,6 @@ struct cache_slot {
 	int keylen;
 	int ttl;
 	cache_fill_fn fn;
-	void *cbdata;
 	int cache_fd;
 	int lock_fd;
 	const char *cache_name;
@@ -187,7 +186,7 @@ static int fill_slot(struct cache_slot *slot)
 		return errno;
 
 	/* Generate cache content */
-	slot->fn(slot->cbdata);
+	slot->fn();
 
 	/* Restore stdout */
 	if (dup2(tmp, STDOUT_FILENO) == -1)
@@ -277,7 +276,7 @@ static int process_slot(struct cache_slot *slot)
 	if ((err = lock_slot(slot)) != 0) {
 		cache_log("[cgit] Unable to lock slot %s: %s (%d)\n",
 			  slot->lock_name, strerror(err), err);
-		slot->fn(slot->cbdata);
+		slot->fn();
 		return 0;
 	}
 
@@ -286,7 +285,7 @@ static int process_slot(struct cache_slot *slot)
 			  slot->lock_name, strerror(err), err);
 		unlock_slot(slot, 0);
 		close_lock(slot);
-		slot->fn(slot->cbdata);
+		slot->fn();
 		return 0;
 	}
 	// We've got a valid cache slot in the lock file, which
@@ -310,7 +309,7 @@ static int process_slot(struct cache_slot *slot)
 
 /* Print cached content to stdout, generate the content if necessary. */
 int cache_process(int size, const char *path, const char *key, int ttl,
-		  cache_fill_fn fn, void *cbdata)
+		  cache_fill_fn fn)
 {
 	unsigned long hash;
 	int i;
@@ -321,14 +320,14 @@ int cache_process(int size, const char *path, const char *key, int ttl,
 
 	/* If the cache is disabled, just generate the content */
 	if (size <= 0) {
-		fn(cbdata);
+		fn();
 		return 0;
 	}
 
 	/* Verify input, calculate filenames */
 	if (!path) {
 		cache_log("[cgit] Cache path not specified, caching is disabled\n");
-		fn(cbdata);
+		fn();
 		return 0;
 	}
 	if (!key)
@@ -343,7 +342,6 @@ int cache_process(int size, const char *path, const char *key, int ttl,
 	strbuf_addbuf(&lockname, &filename);
 	strbuf_addstr(&lockname, ".lock");
 	slot.fn = fn;
-	slot.cbdata = cbdata;
 	slot.ttl = ttl;
 	slot.cache_name = filename.buf;
 	slot.lock_name = lockname.buf;

@@ -436,59 +436,58 @@ void cgit_stats_link(const char *name, const char *title, const char *class,
 	reporevlink("stats", name, title, class, head, NULL, path);
 }
 
-static void cgit_self_link(char *name, const char *title, const char *class,
-			   struct cgit_context *ctx)
+static void cgit_self_link(char *name, const char *title, const char *class)
 {
-	if (!strcmp(ctx->qry.page, "repolist"))
-		cgit_index_link(name, title, class, ctx->qry.search, ctx->qry.sort,
-				ctx->qry.ofs);
-	else if (!strcmp(ctx->qry.page, "summary"))
-		cgit_summary_link(name, title, class, ctx->qry.head);
-	else if (!strcmp(ctx->qry.page, "tag"))
-		cgit_tag_link(name, title, class, ctx->qry.head,
-			      ctx->qry.has_sha1 ? ctx->qry.sha1 : NULL);
-	else if (!strcmp(ctx->qry.page, "tree"))
-		cgit_tree_link(name, title, class, ctx->qry.head,
-			       ctx->qry.has_sha1 ? ctx->qry.sha1 : NULL,
-			       ctx->qry.path);
-	else if (!strcmp(ctx->qry.page, "plain"))
-		cgit_plain_link(name, title, class, ctx->qry.head,
-				ctx->qry.has_sha1 ? ctx->qry.sha1 : NULL,
-				ctx->qry.path);
-	else if (!strcmp(ctx->qry.page, "log"))
-		cgit_log_link(name, title, class, ctx->qry.head,
-			      ctx->qry.has_sha1 ? ctx->qry.sha1 : NULL,
-			      ctx->qry.path, ctx->qry.ofs,
-			      ctx->qry.grep, ctx->qry.search,
-			      ctx->qry.showmsg);
-	else if (!strcmp(ctx->qry.page, "commit"))
-		cgit_commit_link(name, title, class, ctx->qry.head,
-				 ctx->qry.has_sha1 ? ctx->qry.sha1 : NULL,
-				 ctx->qry.path, 0);
-	else if (!strcmp(ctx->qry.page, "patch"))
-		cgit_patch_link(name, title, class, ctx->qry.head,
-				ctx->qry.has_sha1 ? ctx->qry.sha1 : NULL,
-				ctx->qry.path);
-	else if (!strcmp(ctx->qry.page, "refs"))
-		cgit_refs_link(name, title, class, ctx->qry.head,
-			       ctx->qry.has_sha1 ? ctx->qry.sha1 : NULL,
-			       ctx->qry.path);
-	else if (!strcmp(ctx->qry.page, "snapshot"))
-		cgit_snapshot_link(name, title, class, ctx->qry.head,
-				   ctx->qry.has_sha1 ? ctx->qry.sha1 : NULL,
-				   ctx->qry.path);
-	else if (!strcmp(ctx->qry.page, "diff"))
-		cgit_diff_link(name, title, class, ctx->qry.head,
-			       ctx->qry.sha1, ctx->qry.sha2,
-			       ctx->qry.path, 0);
-	else if (!strcmp(ctx->qry.page, "stats"))
-		cgit_stats_link(name, title, class, ctx->qry.head,
-				ctx->qry.path);
+	if (!strcmp(ctx.qry.page, "repolist"))
+		cgit_index_link(name, title, class, ctx.qry.search, ctx.qry.sort,
+				ctx.qry.ofs);
+	else if (!strcmp(ctx.qry.page, "summary"))
+		cgit_summary_link(name, title, class, ctx.qry.head);
+	else if (!strcmp(ctx.qry.page, "tag"))
+		cgit_tag_link(name, title, class, ctx.qry.head,
+			      ctx.qry.has_sha1 ? ctx.qry.sha1 : NULL);
+	else if (!strcmp(ctx.qry.page, "tree"))
+		cgit_tree_link(name, title, class, ctx.qry.head,
+			       ctx.qry.has_sha1 ? ctx.qry.sha1 : NULL,
+			       ctx.qry.path);
+	else if (!strcmp(ctx.qry.page, "plain"))
+		cgit_plain_link(name, title, class, ctx.qry.head,
+				ctx.qry.has_sha1 ? ctx.qry.sha1 : NULL,
+				ctx.qry.path);
+	else if (!strcmp(ctx.qry.page, "log"))
+		cgit_log_link(name, title, class, ctx.qry.head,
+			      ctx.qry.has_sha1 ? ctx.qry.sha1 : NULL,
+			      ctx.qry.path, ctx.qry.ofs,
+			      ctx.qry.grep, ctx.qry.search,
+			      ctx.qry.showmsg);
+	else if (!strcmp(ctx.qry.page, "commit"))
+		cgit_commit_link(name, title, class, ctx.qry.head,
+				 ctx.qry.has_sha1 ? ctx.qry.sha1 : NULL,
+				 ctx.qry.path, 0);
+	else if (!strcmp(ctx.qry.page, "patch"))
+		cgit_patch_link(name, title, class, ctx.qry.head,
+				ctx.qry.has_sha1 ? ctx.qry.sha1 : NULL,
+				ctx.qry.path);
+	else if (!strcmp(ctx.qry.page, "refs"))
+		cgit_refs_link(name, title, class, ctx.qry.head,
+			       ctx.qry.has_sha1 ? ctx.qry.sha1 : NULL,
+			       ctx.qry.path);
+	else if (!strcmp(ctx.qry.page, "snapshot"))
+		cgit_snapshot_link(name, title, class, ctx.qry.head,
+				   ctx.qry.has_sha1 ? ctx.qry.sha1 : NULL,
+				   ctx.qry.path);
+	else if (!strcmp(ctx.qry.page, "diff"))
+		cgit_diff_link(name, title, class, ctx.qry.head,
+			       ctx.qry.sha1, ctx.qry.sha2,
+			       ctx.qry.path, 0);
+	else if (!strcmp(ctx.qry.page, "stats"))
+		cgit_stats_link(name, title, class, ctx.qry.head,
+				ctx.qry.path);
 	else {
 		/* Don't known how to make link for this page */
-		repolink(title, class, ctx->qry.page, ctx->qry.head, ctx->qry.path);
+		repolink(title, class, ctx.qry.page, ctx.qry.head, ctx.qry.path);
 		html("><!-- cgit_self_link() doesn't know how to make link for page '");
-		html_txt(ctx->qry.page);
+		html_txt(ctx.qry.page);
 		html("' -->");
 		html_txt(name);
 		html("</a>");
@@ -632,39 +631,39 @@ void cgit_print_age(time_t t, time_t max_relative, const char *format)
 	      secs * 1.0 / TM_YEAR);
 }
 
-void cgit_print_http_headers(struct cgit_context *ctx)
+void cgit_print_http_headers(void)
 {
-	if (ctx->env.no_http && !strcmp(ctx->env.no_http, "1"))
+	if (ctx.env.no_http && !strcmp(ctx.env.no_http, "1"))
 		return;
 
-	if (ctx->page.status)
-		htmlf("Status: %d %s\n", ctx->page.status, ctx->page.statusmsg);
-	if (ctx->page.mimetype && ctx->page.charset)
-		htmlf("Content-Type: %s; charset=%s\n", ctx->page.mimetype,
-		      ctx->page.charset);
-	else if (ctx->page.mimetype)
-		htmlf("Content-Type: %s\n", ctx->page.mimetype);
-	if (ctx->page.size)
-		htmlf("Content-Length: %zd\n", ctx->page.size);
-	if (ctx->page.filename)
+	if (ctx.page.status)
+		htmlf("Status: %d %s\n", ctx.page.status, ctx.page.statusmsg);
+	if (ctx.page.mimetype && ctx.page.charset)
+		htmlf("Content-Type: %s; charset=%s\n", ctx.page.mimetype,
+		      ctx.page.charset);
+	else if (ctx.page.mimetype)
+		htmlf("Content-Type: %s\n", ctx.page.mimetype);
+	if (ctx.page.size)
+		htmlf("Content-Length: %zd\n", ctx.page.size);
+	if (ctx.page.filename)
 		htmlf("Content-Disposition: inline; filename=\"%s\"\n",
-		      ctx->page.filename);
-	if (!ctx->env.authenticated)
+		      ctx.page.filename);
+	if (!ctx.env.authenticated)
 		html("Cache-Control: no-cache, no-store\n");
-	htmlf("Last-Modified: %s\n", http_date(ctx->page.modified));
-	htmlf("Expires: %s\n", http_date(ctx->page.expires));
-	if (ctx->page.etag)
-		htmlf("ETag: \"%s\"\n", ctx->page.etag);
+	htmlf("Last-Modified: %s\n", http_date(ctx.page.modified));
+	htmlf("Expires: %s\n", http_date(ctx.page.expires));
+	if (ctx.page.etag)
+		htmlf("ETag: \"%s\"\n", ctx.page.etag);
 	html("\n");
-	if (ctx->env.request_method && !strcmp(ctx->env.request_method, "HEAD"))
+	if (ctx.env.request_method && !strcmp(ctx.env.request_method, "HEAD"))
 		exit(0);
 }
 
-void cgit_print_docstart(struct cgit_context *ctx)
+void cgit_print_docstart(void)
 {
-	if (ctx->cfg.embedded) {
-		if (ctx->cfg.header)
-			html_include(ctx->cfg.header);
+	if (ctx.cfg.embedded) {
+		if (ctx.cfg.header)
+			html_include(ctx.cfg.header);
 		return;
 	}
 
@@ -673,37 +672,37 @@ void cgit_print_docstart(struct cgit_context *ctx)
 	html("<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='en' lang='en'>\n");
 	html("<head>\n");
 	html("<title>");
-	html_txt(ctx->page.title);
+	html_txt(ctx.page.title);
 	html("</title>\n");
 	htmlf("<meta name='generator' content='cgit %s'/>\n", cgit_version);
-	if (ctx->cfg.robots && *ctx->cfg.robots)
-		htmlf("<meta name='robots' content='%s'/>\n", ctx->cfg.robots);
+	if (ctx.cfg.robots && *ctx.cfg.robots)
+		htmlf("<meta name='robots' content='%s'/>\n", ctx.cfg.robots);
 	html("<link rel='stylesheet' type='text/css' href='");
-	html_attr(ctx->cfg.css);
+	html_attr(ctx.cfg.css);
 	html("'/>\n");
-	if (ctx->cfg.favicon) {
+	if (ctx.cfg.favicon) {
 		html("<link rel='shortcut icon' href='");
-		html_attr(ctx->cfg.favicon);
+		html_attr(ctx.cfg.favicon);
 		html("'/>\n");
 	}
-	if (host && ctx->repo && ctx->qry.head) {
+	if (host && ctx.repo && ctx.qry.head) {
 		struct strbuf sb = STRBUF_INIT;
-		strbuf_addf(&sb, "h=%s", ctx->qry.head);
+		strbuf_addf(&sb, "h=%s", ctx.qry.head);
 
 		html("<link rel='alternate' title='Atom feed' href='");
 		html(cgit_httpscheme());
 		html_attr(cgit_hosturl());
-		html_attr(cgit_fileurl(ctx->repo->url, "atom", ctx->qry.vpath,
+		html_attr(cgit_fileurl(ctx.repo->url, "atom", ctx.qry.vpath,
 				       sb.buf));
 		html("' type='application/atom+xml'/>\n");
 		strbuf_release(&sb);
 	}
-	if (ctx->cfg.head_include)
-		html_include(ctx->cfg.head_include);
+	if (ctx.cfg.head_include)
+		html_include(ctx.cfg.head_include);
 	html("</head>\n");
 	html("<body>\n");
-	if (ctx->cfg.header)
-		html_include(ctx->cfg.header);
+	if (ctx.cfg.header)
+		html_include(ctx.cfg.header);
 }
 
 void cgit_print_docend()
@@ -767,47 +766,47 @@ void cgit_add_hidden_formfields(int incl_head, int incl_search,
 	}
 }
 
-static const char *hc(struct cgit_context *ctx, const char *page)
+static const char *hc(const char *page)
 {
-	return strcmp(ctx->qry.page, page) ? NULL : "active";
+	return strcmp(ctx.qry.page, page) ? NULL : "active";
 }
 
-static void cgit_print_path_crumbs(struct cgit_context *ctx, char *path)
+static void cgit_print_path_crumbs(char *path)
 {
-	char *old_path = ctx->qry.path;
+	char *old_path = ctx.qry.path;
 	char *p = path, *q, *end = path + strlen(path);
 
-	ctx->qry.path = NULL;
-	cgit_self_link("root", NULL, NULL, ctx);
-	ctx->qry.path = p = path;
+	ctx.qry.path = NULL;
+	cgit_self_link("root", NULL, NULL);
+	ctx.qry.path = p = path;
 	while (p < end) {
 		if (!(q = strchr(p, '/')))
 			q = end;
 		*q = '\0';
 		html_txt("/");
-		cgit_self_link(p, NULL, NULL, ctx);
+		cgit_self_link(p, NULL, NULL);
 		if (q < end)
 			*q = '/';
 		p = q + 1;
 	}
-	ctx->qry.path = old_path;
+	ctx.qry.path = old_path;
 }
 
-static void print_header(struct cgit_context *ctx)
+static void print_header(void)
 {
 	char *logo = NULL, *logo_link = NULL;
 
 	html("<table id='header'>\n");
 	html("<tr>\n");
 
-	if (ctx->repo && ctx->repo->logo && *ctx->repo->logo)
-		logo = ctx->repo->logo;
+	if (ctx.repo && ctx.repo->logo && *ctx.repo->logo)
+		logo = ctx.repo->logo;
 	else
-		logo = ctx->cfg.logo;
-	if (ctx->repo && ctx->repo->logo_link && *ctx->repo->logo_link)
-		logo_link = ctx->repo->logo_link;
+		logo = ctx.cfg.logo;
+	if (ctx.repo && ctx.repo->logo_link && *ctx.repo->logo_link)
+		logo_link = ctx.repo->logo_link;
 	else
-		logo_link = ctx->cfg.logo_link;
+		logo_link = ctx.cfg.logo_link;
 	if (logo && *logo) {
 		html("<td class='logo' rowspan='2'><a href='");
 		if (logo_link && *logo_link)
@@ -820,104 +819,104 @@ static void print_header(struct cgit_context *ctx)
 	}
 
 	html("<td class='main'>");
-	if (ctx->repo) {
+	if (ctx.repo) {
 		cgit_index_link("index", NULL, NULL, NULL, NULL, 0);
 		html(" : ");
-		cgit_summary_link(ctx->repo->name, ctx->repo->name, NULL, NULL);
-		if (ctx->env.authenticated) {
+		cgit_summary_link(ctx.repo->name, ctx.repo->name, NULL, NULL);
+		if (ctx.env.authenticated) {
 			html("</td><td class='form'>");
 			html("<form method='get' action=''>\n");
-			cgit_add_hidden_formfields(0, 1, ctx->qry.page);
+			cgit_add_hidden_formfields(0, 1, ctx.qry.page);
 			html("<select name='h' onchange='this.form.submit();'>\n");
-			for_each_branch_ref(print_branch_option, ctx->qry.head);
+			for_each_branch_ref(print_branch_option, ctx.qry.head);
 			html("</select> ");
 			html("<input type='submit' name='' value='switch'/>");
 			html("</form>");
 		}
 	} else
-		html_txt(ctx->cfg.root_title);
+		html_txt(ctx.cfg.root_title);
 	html("</td></tr>\n");
 
 	html("<tr><td class='sub'>");
-	if (ctx->repo) {
-		html_txt(ctx->repo->desc);
+	if (ctx.repo) {
+		html_txt(ctx.repo->desc);
 		html("</td><td class='sub right'>");
-		html_txt(ctx->repo->owner);
+		html_txt(ctx.repo->owner);
 	} else {
-		if (ctx->cfg.root_desc)
-			html_txt(ctx->cfg.root_desc);
-		else if (ctx->cfg.index_info)
-			html_include(ctx->cfg.index_info);
+		if (ctx.cfg.root_desc)
+			html_txt(ctx.cfg.root_desc);
+		else if (ctx.cfg.index_info)
+			html_include(ctx.cfg.index_info);
 	}
 	html("</td></tr></table>\n");
 }
 
-void cgit_print_pageheader(struct cgit_context *ctx)
+void cgit_print_pageheader(void)
 {
 	html("<div id='cgit'>");
-	if (!ctx->env.authenticated || !ctx->cfg.noheader)
-		print_header(ctx);
+	if (!ctx.env.authenticated || !ctx.cfg.noheader)
+		print_header();
 
 	html("<table class='tabs'><tr><td>\n");
-	if (ctx->env.authenticated && ctx->repo) {
-		cgit_summary_link("summary", NULL, hc(ctx, "summary"),
-				  ctx->qry.head);
-		cgit_refs_link("refs", NULL, hc(ctx, "refs"), ctx->qry.head,
-			       ctx->qry.sha1, NULL);
-		cgit_log_link("log", NULL, hc(ctx, "log"), ctx->qry.head,
-			      NULL, ctx->qry.vpath, 0, NULL, NULL,
-			      ctx->qry.showmsg);
-		cgit_tree_link("tree", NULL, hc(ctx, "tree"), ctx->qry.head,
-			       ctx->qry.sha1, ctx->qry.vpath);
-		cgit_commit_link("commit", NULL, hc(ctx, "commit"),
-				 ctx->qry.head, ctx->qry.sha1, ctx->qry.vpath, 0);
-		cgit_diff_link("diff", NULL, hc(ctx, "diff"), ctx->qry.head,
-			       ctx->qry.sha1, ctx->qry.sha2, ctx->qry.vpath, 0);
-		if (ctx->repo->max_stats)
-			cgit_stats_link("stats", NULL, hc(ctx, "stats"),
-					ctx->qry.head, ctx->qry.vpath);
-		if (ctx->repo->readme.nr)
+	if (ctx.env.authenticated && ctx.repo) {
+		cgit_summary_link("summary", NULL, hc("summary"),
+				  ctx.qry.head);
+		cgit_refs_link("refs", NULL, hc("refs"), ctx.qry.head,
+			       ctx.qry.sha1, NULL);
+		cgit_log_link("log", NULL, hc("log"), ctx.qry.head,
+			      NULL, ctx.qry.vpath, 0, NULL, NULL,
+			      ctx.qry.showmsg);
+		cgit_tree_link("tree", NULL, hc("tree"), ctx.qry.head,
+			       ctx.qry.sha1, ctx.qry.vpath);
+		cgit_commit_link("commit", NULL, hc("commit"),
+				 ctx.qry.head, ctx.qry.sha1, ctx.qry.vpath, 0);
+		cgit_diff_link("diff", NULL, hc("diff"), ctx.qry.head,
+			       ctx.qry.sha1, ctx.qry.sha2, ctx.qry.vpath, 0);
+		if (ctx.repo->max_stats)
+			cgit_stats_link("stats", NULL, hc("stats"),
+					ctx.qry.head, ctx.qry.vpath);
+		if (ctx.repo->readme.nr)
 			reporevlink("about", "about", NULL,
-				    hc(ctx, "about"), ctx->qry.head, NULL,
+				    hc("about"), ctx.qry.head, NULL,
 				    NULL);
 		html("</td><td class='form'>");
 		html("<form class='right' method='get' action='");
-		if (ctx->cfg.virtual_root)
-			html_url_path(cgit_fileurl(ctx->qry.repo, "log",
-						   ctx->qry.vpath, NULL));
+		if (ctx.cfg.virtual_root)
+			html_url_path(cgit_fileurl(ctx.qry.repo, "log",
+						   ctx.qry.vpath, NULL));
 		html("'>\n");
 		cgit_add_hidden_formfields(1, 0, "log");
 		html("<select name='qt'>\n");
-		html_option("grep", "log msg", ctx->qry.grep);
-		html_option("author", "author", ctx->qry.grep);
-		html_option("committer", "committer", ctx->qry.grep);
-		html_option("range", "range", ctx->qry.grep);
+		html_option("grep", "log msg", ctx.qry.grep);
+		html_option("author", "author", ctx.qry.grep);
+		html_option("committer", "committer", ctx.qry.grep);
+		html_option("range", "range", ctx.qry.grep);
 		html("</select>\n");
 		html("<input class='txt' type='text' size='10' name='q' value='");
-		html_attr(ctx->qry.search);
+		html_attr(ctx.qry.search);
 		html("'/>\n");
 		html("<input type='submit' value='search'/>\n");
 		html("</form>\n");
-	} else if (ctx->env.authenticated) {
-		site_link(NULL, "index", NULL, hc(ctx, "repolist"), NULL, NULL, 0);
-		if (ctx->cfg.root_readme)
-			site_link("about", "about", NULL, hc(ctx, "about"),
+	} else if (ctx.env.authenticated) {
+		site_link(NULL, "index", NULL, hc("repolist"), NULL, NULL, 0);
+		if (ctx.cfg.root_readme)
+			site_link("about", "about", NULL, hc("about"),
 				  NULL, NULL, 0);
 		html("</td><td class='form'>");
 		html("<form method='get' action='");
 		html_attr(cgit_rooturl());
 		html("'>\n");
 		html("<input type='text' name='q' size='10' value='");
-		html_attr(ctx->qry.search);
+		html_attr(ctx.qry.search);
 		html("'/>\n");
 		html("<input type='submit' value='search'/>\n");
 		html("</form>");
 	}
 	html("</td></tr></table>\n");
-	if (ctx->env.authenticated && ctx->qry.vpath) {
+	if (ctx.env.authenticated && ctx.qry.vpath) {
 		html("<div class='path'>");
 		html("path: ");
-		cgit_print_path_crumbs(ctx, ctx->qry.vpath);
+		cgit_print_path_crumbs(ctx.qry.vpath);
 		html("</div>");
 	}
 	html("<div class='content'>");

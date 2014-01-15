@@ -259,9 +259,9 @@ void cgit_print_repolist()
 		++columns;
 
 	ctx.page.title = ctx.cfg.root_title;
-	cgit_print_http_headers(&ctx);
-	cgit_print_docstart(&ctx);
-	cgit_print_pageheader(&ctx);
+	cgit_print_http_headers();
+	cgit_print_docstart();
+	cgit_print_pageheader();
 
 	if (ctx.cfg.index_header)
 		html_include(ctx.cfg.index_header);

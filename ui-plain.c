@@ -103,7 +103,7 @@ static int print_object(const unsigned char *sha1, const char *path)
 	ctx.page.filename = path;
 	ctx.page.size = size;
 	ctx.page.etag = sha1_to_hex(sha1);
-	cgit_print_http_headers(&ctx);
+	cgit_print_http_headers();
 	html_raw(buf, size);
 	/* If we allocated this, then casting away const is safe. */
 	if (freemime)
@@ -128,7 +128,7 @@ static void print_dir(const unsigned char *sha1, const char *base,
 	fullpath = buildpath(base, baselen, path);
 	slash = (fullpath[0] == '/' ? "" : "/");
 	ctx.page.etag = sha1_to_hex(sha1);
-	cgit_print_http_headers(&ctx);
+	cgit_print_http_headers();
 	htmlf("<html><head><title>%s", slash);
 	html_txt(fullpath);
 	htmlf("</title></head>\n<body>\n<h2>%s", slash);
@@ -206,14 +206,14 @@ static int basedir_len(const char *path)
 	return 0;
 }
 
-void cgit_print_plain(struct cgit_context *ctx)
+void cgit_print_plain(void)
 {
-	const char *rev = ctx->qry.sha1;
+	const char *rev = ctx.qry.sha1;
 	unsigned char sha1[20];
 	struct commit *commit;
 	struct pathspec_item path_items = {
-		.match = ctx->qry.path,
-		.len = ctx->qry.path ? strlen(ctx->qry.path) : 0
+		.match = ctx.qry.path,
+		.len = ctx.qry.path ? strlen(ctx.qry.path) : 0
 	};
 	struct pathspec paths = {
 		.nr = 1,
@@ -224,7 +224,7 @@ void cgit_print_plain(struct cgit_context *ctx)
 	};
 
 	if (!rev)
-		rev = ctx->qry.head;
+		rev = ctx.qry.head;
 
 	if (get_sha1(rev, sha1)) {
 		html_status(404, "Not found", 0);
