@@ -15,7 +15,7 @@ function filter_open(email, page)
 end
 
 function filter_close()
-	html("<img src='//www.gravatar.com/avatar/" .. md5 .. "?s=13&amp;d=retro' width=13 height=13 alt='Gravatar' /> " .. buffer)
+	html("<img src='//www.gravatar.com/avatar/" .. md5 .. "?s=13&amp;d=retro' width='13' height='13' alt='Gravatar' /> " .. buffer)
 	return 0
 end
 
