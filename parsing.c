@@ -156,7 +156,7 @@ struct commitinfo *cgit_parse_commit(struct commit *commit)
 	}
 
 	if (p && !prefixcmp(p, "committer ")) {
-		p = parse_user(p + 9, &ret->committer, &ret->committer_email,
+		p = parse_user(p + 10, &ret->committer, &ret->committer_email,
 			&ret->committer_date);
 	}
 
