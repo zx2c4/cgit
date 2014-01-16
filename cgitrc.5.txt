@@ -645,7 +645,7 @@ source filter::
 	filtered contents is expected on standard output.
 
 auth filter::
-	The authentication filter receives 11 parameters:
+	The authentication filter receives 12 parameters:
 	  - filter action, explained below, which specifies which action the
 	    filter is called for
 	  - http cookie
@@ -656,8 +656,9 @@ auth filter::
 	  - cgit repo
 	  - cgit page
 	  - cgit url
+	  - cgit login url
 	When the filter action is "body", this filter must write to output the
-	HTML for displaying the login form, which POSTs to "/?p=login". When
+	HTML for displaying the login form, which POSTs to the login url. When
 	the filter action is "authenticate-cookie", this filter must validate
 	the http cookie and return a 0 if it is invalid or 1 if it is invalid,
 	in the exit code / close function. If the filter action is

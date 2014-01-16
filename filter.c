@@ -417,7 +417,7 @@ struct cgit_filter *cgit_new_filter(const char *cmd, filter_type filtertype)
 
 	switch (filtertype) {
 		case AUTH:
-			argument_count = 11;
+			argument_count = 12;
 			break;
 
 		case EMAIL:

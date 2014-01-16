@@ -122,12 +122,7 @@ function filter_open(...)
 	cgit["repo"] = select(9, ...)
 	cgit["page"] = select(10, ...)
 	cgit["url"] = select(11, ...)
-
-	cgit["login"] = ""
-	for _ in cgit["url"]:gfind("/") do
-		cgit["login"] = cgit["login"] .. "../"
-	end
-	cgit["login"] = cgit["login"] .. "?p=login"
+	cgit["login"] = select(12, ...)
 
 end
 

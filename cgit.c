@@ -611,7 +611,8 @@ static inline void open_auth_filter(struct cgit_context *ctx, const char *functi
 		ctx->env.https ? ctx->env.https : "",
 		ctx->qry.repo ? ctx->qry.repo : "",
 		ctx->qry.page ? ctx->qry.page : "",
-		ctx->qry.url ? ctx->qry.url : "");
+		ctx->qry.url ? ctx->qry.url : "",
+		cgit_loginurl());
 }
 
 /* We intentionally keep this rather small, instead of looping and

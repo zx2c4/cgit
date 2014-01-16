@@ -73,6 +73,14 @@ const char *cgit_rooturl()
 		return ctx.cfg.script_name;
 }
 
+const char *cgit_loginurl()
+{
+	static const char *login_url = 0;
+	if (!login_url)
+		login_url = fmtalloc("%s?p=login", cgit_rooturl());
+	return login_url;
+}
+
 char *cgit_repourl(const char *reponame)
 {
 	if (ctx.cfg.virtual_root)
