@@ -614,22 +614,19 @@ static inline void open_auth_filter(struct cgit_context *ctx, const char *functi
 		ctx->qry.url ? ctx->qry.url : "");
 }
 
+/* We intentionally keep this rather small, instead of looping and
+ * feeding it to the filter a couple bytes at a time. This way, the
+ * filter itself does not need to handle any denial of service or
+ * buffer bloat issues. If this winds up being too small, people
+ * will complain on the mailing list, and we'll increase it as needed. */
 #define MAX_AUTHENTICATION_POST_BYTES 4096
+/* The filter is expected to spit out "Status: " and all headers. */
 static inline void authenticate_post(struct cgit_context *ctx)
 {
-	if (ctx->env.http_referer && strlen(ctx->env.http_referer) > 0) {
-		html("Status: 302 Redirect\n");
-		html("Cache-Control: no-cache, no-store\n");
-		htmlf("Location: %s\n", ctx->env.http_referer);
-	} else {
-		html("Status: 501 Missing Referer\n");
-		html("Cache-Control: no-cache, no-store\n\n");
-		exit(0);
-	}
-
-	open_auth_filter(ctx, "authenticate-post");
 	char buffer[MAX_AUTHENTICATION_POST_BYTES];
 	int len;
+
+	open_auth_filter(ctx, "authenticate-post");
 	len = ctx->env.content_length;
 	if (len > MAX_AUTHENTICATION_POST_BYTES)
 		len = MAX_AUTHENTICATION_POST_BYTES;
@@ -637,10 +634,7 @@ static inline void authenticate_post(struct cgit_context *ctx)
 		die_errno("Could not read POST from stdin");
 	if (write(STDOUT_FILENO, buffer, len) < 0)
 		die_errno("Could not write POST to stdout");
-	/* The filter may now spit out a Set-Cookie: ... */
 	cgit_close_filter(ctx->cfg.auth_filter);
-
-	html("\n");
 	exit(0);
 }
 

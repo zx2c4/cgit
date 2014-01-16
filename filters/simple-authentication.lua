@@ -33,15 +33,28 @@ local secret = "BE SURE TO CUSTOMIZE THIS STRING TO SOMETHING BIG AND RANDOM"
 --
 --
 
--- Sets HTTP cookie headers based on post
+-- Sets HTTP cookie headers based on post and sets up redirection.
 function authenticate_post()
 	local password = users[post["username"]]
-	-- TODO: Implement time invariant string comparison function to mitigate against timing attack.
-	if password == nil or password ~= post["password"] then
-		construct_cookie("", "cgitauth")
-	else
-		construct_cookie(post["username"], "cgitauth")
+	local redirect = validate_value(post["redirect"])
+
+	if redirect == nil then
+		not_found()
+		return 0
 	end
+
+	redirect_to(redirect)
+
+	-- TODO: Implement time invariant string comparison function to mitigate timing attack.
+	if password == nil or password ~= post["password"] then
+		set_cookie("cgitauth", "")
+	else
+		-- One week expiration time
+		local username = secure_value(post["username"], os.time() + 604800)
+		set_cookie("cgitauth", username)
+	end
+
+	html("\n")
 	return 0
 end
 
@@ -54,8 +67,8 @@ function authenticate_cookie()
 		return 1
 	end
 
-	local username = validate_cookie(get_cookie(http["cookie"], "cgitauth"))
-	if username == nil or not accepted_users[username] then
+	local username = validate_value(get_cookie(http["cookie"], "cgitauth"))
+	if username == nil or not accepted_users[username:lower()] then
 		return 0
 	else
 		return 1
@@ -68,6 +81,9 @@ function body()
 	html("<form method='post' action='")
 	html_attr(cgit["login"])
 	html("'>")
+	html("<input type='hidden' name='redirect' value='")
+	html_attr(secure_value(cgit["url"], 0))
+	html("' />")
 	html("<table>")
 	html("<tr><td><label for='username'>Username:</label></td><td><input id='username' name='username' autofocus /></td></tr>")
 	html("<tr><td><label for='password'>Password:</label></td><td><input id='password' name='password' type='password' /></td></tr>")
@@ -78,81 +94,10 @@ function body()
 end
 
 
---
---
--- Cookie construction and validation helpers.
---
---
-
-local crypto = require("crypto")
-
--- Returns username of cookie if cookie is valid. Otherwise returns nil.
-function validate_cookie(cookie)
-	local i = 0
-	local username = ""
-	local expiration = 0
-	local salt = ""
-	local hmac = ""
-
-	if cookie:len() < 3 or cookie:sub(1, 1) == "|" then
-		return nil
-	end
-
-	for component in string.gmatch(cookie, "[^|]+") do
-		if i == 0 then
-			username = component
-		elseif i == 1 then
-			expiration = tonumber(component)
-			if expiration == nil then
-				expiration = 0
-			end
-		elseif i == 2 then
-			salt = component
-		elseif i == 3 then
-			hmac = component
-		else
-			break
-		end
-		i = i + 1
-	end
-
-	if hmac == nil or hmac:len() == 0 then
-		return nil
-	end
-
-	-- TODO: implement time invariant comparison to prevent against timing attack.
-	if hmac ~= crypto.hmac.digest("sha1", username .. "|" .. tostring(expiration) .. "|" .. salt, secret) then
-		return nil
-	end
-
-	if expiration <= os.time() then
-		return nil
-	end
-
-	return username:lower()
-end
-
-function construct_cookie(username, cookie)
-	local authstr = ""
-	if username:len() > 0 then
-		-- One week expiration time
-		local expiration = os.time() + 604800
-		local salt = crypto.hex(crypto.rand.bytes(16))
-
-		authstr = username .. "|" .. tostring(expiration) .. "|" .. salt
-		authstr = authstr .. "|" .. crypto.hmac.digest("sha1", authstr, secret)
-	end
-
-	html("Set-Cookie: " .. cookie .. "=" .. authstr .. "; HttpOnly")
-	if http["https"] == "yes" or http["https"] == "on" or http["https"] == "1" then
-		html("; secure")
-	end
-	html("\n")
-end
 
 --
 --
--- Wrapper around filter API follows below, exposing the http table, the cgit table, and the post table to the above functions.
+-- Wrapper around filter API, exposing the http table, the cgit table, and the post table to the above functions.
 --
 --
 
@@ -197,7 +142,7 @@ end
 
 --
 --
--- Utility functions follow below, based on keplerproject/wsapi.
+-- Utility functions based on keplerproject/wsapi.
 --
 --
 
@@ -208,6 +153,16 @@ function url_decode(str)
 	str = string.gsub(str, "+", " ")
 	str = string.gsub(str, "%%(%x%x)", function(h) return string.char(tonumber(h, 16)) end)
 	str = string.gsub(str, "\r\n", "\n")
+	return str
+end
+
+function url_encode(str)
+	if not str then
+		return ""
+	end
+	str = string.gsub(str, "\n", "\r\n")
+	str = string.gsub(str, "([^%w ])", function (c) return string.format("%%%02X", string.byte(c)) end)
+	str = string.gsub(str, " ", "+")
 	return str
 end
 
@@ -222,4 +177,91 @@ end
 function get_cookie(cookies, name)
 	cookies = string.gsub(";" .. cookies .. ";", "%s*;%s*", ";")
 	return url_decode(string.match(cookies, ";" .. name .. "=(.-);"))
+end
+
+
+--
+--
+-- Cookie construction and validation helpers.
+--
+--
+
+local crypto = require("crypto")
+
+-- Returns value of cookie if cookie is valid. Otherwise returns nil.
+function validate_value(cookie)
+	local i = 0
+	local value = ""
+	local expiration = 0
+	local salt = ""
+	local hmac = ""
+
+	if cookie == nil or cookie:len() < 3 or cookie:sub(1, 1) == "|" then
+		return nil
+	end
+
+	for component in string.gmatch(cookie, "[^|]+") do
+		if i == 0 then
+			value = component
+		elseif i == 1 then
+			expiration = tonumber(component)
+			if expiration == nil then
+				expiration = 0
+			end
+		elseif i == 2 then
+			salt = component
+		elseif i == 3 then
+			hmac = component
+		else
+			break
+		end
+		i = i + 1
+	end
+
+	if hmac == nil or hmac:len() == 0 then
+		return nil
+	end
+
+	-- TODO: implement time invariant comparison to prevent against timing attack.
+	if hmac ~= crypto.hmac.digest("sha1", value .. "|" .. tostring(expiration) .. "|" .. salt, secret) then
+		return nil
+	end
+
+	if expiration ~= 0 and expiration <= os.time() then
+		return nil
+	end
+
+	return url_decode(value)
+end
+
+function secure_value(value, expiration)
+	if value == nil or value:len() <= 0 then
+		return ""
+	end
+
+	local authstr = ""
+	local salt = crypto.hex(crypto.rand.bytes(16))
+	value = url_encode(value)
+	authstr = value .. "|" .. tostring(expiration) .. "|" .. salt
+	authstr = authstr .. "|" .. crypto.hmac.digest("sha1", authstr, secret)
+	return authstr
+end
+
+function set_cookie(cookie, value)
+	html("Set-Cookie: " .. cookie .. "=" .. value .. "; HttpOnly")
+	if http["https"] == "yes" or http["https"] == "on" or http["https"] == "1" then
+		html("; secure")
+	end
+	html("\n")
+end
+
+function redirect_to(url)
+	html("Status: 302 Redirect\n")
+	html("Cache-Control: no-cache, no-store\n")
+	html("Location: " .. url .. "\n")
+end
+
+function not_found()
+	html("Status: 404 Not Found\n")
+	html("Cache-Control: no-cache, no-store\n\n")
 end
