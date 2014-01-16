@@ -306,7 +306,13 @@ void cgit_print_repolist()
 		html_link_close();
 		html("</td><td>");
 		if (ctx.cfg.enable_index_owner) {
+			html("<a href='");
+			html_attr(cgit_rooturl());
+			html("?q=");
+			html_url_arg(ctx.repo->owner);
+			html("'>");
 			html_txt(ctx.repo->owner);
+			html("</a>");
 			html("</td><td>");
 		}
 		print_modtime(ctx.repo);
