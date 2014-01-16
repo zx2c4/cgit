@@ -45,7 +45,7 @@ function authenticate_post()
 
 	redirect_to(redirect)
 
-	-- TODO: Implement time invariant string comparison function to mitigate timing attack.
+	-- Lua hashes strings, so these comparisons are time invariant.
 	if password == nil or password ~= post["password"] then
 		set_cookie("cgitauth", "")
 	else
@@ -222,7 +222,7 @@ function validate_value(cookie)
 		return nil
 	end
 
-	-- TODO: implement time invariant comparison to prevent against timing attack.
+	-- Lua hashes strings, so these comparisons are time invariant.
 	if hmac ~= crypto.hmac.digest("sha1", value .. "|" .. tostring(expiration) .. "|" .. salt, secret) then
 		return nil
 	end
