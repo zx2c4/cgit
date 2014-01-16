@@ -591,6 +591,7 @@ static int prepare_repo_cmd(void)
 		cgit_print_pageheader();
 		cgit_print_error("Invalid branch: %s", tmp);
 		cgit_print_docend();
+		free(tmp);
 		return 1;
 	}
 	sort_string_list(&ctx.repo->submodules);
