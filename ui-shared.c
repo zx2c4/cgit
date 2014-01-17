@@ -859,6 +859,10 @@ void cgit_print_pageheader(void)
 
 	html("<table class='tabs'><tr><td>\n");
 	if (ctx.env.authenticated && ctx.repo) {
+		if (ctx.repo->readme.nr)
+			reporevlink("about", "about", NULL,
+				    hc("about"), ctx.qry.head, NULL,
+				    NULL);
 		cgit_summary_link("summary", NULL, hc("summary"),
 				  ctx.qry.head);
 		cgit_refs_link("refs", NULL, hc("refs"), ctx.qry.head,
@@ -875,10 +879,6 @@ void cgit_print_pageheader(void)
 		if (ctx.repo->max_stats)
 			cgit_stats_link("stats", NULL, hc("stats"),
 					ctx.qry.head, ctx.qry.vpath);
-		if (ctx.repo->readme.nr)
-			reporevlink("about", "about", NULL,
-				    hc("about"), ctx.qry.head, NULL,
-				    NULL);
 		html("</td><td class='form'>");
 		html("<form class='right' method='get' action='");
 		if (ctx.cfg.virtual_root)
