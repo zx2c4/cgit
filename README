@@ -54,7 +54,7 @@ Dependencies
 * libzip
 * libcrypto (OpenSSL)
 * libssl (OpenSSL)
-* optional: luajit or lua
+* optional: luajit or lua, most reliably used when pkg-config is available
 
 Apache configuration
 --------------------
