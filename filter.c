@@ -38,6 +38,7 @@ void cgit_cleanup_filters(void)
 	reap_filter(ctx.cfg.commit_filter);
 	reap_filter(ctx.cfg.source_filter);
 	reap_filter(ctx.cfg.email_filter);
+	reap_filter(ctx.cfg.auth_filter);
 	for (i = 0; i < cgit_repolist.count; ++i) {
 		reap_filter(cgit_repolist.repos[i].about_filter);
 		reap_filter(cgit_repolist.repos[i].commit_filter);
