@@ -596,6 +596,8 @@ void cgit_print_age(time_t t, time_t max_relative, const char *format)
 		return;
 	time(&now);
 	secs = now - t;
+	if (secs < 0)
+		secs = 0;
 
 	if (secs > max_relative && max_relative >= 0) {
 		cgit_print_date(t, format, ctx.cfg.local_time);
