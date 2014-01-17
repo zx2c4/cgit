@@ -12,17 +12,27 @@
 --
 --
 
+-- A list of password protected repositories along with the users who can access them.
 local protected_repos = {
 	glouglou	= { laurent = true, jason = true },
 	qt		= { jason = true, bob = true }
 }
 
+-- Please note that, in production, you'll want to replace this simple lookup
+-- table with either a table of salted and hashed passwords (using something
+-- smart like scrypt), or replace this table lookup with an external support,
+-- such as consulting your system's pam / shadow system, or an external
+-- database, or an external validating web service. For testing, or for
+-- extremely low-security usage, you may be able, however, to get away with
+-- compromising on hardcoding the passwords in cleartext, as we have done here.
 local users = {
 	jason		= "secretpassword",
 	laurent		= "s3cr3t",
 	bob		= "ilikelua"
 }
 
+-- All cookies will be authenticated based on this secret. Make it something
+-- totally random and impossible to guess. It should be large.
 local secret = "BE SURE TO CUSTOMIZE THIS STRING TO SOMETHING BIG AND RANDOM"
 
 
