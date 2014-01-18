@@ -29,6 +29,7 @@ DOC_PDF  = $(patsubst %.txt,%.pdf,$(MAN_TXT))
 # j, z, t. (representing long long int, char, intmax_t, size_t, ptrdiff_t).
 # some C compilers supported these specifiers prior to C99 as an extension.
 #
+# Define HAVE_LINUX_SENDFILE to use sendfile()
 
 #-include config.mak
 

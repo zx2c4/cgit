@@ -68,6 +68,14 @@ ifeq ($(findstring BSD,$(uname_S)),)
 	CGIT_LIBS += -ldl
 endif
 
+# glibc 2.1+ offers sendfile which the most common C library on Linux
+ifeq ($(uname_S),Linux)
+	HAVE_LINUX_SENDFILE = YesPlease
+endif
+
+ifdef HAVE_LINUX_SENDFILE
+	CGIT_CFLAGS += -DHAVE_LINUX_SENDFILE
+endif
 
 CGIT_OBJ_NAMES += cgit.o
 CGIT_OBJ_NAMES += cache.o

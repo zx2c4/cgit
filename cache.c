@@ -13,6 +13,9 @@
  *
  */
 
+#ifdef HAVE_LINUX_SENDFILE
+#include <sys/sendfile.h>
+#endif
 #include "cgit.h"
 #include "cache.h"
 #include "html.h"
@@ -30,7 +33,6 @@ struct cache_slot {
 	const char *lock_name;
 	int match;
 	struct stat cache_st;
-	struct stat lock_st;
 	int bufsize;
 	char buf[CACHE_BUFSIZE];
 };
@@ -81,6 +83,23 @@ static int close_slot(struct cache_slot *slot)
 /* Print the content of the active cache slot (but skip the key). */
 static int print_slot(struct cache_slot *slot)
 {
+#ifdef HAVE_LINUX_SENDFILE
+	off_t start_off;
+	int ret;
+
+	start_off = slot->keylen + 1;
+
+	do {
+		ret = sendfile(STDOUT_FILENO, slot->cache_fd, &start_off,
+				slot->cache_st.st_size - start_off);
+		if (ret < 0) {
+			if (errno == EAGAIN || errno == EINTR)
+				continue;
+			return errno;
+		}
+		return 0;
+	} while (1);
+#else
 	ssize_t i, j;
 
 	i = lseek(slot->cache_fd, slot->keylen + 1, SEEK_SET);
@@ -97,6 +116,7 @@ static int print_slot(struct cache_slot *slot)
 		return errno;
 	else
 		return 0;
+#endif
 }
 
 /* Check if the slot has expired */
@@ -187,6 +207,10 @@ static int fill_slot(struct cache_slot *slot)
 
 	/* Generate cache content */
 	slot->fn();
+
+	/* update stat info */
+	if (fstat(slot->lock_fd, &slot->cache_st))
+		return errno;
 
 	/* Restore stdout */
 	if (dup2(tmp, STDOUT_FILENO) == -1)
