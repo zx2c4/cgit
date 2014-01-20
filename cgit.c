@@ -921,6 +921,23 @@ static void cgit_parse_args(int argc, const char **argv)
 	int scan = 0;
 
 	for (i = 1; i < argc; i++) {
+		if (!strcmp(argv[i], "--version")) {
+			printf("CGit %s | http://git.zx2c4.com/cgit/\n\nCompiled in features:\n", CGIT_VERSION);
+#ifdef NO_LUA
+			printf("[-] ");
+#else
+			printf("[+] ");
+#endif
+			printf("Lua scripting\n");
+#ifndef HAVE_LINUX_SENDFILE
+			printf("[-] ");
+#else
+			printf("[+] ");
+#endif
+			printf("Linux sendfile() usage\n");
+
+			exit(0);
+		}
 		if (!prefixcmp(argv[i], "--cache=")) {
 			ctx.cfg.cache_root = xstrdup(argv[i] + 8);
 		} else if (!strcmp(argv[i], "--nocache")) {
