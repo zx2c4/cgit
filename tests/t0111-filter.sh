@@ -3,7 +3,12 @@
 test_description='Check filtered content'
 . ./setup.sh
 
-for prefix in exec lua
+prefixes="exec"
+if [ $CGIT_HAS_LUA -eq 1 ]; then
+	prefixes="$prefixes lua"
+fi
+
+for prefix in $prefixes
 do
 	test_expect_success "generate filter-$prefix/tree/a%2bb" "
 		cgit_url 'filter-$prefix/tree/a%2bb' >tmp
