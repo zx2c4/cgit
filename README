@@ -38,14 +38,11 @@ If you'd like to compile without Lua support, you may use:
 
 And if you'd like to specify a Lua implementation, you may use:
 
-    $ make LUA_IMPLEMENTATION=JIT
+    $ make LUA_PKGCONFIG=lua5.1
 
-for using the LuaJIT project. Or:
-
-    $ make LUA_IMPLEMENTATION=VANILLA
-
-for the mainline Lua project. If you specify neither implementation, it will
-be auto-detected, preferring LuaJIT if both are present.
+If this is not specified, the Lua implementation will be auto-detected,
+preferring LuaJIT if many are present. Acceptable values are generally "lua",
+"luajit", "lua5.1", and "lua5.2".
 
 
 Dependencies
