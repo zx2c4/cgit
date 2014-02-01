@@ -4,7 +4,7 @@
 V=$1
 
 # Use `git describe` to get current version if we're inside a git repo
-if test -d .git
+if test "$(git rev-parse --git-dir 2>/dev/null)" = '.git'
 then
 	V=$(git describe --abbrev=4 HEAD 2>/dev/null)
 fi
