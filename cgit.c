@@ -184,6 +184,8 @@ static void config_cb(const char *name, const char *value)
 		ctx.cfg.cache_dynamic_ttl = atoi(value);
 	else if (!strcmp(name, "cache-about-ttl"))
 		ctx.cfg.cache_about_ttl = atoi(value);
+	else if (!strcmp(name, "cache-snapshot-ttl"))
+		ctx.cfg.cache_snapshot_ttl = atoi(value);
 	else if (!strcmp(name, "case-sensitive-sort"))
 		ctx.cfg.case_sensitive_sort = atoi(value);
 	else if (!strcmp(name, "about-filter"))
@@ -331,6 +333,7 @@ static void prepare_context(void)
 	ctx.cfg.cache_max_create_time = 5;
 	ctx.cfg.cache_root = CGIT_CACHE_ROOT;
 	ctx.cfg.cache_about_ttl = 15;
+	ctx.cfg.cache_snapshot_ttl = 5;
 	ctx.cfg.cache_repo_ttl = 5;
 	ctx.cfg.cache_root_ttl = 5;
 	ctx.cfg.cache_scanrc_ttl = 15;
@@ -994,6 +997,9 @@ static int calc_ttl()
 
 	if (!strcmp(ctx.qry.page, "about"))
 		return ctx.cfg.cache_about_ttl;
+
+	if (!strcmp(ctx.qry.page, "snapshot"))
+		return ctx.cfg.cache_snapshot_ttl;
 
 	if (ctx.qry.has_sha1)
 		return ctx.cfg.cache_static_ttl;

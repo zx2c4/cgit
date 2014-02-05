@@ -210,6 +210,7 @@ struct cgit_config {
 	int cache_scanrc_ttl;
 	int cache_static_ttl;
 	int cache_about_ttl;
+	int cache_snapshot_ttl;
 	int case_sensitive_sort;
 	int embedded;
 	int enable_filter_overrides;

@@ -88,6 +88,11 @@ cache-about-ttl::
 	version of the repository about page. Negative values have infinite
 	ttl. Default value: "15".
 
+cache-snapshot-ttl::
+	Number which specifies the time-to-live, in minutes, for the cached
+	version of snapshots. Negative values have infinite ttl. Default
+	value: "5".
+
 cache-size::
 	The maximum number of entries in the cgit cache. Default value: "0"
 	(i.e. caching is disabled).
