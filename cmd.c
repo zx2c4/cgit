@@ -113,7 +113,7 @@ static void refs_fn(void)
 static void snapshot_fn(void)
 {
 	cgit_print_snapshot(ctx.qry.head, ctx.qry.sha1, ctx.qry.path,
-			    ctx.repo->snapshots, ctx.qry.nohead);
+			    ctx.qry.nohead);
 }
 
 static void stats_fn(void)

@@ -193,7 +193,7 @@ static void show_error(char *fmt, ...)
 }
 
 void cgit_print_snapshot(const char *head, const char *hex,
-			 const char *filename, int snapshots, int dwim)
+			 const char *filename, int dwim)
 {
 	const struct cgit_snapshot_format* f;
 	char *prefix = NULL;
