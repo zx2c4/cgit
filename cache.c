@@ -343,7 +343,7 @@ int cache_process(int size, const char *path, const char *key, int ttl,
 	int result;
 
 	/* If the cache is disabled, just generate the content */
-	if (size <= 0) {
+	if (size <= 0 || ttl == 0) {
 		fn();
 		return 0;
 	}
