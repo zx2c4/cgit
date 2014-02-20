@@ -368,6 +368,7 @@ void cgit_diff_tree(const unsigned char *old_sha1,
 	struct diff_options opt;
 	struct pathspec_item item;
 
+	memset(&item, 0, sizeof(item));
 	diff_setup(&opt);
 	opt.output_format = DIFF_FORMAT_CALLBACK;
 	opt.detect_rename = 1;
