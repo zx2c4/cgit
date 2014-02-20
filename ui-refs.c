@@ -105,7 +105,7 @@ static void print_tag_downloads(const struct cgit_repo *repo, const char *ref)
 	const char *basename;
 	int free_ref = 0;
 
-	if (!ref || strlen(ref) < 2)
+	if (!ref || strlen(ref) < 1)
 		return;
 
 	basename = cgit_repobasename(repo->url);
