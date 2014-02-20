@@ -31,7 +31,7 @@ ifdef NO_LUA
 else
 ifeq ($(LUA_PKGCONFIG),)
 	LUA_PKGCONFIG := $(shell for pc in luajit lua lua5.2 lua5.1; do \
-			pkg-config --exists $$pc && echo $$pc && break; \
+			pkg-config --exists $$pc 2>/dev/null && echo $$pc && break; \
 			done)
 	LUA_MODE := autodetected
 else
