@@ -60,48 +60,41 @@ cache-root::
 
 cache-static-ttl::
 	Number which specifies the time-to-live, in minutes, for the cached
-	version of repository pages accessed with a fixed SHA1. Negative
-	values have infinite ttl, zero means that the cache is disabled for
-	this type of pages. Default value: -1".
+	version of repository pages accessed with a fixed SHA1. See also:
+	"CACHE". Default value: -1".
 
 cache-dynamic-ttl::
 	Number which specifies the time-to-live, in minutes, for the cached
-	version of repository pages accessed without a fixed SHA1. Negative
-	values have infinite ttl, zero means that the cache is disabled for this
-	type of pages. Default value: "5".
+	version of repository pages accessed without a fixed SHA1. See also:
+	"CACHE". Default value: "5".
 
 cache-repo-ttl::
 	Number which specifies the time-to-live, in minutes, for the cached
-	version of the repository summary page. Negative values have infinite
-	ttl, zero means that the cache is disabled for this type of pages.
-	Default value: "5".
+	version of the repository summary page. See also: "CACHE". Default
+	value: "5".
 
 cache-root-ttl::
 	Number which specifies the time-to-live, in minutes, for the cached
-	version of the repository index page. Negative values have infinite
-	ttl, zero means that the cache is disabled for this type of pages.
-	Default value: "5".
+	version of the repository index page. See also: "CACHE". Default
+	value: "5".
 
 cache-scanrc-ttl::
 	Number which specifies the time-to-live, in minutes, for the result
-	of scanning a path for git repositories. Negative values have infinite
-	ttl, zero means that the cache is disable for this type of pages.
-	Default value: "15".
+	of scanning a path for git repositories. See also: "CACHE". Default
+	value: "15".
 
 cache-about-ttl::
 	Number which specifies the time-to-live, in minutes, for the cached
-	version of the repository about page. Negative values have infinite
-	ttl, zero means that the cache is disable for this type of pages.
-	Default value: "15".
+	version of the repository about page. See also: "CACHE". Default
+	value: "15".
 
 cache-snapshot-ttl::
 	Number which specifies the time-to-live, in minutes, for the cached
-	version of snapshots. Negative values have infinite ttl, zero means
-	that the cache is disable for this type of pages. Default value: "5".
+	version of snapshots. See also: "CACHE". Default value: "5".
 
 cache-size::
-	The maximum number of entries in the cgit cache. Default value: "0"
-	(i.e. caching is disabled).
+	The maximum number of entries in the cgit cache. When set to "0",
+	caching is disabled. See also: "CACHE". Default value: "0"
 
 case-sensitive-sort::
 	Sort items in the repo list case sensitively. Default value: "1".
@@ -721,6 +714,16 @@ the environment variables defined in "FILTER API":
 
 - clone-url
 - repo.clone-url
+
+
+CACHE
+------
+
+All cache ttl values are in minutes. Negative ttl values indicate that a page
+type will never expire, and thus the first time a URL is accessed, the result
+will be cached indefinitely, even if the underlying git repository changes.
+Conversely, when a ttl value is zero, the cache is disabled for that
+particular page type, and the page type is never cached.
 
 
 EXAMPLE CGITRC FILE
