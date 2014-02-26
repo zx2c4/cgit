@@ -11,18 +11,10 @@
 #include "html.h"
 #include "ui-shared.h"
 
-static int cmp_age(int age1, int age2)
+static inline int cmp_age(int age1, int age2)
 {
-	if (age1 != 0 && age2 != 0)
-		return age2 - age1;
-
-	if (age1 == 0 && age2 == 0)
-		return 0;
-
-	if (age1 == 0)
-		return +1;
-
-	return -1;
+	/* age1 and age2 are assumed to be non-negative */
+	return age2 - age1;
 }
 
 static int cmp_ref_name(const void *a, const void *b)
