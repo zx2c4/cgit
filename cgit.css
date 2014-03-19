@@ -590,6 +590,13 @@ div#cgit div.footer {
 	font-size: 80%;
 	color: #ccc;
 }
+div#cgit div.footer a {
+	color: #ccc;
+	text-decoration: none;
+}
+div#cgit div.footer a:hover {
+	text-decoration: underline;
+}
 div#cgit a.branch-deco {
 	color: #000;
 	margin: 0px 0.5em;
