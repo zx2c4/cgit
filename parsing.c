@@ -17,7 +17,8 @@
  */
 void cgit_parse_url(const char *url)
 {
-	char *cmd, *p;
+	char *c, *cmd, *p;
+	struct cgit_repo *repo;
 
 	ctx.repo = NULL;
 	if (!url || url[0] == '\0')
@@ -29,16 +30,20 @@ void cgit_parse_url(const char *url)
 		return;
 	}
 
-	cmd = strchr(url, '/');
-	while (!ctx.repo && cmd) {
-		cmd[0] = '\0';
-		ctx.repo = cgit_get_repoinfo(url);
-		if (ctx.repo == NULL) {
-			cmd[0] = '/';
-			cmd = strchr(cmd + 1, '/');
-			continue;
+	cmd = NULL;
+	c = strchr(url, '/');
+	while (c) {
+		c[0] = '\0';
+		repo = cgit_get_repoinfo(url);
+		if (repo) {
+			ctx.repo = repo;
+			cmd = c;
 		}
+		c[0] = '/';
+		c = strchr(c + 1, '/');
+	}
 
+	if (ctx.repo) {
 		ctx.qry.repo = ctx.repo->url;
 		p = strchr(cmd + 1, '/');
 		if (p) {
