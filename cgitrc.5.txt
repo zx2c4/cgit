@@ -603,7 +603,7 @@ specification with the relevant string; available values are:
 		This is called when the current filtering operation is
 		completed. It must return an integer value. Usually 0
 		indicates success.
-	
+
 	Additionally, cgit exposes to the Lua the following built-in functions:
 
 	'html(str)'::

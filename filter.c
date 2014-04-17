@@ -210,7 +210,7 @@ static inline int hook_lua_filter(lua_State *lua_state, void (*fn)(const char *t
 	str = lua_tostring(lua_state, 1);
 	if (!str)
 		return 0;
-	
+
 	save_filter_write = filter_write;
 	save_filter = current_write_filter;
 	unhook_write();

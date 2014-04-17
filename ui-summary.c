@@ -112,7 +112,7 @@ static char* append_readme_path(const char *filename, const char *ref, const cha
 		full_path = xstrdup(path);
 	} else
 		full_path = fmtalloc("%s/%s", base_dir, path);
-	
+
 	if (!ref) {
 		resolved_base = realpath(base_dir, NULL);
 		resolved_full = realpath(full_path, NULL);
@@ -136,7 +136,7 @@ void cgit_print_repo_readme(char *path)
 
 	if (ctx.repo->readme.nr == 0)
 		return;
-	
+
 	filename = ctx.repo->readme.items[0].string;
 	ref = ctx.repo->readme.items[0].util;
 

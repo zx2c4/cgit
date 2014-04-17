@@ -54,7 +54,7 @@ int cgit_ref_path_exists(const char *path, const char *ref, int file_only)
 
 	if (get_sha1(ref, sha1))
 		return 0;
-	if (sha1_object_info(sha1, &size) != OBJ_COMMIT) 
+	if (sha1_object_info(sha1, &size) != OBJ_COMMIT)
 		return 0;
 	read_tree_recursive(lookup_commit_reference(sha1)->tree, "", 0, 0, &paths, walk_tree, &walk_tree_ctx);
 	return walk_tree_ctx.found_path;
