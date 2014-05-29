@@ -63,21 +63,21 @@ void show_commit_decorations(struct commit *commit)
 	deco = lookup_decoration(&name_decoration, &commit->object);
 	html("<span class='decoration'>");
 	while (deco) {
-		if (!prefixcmp(deco->name, "refs/heads/")) {
+		if (starts_with(deco->name, "refs/heads/")) {
 			strncpy(buf, deco->name + 11, sizeof(buf) - 1);
 			cgit_log_link(buf, NULL, "branch-deco", buf, NULL,
 				      ctx.qry.vpath, 0, NULL, NULL,
 				      ctx.qry.showmsg);
 		}
-		else if (!prefixcmp(deco->name, "tag: refs/tags/")) {
+		else if (starts_with(deco->name, "tag: refs/tags/")) {
 			strncpy(buf, deco->name + 15, sizeof(buf) - 1);
 			cgit_tag_link(buf, NULL, "tag-deco", ctx.qry.head, buf);
 		}
-		else if (!prefixcmp(deco->name, "refs/tags/")) {
+		else if (starts_with(deco->name, "refs/tags/")) {
 			strncpy(buf, deco->name + 10, sizeof(buf) - 1);
 			cgit_tag_link(buf, NULL, "tag-deco", ctx.qry.head, buf);
 		}
-		else if (!prefixcmp(deco->name, "refs/remotes/")) {
+		else if (starts_with(deco->name, "refs/remotes/")) {
 			if (!ctx.repo->enable_remote_branches)
 				goto next;
 			strncpy(buf, deco->name + 13, sizeof(buf) - 1);

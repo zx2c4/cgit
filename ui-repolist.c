@@ -99,7 +99,7 @@ static int is_in_url(struct cgit_repo *repo)
 {
 	if (!ctx.qry.url)
 		return 1;
-	if (repo->url && !prefixcmp(repo->url, ctx.qry.url))
+	if (repo->url && starts_with(repo->url, ctx.qry.url))
 		return 1;
 	return 0;
 }

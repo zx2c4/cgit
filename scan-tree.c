@@ -61,7 +61,7 @@ static int gitconfig_config(const char *key, const char *value, void *cb)
 		config_fn(repo, "desc", value);
 	else if (!strcmp(key, "gitweb.category"))
 		config_fn(repo, "section", value);
-	else if (!prefixcmp(key, "cgit."))
+	else if (starts_with(key, "cgit."))
 		config_fn(repo, key + 5, value);
 
 	return 0;
@@ -105,7 +105,7 @@ static void add_repo(const char *base, struct strbuf *path, repo_config_fn fn)
 		return;
 	strbuf_setlen(path, pathlen);
 
-	if (prefixcmp(path->buf, base))
+	if (!starts_with(path->buf, base))
 		strbuf_addbuf(&rel, path);
 	else
 		strbuf_addstr(&rel, path->buf + strlen(base) + 1);
@@ -115,6 +115,7 @@ static void add_repo(const char *base, struct strbuf *path, repo_config_fn fn)
 	else if (rel.len && rel.buf[rel.len - 1] == '/')
 		strbuf_setlen(&rel, rel.len - 1);
 
+	fprintf(stderr, "add_repo(): %s\n", rel.buf);
 	repo = cgit_add_repo(rel.buf);
 	config_fn = fn;
 	if (ctx.cfg.enable_git_config) {
@@ -161,7 +162,8 @@ static void add_repo(const char *base, struct strbuf *path, repo_config_fn fn)
 			*slash = '\0';
 			repo->section = xstrdup(rel.buf);
 			*slash = '/';
-			if (!prefixcmp(repo->name, repo->section)) {
+			fprintf(stderr, "repo->name %s, repo->section %s\n", repo->name, repo->section);
+			if (starts_with(repo->name, repo->section)) {
 				repo->name += strlen(repo->section);
 				if (*repo->name == '/')
 					repo->name++;
@@ -184,6 +186,7 @@ static void scan_path(const char *base, const char *path, repo_config_fn fn)
 	size_t pathlen = strlen(path);
 	struct stat st;
 
+	fprintf(stderr, "scan_path(): %s\n", path);
 	if (!dir) {
 		fprintf(stderr, "Error opening directory %s: %s (%d)\n",
 			path, strerror(errno), errno);
@@ -192,6 +195,7 @@ static void scan_path(const char *base, const char *path, repo_config_fn fn)
 
 	strbuf_add(&pathbuf, path, strlen(path));
 	if (is_git_dir(pathbuf.buf)) {
+		fprintf(stderr, "scan_path() is_git_dir: %s\n", path);
 		add_repo(base, &pathbuf, fn);
 		goto end;
 	}

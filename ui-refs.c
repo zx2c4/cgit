@@ -101,7 +101,7 @@ static void print_tag_downloads(const struct cgit_repo *repo, const char *ref)
 		return;
 
 	basename = cgit_repobasename(repo->url);
-	if (prefixcmp(ref, basename) != 0) {
+	if (!starts_with(ref, basename)) {
 		if ((ref[0] == 'v' || ref[0] == 'V') && isdigit(ref[1]))
 			ref++;
 		if (isdigit(ref[0])) {
@@ -239,9 +239,9 @@ void cgit_print_refs()
 
 	html("<table class='list nowrap'>");
 
-	if (ctx.qry.path && !prefixcmp(ctx.qry.path, "heads"))
+	if (ctx.qry.path && starts_with(ctx.qry.path, "heads"))
 		cgit_print_branches(0);
-	else if (ctx.qry.path && !prefixcmp(ctx.qry.path, "tags"))
+	else if (ctx.qry.path && starts_with(ctx.qry.path, "tags"))
 		cgit_print_tags(0);
 	else {
 		cgit_print_branches(0);

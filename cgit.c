@@ -69,7 +69,7 @@ static void repo_config(struct cgit_repo *repo, const char *name, const char *va
 		repo->max_stats = cgit_find_stats_period(value, NULL);
 	else if (!strcmp(name, "module-link"))
 		repo->module_link= xstrdup(value);
-	else if (!prefixcmp(name, "module-link.")) {
+	else if (starts_with(name, "module-link.")) {
 		item = string_list_append(&repo->submodules, xstrdup(name + 12));
 		item->util = xstrdup(value);
 	} else if (!strcmp(name, "section"))
@@ -102,7 +102,7 @@ static void config_cb(const char *name, const char *value)
 		ctx.repo = cgit_add_repo(value);
 	else if (ctx.repo && !strcmp(name, "repo.path"))
 		ctx.repo->path = trim_end(value, '/');
-	else if (ctx.repo && !prefixcmp(name, "repo."))
+	else if (ctx.repo && starts_with(name, "repo."))
 		repo_config(ctx.repo, name + 5, value);
 	else if (!strcmp(name, "readme") && value != NULL)
 		string_list_append(&ctx.cfg.readme, xstrdup(value));
@@ -264,7 +264,7 @@ static void config_cb(const char *name, const char *value)
 			ctx.cfg.branch_sort = 1;
 		if (!strcmp(value, "name"))
 			ctx.cfg.branch_sort = 0;
-	} else if (!prefixcmp(name, "mimetype."))
+	} else if (starts_with(name, "mimetype."))
 		add_mimetype(name + 9, value);
 	else if (!strcmp(name, "include"))
 		parse_configfile(expand_macros(value), config_cb);
@@ -454,7 +454,7 @@ static char *guess_defbranch(void)
 	unsigned char sha1[20];
 
 	ref = resolve_ref_unsafe("HEAD", sha1, 0, NULL);
-	if (!ref || prefixcmp(ref, "refs/heads/"))
+	if (!ref || !starts_with(ref, "refs/heads/"))
 		return "master";
 	return xstrdup(ref + 11);
 }
@@ -941,28 +941,28 @@ static void cgit_parse_args(int argc, const char **argv)
 
 			exit(0);
 		}
-		if (!prefixcmp(argv[i], "--cache=")) {
+		if (starts_with(argv[i], "--cache=")) {
 			ctx.cfg.cache_root = xstrdup(argv[i] + 8);
 		} else if (!strcmp(argv[i], "--nocache")) {
 			ctx.cfg.nocache = 1;
 		} else if (!strcmp(argv[i], "--nohttp")) {
 			ctx.env.no_http = "1";
-		} else if (!prefixcmp(argv[i], "--query=")) {
+		} else if (starts_with(argv[i], "--query=")) {
 			ctx.qry.raw = xstrdup(argv[i] + 8);
-		} else if (!prefixcmp(argv[i], "--repo=")) {
+		} else if (starts_with(argv[i], "--repo=")) {
 			ctx.qry.repo = xstrdup(argv[i] + 7);
-		} else if (!prefixcmp(argv[i], "--page=")) {
+		} else if (starts_with(argv[i], "--page=")) {
 			ctx.qry.page = xstrdup(argv[i] + 7);
-		} else if (!prefixcmp(argv[i], "--head=")) {
+		} else if (starts_with(argv[i], "--head=")) {
 			ctx.qry.head = xstrdup(argv[i] + 7);
 			ctx.qry.has_symref = 1;
-		} else if (!prefixcmp(argv[i], "--sha1=")) {
+		} else if (starts_with(argv[i], "--sha1=")) {
 			ctx.qry.sha1 = xstrdup(argv[i] + 7);
 			ctx.qry.has_sha1 = 1;
-		} else if (!prefixcmp(argv[i], "--ofs=")) {
+		} else if (starts_with(argv[i], "--ofs=")) {
 			ctx.qry.ofs = atoi(argv[i] + 6);
-		} else if (!prefixcmp(argv[i], "--scan-tree=") ||
-		           !prefixcmp(argv[i], "--scan-path=")) {
+		} else if (starts_with(argv[i], "--scan-tree=") ||
+		           starts_with(argv[i], "--scan-path=")) {
 			/*
 			 * HACK: The global snapshot bit mask defines the set
 			 * of allowed snapshot formats, but the config file

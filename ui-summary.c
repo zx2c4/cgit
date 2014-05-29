@@ -116,7 +116,7 @@ static char* append_readme_path(const char *filename, const char *ref, const cha
 	if (!ref) {
 		resolved_base = realpath(base_dir, NULL);
 		resolved_full = realpath(full_path, NULL);
-		if (!resolved_base || !resolved_full || prefixcmp(resolved_full, resolved_base)) {
+		if (!resolved_base || !resolved_full || !starts_with(resolved_full, resolved_base)) {
 			free(full_path);
 			full_path = NULL;
 		}

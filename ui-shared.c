@@ -128,7 +128,7 @@ const char *cgit_repobasename(const char *reponame)
 	/* strip trailing slashes */
 	while (p && rvbuf[p] == '/') rvbuf[p--] = 0;
 	/* strip trailing .git */
-	if (p >= 3 && !prefixcmp(&rvbuf[p-3], ".git")) {
+	if (p >= 3 && starts_with(&rvbuf[p-3], ".git")) {
 		p -= 3; rvbuf[p--] = 0;
 	}
 	/* strip more trailing slashes if any */

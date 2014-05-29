@@ -99,7 +99,7 @@ static const struct cgit_snapshot_format *get_format(const char *filename)
 	const struct cgit_snapshot_format *fmt;
 
 	for (fmt = cgit_snapshot_formats; fmt->suffix; fmt++) {
-		if (!suffixcmp(filename, fmt->suffix))
+		if (ends_with(filename, fmt->suffix))
 			return fmt;
 	}
 	return NULL;
@@ -151,7 +151,7 @@ static const char *get_ref_from_filename(const char *url, const char *filename,
 		goto out;
 
 	reponame = cgit_repobasename(url);
-	if (prefixcmp(snapshot.buf, reponame) == 0) {
+	if (starts_with(snapshot.buf, reponame)) {
 		const char *new_start = snapshot.buf;
 		new_start += strlen(reponame);
 		while (new_start && (*new_start == '-' || *new_start == '_'))
