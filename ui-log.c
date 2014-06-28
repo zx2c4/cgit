@@ -337,16 +337,16 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 	else if (commit_sort == 2)
 		argv_array_push(&rev_argv, "--topo-order");
 
-	if (path) {
-		argv_array_push(&rev_argv, "--");
+	argv_array_push(&rev_argv, "--");
+	if (path)
 		argv_array_push(&rev_argv, path);
-	}
 
 	init_revisions(&rev, NULL);
 	rev.abbrev = DEFAULT_ABBREV;
 	rev.commit_format = CMIT_FMT_DEFAULT;
 	rev.verbose_header = 1;
 	rev.show_root_diff = 0;
+	rev.ignore_missing = 1;
 	setup_revisions(rev_argv.argc, rev_argv.argv, &rev, NULL);
 	load_ref_decorations(DECORATE_FULL_REFS);
 	rev.show_decorations = 1;
