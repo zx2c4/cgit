@@ -115,7 +115,6 @@ static void add_repo(const char *base, struct strbuf *path, repo_config_fn fn)
 	else if (rel.len && rel.buf[rel.len - 1] == '/')
 		strbuf_setlen(&rel, rel.len - 1);
 
-	fprintf(stderr, "add_repo(): %s\n", rel.buf);
 	repo = cgit_add_repo(rel.buf);
 	config_fn = fn;
 	if (ctx.cfg.enable_git_config) {
@@ -162,7 +161,6 @@ static void add_repo(const char *base, struct strbuf *path, repo_config_fn fn)
 			*slash = '\0';
 			repo->section = xstrdup(rel.buf);
 			*slash = '/';
-			fprintf(stderr, "repo->name %s, repo->section %s\n", repo->name, repo->section);
 			if (starts_with(repo->name, repo->section)) {
 				repo->name += strlen(repo->section);
 				if (*repo->name == '/')
@@ -186,7 +184,6 @@ static void scan_path(const char *base, const char *path, repo_config_fn fn)
 	size_t pathlen = strlen(path);
 	struct stat st;
 
-	fprintf(stderr, "scan_path(): %s\n", path);
 	if (!dir) {
 		fprintf(stderr, "Error opening directory %s: %s (%d)\n",
 			path, strerror(errno), errno);
@@ -195,7 +192,6 @@ static void scan_path(const char *base, const char *path, repo_config_fn fn)
 
 	strbuf_add(&pathbuf, path, strlen(path));
 	if (is_git_dir(pathbuf.buf)) {
-		fprintf(stderr, "scan_path() is_git_dir: %s\n", path);
 		add_repo(base, &pathbuf, fn);
 		goto end;
 	}
