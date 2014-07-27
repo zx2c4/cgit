@@ -504,12 +504,6 @@ static void choose_readme(struct cgit_repo *repo)
 			free(ref);
 			continue;
 		}
-		/* If there's only one item, we skip the possibly expensive
-		 * selection process. */
-		if (repo->readme.nr == 1) {
-			found = 1;
-			break;
-		}
 		if (ref) {
 			if (cgit_ref_path_exists(filename, ref, 1)) {
 				found = 1;
