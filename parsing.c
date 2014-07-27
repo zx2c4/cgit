@@ -69,9 +69,9 @@ static char *substr(const char *head, const char *tail)
 	return buf;
 }
 
-static char *parse_user(char *t, char **name, char **email, unsigned long *date)
+static const char *parse_user(const char *t, char **name, char **email, unsigned long *date)
 {
-	char *p = t;
+	const char *p = t;
 	int mode = 1;
 
 	while (p && *p) {
@@ -132,7 +132,7 @@ static const char *reencode(char **txt, const char *src_enc, const char *dst_enc
 struct commitinfo *cgit_parse_commit(struct commit *commit)
 {
 	struct commitinfo *ret;
-	char *p = commit->buffer, *t;
+	const char *p = commit->buffer, *t;
 
 	ret = xmalloc(sizeof(*ret));
 	ret->commit = commit;
@@ -223,7 +223,7 @@ struct taginfo *cgit_parse_tag(struct tag *tag)
 	void *data;
 	enum object_type type;
 	unsigned long size;
-	char *p;
+	const char *p;
 	struct taginfo *ret;
 
 	data = read_sha1_file(tag->object.sha1, &type, &size);
