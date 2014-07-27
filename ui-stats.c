@@ -246,6 +246,7 @@ static struct string_list collect_stats(struct cgit_period *period)
 		add_commit(&authors, commit, period);
 		free_commit_buffer(commit);
 		free_commit_list(commit->parents);
+		commit->parents = NULL;
 	}
 	return authors;
 }
