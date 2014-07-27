@@ -388,16 +388,14 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 		ofs = 0;
 
 	for (i = 0; i < ofs && (commit = get_revision(&rev)) != NULL; i++) {
-		free(commit->buffer);
-		commit->buffer = NULL;
+		free_commit_buffer(commit);
 		free_commit_list(commit->parents);
 		commit->parents = NULL;
 	}
 
 	for (i = 0; i < cnt && (commit = get_revision(&rev)) != NULL; i++) {
 		print_commit(commit, &rev);
-		free(commit->buffer);
-		commit->buffer = NULL;
+		free_commit_buffer(commit);
 		free_commit_list(commit->parents);
 		commit->parents = NULL;
 	}

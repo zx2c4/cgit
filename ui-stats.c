@@ -244,7 +244,7 @@ static struct string_list collect_stats(struct cgit_period *period)
 	memset(&authors, 0, sizeof(authors));
 	while ((commit = get_revision(&rev)) != NULL) {
 		add_commit(&authors, commit, period);
-		free(commit->buffer);
+		free_commit_buffer(commit);
 		free_commit_list(commit->parents);
 	}
 	return authors;

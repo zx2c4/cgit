@@ -132,7 +132,8 @@ static const char *reencode(char **txt, const char *src_enc, const char *dst_enc
 struct commitinfo *cgit_parse_commit(struct commit *commit)
 {
 	struct commitinfo *ret;
-	const char *p = commit->buffer, *t;
+	const char *p = get_cached_commit_buffer(commit, NULL);
+	const char *t;
 
 	ret = xmalloc(sizeof(*ret));
 	ret->commit = commit;
