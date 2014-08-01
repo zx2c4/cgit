@@ -31,9 +31,11 @@ static void print_url(const char *url)
 		htmlf("<tr><th class='left' colspan='%d'>Clone</th></tr>\n", columns);
 	}
 
-	htmlf("<tr><td colspan='%d'><a href='", columns);
+	htmlf("<tr><td colspan='%d'><a rel='vcs-git' href='", columns);
 	html_url_path(url);
-	html("'>");
+	html("' title='");
+	html_attr(ctx.repo->name);
+	html(" Git repository'>");
 	html_txt(url);
 	html("</a></td></tr>\n");
 }
