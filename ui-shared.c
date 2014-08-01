@@ -727,6 +727,43 @@ void cgit_print_docend()
 	html("</body>\n</html>\n");
 }
 
+static void add_clone_urls(void (*fn)(const char *), char *txt, char *suffix)
+{
+	struct strbuf buf = STRBUF_INIT;
+	char *h = txt, *t, c;
+
+	while (h && *h) {
+		while (h && *h == ' ')
+			h++;
+		if (!*h)
+			break;
+		t = h;
+		while (t && *t && *t != ' ')
+			t++;
+		c = *t;
+		*t = 0;
+
+		if (suffix && *suffix) {
+			strbuf_reset(&buf);
+			strbuf_addf(&buf, "%s/%s", h, suffix);
+			h = buf.buf;
+		}
+		fn(h);
+		*t = c;
+		h = t;
+	}
+
+	strbuf_release(&buf);
+}
+
+void cgit_add_clone_urls(void (*fn)(const char *))
+{
+	if (ctx.repo->clone_url)
+		add_clone_urls(fn, expand_macros(ctx.repo->clone_url), NULL);
+	else if (ctx.cfg.clone_prefix)
+		add_clone_urls(fn, ctx.cfg.clone_prefix, ctx.repo->url);
+}
+
 static int print_branch_option(const char *refname, const unsigned char *sha1,
 			       int flags, void *cb_data)
 {

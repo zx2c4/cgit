@@ -12,62 +12,30 @@
 #include "ui-log.h"
 #include "ui-refs.h"
 #include "ui-blob.h"
+#include "ui-shared.h"
 #include <libgen.h>
 
-static void print_url(char *base, char *suffix)
+static int urls;
+
+static void print_url(const char *url)
 {
 	int columns = 3;
-	struct strbuf basebuf = STRBUF_INIT;
 
 	if (ctx.repo->enable_log_filecount)
 		columns++;
 	if (ctx.repo->enable_log_linecount)
 		columns++;
 
-	if (!base || !*base)
-		return;
-	if (suffix && *suffix) {
-		strbuf_addf(&basebuf, "%s/%s", base, suffix);
-		base = basebuf.buf;
+	if (urls++ == 0) {
+		htmlf("<tr class='nohover'><td colspan='%d'>&nbsp;</td></tr>", columns);
+		htmlf("<tr><th class='left' colspan='%d'>Clone</th></tr>\n", columns);
 	}
+
 	htmlf("<tr><td colspan='%d'><a href='", columns);
-	html_url_path(base);
+	html_url_path(url);
 	html("'>");
-	html_txt(base);
+	html_txt(url);
 	html("</a></td></tr>\n");
-	strbuf_release(&basebuf);
-}
-
-static void print_urls(char *txt, char *suffix)
-{
-	char *h = txt, *t, c;
-	int urls = 0;
-	int columns = 3;
-
-	if (ctx.repo->enable_log_filecount)
-		columns++;
-	if (ctx.repo->enable_log_linecount)
-		columns++;
-
-
-	while (h && *h) {
-		while (h && *h == ' ')
-			h++;
-		if (!*h)
-			break;
-		t = h;
-		while (t && *t && *t != ' ')
-			t++;
-		c = *t;
-		*t = 0;
-		if (urls++ == 0) {
-			htmlf("<tr class='nohover'><td colspan='%d'>&nbsp;</td></tr>", columns);
-			htmlf("<tr><th class='left' colspan='%d'>Clone</th></tr>\n", columns);
-		}
-		print_url(h, suffix);
-		*t = c;
-		h = t;
-	}
 }
 
 void cgit_print_summary()
@@ -88,10 +56,8 @@ void cgit_print_summary()
 		cgit_print_log(ctx.qry.head, 0, ctx.cfg.summary_log, NULL,
 			       NULL, NULL, 0, 0, 0);
 	}
-	if (ctx.repo->clone_url)
-		print_urls(expand_macros(ctx.repo->clone_url), NULL);
-	else if (ctx.cfg.clone_prefix)
-		print_urls(ctx.cfg.clone_prefix, ctx.repo->url);
+	urls = 0;
+	cgit_add_clone_urls(print_url);
 	html("</table>");
 }
 
