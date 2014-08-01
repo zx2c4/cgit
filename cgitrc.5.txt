@@ -667,7 +667,7 @@ auth filter::
 	the http cookie and return a 0 if it is invalid or 1 if it is invalid,
 	in the exit code / close function. If the filter action is
 	"authenticate-post", this filter receives POST'd parameters on
-	standard input, and should write a complete CGI request, preferably
+	standard input, and should write a complete CGI response, preferably
 	with a 302 redirect, and write to output one or more "Set-Cookie"
 	HTTP headers, each followed by a newline.
 
