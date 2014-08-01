@@ -660,6 +660,15 @@ void cgit_print_http_headers(void)
 		exit(0);
 }
 
+static void print_rel_vcs_link(const char *url)
+{
+	html("<link rel='vcs-git' href='");
+	html_attr(url);
+	html("' title='");
+	html_attr(ctx.repo->name);
+	html(" Git repository'/>\n");
+}
+
 void cgit_print_docstart(void)
 {
 	if (ctx.cfg.embedded) {
@@ -698,6 +707,8 @@ void cgit_print_docstart(void)
 		html("' type='application/atom+xml'/>\n");
 		strbuf_release(&sb);
 	}
+	if (ctx.repo)
+		cgit_add_clone_urls(print_rel_vcs_link);
 	if (ctx.cfg.head_include)
 		html_include(ctx.cfg.head_include);
 	html("</head>\n");
