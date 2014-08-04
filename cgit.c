@@ -91,6 +91,8 @@ static void repo_config(struct cgit_repo *repo, const char *name, const char *va
 			repo->source_filter = cgit_new_filter(value, SOURCE);
 		else if (!strcmp(name, "email-filter"))
 			repo->email_filter = cgit_new_filter(value, EMAIL);
+		else if (!strcmp(name, "owner-filter"))
+			repo->owner_filter = cgit_new_filter(value, OWNER);
 	}
 }
 
@@ -194,6 +196,8 @@ static void config_cb(const char *name, const char *value)
 		ctx.cfg.commit_filter = cgit_new_filter(value, COMMIT);
 	else if (!strcmp(name, "email-filter"))
 		ctx.cfg.email_filter = cgit_new_filter(value, EMAIL);
+	else if (!strcmp(name, "owner-filter"))
+		ctx.cfg.owner_filter = cgit_new_filter(value, OWNER);
 	else if (!strcmp(name, "auth-filter"))
 		ctx.cfg.auth_filter = cgit_new_filter(value, AUTH);
 	else if (!strcmp(name, "embedded"))
@@ -800,6 +804,8 @@ static void print_repo(FILE *f, struct cgit_repo *repo)
 		cgit_fprintf_filter(repo->source_filter, f, "repo.source-filter=");
 	if (repo->email_filter && repo->email_filter != ctx.cfg.email_filter)
 		cgit_fprintf_filter(repo->email_filter, f, "repo.email-filter=");
+	if (repo->owner_filter && repo->owner_filter != ctx.cfg.owner_filter)
+		cgit_fprintf_filter(repo->owner_filter, f, "repo.owner-filter=");
 	if (repo->snapshots != ctx.cfg.snapshots) {
 		char *tmp = build_snapshot_setting(repo->snapshots);
 		fprintf(f, "repo.snapshots=%s\n", tmp ? tmp : "");

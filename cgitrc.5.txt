@@ -247,6 +247,15 @@ logo-link::
 	calculated url of the repository index page will be used. Default
 	value: none.
 
+owner-filter::
+	Specifies a command which will be invoked to format the Owner
+	column of the main page.  The command will get the owner on STDIN,
+	and the STDOUT from the command will be included verbatim in the
+	table.  This can be used to link to additional context such as an
+	owners home page.  When active this filter is used instead of the
+	default owner query url.  Default value: none.
+	See also: "FILTER API".
+
 max-atom-items::
 	Specifies the number of items to display in atom feeds view. Default
 	value: "10".
@@ -509,6 +518,10 @@ repo.logo-link::
 	calculated url of the repository index page will be used. Default
 	value: global logo-link.
 
+repo.owner-filter::
+	Override the default owner-filter. Default value: none. See also:
+	"enable-filter-overrides". See also: "FILTER API".
+
 repo.module-link::
 	Text which will be used as the formatstring for a hyperlink when a
 	submodule is printed in a directory listing. The arguments for the
@@ -640,6 +653,11 @@ email filter::
 	then receive the text string to format on standard input and is
 	expected to write to standard output the formatted text to be included
 	in the page.
+
+owner filter::
+	This filter is given no arguments.  The owner text is avilable on
+	standard input and the filter is expected to write to standard
+	output.  The output is included in the Owner column.
 
 source filter::
 	This filter is given a single parameter: the filename of the source
