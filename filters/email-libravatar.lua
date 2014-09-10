@@ -15,7 +15,8 @@ function filter_open(email, page)
 end
 
 function filter_close()
-	html("<img src='//cdn.libravatar.org/avatar/" .. md5 .. "?s=13&amp;d=retro' width='13' height='13' alt='Libravatar' /> " .. buffer)
+	baseurl = os.getenv("HTTPS") and "https://seccdn.libravatar.org/" or "http://cdn.libravatar.org/"
+	html("<img src='" .. baseurl .. "avatar/" .. md5 .. "?s=13&amp;d=retro' width='13' height='13' alt='Libravatar' /> " .. buffer)
 	return 0
 end
 
