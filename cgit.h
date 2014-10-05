@@ -53,7 +53,7 @@ typedef void (*filepair_fn)(struct diff_filepair *pair);
 typedef void (*linediff_fn)(char *line, int len);
 
 typedef enum {
-	DIFF_UNIFIED, DIFF_SSDIFF
+	DIFF_UNIFIED, DIFF_SSDIFF, DIFF_STATONLY
 } diff_type;
 
 typedef enum {

@@ -349,6 +349,7 @@ void cgit_print_diff_ctrls()
 	curr = ctx.qry.has_difftype ? ctx.qry.difftype : ctx.cfg.difftype;
 	html_intoption(0, "unified", curr);
 	html_intoption(1, "ssdiff", curr);
+	html_intoption(2, "stat only", curr);
 	html("</select></td></tr>");
 	html("<tr><td/><td class='ctrl'>");
 	html("<noscript><input type='submit' value='reload'/></noscript>");
@@ -428,6 +429,9 @@ void cgit_print_diff(const char *new_rev, const char *old_rev,
 		cgit_print_diff_ctrls();
 
 	cgit_print_diffstat(old_rev_sha1, new_rev_sha1, prefix);
+
+	if (difftype == DIFF_STATONLY)
+		return;
 
 	if (use_ssdiff) {
 		html("<table summary='ssdiff' class='ssdiff'>");
