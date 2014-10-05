@@ -99,7 +99,7 @@ void cgit_print_commit(char *hex, const char *prefix)
 		cgit_commit_link(tmp2, NULL, NULL, ctx.qry.head, tmp, prefix);
 		html(" (");
 		cgit_diff_link("diff", NULL, NULL, ctx.qry.head, hex,
-			       sha1_to_hex(p->item->object.sha1), prefix, 0);
+			       sha1_to_hex(p->item->object.sha1), prefix);
 		html(")</td></tr>");
 		parents++;
 	}

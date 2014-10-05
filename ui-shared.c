@@ -385,7 +385,7 @@ void cgit_snapshot_link(const char *name, const char *title, const char *class,
 
 void cgit_diff_link(const char *name, const char *title, const char *class,
 		    const char *head, const char *new_rev, const char *old_rev,
-		    const char *path, int toggle_ssdiff)
+		    const char *path)
 {
 	char *delim;
 
@@ -402,7 +402,7 @@ void cgit_diff_link(const char *name, const char *title, const char *class,
 		html_url_arg(old_rev);
 		delim = "&amp;";
 	}
-	if ((ctx.qry.ssdiff && !toggle_ssdiff) || (!ctx.qry.ssdiff && toggle_ssdiff)) {
+	if (ctx.qry.ssdiff) {
 		html(delim);
 		html("ss=1");
 		delim = "&amp;";
@@ -478,7 +478,7 @@ static void cgit_self_link(char *name, const char *title, const char *class)
 	else if (!strcmp(ctx.qry.page, "diff"))
 		cgit_diff_link(name, title, class, ctx.qry.head,
 			       ctx.qry.sha1, ctx.qry.sha2,
-			       ctx.qry.path, 0);
+			       ctx.qry.path);
 	else if (!strcmp(ctx.qry.page, "stats"))
 		cgit_stats_link(name, title, class, ctx.qry.head,
 				ctx.qry.path);
@@ -876,7 +876,7 @@ void cgit_print_pageheader(void)
 		cgit_commit_link("commit", NULL, hc("commit"),
 				 ctx.qry.head, ctx.qry.sha1, ctx.qry.vpath);
 		cgit_diff_link("diff", NULL, hc("diff"), ctx.qry.head,
-			       ctx.qry.sha1, ctx.qry.sha2, ctx.qry.vpath, 0);
+			       ctx.qry.sha1, ctx.qry.sha2, ctx.qry.vpath);
 		if (ctx.repo->max_stats)
 			cgit_stats_link("stats", NULL, hc("stats"),
 					ctx.qry.head, ctx.qry.vpath);
