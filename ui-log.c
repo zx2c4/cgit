@@ -90,7 +90,7 @@ void show_commit_decorations(struct commit *commit)
 			strncpy(buf, deco->name, sizeof(buf) - 1);
 			cgit_commit_link(buf, NULL, "deco", ctx.qry.head,
 					 sha1_to_hex(commit->object.sha1),
-					 ctx.qry.vpath, 0);
+					 ctx.qry.vpath);
 		}
 next:
 		deco = deco->next;
@@ -165,7 +165,7 @@ static void print_commit(struct commit *commit, struct rev_info *revs)
 		}
 	}
 	cgit_commit_link(info->subject, NULL, NULL, ctx.qry.head,
-			 sha1_to_hex(commit->object.sha1), ctx.qry.vpath, 0);
+			 sha1_to_hex(commit->object.sha1), ctx.qry.vpath);
 	show_commit_decorations(commit);
 	html("</td><td>");
 	cgit_open_filter(ctx.repo->email_filter, info->author_email, "log");

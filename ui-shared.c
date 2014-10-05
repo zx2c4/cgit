@@ -328,8 +328,7 @@ void cgit_log_link(const char *name, const char *title, const char *class,
 }
 
 void cgit_commit_link(char *name, const char *title, const char *class,
-		      const char *head, const char *rev, const char *path,
-		      int toggle_ssdiff)
+		      const char *head, const char *rev, const char *path)
 {
 	if (strlen(name) > ctx.cfg.max_msg_len && ctx.cfg.max_msg_len >= 15) {
 		name[ctx.cfg.max_msg_len] = '\0';
@@ -347,7 +346,7 @@ void cgit_commit_link(char *name, const char *title, const char *class,
 		html_url_arg(rev);
 		delim = "&amp;";
 	}
-	if ((ctx.qry.ssdiff && !toggle_ssdiff) || (!ctx.qry.ssdiff && toggle_ssdiff)) {
+	if (ctx.qry.ssdiff) {
 		html(delim);
 		html("ss=1");
 		delim = "&amp;";
@@ -463,7 +462,7 @@ static void cgit_self_link(char *name, const char *title, const char *class)
 	else if (!strcmp(ctx.qry.page, "commit"))
 		cgit_commit_link(name, title, class, ctx.qry.head,
 				 ctx.qry.has_sha1 ? ctx.qry.sha1 : NULL,
-				 ctx.qry.path, 0);
+				 ctx.qry.path);
 	else if (!strcmp(ctx.qry.page, "patch"))
 		cgit_patch_link(name, title, class, ctx.qry.head,
 				ctx.qry.has_sha1 ? ctx.qry.sha1 : NULL,
@@ -503,7 +502,7 @@ void cgit_object_link(struct object *obj)
 	shortrev[10] = '\0';
 	if (obj->type == OBJ_COMMIT) {
 		cgit_commit_link(fmt("commit %s...", shortrev), NULL, NULL,
-				 ctx.qry.head, fullrev, NULL, 0);
+				 ctx.qry.head, fullrev, NULL);
 		return;
 	} else if (obj->type == OBJ_TREE)
 		page = "tree";
@@ -875,7 +874,7 @@ void cgit_print_pageheader(void)
 		cgit_tree_link("tree", NULL, hc("tree"), ctx.qry.head,
 			       ctx.qry.sha1, ctx.qry.vpath);
 		cgit_commit_link("commit", NULL, hc("commit"),
-				 ctx.qry.head, ctx.qry.sha1, ctx.qry.vpath, 0);
+				 ctx.qry.head, ctx.qry.sha1, ctx.qry.vpath);
 		cgit_diff_link("diff", NULL, hc("diff"), ctx.qry.head,
 			       ctx.qry.sha1, ctx.qry.sha2, ctx.qry.vpath, 0);
 		if (ctx.repo->max_stats)

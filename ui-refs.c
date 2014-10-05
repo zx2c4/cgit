@@ -67,7 +67,7 @@ static int print_branch(struct refinfo *ref)
 	html("</td><td>");
 
 	if (ref->object->type == OBJ_COMMIT) {
-		cgit_commit_link(info->subject, NULL, NULL, name, NULL, NULL, 0);
+		cgit_commit_link(info->subject, NULL, NULL, name, NULL, NULL);
 		html("</td><td>");
 		cgit_open_filter(ctx.repo->email_filter, info->author_email, "refs");
 		html_txt(info->author);
