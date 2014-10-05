@@ -345,8 +345,8 @@ void cgit_print_diff_ctrls()
 	html("</tr><tr>");
 	html("<td class='label'>mode:</td>");
 	html("<td class='ctrl'>");
-	html("<select name='ss' onchange='this.form.submit();'>");
-	curr = ctx.qry.has_ssdiff ? ctx.qry.ssdiff : ctx.cfg.ssdiff;
+	html("<select name='dt' onchange='this.form.submit();'>");
+	curr = ctx.qry.has_difftype ? ctx.qry.difftype : ctx.cfg.difftype;
 	html_intoption(0, "unified", curr);
 	html_intoption(1, "ssdiff", curr);
 	html("</select></td></tr>");
@@ -362,6 +362,7 @@ void cgit_print_diff(const char *new_rev, const char *old_rev,
 {
 	struct commit *commit, *commit2;
 	const unsigned char *old_tree_sha1, *new_tree_sha1;
+	diff_type difftype;
 
 	if (!new_rev)
 		new_rev = ctx.qry.head;
@@ -420,7 +421,8 @@ void cgit_print_diff(const char *new_rev, const char *old_rev,
 		return;
 	}
 
-	use_ssdiff = ctx.qry.has_ssdiff ? ctx.qry.ssdiff : ctx.cfg.ssdiff;
+	difftype = ctx.qry.has_difftype ? ctx.qry.difftype : ctx.cfg.difftype;
+	use_ssdiff = difftype == DIFF_SSDIFF;
 
 	if (show_ctrls)
 		cgit_print_diff_ctrls();

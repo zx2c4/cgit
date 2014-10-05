@@ -53,6 +53,10 @@ typedef void (*filepair_fn)(struct diff_filepair *pair);
 typedef void (*linediff_fn)(char *line, int len);
 
 typedef enum {
+	DIFF_UNIFIED, DIFF_SSDIFF
+} diff_type;
+
+typedef enum {
 	ABOUT, COMMIT, SOURCE, EMAIL, AUTH
 } filter_type;
 
@@ -150,7 +154,7 @@ struct reflist {
 struct cgit_query {
 	int has_symref;
 	int has_sha1;
-	int has_ssdiff;
+	int has_difftype;
 	char *raw;
 	char *repo;
 	char *page;
@@ -168,7 +172,7 @@ struct cgit_query {
 	int nohead;
 	char *sort;
 	int showmsg;
-	int ssdiff;
+	diff_type difftype;
 	int show_all;
 	int context;
 	int ignorews;
@@ -245,7 +249,7 @@ struct cgit_config {
 	int summary_branches;
 	int summary_log;
 	int summary_tags;
-	int ssdiff;
+	diff_type difftype;
 	int branch_sort;
 	int commit_sort;
 	struct string_list mimetypes;

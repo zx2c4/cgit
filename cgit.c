@@ -237,7 +237,7 @@ static void config_cb(const char *name, const char *value)
 	else if (!strcmp(name, "summary-tags"))
 		ctx.cfg.summary_tags = atoi(value);
 	else if (!strcmp(name, "side-by-side-diffs"))
-		ctx.cfg.ssdiff = atoi(value);
+		ctx.cfg.difftype = atoi(value) ? DIFF_SSDIFF : DIFF_UNIFIED;
 	else if (!strcmp(name, "agefile"))
 		ctx.cfg.agefile = xstrdup(value);
 	else if (!strcmp(name, "mimetype-file"))
@@ -312,9 +312,13 @@ static void querystring_cb(const char *name, const char *value)
 		ctx.qry.showmsg = atoi(value);
 	} else if (!strcmp(name, "period")) {
 		ctx.qry.period = xstrdup(value);
+	} else if (!strcmp(name, "dt")) {
+		ctx.qry.difftype = atoi(value);
+		ctx.qry.has_difftype = 1;
 	} else if (!strcmp(name, "ss")) {
-		ctx.qry.ssdiff = atoi(value);
-		ctx.qry.has_ssdiff = 1;
+		/* No longer generated, but there may be links out there. */
+		ctx.qry.difftype = atoi(value) ? DIFF_SSDIFF : DIFF_UNIFIED;
+		ctx.qry.has_difftype = 1;
 	} else if (!strcmp(name, "all")) {
 		ctx.qry.show_all = atoi(value);
 	} else if (!strcmp(name, "context")) {
@@ -372,7 +376,7 @@ static void prepare_context(void)
 	ctx.cfg.summary_log = 10;
 	ctx.cfg.summary_tags = 10;
 	ctx.cfg.max_atom_items = 10;
-	ctx.cfg.ssdiff = 0;
+	ctx.cfg.difftype = DIFF_UNIFIED;
 	ctx.env.cgit_config = getenv("CGIT_CONFIG");
 	ctx.env.http_host = getenv("HTTP_HOST");
 	ctx.env.https = getenv("HTTPS");

@@ -346,9 +346,9 @@ void cgit_commit_link(char *name, const char *title, const char *class,
 		html_url_arg(rev);
 		delim = "&amp;";
 	}
-	if (ctx.qry.ssdiff) {
+	if (ctx.qry.difftype) {
 		html(delim);
-		html("ss=1");
+		htmlf("dt=%d", ctx.qry.difftype);
 		delim = "&amp;";
 	}
 	if (ctx.qry.context > 0 && ctx.qry.context != 3) {
@@ -402,9 +402,9 @@ void cgit_diff_link(const char *name, const char *title, const char *class,
 		html_url_arg(old_rev);
 		delim = "&amp;";
 	}
-	if (ctx.qry.ssdiff) {
+	if (ctx.qry.difftype) {
 		html(delim);
-		html("ss=1");
+		htmlf("dt=%d", ctx.qry.difftype);
 		delim = "&amp;";
 	}
 	if (ctx.qry.context > 0 && ctx.qry.context != 3) {
