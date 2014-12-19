@@ -457,7 +457,7 @@ static char *guess_defbranch(void)
 	const char *ref;
 	unsigned char sha1[20];
 
-	ref = resolve_ref_unsafe("HEAD", sha1, 0, NULL);
+	ref = resolve_ref_unsafe("HEAD", 0, sha1, NULL);
 	if (!ref || !starts_with(ref, "refs/heads/"))
 		return "master";
 	return xstrdup(ref + 11);

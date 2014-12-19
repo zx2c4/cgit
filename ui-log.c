@@ -56,11 +56,11 @@ static void inspect_files(struct diff_filepair *pair)
 
 void show_commit_decorations(struct commit *commit)
 {
-	struct name_decoration *deco;
+	const struct name_decoration *deco;
 	static char buf[1024];
 
 	buf[sizeof(buf) - 1] = 0;
-	deco = lookup_decoration(&name_decoration, &commit->object);
+	deco = get_name_decoration(&commit->object);
 	html("<span class='decoration'>");
 	while (deco) {
 		if (starts_with(deco->name, "refs/heads/")) {
