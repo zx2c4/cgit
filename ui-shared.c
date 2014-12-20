@@ -587,6 +587,23 @@ void cgit_print_date(time_t secs, const char *format, int local_time)
 	html_txt(buf);
 }
 
+static void print_rel_date(time_t t, double value,
+	const char *class, const char *suffix)
+{
+	char buf[64];
+	struct tm *time;
+
+	if (ctx.cfg.local_time)
+		time = localtime(&t);
+	else
+		time = gmtime(&t);
+	strftime(buf, sizeof(buf) - 1, FMT_LONGDATE, time);
+
+	htmlf("<span class='%s' title='", class);
+	html_attr(buf);
+	htmlf("'>%.0f %s</span>", value, suffix);
+}
+
 void cgit_print_age(time_t t, time_t max_relative, const char *format)
 {
 	time_t now, secs;
@@ -604,32 +621,26 @@ void cgit_print_age(time_t t, time_t max_relative, const char *format)
 	}
 
 	if (secs < TM_HOUR * 2) {
-		htmlf("<span class='age-mins'>%.0f min.</span>",
-		      secs * 1.0 / TM_MIN);
+		print_rel_date(t, secs * 1.0 / TM_MIN, "age-mins", "min.");
 		return;
 	}
 	if (secs < TM_DAY * 2) {
-		htmlf("<span class='age-hours'>%.0f hours</span>",
-		      secs * 1.0 / TM_HOUR);
+		print_rel_date(t, secs * 1.0 / TM_HOUR, "age-hours", "hours");
 		return;
 	}
 	if (secs < TM_WEEK * 2) {
-		htmlf("<span class='age-days'>%.0f days</span>",
-		      secs * 1.0 / TM_DAY);
+		print_rel_date(t, secs * 1.0 / TM_DAY, "age-days", "days");
 		return;
 	}
 	if (secs < TM_MONTH * 2) {
-		htmlf("<span class='age-weeks'>%.0f weeks</span>",
-		      secs * 1.0 / TM_WEEK);
+		print_rel_date(t, secs * 1.0 / TM_WEEK, "age-weeks", "weeks");
 		return;
 	}
 	if (secs < TM_YEAR * 2) {
-		htmlf("<span class='age-months'>%.0f months</span>",
-		      secs * 1.0 / TM_MONTH);
+		print_rel_date(t, secs * 1.0 / TM_MONTH, "age-months", "months");
 		return;
 	}
-	htmlf("<span class='age-years'>%.0f years</span>",
-	      secs * 1.0 / TM_YEAR);
+	print_rel_date(t, secs * 1.0 / TM_YEAR, "age-years", "years");
 }
 
 void cgit_print_http_headers(void)
