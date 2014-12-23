@@ -1,0 +1,19 @@
+#!/bin/sh
+#
+# An example hook to update the "agefile" for CGit's idle time calculation.
+#
+# This hook assumes that you are using the default agefile location of
+# "info/web/last-modified".  If you change the value in your cgitrc then you
+# must also change it here.
+#
+# To install the hook, copy (or link) it to the file "hooks/post-receive" in
+# each of your repositories.
+#
+
+agefile="$(git rev-parse --git-dir)"/info/web/last-modified
+
+mkdir -p "$(dirname "$agefile")" &&
+git for-each-ref \
+	--sort=-authordate --count=1 \
+	--format='%(authordate:iso8601)' \
+	>"$agefile"
