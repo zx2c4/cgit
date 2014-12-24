@@ -71,36 +71,25 @@ static char *substr(const char *head, const char *tail)
 
 static const char *parse_user(const char *t, char **name, char **email, unsigned long *date)
 {
-	const char *p = t;
-	int mode = 1;
+	const char *line_end = strchrnul(t, '\n');
+	struct ident_split ident;
+	unsigned email_len;
 
-	while (p && *p) {
-		if (mode == 1 && *p == '<') {
-			*name = substr(t, p - 1);
-			t = p;
-			mode++;
-		} else if (mode == 1 && *p == '\n') {
-			*name = substr(t, p);
-			p++;
-			break;
-		} else if (mode == 2 && *p == '>') {
-			*email = substr(t, p + 1);
-			t = p;
-			mode++;
-		} else if (mode == 2 && *p == '\n') {
-			*email = substr(t, p);
-			p++;
-			break;
-		} else if (mode == 3 && isdigit(*p)) {
-			*date = atol(p);
-			mode++;
-		} else if (*p == '\n') {
-			p++;
-			break;
-		}
-		p++;
+	if (!split_ident_line(&ident, t, line_end - t)) {
+		*name = substr(ident.name_begin, ident.name_end);
+
+		email_len = ident.mail_end - ident.mail_begin;
+		*email = xmalloc(strlen("<") + email_len + strlen(">") + 1);
+		sprintf(*email, "<%.*s>", email_len, ident.mail_begin);
+
+		if (ident.date_begin)
+			*date = strtoul(ident.date_begin, NULL, 10);
 	}
-	return p;
+
+	if (*line_end)
+		return line_end + 1;
+	else
+		return line_end;
 }
 
 #ifdef NO_ICONV
