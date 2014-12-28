@@ -25,7 +25,7 @@ test_expect_success 'find `cgit` signature' '
 
 test_expect_success 'compare with output of git-format-patch(1)' '
 	CGIT_VERSION=$(sed -n "s/CGIT_VERSION = //p" ../../VERSION) &&
-	git --git-dir="$PWD/repos/foo/.git" format-patch -p --subject-prefix="" --signature="cgit $CGIT_VERSION" --stdout HEAD^ >tmp2 &&
+	git --git-dir="$PWD/repos/foo/.git" format-patch --subject-prefix="" --signature="cgit $CGIT_VERSION" --stdout HEAD^ >tmp2 &&
 	strip_headers <tmp >tmp_ &&
 	test_cmp tmp_ tmp2
 '
@@ -54,7 +54,7 @@ test_expect_success 'find `cgit` signature' '
 
 test_expect_success 'compare with output of git-format-patch(1)' '
 	CGIT_VERSION=$(sed -n "s/CGIT_VERSION = //p" ../../VERSION) &&
-	git --git-dir="$PWD/repos/foo/.git" format-patch -p -N --subject-prefix="" --signature="cgit $CGIT_VERSION" --stdout HEAD~3..HEAD >tmp2 &&
+	git --git-dir="$PWD/repos/foo/.git" format-patch -N --subject-prefix="" --signature="cgit $CGIT_VERSION" --stdout HEAD~3..HEAD >tmp2 &&
 	strip_headers <tmp >tmp_ &&
 	test_cmp tmp_ tmp2
 '
