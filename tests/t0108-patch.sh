@@ -24,10 +24,10 @@ test_expect_success 'find `cgit` signature' '
 '
 
 test_expect_success 'compare with output of git-format-patch(1)' '
-	CGIT_VERSION=$(sed -n "s/CGIT_VERSION = //p" ../../VERSION)
-	git --git-dir="$PWD/repos/foo/.git" format-patch -p --subject-prefix="" --signature="cgit $CGIT_VERSION" --stdout HEAD^ >tmp2
-	sed "1,5d" tmp >tmp_
-	cmp tmp_ tmp2
+	CGIT_VERSION=$(sed -n "s/CGIT_VERSION = //p" ../../VERSION) &&
+	git --git-dir="$PWD/repos/foo/.git" format-patch -p --subject-prefix="" --signature="cgit $CGIT_VERSION" --stdout HEAD^ >tmp2 &&
+	strip_headers <tmp >tmp_ &&
+	test_cmp tmp_ tmp2
 '
 
 test_expect_success 'find initial commit' '
@@ -43,8 +43,8 @@ test_expect_success 'find `cgit` signature' '
 '
 
 test_expect_success 'generate patches for multiple commits' '
-	id=$(git --git-dir="$PWD/repos/foo/.git" rev-parse HEAD)
-	id2=$(git --git-dir="$PWD/repos/foo/.git" rev-parse HEAD~3)
+	id=$(git --git-dir="$PWD/repos/foo/.git" rev-parse HEAD) &&
+	id2=$(git --git-dir="$PWD/repos/foo/.git" rev-parse HEAD~3) &&
 	cgit_query "url=foo/patch&id=$id&id2=$id2" >tmp
 '
 
@@ -53,10 +53,10 @@ test_expect_success 'find `cgit` signature' '
 '
 
 test_expect_success 'compare with output of git-format-patch(1)' '
-	CGIT_VERSION=$(sed -n "s/CGIT_VERSION = //p" ../../VERSION)
-	git --git-dir="$PWD/repos/foo/.git" format-patch -p -N --subject-prefix="" --signature="cgit $CGIT_VERSION" --stdout HEAD~3..HEAD >tmp2
-	sed "1,5d" tmp >tmp_
-	cmp tmp_ tmp2
+	CGIT_VERSION=$(sed -n "s/CGIT_VERSION = //p" ../../VERSION) &&
+	git --git-dir="$PWD/repos/foo/.git" format-patch -p -N --subject-prefix="" --signature="cgit $CGIT_VERSION" --stdout HEAD~3..HEAD >tmp2 &&
+	strip_headers <tmp >tmp_ &&
+	test_cmp tmp_ tmp2
 '
 
 test_done
