@@ -428,6 +428,16 @@ void cgit_print_diff(const char *new_rev, const char *old_rev,
 	if (show_ctrls)
 		cgit_print_diff_ctrls();
 
+	/*
+	 * Clicking on a link to a file in the diff stat should show a diff
+	 * of the file, showing the diff stat limited to a single file is
+	 * pretty useless.  All links from this point on will be to
+	 * individual files, so we simply reset the difftype in the query
+	 * here to avoid propagating DIFF_STATONLY to the individual files.
+	 */
+	if (difftype == DIFF_STATONLY)
+		ctx.qry.difftype = ctx.cfg.difftype;
+
 	cgit_print_diffstat(old_rev_sha1, new_rev_sha1, prefix);
 
 	if (difftype == DIFF_STATONLY)
