@@ -71,8 +71,10 @@ static void send_file(char *path)
 
 void cgit_clone_info(void)
 {
-	if (!ctx.qry.path || strcmp(ctx.qry.path, "refs"))
+	if (!ctx.qry.path || strcmp(ctx.qry.path, "refs")) {
+		html_status(400, "Bad request", 0);
 		return;
+	}
 
 	ctx.page.mimetype = "text/plain";
 	ctx.page.filename = "info/refs";
