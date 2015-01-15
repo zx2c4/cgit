@@ -71,11 +71,11 @@ void show_commit_decorations(struct commit *commit)
 		}
 		else if (starts_with(deco->name, "tag: refs/tags/")) {
 			strncpy(buf, deco->name + 15, sizeof(buf) - 1);
-			cgit_tag_link(buf, NULL, "tag-deco", ctx.qry.head, buf);
+			cgit_tag_link(buf, NULL, "tag-deco", buf);
 		}
 		else if (starts_with(deco->name, "refs/tags/")) {
 			strncpy(buf, deco->name + 10, sizeof(buf) - 1);
-			cgit_tag_link(buf, NULL, "tag-deco", ctx.qry.head, buf);
+			cgit_tag_link(buf, NULL, "tag-deco", buf);
 		}
 		else if (starts_with(deco->name, "refs/remotes/")) {
 			if (!ctx.repo->enable_remote_branches)

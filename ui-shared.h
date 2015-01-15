@@ -18,8 +18,7 @@ extern void cgit_index_link(const char *name, const char *title,
 extern void cgit_summary_link(const char *name, const char *title,
 			      const char *class, const char *head);
 extern void cgit_tag_link(const char *name, const char *title,
-			  const char *class, const char *head,
-			  const char *rev);
+			  const char *class, const char *tag);
 extern void cgit_tree_link(const char *name, const char *title,
 			   const char *class, const char *head,
 			   const char *rev, const char *path);

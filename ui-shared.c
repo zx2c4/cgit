@@ -273,9 +273,9 @@ void cgit_summary_link(const char *name, const char *title, const char *class,
 }
 
 void cgit_tag_link(const char *name, const char *title, const char *class,
-		   const char *head, const char *rev)
+		   const char *tag)
 {
-	reporevlink("tag", name, title, class, head, rev, NULL);
+	reporevlink("tag", name, title, class, tag, NULL, NULL);
 }
 
 void cgit_tree_link(const char *name, const char *title, const char *class,
@@ -443,8 +443,8 @@ static void cgit_self_link(char *name, const char *title, const char *class)
 	else if (!strcmp(ctx.qry.page, "summary"))
 		cgit_summary_link(name, title, class, ctx.qry.head);
 	else if (!strcmp(ctx.qry.page, "tag"))
-		cgit_tag_link(name, title, class, ctx.qry.head,
-			      ctx.qry.has_sha1 ? ctx.qry.sha1 : NULL);
+		cgit_tag_link(name, title, class, ctx.qry.has_sha1 ?
+			       ctx.qry.sha1 : ctx.qry.head);
 	else if (!strcmp(ctx.qry.page, "tree"))
 		cgit_tree_link(name, title, class, ctx.qry.head,
 			       ctx.qry.has_sha1 ? ctx.qry.sha1 : NULL,
