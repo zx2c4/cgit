@@ -119,6 +119,7 @@ static int make_snapshot(const struct cgit_snapshot_format *format,
 		cgit_print_error("Not a commit reference: %s", hex);
 		return 1;
 	}
+	ctx.page.etag = sha1_to_hex(sha1);
 	ctx.page.mimetype = xstrdup(format->mimetype);
 	ctx.page.filename = xstrdup(filename);
 	cgit_print_http_headers();
