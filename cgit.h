@@ -106,6 +106,8 @@ struct cgit_repo {
 	struct cgit_filter *email_filter;
 	struct cgit_filter *owner_filter;
 	struct string_list submodules;
+	int hide;
+	int ignore;
 };
 
 typedef void (*repo_config_fn)(struct cgit_repo *repo, const char *name,

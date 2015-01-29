@@ -93,6 +93,10 @@ static void repo_config(struct cgit_repo *repo, const char *name, const char *va
 			repo->email_filter = cgit_new_filter(value, EMAIL);
 		else if (!strcmp(name, "owner-filter"))
 			repo->owner_filter = cgit_new_filter(value, OWNER);
+	} else if (!strcmp(name, "hide")) {
+		repo->hide = atoi(value);
+	} else if (!strcmp(name, "ignore")) {
+		repo->ignore = atoi(value);
 	}
 }
 
@@ -828,6 +832,8 @@ static void print_repo(FILE *f, struct cgit_repo *repo)
 		else if (repo->commit_sort == 2)
 			fprintf(f, "repo.commit-sort=topo\n");
 	}
+	fprintf(f, "repo.hide=%d\n", repo->hide);
+	fprintf(f, "repo.ignore=%d\n", repo->ignore);
 	fprintf(f, "\n");
 }
 

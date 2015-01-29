@@ -275,6 +275,8 @@ void cgit_print_repolist()
 	html("<table summary='repository list' class='list nowrap'>");
 	for (i = 0; i < cgit_repolist.count; i++) {
 		ctx.repo = &cgit_repolist.repos[i];
+		if (ctx.repo->hide || ctx.repo->ignore)
+			continue;
 		if (!(is_match(ctx.repo) && is_in_url(ctx.repo)))
 			continue;
 		hits++;

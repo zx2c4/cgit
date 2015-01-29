@@ -509,6 +509,16 @@ repo.enable-subject-links::
 	A flag which can be used to override the global setting
 	`enable-subject-links'. Default value: none.
 
+repo.hide::
+	Flag which, when set to "1", hides the repository from the repository
+	index. The repository can still be accessed by providing a direct path.
+	Default value: "0". See also: "repo.ignore".
+
+repo.ignore::
+	Flag which, when set to "1", ignores the repository. The repository
+	is not shown in the index and cannot be accessed by providing a direct
+	path. Default value: "0". See also: "repo.hide".
+
 repo.logo::
 	Url which specifies the source of an image which will be used as a logo
 	on this repo's pages. Default value: global logo.

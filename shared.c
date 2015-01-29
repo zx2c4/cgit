@@ -75,6 +75,7 @@ struct cgit_repo *cgit_add_repo(const char *url)
 	ret->owner_filter = ctx.cfg.owner_filter;
 	ret->clone_url = ctx.cfg.clone_url;
 	ret->submodules.strdup_strings = 1;
+	ret->hide = ret->ignore = 0;
 	return ret;
 }
 
@@ -85,6 +86,8 @@ struct cgit_repo *cgit_get_repoinfo(const char *url)
 
 	for (i = 0; i < cgit_repolist.count; i++) {
 		repo = &cgit_repolist.repos[i];
+		if (repo->ignore)
+			continue;
 		if (!strcmp(repo->url, url))
 			return repo;
 	}
