@@ -751,31 +751,19 @@ void cgit_print_docend()
 
 static void add_clone_urls(void (*fn)(const char *), char *txt, char *suffix)
 {
-	struct strbuf buf = STRBUF_INIT;
-	char *h = txt, *t, c;
+	struct strbuf **url_list = strbuf_split_str(txt, ' ', 0);
+	int i;
 
-	while (h && *h) {
-		while (h && *h == ' ')
-			h++;
-		if (!*h)
-			break;
-		t = h;
-		while (t && *t && *t != ' ')
-			t++;
-		c = *t;
-		*t = 0;
-
-		if (suffix && *suffix) {
-			strbuf_reset(&buf);
-			strbuf_addf(&buf, "%s/%s", h, suffix);
-			h = buf.buf;
-		}
-		fn(h);
-		*t = c;
-		h = t;
+	for (i = 0; url_list[i]; i++) {
+		strbuf_rtrim(url_list[i]);
+		if (url_list[i]->len == 0)
+			continue;
+		if (suffix && *suffix)
+			strbuf_addf(url_list[i], "/%s", suffix);
+		fn(url_list[i]->buf);
 	}
 
-	strbuf_release(&buf);
+	strbuf_list_free(url_list);
 }
 
 void cgit_add_clone_urls(void (*fn)(const char *))
