@@ -173,23 +173,22 @@ static void print_dir_tail(void)
 	html(" </ul>\n</body></html>\n");
 }
 
-static int walk_tree(const unsigned char *sha1, const char *base, int baselen,
-		     const char *pathname, unsigned mode, int stage,
-		     void *cbdata)
+static int walk_tree(const unsigned char *sha1, struct strbuf *base,
+		const char *pathname, unsigned mode, int stage, void *cbdata)
 {
 	struct walk_tree_context *walk_tree_ctx = cbdata;
 
-	if (baselen == walk_tree_ctx->match_baselen) {
+	if (base->len == walk_tree_ctx->match_baselen) {
 		if (S_ISREG(mode)) {
 			if (print_object(sha1, pathname))
 				walk_tree_ctx->match = 1;
 		} else if (S_ISDIR(mode)) {
-			print_dir(sha1, base, baselen, pathname);
+			print_dir(sha1, base->buf, base->len, pathname);
 			walk_tree_ctx->match = 2;
 			return READ_TREE_RECURSIVE;
 		}
-	} else if (baselen > walk_tree_ctx->match_baselen) {
-		print_dir_entry(sha1, base, baselen, pathname, mode);
+	} else if (base->len > walk_tree_ctx->match_baselen) {
+		print_dir_entry(sha1, base->buf, base->len, pathname, mode);
 		walk_tree_ctx->match = 2;
 	} else if (S_ISDIR(mode)) {
 		return READ_TREE_RECURSIVE;

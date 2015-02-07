@@ -18,15 +18,15 @@ struct walk_tree_context {
 	int file_only:1;
 };
 
-static int walk_tree(const unsigned char *sha1, const char *base, int baselen,
-	const char *pathname, unsigned mode, int stage, void *cbdata)
+static int walk_tree(const unsigned char *sha1, struct strbuf *base,
+		const char *pathname, unsigned mode, int stage, void *cbdata)
 {
 	struct walk_tree_context *walk_tree_ctx = cbdata;
 
 	if (walk_tree_ctx->file_only && !S_ISREG(mode))
 		return READ_TREE_RECURSIVE;
-	if (strncmp(base, walk_tree_ctx->match_path, baselen)
-		|| strcmp(walk_tree_ctx->match_path + baselen, pathname))
+	if (strncmp(base->buf, walk_tree_ctx->match_path, base->len)
+		|| strcmp(walk_tree_ctx->match_path + base->len, pathname))
 		return READ_TREE_RECURSIVE;
 	memmove(walk_tree_ctx->matched_sha1, sha1, 20);
 	walk_tree_ctx->found_path = 1;

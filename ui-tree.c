@@ -121,9 +121,8 @@ static void print_object(const unsigned char *sha1, char *path, const char *base
 }
 
 
-static int ls_item(const unsigned char *sha1, const char *base, int baselen,
-		   const char *pathname, unsigned int mode, int stage,
-		   void *cbdata)
+static int ls_item(const unsigned char *sha1, struct strbuf *base,
+		const char *pathname, unsigned mode, int stage, void *cbdata)
 {
 	struct walk_tree_context *walk_tree_ctx = cbdata;
 	char *name;
@@ -216,16 +215,15 @@ static void ls_tree(const unsigned char *sha1, char *path, struct walk_tree_cont
 }
 
 
-static int walk_tree(const unsigned char *sha1, const char *base, int baselen,
-		     const char *pathname, unsigned mode, int stage,
-		     void *cbdata)
+static int walk_tree(const unsigned char *sha1, struct strbuf *base,
+		const char *pathname, unsigned mode, int stage, void *cbdata)
 {
 	struct walk_tree_context *walk_tree_ctx = cbdata;
 	static char buffer[PATH_MAX];
 
 	if (walk_tree_ctx->state == 0) {
-		memcpy(buffer, base, baselen);
-		strcpy(buffer + baselen, pathname);
+		memcpy(buffer, base->buf, base->len);
+		strcpy(buffer + base->len, pathname);
 		if (strcmp(walk_tree_ctx->match_path, buffer))
 			return READ_TREE_RECURSIVE;
 
@@ -238,10 +236,9 @@ static int walk_tree(const unsigned char *sha1, const char *base, int baselen,
 			return 0;
 		}
 	}
-	ls_item(sha1, base, baselen, pathname, mode, stage, walk_tree_ctx);
+	ls_item(sha1, base, pathname, mode, stage, walk_tree_ctx);
 	return 0;
 }
-
 
 /*
  * Show a tree or a blob

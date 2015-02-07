@@ -603,7 +603,7 @@ static int prepare_repo_cmd(void)
 		free(tmp);
 		return 1;
 	}
-	sort_string_list(&ctx.repo->submodules);
+	string_list_sort(&ctx.repo->submodules);
 	cgit_prepare_repo_env(ctx.repo);
 	choose_readme(ctx.repo);
 	return 0;
