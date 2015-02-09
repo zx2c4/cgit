@@ -63,8 +63,8 @@ static void send_file(char *path)
 	}
 	ctx.page.mimetype = "application/octet-stream";
 	ctx.page.filename = path;
-	if (!starts_with(ctx.repo->path, path))
-		ctx.page.filename += strlen(ctx.repo->path) + 1;
+	skip_prefix(path, ctx.repo->path, &ctx.page.filename);
+	skip_prefix(ctx.page.filename, "/", &ctx.page.filename);
 	cgit_print_http_headers();
 	html_include(path);
 }
