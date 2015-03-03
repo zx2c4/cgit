@@ -144,10 +144,10 @@ static void site_url(const char *page, const char *search, const char *sort, int
 {
 	char *delim = "?";
 
-	if (ctx.cfg.virtual_root)
-		html_attr(ctx.cfg.virtual_root);
+	if (!page)
+		html_attr(ctx.qry.url);
 	else
-		html_url_path(ctx.cfg.script_name);
+		html_attr(cgit_rooturl());
 
 	if (page) {
 		htmlf("?p=%s", page);
