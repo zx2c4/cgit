@@ -161,10 +161,23 @@ static int close_lock(struct cache_slot *slot)
  */
 static int lock_slot(struct cache_slot *slot)
 {
-	slot->lock_fd = open(slot->lock_name, O_RDWR | O_CREAT | O_EXCL,
+	struct flock lock = {
+		.l_type = F_WRLCK,
+		.l_whence = SEEK_SET,
+		.l_start = 0,
+		.l_len = 0,
+	};
+
+	slot->lock_fd = open(slot->lock_name, O_RDWR | O_CREAT,
 			     S_IRUSR | S_IWUSR);
 	if (slot->lock_fd == -1)
 		return errno;
+	if (fcntl(slot->lock_fd, F_SETLK, &lock) < 0) {
+		int saved_errno = errno;
+		close(slot->lock_fd);
+		slot->lock_fd = -1;
+		return saved_errno;
+	}
 	if (xwrite(slot->lock_fd, slot->key, slot->keylen + 1) < 0)
 		return errno;
 	return 0;
