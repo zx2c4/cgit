@@ -65,6 +65,13 @@ const char *cgit_hosturl()
 	return fmtalloc("%s:%s", ctx.env.server_name, ctx.env.server_port);
 }
 
+const char *cgit_currenturl()
+{
+	if (!ctx.qry.url)
+		return cgit_rooturl();
+	return ctx.qry.url;
+}
+
 const char *cgit_rooturl()
 {
 	if (ctx.cfg.virtual_root)
@@ -145,7 +152,7 @@ static void site_url(const char *page, const char *search, const char *sort, int
 	char *delim = "?";
 
 	if (!page)
-		html_attr(ctx.qry.url);
+		html_attr(cgit_currenturl());
 	else
 		html_attr(cgit_rooturl());
 
@@ -952,7 +959,7 @@ void cgit_print_pageheader(void)
 				  NULL, NULL, 0);
 		html("</td><td class='form'>");
 		html("<form method='get' action='");
-		html_attr(ctx.qry.url);
+		html_attr(cgit_currenturl());
 		html("'>\n");
 		html("<input type='text' name='q' size='10' value='");
 		html_attr(ctx.qry.search);
