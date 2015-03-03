@@ -140,7 +140,7 @@ static void print_pager(int items, int pagelen, char *search, char *sort)
 		class = (ctx.qry.ofs == ofs) ? "current" : NULL;
 		html("<li>");
 		cgit_index_link(fmt("[%d]", i + 1), fmt("Page %d", i + 1),
-				class, search, sort, ofs);
+				class, search, sort, ofs, 0);
 		html("</li>");
 	}
 	html("</ul>");
