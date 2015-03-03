@@ -108,7 +108,7 @@ static int is_in_url(struct cgit_repo *repo)
 static void print_sort_header(const char *title, const char *sort)
 {
 	html("<th class='left'><a href='");
-	html_attr(cgit_rooturl());
+	html_attr(ctx.qry.url);
 	htmlf("?s=%s", sort);
 	if (ctx.qry.search) {
 		html("&amp;q=");
@@ -315,7 +315,7 @@ void cgit_print_repolist()
 				cgit_close_filter(ctx.repo->owner_filter);
 			} else {
 				html("<a href='");
-				html_attr(cgit_rooturl());
+				html_attr(ctx.qry.url);
 				html("?q=");
 				html_url_arg(ctx.repo->owner);
 				html("'>");

@@ -952,7 +952,7 @@ void cgit_print_pageheader(void)
 				  NULL, NULL, 0);
 		html("</td><td class='form'>");
 		html("<form method='get' action='");
-		html_attr(cgit_rooturl());
+		html_attr(ctx.qry.url);
 		html("'>\n");
 		html("<input type='text' name='q' size='10' value='");
 		html_attr(ctx.qry.search);
