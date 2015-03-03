@@ -316,7 +316,7 @@ void cgit_print_repolist()
 			} else {
 				html("<a href='");
 				html_attr(cgit_rooturl());
-				html("?=");
+				html("?q=");
 				html_url_arg(ctx.repo->owner);
 				html("'>");
 				html_txt(ctx.repo->owner);
