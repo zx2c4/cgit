@@ -254,7 +254,7 @@ div#cgit div.error {
 	margin: 1em 2em;
 }
 
-div#cgit a.ls-blob, div#cgit a.ls-dir, div#cgit a.ls-mod {
+div#cgit a.ls-blob, div#cgit a.ls-dir, div#cgit .ls-mod {
 	font-family: monospace;
 }
 

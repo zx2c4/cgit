@@ -559,25 +559,32 @@ void cgit_submodule_link(const char *class, char *path, const char *rev)
 			item = lookup_path(list, path);
 		}
 	}
-	html("<a ");
-	if (class)
-		htmlf("class='%s' ", class);
-	html("href='");
-	if (item) {
-		html_attrf(item->util, rev);
-	} else if (ctx.repo->module_link) {
-		dir = strrchr(path, '/');
-		if (dir)
-			dir++;
-		else
-			dir = path;
-		html_attrf(ctx.repo->module_link, dir, rev);
+	if (item || ctx.repo->module_link) {
+		html("<a ");
+		if (class)
+			htmlf("class='%s' ", class);
+		html("href='");
+		if (item) {
+			html_attrf(item->util, rev);
+		} else {
+			dir = strrchr(path, '/');
+			if (dir)
+				dir++;
+			else
+				dir = path;
+			html_attrf(ctx.repo->module_link, dir, rev);
+		}
+		html("'>");
+		html_txt(path);
+		html("</a>");
 	} else {
-		html("#");
+		html("<span");
+		if (class)
+			htmlf(" class='%s'", class);
+		html(">");
+		html_txt(path);
+		html("</span>");
 	}
-	html("'>");
-	html_txt(path);
-	html("</a>");
 	html_txtf(" @ %.7s", rev);
 	if (item && tail)
 		path[len - 1] = tail;
