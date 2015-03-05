@@ -46,7 +46,7 @@ local secret = "BE SURE TO CUSTOMIZE THIS STRING TO SOMETHING BIG AND RANDOM"
 -- Sets HTTP cookie headers based on post and sets up redirection.
 function authenticate_post()
 	local password = users[post["username"]]
-	local redirect = validate_value(post["redirect"])
+	local redirect = validate_value("redirect", post["redirect"])
 
 	if redirect == nil then
 		not_found()
@@ -60,7 +60,7 @@ function authenticate_post()
 		set_cookie("cgitauth", "")
 	else
 		-- One week expiration time
-		local username = secure_value(post["username"], os.time() + 604800)
+		local username = secure_value("username", post["username"], os.time() + 604800)
 		set_cookie("cgitauth", username)
 	end
 
@@ -77,7 +77,7 @@ function authenticate_cookie()
 		return 1
 	end
 
-	local username = validate_value(get_cookie(http["cookie"], "cgitauth"))
+	local username = validate_value("username", get_cookie(http["cookie"], "cgitauth"))
 	if username == nil or not accepted_users[username:lower()] then
 		return 0
 	else
@@ -92,7 +92,7 @@ function body()
 	html_attr(cgit["login"])
 	html("'>")
 	html("<input type='hidden' name='redirect' value='")
-	html_attr(secure_value(cgit["url"], 0))
+	html_attr(secure_value("redirect", cgit["url"], 0))
 	html("' />")
 	html("<table>")
 	html("<tr><td><label for='username'>Username:</label></td><td><input id='username' name='username' autofocus /></td></tr>")
@@ -194,9 +194,10 @@ end
 local crypto = require("crypto")
 
 -- Returns value of cookie if cookie is valid. Otherwise returns nil.
-function validate_value(cookie)
+function validate_value(expected_field, cookie)
 	local i = 0
 	local value = ""
+	local field = ""
 	local expiration = 0
 	local salt = ""
 	local hmac = ""
@@ -207,15 +208,17 @@ function validate_value(cookie)
 
 	for component in string.gmatch(cookie, "[^|]+") do
 		if i == 0 then
-			value = component
+			field = component
 		elseif i == 1 then
+			value = component
+		elseif i == 2 then
 			expiration = tonumber(component)
 			if expiration == nil then
-				expiration = 0
+				expiration = -1
 			end
-		elseif i == 2 then
-			salt = component
 		elseif i == 3 then
+			salt = component
+		elseif i == 4 then
 			hmac = component
 		else
 			break
@@ -228,18 +231,22 @@ function validate_value(cookie)
 	end
 
 	-- Lua hashes strings, so these comparisons are time invariant.
-	if hmac ~= crypto.hmac.digest("sha1", value .. "|" .. tostring(expiration) .. "|" .. salt, secret) then
+	if hmac ~= crypto.hmac.digest("sha1", field .. "|" .. value .. "|" .. tostring(expiration) .. "|" .. salt, secret) then
 		return nil
 	end
 
-	if expiration ~= 0 and expiration <= os.time() then
+	if expiration == -1 or (expiration ~= 0 and expiration <= os.time()) then
+		return nil
+	end
+
+	if url_decode(field) ~= expected_field then
 		return nil
 	end
 
 	return url_decode(value)
 end
 
-function secure_value(value, expiration)
+function secure_value(field, value, expiration)
 	if value == nil or value:len() <= 0 then
 		return ""
 	end
@@ -247,7 +254,8 @@ function secure_value(value, expiration)
 	local authstr = ""
 	local salt = crypto.hex(crypto.rand.bytes(16))
 	value = url_encode(value)
-	authstr = value .. "|" .. tostring(expiration) .. "|" .. salt
+	field = url_encode(field)
+	authstr = field .. "|" .. value .. "|" .. tostring(expiration) .. "|" .. salt
 	authstr = authstr .. "|" .. crypto.hmac.digest("sha1", authstr, secret)
 	return authstr
 end
