@@ -536,6 +536,17 @@ static void choose_readme(struct cgit_repo *repo)
 		string_list_append(&repo->readme, filename)->util = ref;
 }
 
+static void print_no_repo_clone_urls(const char *url)
+{
+        html("<tr><td><a rel='vcs-git' href='");
+        html_url_path(url);
+        html("' title='");
+        html_attr(ctx.repo->name);
+        html(" Git repository'>");
+        html_txt(url);
+        html("</a></td></tr>\n");
+}
+
 static int prepare_repo_cmd(void)
 {
 	unsigned char sha1[20];
@@ -586,6 +597,11 @@ static int prepare_repo_cmd(void)
 		cgit_print_docstart();
 		cgit_print_pageheader();
 		cgit_print_error("Repository seems to be empty");
+		if (!strcmp(ctx.qry.page, "summary")) {
+			html("<table class='list'><tr class='nohover'><td>&nbsp;</td></tr><tr class='nohover'><th class='left'>Clone</th></tr>\n");
+			cgit_add_clone_urls(print_no_repo_clone_urls);
+			html("</table>\n");
+		}
 		cgit_print_docend();
 		return 1;
 	}

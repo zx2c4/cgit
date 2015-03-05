@@ -28,7 +28,7 @@ static void print_url(const char *url)
 
 	if (urls++ == 0) {
 		htmlf("<tr class='nohover'><td colspan='%d'>&nbsp;</td></tr>", columns);
-		htmlf("<tr><th class='left' colspan='%d'>Clone</th></tr>\n", columns);
+		htmlf("<tr class='nohover'><th class='left' colspan='%d'>Clone</th></tr>\n", columns);
 	}
 
 	htmlf("<tr><td colspan='%d'><a rel='vcs-git' href='", columns);
