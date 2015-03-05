@@ -69,13 +69,12 @@ static char *substr(const char *head, const char *tail)
 	return buf;
 }
 
-static const char *parse_user(const char *t, char **name, char **email, unsigned long *date)
+static void parse_user(const char *t, char **name, char **email, unsigned long *date)
 {
-	const char *line_end = strchrnul(t, '\n');
 	struct ident_split ident;
 	unsigned email_len;
 
-	if (!split_ident_line(&ident, t, line_end - t)) {
+	if (!split_ident_line(&ident, t, strchrnul(t, '\n') - t)) {
 		*name = substr(ident.name_begin, ident.name_end);
 
 		email_len = ident.mail_end - ident.mail_begin;
@@ -85,11 +84,6 @@ static const char *parse_user(const char *t, char **name, char **email, unsigned
 		if (ident.date_begin)
 			*date = strtoul(ident.date_begin, NULL, 10);
 	}
-
-	if (*line_end)
-		return line_end + 1;
-	else
-		return line_end;
 }
 
 #ifdef NO_ICONV
@@ -152,13 +146,15 @@ struct commitinfo *cgit_parse_commit(struct commit *commit)
 		p += sha1hex_len + 1;
 
 	if (p && skip_prefix(p, "author ", &p)) {
-		p = parse_user(p, &ret->author, &ret->author_email,
+		parse_user(p, &ret->author, &ret->author_email,
 			&ret->author_date);
+		p = next_header_line(p);
 	}
 
 	if (p && skip_prefix(p, "committer ", &p)) {
-		p = parse_user(p, &ret->committer, &ret->committer_email,
+		parse_user(p, &ret->committer, &ret->committer_email,
 			&ret->committer_date);
+		p = next_header_line(p);
 	}
 
 	if (p && skip_prefix(p, "encoding ", &p)) {
@@ -211,7 +207,7 @@ struct taginfo *cgit_parse_tag(struct tag *tag)
 
 	for (p = data; !end_of_header(p); p = next_header_line(p)) {
 		if (skip_prefix(p, "tagger ", &p)) {
-			p = parse_user(p, &ret->tagger, &ret->tagger_email,
+			parse_user(p, &ret->tagger, &ret->tagger_email,
 				&ret->tagger_date);
 		}
 	}
