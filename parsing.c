@@ -216,6 +216,9 @@ struct taginfo *cgit_parse_tag(struct tag *tag)
 		}
 	}
 
+	while (p && *p == '\n')
+		p++;
+
 	if (p && *p)
 		ret->msg = xstrdup(p);
 
