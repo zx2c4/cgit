@@ -72,7 +72,7 @@ static inline void hook_write(struct cgit_filter *filter, ssize_t (*new_write)(s
 	filter_write = new_write;
 }
 
-static inline void unhook_write()
+static inline void unhook_write(void)
 {
 	assert(filter_write != NULL);
 	assert(current_write_filter != NULL);

@@ -18,7 +18,7 @@ struct deferred_lines {
 static struct deferred_lines *deferred_old, *deferred_old_last;
 static struct deferred_lines *deferred_new, *deferred_new_last;
 
-static void create_or_reset_lcs_table()
+static void create_or_reset_lcs_table(void)
 {
 	int i;
 
@@ -276,7 +276,7 @@ static void print_ssdiff_line(char *class,
 		free(old_line);
 }
 
-static void print_deferred_old_lines()
+static void print_deferred_old_lines(void)
 {
 	struct deferred_lines *iter_old, *tmp;
 	iter_old = deferred_old;
@@ -289,7 +289,7 @@ static void print_deferred_old_lines()
 	}
 }
 
-static void print_deferred_new_lines()
+static void print_deferred_new_lines(void)
 {
 	struct deferred_lines *iter_new, *tmp;
 	iter_new = deferred_new;
@@ -302,7 +302,7 @@ static void print_deferred_new_lines()
 	}
 }
 
-static void print_deferred_changed_lines()
+static void print_deferred_changed_lines(void)
 {
 	struct deferred_lines *iter_old, *iter_new, *tmp;
 	int n_old_lines = calc_deferred_lines(deferred_old);
@@ -337,7 +337,7 @@ static void print_deferred_changed_lines()
 	}
 }
 
-void cgit_ssdiff_print_deferred_lines()
+void cgit_ssdiff_print_deferred_lines(void)
 {
 	if (!deferred_old && !deferred_new)
 		return;
@@ -388,7 +388,7 @@ void cgit_ssdiff_line_cb(char *line, int len)
 	line[len - 1] = c;
 }
 
-void cgit_ssdiff_header_begin()
+void cgit_ssdiff_header_begin(void)
 {
 	current_old_line = -1;
 	current_new_line = -1;
@@ -396,12 +396,12 @@ void cgit_ssdiff_header_begin()
 	html("<tr><td class='head' colspan='4'>");
 }
 
-void cgit_ssdiff_header_end()
+void cgit_ssdiff_header_end(void)
 {
 	html("</td><tr>");
 }
 
-void cgit_ssdiff_footer()
+void cgit_ssdiff_footer(void)
 {
 	if (deferred_old || deferred_new)
 		cgit_ssdiff_print_deferred_lines();

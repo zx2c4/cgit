@@ -46,7 +46,7 @@ void cgit_vprint_error(const char *fmt, va_list ap)
 	html("</div>\n");
 }
 
-const char *cgit_httpscheme()
+const char *cgit_httpscheme(void)
 {
 	if (ctx.env.https && !strcmp(ctx.env.https, "on"))
 		return "https://";
@@ -54,7 +54,7 @@ const char *cgit_httpscheme()
 		return "http://";
 }
 
-const char *cgit_hosturl()
+const char *cgit_hosturl(void)
 {
 	if (ctx.env.http_host)
 		return ctx.env.http_host;
@@ -65,14 +65,14 @@ const char *cgit_hosturl()
 	return fmtalloc("%s:%s", ctx.env.server_name, ctx.env.server_port);
 }
 
-const char *cgit_currenturl()
+const char *cgit_currenturl(void)
 {
 	if (!ctx.qry.url)
 		return cgit_rooturl();
 	return ctx.qry.url;
 }
 
-const char *cgit_rooturl()
+const char *cgit_rooturl(void)
 {
 	if (ctx.cfg.virtual_root)
 		return ctx.cfg.virtual_root;
@@ -80,7 +80,7 @@ const char *cgit_rooturl()
 		return ctx.cfg.script_name;
 }
 
-const char *cgit_loginurl()
+const char *cgit_loginurl(void)
 {
 	static const char *login_url = 0;
 	if (!login_url)
@@ -735,7 +735,7 @@ void cgit_print_docstart(void)
 		html_include(ctx.cfg.header);
 }
 
-void cgit_print_docend()
+void cgit_print_docend(void)
 {
 	html("</div> <!-- class=content -->\n");
 	if (ctx.cfg.embedded) {

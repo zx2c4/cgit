@@ -40,7 +40,7 @@ static void print_url(const char *url)
 	html("</a></td></tr>\n");
 }
 
-void cgit_print_summary()
+void cgit_print_summary(void)
 {
 	int columns = 3;
 

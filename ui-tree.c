@@ -180,7 +180,7 @@ static int ls_item(const unsigned char *sha1, struct strbuf *base,
 	return 0;
 }
 
-static void ls_head()
+static void ls_head(void)
 {
 	html("<table summary='tree listing' class='list'>\n");
 	html("<tr class='nohover'>");
@@ -191,7 +191,7 @@ static void ls_head()
 	html("</tr>\n");
 }
 
-static void ls_tail()
+static void ls_tail(void)
 {
 	html("</table>\n");
 }

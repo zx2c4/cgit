@@ -311,7 +311,7 @@ static void filepair_cb(struct diff_filepair *pair)
 		cgit_ssdiff_footer();
 }
 
-void cgit_print_diff_ctrls()
+void cgit_print_diff_ctrls(void)
 {
 	int i, curr;
 

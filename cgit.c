@@ -1013,7 +1013,7 @@ static void cgit_parse_args(int argc, const char **argv)
 	}
 }
 
-static int calc_ttl()
+static int calc_ttl(void)
 {
 	if (!ctx.repo)
 		return ctx.cfg.cache_root_ttl;
