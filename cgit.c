@@ -599,6 +599,7 @@ static int prepare_repo_cmd(void)
 		cgit_print_error("Repository seems to be empty");
 		if (!strcmp(ctx.qry.page, "summary")) {
 			html("<table class='list'><tr class='nohover'><td>&nbsp;</td></tr><tr class='nohover'><th class='left'>Clone</th></tr>\n");
+			cgit_prepare_repo_env(ctx.repo);
 			cgit_add_clone_urls(print_no_repo_clone_urls);
 			html("</table>\n");
 		}
