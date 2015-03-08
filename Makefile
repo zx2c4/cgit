@@ -68,6 +68,9 @@ all:: cgit
 cgit:
 	$(QUIET_SUBDIR0)git $(QUIET_SUBDIR1) -f ../cgit.mk ../cgit $(EXTRA_GIT_TARGETS) NO_CURL=1
 
+sparse:
+	$(QUIET_SUBDIR0)git $(QUIET_SUBDIR1) -f ../cgit.mk NO_CURL=1 cgit-sparse
+
 test:
 	@$(MAKE) --no-print-directory cgit EXTRA_GIT_TARGETS=all
 	$(QUIET_SUBDIR0)tests $(QUIET_SUBDIR1) all

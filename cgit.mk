@@ -96,7 +96,7 @@ CGIT_OBJS := $(addprefix $(CGIT_PREFIX),$(CGIT_OBJ_NAMES))
 
 # Only cgit.c reference CGIT_VERSION so we only rebuild its objects when the
 # version changes.
-CGIT_VERSION_OBJS := $(addprefix $(CGIT_PREFIX),cgit.o)
+CGIT_VERSION_OBJS := $(addprefix $(CGIT_PREFIX),cgit.o cgit.sp)
 $(CGIT_VERSION_OBJS): $(CGIT_PREFIX)VERSION
 $(CGIT_VERSION_OBJS): EXTRA_CPPFLAGS = \
 	-DCGIT_VERSION='"$(CGIT_VERSION)"'
@@ -129,3 +129,10 @@ $(CGIT_OBJS): %.o: %.c GIT-CFLAGS $(CGIT_PREFIX)CGIT-CFLAGS $(missing_dep_dirs)
 $(CGIT_PREFIX)cgit: $(CGIT_OBJS) GIT-LDFLAGS $(GITLIBS)
 	@echo 1>&1 "    * $(LUA_MESSAGE)"
 	$(QUIET_LINK)$(CC) $(ALL_CFLAGS) -o $@ $(ALL_LDFLAGS) $(filter %.o,$^) $(LIBS) $(CGIT_LIBS)
+
+CGIT_SP_OBJS := $(patsubst %.o,%.sp,$(CGIT_OBJS))
+
+$(CGIT_SP_OBJS): %.sp: %.c GIT-CFLAGS $(CGIT_PREFIX)CGIT-CFLAGS FORCE
+	$(QUIET_SP)cgcc -no-compile $(ALL_CFLAGS) $(EXTRA_CPPFLAGS) $(CGIT_CFLAGS) $(SPARSE_FLAGS) $<
+
+cgit-sparse: $(CGIT_SP_OBJS)
