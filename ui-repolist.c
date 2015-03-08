@@ -223,7 +223,7 @@ struct sortcolumn {
 	int (*fn)(const void *a, const void *b);
 };
 
-struct sortcolumn sortcolumn[] = {
+static const struct sortcolumn sortcolumn[] = {
 	{"section", sort_section},
 	{"name", sort_name},
 	{"desc", sort_desc},
@@ -234,7 +234,7 @@ struct sortcolumn sortcolumn[] = {
 
 static int sort_repolist(char *field)
 {
-	struct sortcolumn *column;
+	const struct sortcolumn *column;
 
 	for (column = &sortcolumn[0]; column->name; column++) {
 		if (strcmp(field, column->name))
