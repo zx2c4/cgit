@@ -411,7 +411,7 @@ int cache_ls(const char *path)
 	DIR *dir;
 	struct dirent *ent;
 	int err = 0;
-	struct cache_slot slot = { 0 };
+	struct cache_slot slot = { NULL };
 	struct strbuf fullname = STRBUF_INIT;
 	size_t prefixlen;
 
