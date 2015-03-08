@@ -12,7 +12,7 @@
 #include "ui-shared.h"
 #include "argv-array.h"
 
-int files, add_lines, rem_lines;
+static int files, add_lines, rem_lines;
 
 /*
  * The list of available column colors in the commit graph.
