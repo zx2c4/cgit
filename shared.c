@@ -284,8 +284,8 @@ static int load_mmfile(mmfile_t *file, const unsigned char *sha1)
  * ripped from git and modified to use globals instead of
  * a special callback-struct.
  */
-char *diffbuf = NULL;
-int buflen = 0;
+static char *diffbuf = NULL;
+static int buflen = 0;
 
 static int filediff_cb(void *priv, mmbuffer_t *mb, int nbuf)
 {
