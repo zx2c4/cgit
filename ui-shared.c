@@ -69,7 +69,11 @@ const char *cgit_currenturl(void)
 {
 	if (!ctx.qry.url)
 		return cgit_rooturl();
-	return ctx.qry.url;
+	const char *root = cgit_rooturl();
+	size_t len = strlen(root);
+	if (len && root[len - 1] == '/')
+		return fmtalloc("%s%s", root, ctx.qry.url);
+	return fmtalloc("%s/%s", root, ctx.qry.url);
 }
 
 const char *cgit_rooturl(void)
