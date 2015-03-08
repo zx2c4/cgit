@@ -119,7 +119,7 @@ char *cgit_fileurl(const char *reponame, const char *pagename,
 char *cgit_pageurl(const char *reponame, const char *pagename,
 		   const char *query)
 {
-	return cgit_fileurl(reponame, pagename, 0, query);
+	return cgit_fileurl(reponame, pagename, NULL, query);
 }
 
 const char *cgit_repobasename(const char *reponame)
