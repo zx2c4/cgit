@@ -45,8 +45,8 @@ out:
 	return result;
 }
 
-struct cgit_repo *repo;
-repo_config_fn config_fn;
+static struct cgit_repo *repo;
+static repo_config_fn config_fn;
 
 static void repo_config(const char *name, const char *value)
 {
