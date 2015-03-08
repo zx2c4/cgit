@@ -14,8 +14,8 @@
 struct walk_tree_context {
 	const char *match_path;
 	unsigned char *matched_sha1;
-	int found_path:1;
-	int file_only:1;
+	unsigned int found_path:1;
+	unsigned int file_only:1;
 };
 
 static int walk_tree(const unsigned char *sha1, struct strbuf *base,

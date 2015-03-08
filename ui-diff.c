@@ -31,7 +31,7 @@ static struct fileinfo {
 	unsigned int removed;
 	unsigned long old_size;
 	unsigned long new_size;
-	int binary:1;
+	unsigned int binary:1;
 } *items;
 
 static int use_ssdiff = 0;
