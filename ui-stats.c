@@ -125,7 +125,7 @@ static char *pretty_year(struct tm *tm)
 	return fmt("%d", tm->tm_year + 1900);
 }
 
-struct cgit_period periods[] = {
+static const struct cgit_period periods[] = {
 	{'w', "week", 12, 4, trunc_week, dec_week, inc_week, pretty_week},
 	{'m', "month", 12, 4, trunc_month, dec_month, inc_month, pretty_month},
 	{'q', "quarter", 12, 4, trunc_quarter, dec_quarter, inc_quarter, pretty_quarter},
@@ -136,7 +136,7 @@ struct cgit_period periods[] = {
  * and update the period pointer to the correcsponding struct.
  * If no matching code is found, return 0.
  */
-int cgit_find_stats_period(const char *expr, struct cgit_period **period)
+int cgit_find_stats_period(const char *expr, const struct cgit_period **period)
 {
 	int i;
 	char code = '\0';
@@ -165,7 +165,7 @@ const char *cgit_find_stats_periodname(int idx)
 }
 
 static void add_commit(struct string_list *authors, struct commit *commit,
-	struct cgit_period *period)
+	const struct cgit_period *period)
 {
 	struct commitinfo *info;
 	struct string_list_item *author, *item;
@@ -209,7 +209,7 @@ static int cmp_total_commits(const void *a1, const void *a2)
 /* Walk the commit DAG and collect number of commits per author per
  * timeperiod into a nested string_list collection.
  */
-static struct string_list collect_stats(struct cgit_period *period)
+static struct string_list collect_stats(const struct cgit_period *period)
 {
 	struct string_list authors;
 	struct rev_info rev;
@@ -256,7 +256,7 @@ static void print_combined_authorrow(struct string_list *authors, int from,
 				     const char *leftclass,
 				     const char *centerclass,
 				     const char *rightclass,
-				     struct cgit_period *period)
+				     const struct cgit_period *period)
 {
 	struct string_list_item *author;
 	struct authorstat *authorstat;
@@ -295,7 +295,7 @@ static void print_combined_authorrow(struct string_list *authors, int from,
 }
 
 static void print_authors(struct string_list *authors, int top,
-			  struct cgit_period *period)
+			  const struct cgit_period *period)
 {
 	struct string_list_item *author;
 	struct authorstat *authorstat;
@@ -363,7 +363,7 @@ static void print_authors(struct string_list *authors, int top,
 void cgit_show_stats(void)
 {
 	struct string_list authors;
-	struct cgit_period *period;
+	const struct cgit_period *period;
 	int top, i;
 	const char *code = "w";
 

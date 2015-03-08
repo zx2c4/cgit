@@ -20,7 +20,7 @@ struct cgit_period {
 	char *(*pretty)(struct tm *tm);
 };
 
-extern int cgit_find_stats_period(const char *expr, struct cgit_period **period);
+extern int cgit_find_stats_period(const char *expr, const struct cgit_period **period);
 extern const char *cgit_find_stats_periodname(int idx);
 
 extern void cgit_show_stats(void);
