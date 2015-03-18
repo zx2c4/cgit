@@ -895,6 +895,8 @@ static void print_header(void)
 			cgit_add_hidden_formfields(0, 1, ctx.qry.page);
 			html("<select name='h' onchange='this.form.submit();'>\n");
 			for_each_branch_ref(print_branch_option, ctx.qry.head);
+			if (ctx.repo->enable_remote_branches)
+				for_each_remote_ref(print_branch_option, ctx.qry.head);
 			html("</select> ");
 			html("<input type='submit' name='' value='switch'/>");
 			html("</form>");
