@@ -421,7 +421,7 @@ struct refmatch {
 	int match;
 };
 
-static int find_current_ref(const char *refname, const unsigned char *sha1,
+static int find_current_ref(const char *refname, const struct object_id *oid,
 			    int flags, void *cb_data)
 {
 	struct refmatch *info;

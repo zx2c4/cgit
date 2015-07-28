@@ -335,7 +335,7 @@ extern void strbuf_ensure_end(struct strbuf *sb, char c);
 
 extern void cgit_add_ref(struct reflist *list, struct refinfo *ref);
 extern void cgit_free_reflist_inner(struct reflist *list);
-extern int cgit_refs_cb(const char *refname, const unsigned char *sha1,
+extern int cgit_refs_cb(const char *refname, const struct object_id *oid,
 			int flags, void *cb_data);
 
 extern void *cgit_free_commitinfo(struct commitinfo *info);

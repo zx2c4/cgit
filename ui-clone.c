@@ -12,15 +12,15 @@
 #include "html.h"
 #include "ui-shared.h"
 
-static int print_ref_info(const char *refname, const unsigned char *sha1,
+static int print_ref_info(const char *refname, const struct object_id *oid,
                           int flags, void *cb_data)
 {
 	struct object *obj;
 
-	if (!(obj = parse_object(sha1)))
+	if (!(obj = parse_object(oid->hash)))
 		return 0;
 
-	htmlf("%s\t%s\n", sha1_to_hex(sha1), refname);
+	htmlf("%s\t%s\n", oid_to_hex(oid), refname);
 	if (obj->type == OBJ_TAG) {
 		if (!(obj = deref_tag(obj, refname, 0)))
 			return 0;
@@ -50,7 +50,7 @@ static void print_pack_info(void)
 	}
 }
 
-static void send_file(char *path)
+static void send_file(const char *path)
 {
 	struct stat st;
 

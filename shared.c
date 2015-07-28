@@ -185,13 +185,13 @@ void cgit_add_ref(struct reflist *list, struct refinfo *ref)
 	list->refs[list->count++] = ref;
 }
 
-static struct refinfo *cgit_mk_refinfo(const char *refname, const unsigned char *sha1)
+static struct refinfo *cgit_mk_refinfo(const char *refname, const struct object_id *oid)
 {
 	struct refinfo *ref;
 
 	ref = xmalloc(sizeof (struct refinfo));
 	ref->refname = xstrdup(refname);
-	ref->object = parse_object(sha1);
+	ref->object = parse_object(oid->hash);
 	switch (ref->object->type) {
 	case OBJ_TAG:
 		ref->tag = cgit_parse_tag((struct tag *)ref->object);
@@ -239,11 +239,11 @@ void cgit_free_reflist_inner(struct reflist *list)
 	free(list->refs);
 }
 
-int cgit_refs_cb(const char *refname, const unsigned char *sha1, int flags,
+int cgit_refs_cb(const char *refname, const struct object_id *oid, int flags,
 		  void *cb_data)
 {
 	struct reflist *list = (struct reflist *)cb_data;
-	struct refinfo *info = cgit_mk_refinfo(refname, sha1);
+	struct refinfo *info = cgit_mk_refinfo(refname, oid);
 
 	if (info)
 		cgit_add_ref(list, info);
