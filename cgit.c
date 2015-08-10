@@ -82,6 +82,10 @@ static void repo_config(struct cgit_repo *repo, const char *name, const char *va
 		repo->logo = xstrdup(value);
 	else if (!strcmp(name, "logo-link") && value != NULL)
 		repo->logo_link = xstrdup(value);
+	else if (!strcmp(name, "hide"))
+		repo->hide = atoi(value);
+	else if (!strcmp(name, "ignore"))
+		repo->ignore = atoi(value);
 	else if (ctx.cfg.enable_filter_overrides) {
 		if (!strcmp(name, "about-filter"))
 			repo->about_filter = cgit_new_filter(value, ABOUT);
@@ -93,10 +97,6 @@ static void repo_config(struct cgit_repo *repo, const char *name, const char *va
 			repo->email_filter = cgit_new_filter(value, EMAIL);
 		else if (!strcmp(name, "owner-filter"))
 			repo->owner_filter = cgit_new_filter(value, OWNER);
-	} else if (!strcmp(name, "hide")) {
-		repo->hide = atoi(value);
-	} else if (!strcmp(name, "ignore")) {
-		repo->ignore = atoi(value);
 	}
 }
 
