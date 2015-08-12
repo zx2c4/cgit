@@ -476,7 +476,7 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 	if (ofs<0)
 		ofs = 0;
 
-	for (i = 0; i < ofs && (commit = get_revision(&rev)) != NULL; i++) {
+	for (i = 0; i < ofs && (commit = get_revision(&rev)) != NULL; /* nop */) {
 		if (show_commit(commit, &rev))
 			i++;
 		free_commit_buffer(commit);
@@ -484,7 +484,7 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 		commit->parents = NULL;
 	}
 
-	for (i = 0; i < cnt && (commit = get_revision(&rev)) != NULL; i++) {
+	for (i = 0; i < cnt && (commit = get_revision(&rev)) != NULL; /* nop */) {
 		/*
 		 * In "follow" mode, we must count the files and lines the
 		 * first time we invoke diff on a given commit, and we need
