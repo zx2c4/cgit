@@ -250,8 +250,8 @@ int cgit_refs_cb(const char *refname, const struct object_id *oid, int flags,
 	return 0;
 }
 
-static void cgit_diff_tree_cb(struct diff_queue_struct *q,
-			      struct diff_options *options, void *data)
+void cgit_diff_tree_cb(struct diff_queue_struct *q,
+		       struct diff_options *options, void *data)
 {
 	int i;
 

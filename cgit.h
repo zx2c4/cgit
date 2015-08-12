@@ -340,6 +340,9 @@ extern int cgit_refs_cb(const char *refname, const struct object_id *oid,
 
 extern void *cgit_free_commitinfo(struct commitinfo *info);
 
+void cgit_diff_tree_cb(struct diff_queue_struct *q,
+		       struct diff_options *options, void *data);
+
 extern int cgit_diff_files(const unsigned char *old_sha1,
 			   const unsigned char *new_sha1,
 			   unsigned long *old_size, unsigned long *new_size,
