@@ -8,8 +8,8 @@ test_expect_success 'generate foo/rawdiff' '
 '
 
 test_expect_success 'compare with output of git-diff(1)' '
-	git --git-dir="$PWD/repos/foo/.git" diff HEAD^.. >tmp2
-	sed "1,4d" tmp >tmp_
+	git --git-dir="$PWD/repos/foo/.git" diff HEAD^.. >tmp2 &&
+	sed "1,4d" tmp >tmp_ &&
 	cmp tmp_ tmp2
 '
 
@@ -22,20 +22,20 @@ test_expect_success 'generate diff for initial commit' '
 '
 
 test_expect_success 'compare with output of git-diff-tree(1)' '
-	git --git-dir="$PWD/repos/foo/.git" diff-tree -p --no-commit-id --root "$root" >tmp2
-	sed "1,4d" tmp >tmp_
+	git --git-dir="$PWD/repos/foo/.git" diff-tree -p --no-commit-id --root "$root" >tmp2 &&
+	sed "1,4d" tmp >tmp_ &&
 	cmp tmp_ tmp2
 '
 
 test_expect_success 'generate diff for multiple commits' '
-	id=$(git --git-dir="$PWD/repos/foo/.git" rev-parse HEAD)
-	id2=$(git --git-dir="$PWD/repos/foo/.git" rev-parse HEAD~3)
+	id=$(git --git-dir="$PWD/repos/foo/.git" rev-parse HEAD) &&
+	id2=$(git --git-dir="$PWD/repos/foo/.git" rev-parse HEAD~3) &&
 	cgit_query "url=foo/rawdiff&id=$id&id2=$id2" >tmp
 '
 
 test_expect_success 'compare with output of git-diff(1)' '
-	git --git-dir="$PWD/repos/foo/.git" diff HEAD~3..HEAD >tmp2
-	sed "1,4d" tmp >tmp_
+	git --git-dir="$PWD/repos/foo/.git" diff HEAD~3..HEAD >tmp2 &&
+	sed "1,4d" tmp >tmp_ &&
 	cmp tmp_ tmp2
 '
 
