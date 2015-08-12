@@ -303,7 +303,8 @@ void cgit_plain_link(const char *name, const char *title, const char *class,
 
 void cgit_log_link(const char *name, const char *title, const char *class,
 		   const char *head, const char *rev, const char *path,
-		   int ofs, const char *grep, const char *pattern, int showmsg)
+		   int ofs, const char *grep, const char *pattern, int showmsg,
+		   int follow)
 {
 	char *delim;
 
@@ -332,6 +333,11 @@ void cgit_log_link(const char *name, const char *title, const char *class,
 	if (showmsg) {
 		html(delim);
 		html("showmsg=1");
+		delim = "&amp;";
+	}
+	if (follow) {
+		html(delim);
+		html("follow=1");
 	}
 	html("'>");
 	html_txt(name);
@@ -372,6 +378,10 @@ void cgit_commit_link(char *name, const char *title, const char *class,
 		html(delim);
 		html("ignorews=1");
 		delim = "&amp;";
+	}
+	if (ctx.qry.follow) {
+		html(delim);
+		html("follow=1");
 	}
 	html("'>");
 	if (name[0] != '\0')
@@ -429,6 +439,10 @@ void cgit_diff_link(const char *name, const char *title, const char *class,
 		html("ignorews=1");
 		delim = "&amp;";
 	}
+	if (ctx.qry.follow) {
+		html(delim);
+		html("follow=1");
+	}
 	html("'>");
 	html_txt(name);
 	html("</a>");
@@ -469,7 +483,7 @@ static void cgit_self_link(char *name, const char *title, const char *class)
 			      ctx.qry.has_sha1 ? ctx.qry.sha1 : NULL,
 			      ctx.qry.path, ctx.qry.ofs,
 			      ctx.qry.grep, ctx.qry.search,
-			      ctx.qry.showmsg);
+			      ctx.qry.showmsg, ctx.qry.follow);
 	else if (!strcmp(ctx.qry.page, "commit"))
 		cgit_commit_link(name, title, class, ctx.qry.head,
 				 ctx.qry.has_sha1 ? ctx.qry.sha1 : NULL,
@@ -945,7 +959,7 @@ void cgit_print_pageheader(void)
 			       ctx.qry.sha1, NULL);
 		cgit_log_link("log", NULL, hc("log"), ctx.qry.head,
 			      NULL, ctx.qry.vpath, 0, NULL, NULL,
-			      ctx.qry.showmsg);
+			      ctx.qry.showmsg, ctx.qry.follow);
 		cgit_tree_link("tree", NULL, hc("tree"), ctx.qry.head,
 			       ctx.qry.sha1, ctx.qry.vpath);
 		cgit_commit_link("commit", NULL, hc("commit"),
@@ -993,6 +1007,14 @@ void cgit_print_pageheader(void)
 		html("<div class='path'>");
 		html("path: ");
 		cgit_print_path_crumbs(ctx.qry.vpath);
+		if (ctx.cfg.enable_follow_links && !strcmp(ctx.qry.page, "log")) {
+			html(" (");
+			ctx.qry.follow = !ctx.qry.follow;
+			cgit_self_link(ctx.qry.follow ? "follow" : "unfollow",
+					NULL, NULL);
+			ctx.qry.follow = !ctx.qry.follow;
+			html(")");
+		}
 		html("</div>");
 	}
 	html("<div class='content'>");

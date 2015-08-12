@@ -166,7 +166,7 @@ static int ls_item(const unsigned char *sha1, struct strbuf *base,
 	html("<td>");
 	cgit_log_link("log", NULL, "button", ctx.qry.head,
 		      walk_tree_ctx->curr_rev, fullpath.buf, 0, NULL, NULL,
-		      ctx.qry.showmsg);
+		      ctx.qry.showmsg, 0);
 	if (ctx.repo->max_stats)
 		cgit_stats_link("stats", NULL, "button", ctx.qry.head,
 				fullpath.buf);

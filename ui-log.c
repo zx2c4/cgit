@@ -12,7 +12,7 @@
 #include "ui-shared.h"
 #include "argv-array.h"
 
-static int files, add_lines, rem_lines;
+static int files, add_lines, rem_lines, lines_counted;
 
 /*
  * The list of available column colors in the commit graph.
@@ -67,7 +67,7 @@ void show_commit_decorations(struct commit *commit)
 			strncpy(buf, deco->name + 11, sizeof(buf) - 1);
 			cgit_log_link(buf, NULL, "branch-deco", buf, NULL,
 				      ctx.qry.vpath, 0, NULL, NULL,
-				      ctx.qry.showmsg);
+				      ctx.qry.showmsg, 0);
 		}
 		else if (starts_with(deco->name, "tag: refs/tags/")) {
 			strncpy(buf, deco->name + 15, sizeof(buf) - 1);
@@ -84,7 +84,7 @@ void show_commit_decorations(struct commit *commit)
 			cgit_log_link(buf, NULL, "remote-deco", NULL,
 				      sha1_to_hex(commit->object.sha1),
 				      ctx.qry.vpath, 0, NULL, NULL,
-				      ctx.qry.showmsg);
+				      ctx.qry.showmsg, 0);
 		}
 		else {
 			strncpy(buf, deco->name, sizeof(buf) - 1);
@@ -96,6 +96,74 @@ next:
 		deco = deco->next;
 	}
 	html("</span>");
+}
+
+static void handle_rename(struct diff_filepair *pair)
+{
+	/*
+	 * After we have seen a rename, we generate links to the previous
+	 * name of the file so that commit & diff views get fed the path
+	 * that is correct for the commit they are showing, avoiding the
+	 * need to walk the entire history leading back to every commit we
+	 * show in order detect renames.
+	 */
+	if (0 != strcmp(ctx.qry.vpath, pair->two->path)) {
+		free(ctx.qry.vpath);
+		ctx.qry.vpath = xstrdup(pair->two->path);
+	}
+	inspect_files(pair);
+}
+
+static int show_commit(struct commit *commit, struct rev_info *revs)
+{
+	struct commit_list *parents = commit->parents;
+	struct commit *parent;
+	int found = 0, saved_fmt;
+	unsigned saved_flags = revs->diffopt.flags;
+
+
+	/* Always show if we're not in "follow" mode with a single file. */
+	if (!ctx.qry.follow)
+		return 1;
+
+	/*
+	 * In "follow" mode, we don't show merges.  This is consistent with
+	 * "git log --follow -- <file>".
+	 */
+	if (parents && parents->next)
+		return 0;
+
+	/*
+	 * If this is the root commit, do what rev_info tells us.
+	 */
+	if (!parents)
+		return revs->show_root_diff;
+
+	/* When we get here we have precisely one parent. */
+	parent = parents->item;
+	parse_commit(parent);
+
+	files = 0;
+	add_lines = 0;
+	rem_lines = 0;
+
+	DIFF_OPT_SET(&revs->diffopt, RECURSIVE);
+	diff_tree_sha1(parent->tree->object.sha1,
+		       commit->tree->object.sha1,
+		       "", &revs->diffopt);
+	diffcore_std(&revs->diffopt);
+
+	found = !diff_queue_is_empty();
+	saved_fmt = revs->diffopt.output_format;
+	revs->diffopt.output_format = DIFF_FORMAT_CALLBACK;
+	revs->diffopt.format_callback = cgit_diff_tree_cb;
+	revs->diffopt.format_callback_data = handle_rename;
+	diff_flush(&revs->diffopt);
+	revs->diffopt.output_format = saved_fmt;
+	revs->diffopt.flags = saved_flags;
+
+	lines_counted = 1;
+	return found;
 }
 
 static void print_commit(struct commit *commit, struct rev_info *revs)
@@ -177,7 +245,8 @@ static void print_commit(struct commit *commit, struct rev_info *revs)
 		cgit_print_age(commit->date, TM_WEEK * 2, FMT_SHORTDATE);
 	}
 
-	if (ctx.repo->enable_log_filecount || ctx.repo->enable_log_linecount) {
+	if (!lines_counted && (ctx.repo->enable_log_filecount ||
+			       ctx.repo->enable_log_linecount)) {
 		files = 0;
 		add_lines = 0;
 		rem_lines = 0;
@@ -325,7 +394,17 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 			}
 		}
 	}
-	if (commit_graph) {
+
+	if (!path || !ctx.cfg.enable_follow_links) {
+		/*
+		 * If we don't have a path, "follow" is a no-op so make sure
+		 * the variable is set to false to avoid needing to check
+		 * both this and whether we have a path everywhere.
+		 */
+		ctx.qry.follow = 0;
+	}
+
+	if (commit_graph && !ctx.qry.follow) {
 		argv_array_push(&rev_argv, "--graph");
 		argv_array_push(&rev_argv, "--color");
 		graph_set_column_colors(column_colors_html,
@@ -337,6 +416,8 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 	else if (commit_sort == 2)
 		argv_array_push(&rev_argv, "--topo-order");
 
+	if (path && ctx.qry.follow)
+		argv_array_push(&rev_argv, "--follow");
 	argv_array_push(&rev_argv, "--");
 	if (path)
 		argv_array_push(&rev_argv, path);
@@ -347,10 +428,17 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 	rev.verbose_header = 1;
 	rev.show_root_diff = 0;
 	rev.ignore_missing = 1;
+	rev.simplify_history = 1;
 	setup_revisions(rev_argv.argc, rev_argv.argv, &rev, NULL);
 	load_ref_decorations(DECORATE_FULL_REFS);
 	rev.show_decorations = 1;
 	rev.grep_filter.regflags |= REG_ICASE;
+
+	rev.diffopt.detect_rename = 1;
+	rev.diffopt.rename_limit = ctx.cfg.renamelimit;
+	if (ctx.qry.ignorews)
+		DIFF_XDL_SET(&rev.diffopt, IGNORE_WHITESPACE);
+
 	compile_grep_patterns(&rev.grep_filter);
 	prepare_revision_walk(&rev);
 
@@ -368,11 +456,12 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 		cgit_log_link(ctx.qry.showmsg ? "Collapse" : "Expand", NULL,
 			      NULL, ctx.qry.head, ctx.qry.sha1,
 			      ctx.qry.vpath, ctx.qry.ofs, ctx.qry.grep,
-			      ctx.qry.search, ctx.qry.showmsg ? 0 : 1);
+			      ctx.qry.search, ctx.qry.showmsg ? 0 : 1,
+			      ctx.qry.follow);
 		html(")");
 	}
 	html("</th><th class='left'>Author</th>");
-	if (commit_graph)
+	if (rev.graph)
 		html("<th class='left'>Age</th>");
 	if (ctx.repo->enable_log_filecount) {
 		html("<th class='left'>Files</th>");
@@ -388,13 +477,30 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 		ofs = 0;
 
 	for (i = 0; i < ofs && (commit = get_revision(&rev)) != NULL; i++) {
+		if (show_commit(commit, &rev))
+			i++;
 		free_commit_buffer(commit);
 		free_commit_list(commit->parents);
 		commit->parents = NULL;
 	}
 
 	for (i = 0; i < cnt && (commit = get_revision(&rev)) != NULL; i++) {
-		print_commit(commit, &rev);
+		/*
+		 * In "follow" mode, we must count the files and lines the
+		 * first time we invoke diff on a given commit, and we need
+		 * to do that to see if the commit touches the path we care
+		 * about, so we do it in show_commit.  Hence we must clear
+		 * lines_counted here.
+		 *
+		 * This has the side effect of avoiding running diff twice
+		 * when we are both following renames and showing file
+		 * and/or line counts.
+		 */
+		lines_counted = 0;
+		if (show_commit(commit, &rev)) {
+			i++;
+			print_commit(commit, &rev);
+		}
 		free_commit_buffer(commit);
 		free_commit_list(commit->parents);
 		commit->parents = NULL;
@@ -406,7 +512,8 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 			cgit_log_link("[prev]", NULL, NULL, ctx.qry.head,
 				      ctx.qry.sha1, ctx.qry.vpath,
 				      ofs - cnt, ctx.qry.grep,
-				      ctx.qry.search, ctx.qry.showmsg);
+				      ctx.qry.search, ctx.qry.showmsg,
+				      ctx.qry.follow);
 			html("</li>");
 		}
 		if ((commit = get_revision(&rev)) != NULL) {
@@ -414,14 +521,16 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 			cgit_log_link("[next]", NULL, NULL, ctx.qry.head,
 				      ctx.qry.sha1, ctx.qry.vpath,
 				      ofs + cnt, ctx.qry.grep,
-				      ctx.qry.search, ctx.qry.showmsg);
+				      ctx.qry.search, ctx.qry.showmsg,
+				      ctx.qry.follow);
 			html("</li>");
 		}
 		html("</ul>");
 	} else if ((commit = get_revision(&rev)) != NULL) {
 		htmlf("<tr class='nohover'><td colspan='%d'>", columns);
 		cgit_log_link("[...]", NULL, NULL, ctx.qry.head, NULL,
-			      ctx.qry.vpath, 0, NULL, NULL, ctx.qry.showmsg);
+			      ctx.qry.vpath, 0, NULL, NULL, ctx.qry.showmsg,
+			      ctx.qry.follow);
 		html("</td></tr>\n");
 	}
 

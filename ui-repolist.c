@@ -330,7 +330,7 @@ void cgit_print_repolist(void)
 			html("<td>");
 			cgit_summary_link("summary", NULL, "button", NULL);
 			cgit_log_link("log", NULL, "button", NULL, NULL, NULL,
-				      0, NULL, NULL, ctx.qry.showmsg);
+				      0, NULL, NULL, ctx.qry.showmsg, 0);
 			cgit_tree_link("tree", NULL, "button", NULL, NULL, NULL);
 			html("</td>");
 		}

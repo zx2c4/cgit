@@ -150,6 +150,10 @@ enable-filter-overrides::
 	Flag which, when set to "1", allows all filter settings to be
 	overridden in repository-specific cgitrc files. Default value: none.
 
+enable-follow-links::
+	Flag which, when set to "1", allows users to follow a file in the log
+	view.  Default value: "0".
+
 enable-http-clone::
 	If set to "1", cgit will act as an dumb HTTP endpoint for git clones.
 	You can add "http://$HTTP_HOST$SCRIPT_NAME/$CGIT_REPO_URL" to clone-url
