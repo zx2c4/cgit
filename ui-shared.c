@@ -689,6 +689,14 @@ void cgit_print_http_headers(void)
 		exit(0);
 }
 
+void cgit_redirect(const char *url, bool permanent)
+{
+	htmlf("Status: %d %s\n", permanent ? 301 : 302, permanent ? "Moved" : "Found");
+	htmlf("Location: %s\n", url);
+	htmlf("\n");
+	exit(0);
+}
+
 static void print_rel_vcs_link(const char *url)
 {
 	html("<link rel='vcs-git' href='");

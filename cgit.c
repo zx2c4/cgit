@@ -742,6 +742,9 @@ static void process_request(void)
 	if (ctx.repo && prepare_repo_cmd())
 		return;
 
+	if (cmd->pre)
+		cmd->pre();
+
 	if (cmd->want_layout) {
 		cgit_print_http_headers();
 		cgit_print_docstart();
