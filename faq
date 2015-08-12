@@ -26,3 +26,16 @@ the .git directory.
 A less likely cause is that the repo is, infact, not a valid repo. Try
 to run 'git show' in the offending repo to see if git also thinks your
 repo has issues.
+
+
+### Why is the idle time for my repository wrong?
+
+By default CGit uses the modification time of the default branch's ref
+file as a quick method of determining when the repository was last
+changed.  If you primarily work on other branches then this work will
+not be reflected in the idle time.
+
+You can use a post-receive hook to run a script that tells CGit the
+correct modification time by writing to ``info/web/last-modified``.  An
+example is provided in the CGit repository at
+``contrib/hooks/post-receive.agefile``.
