@@ -604,19 +604,24 @@ void cgit_submodule_link(const char *class, char *path, const char *rev)
 		path[len - 1] = tail;
 }
 
-void cgit_print_date(time_t secs, const char *format, int local_time)
+static const char *fmt_date(time_t secs, const char *format, int local_time)
 {
-	char buf[64];
+	static char buf[64];
 	struct tm *time;
 
 	if (!secs)
-		return;
+		return "";
 	if (local_time)
 		time = localtime(&secs);
 	else
 		time = gmtime(&secs);
 	strftime(buf, sizeof(buf)-1, format, time);
-	html_txt(buf);
+	return buf;
+}
+
+void cgit_print_date(time_t secs, const char *format, int local_time)
+{
+	html_txt(fmt_date(secs, format, local_time));
 }
 
 static void print_rel_date(time_t t, double value,
