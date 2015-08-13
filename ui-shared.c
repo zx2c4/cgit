@@ -627,17 +627,8 @@ void cgit_print_date(time_t secs, const char *format, int local_time)
 static void print_rel_date(time_t t, double value,
 	const char *class, const char *suffix)
 {
-	char buf[64];
-	struct tm *time;
-
-	if (ctx.cfg.local_time)
-		time = localtime(&t);
-	else
-		time = gmtime(&t);
-	strftime(buf, sizeof(buf) - 1, FMT_LONGDATE, time);
-
 	htmlf("<span class='%s' title='", class);
-	html_attr(buf);
+	html_attr(fmt_date(t, FMT_LONGDATE, ctx.cfg.local_time));
 	htmlf("'>%.0f %s</span>", value, suffix);
 }
 
