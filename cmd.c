@@ -46,7 +46,10 @@ static void about_fn(void)
 
 static void about_pre(void)
 {
-	if (ctx.repo && !ctx.qry.path && ctx.qry.url[strlen(ctx.qry.url) - 1] != '/')
+	if (ctx.repo &&
+	    !ctx.qry.path &&
+	    ctx.qry.url[strlen(ctx.qry.url) - 1] != '/' &&
+	    ctx.env.path_info[strlen(ctx.env.path_info) - 1] != '/')
 		cgit_redirect(fmtalloc("%s/", cgit_currenturl()), true);
 }
 
