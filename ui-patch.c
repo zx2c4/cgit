@@ -25,21 +25,25 @@ void cgit_print_patch(const char *new_rev, const char *old_rev,
 		new_rev = ctx.qry.head;
 
 	if (get_sha1(new_rev, new_rev_sha1)) {
+		cgit_print_http_headers();
 		cgit_print_error("Bad object id: %s", new_rev);
 		return;
 	}
 	commit = lookup_commit_reference(new_rev_sha1);
 	if (!commit) {
+		cgit_print_http_headers();
 		cgit_print_error("Bad commit reference: %s", new_rev);
 		return;
 	}
 
 	if (old_rev) {
 		if (get_sha1(old_rev, old_rev_sha1)) {
+			cgit_print_http_headers();
 			cgit_print_error("Bad object id: %s", old_rev);
 			return;
 		}
 		if (!lookup_commit_reference(old_rev_sha1)) {
+			cgit_print_http_headers();
 			cgit_print_error("Bad commit reference: %s", old_rev);
 			return;
 		}
