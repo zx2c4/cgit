@@ -644,7 +644,11 @@ void cgit_print_age(time_t t, time_t max_relative, const char *format)
 		secs = 0;
 
 	if (secs > max_relative && max_relative >= 0) {
+		html("<span title='");
+		html_attr(fmt_date(t, FMT_LONGDATE, ctx.cfg.local_time));
+		html("'>");
 		cgit_print_date(t, format, ctx.cfg.local_time);
+		html("</span>");
 		return;
 	}
 
