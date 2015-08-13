@@ -8,16 +8,12 @@
 
 #include "cgit.h"
 #include "html.h"
-#include <dlfcn.h>
 #ifndef NO_LUA
+#include <dlfcn.h>
 #include <lua.h>
 #include <lualib.h>
 #include <lauxlib.h>
 #endif
-
-static ssize_t (*libc_write)(int fd, const void *buf, size_t count);
-static ssize_t (*filter_write)(struct cgit_filter *base, const void *buf, size_t count) = NULL;
-static struct cgit_filter *current_write_filter = NULL;
 
 static inline void reap_filter(struct cgit_filter *filter)
 {
@@ -41,37 +37,6 @@ void cgit_cleanup_filters(void)
 		reap_filter(cgit_repolist.repos[i].email_filter);
 		reap_filter(cgit_repolist.repos[i].owner_filter);
 	}
-}
-
-void cgit_init_filters(void)
-{
-	libc_write = dlsym(RTLD_NEXT, "write");
-	if (!libc_write)
-		die("Could not locate libc's write function");
-}
-
-ssize_t write(int fd, const void *buf, size_t count)
-{
-	if (fd != STDOUT_FILENO || !filter_write)
-		return libc_write(fd, buf, count);
-	return filter_write(current_write_filter, buf, count);
-}
-
-static inline void hook_write(struct cgit_filter *filter, ssize_t (*new_write)(struct cgit_filter *base, const void *buf, size_t count))
-{
-	/* We want to avoid buggy nested patterns. */
-	assert(filter_write == NULL);
-	assert(current_write_filter == NULL);
-	current_write_filter = filter;
-	filter_write = new_write;
-}
-
-static inline void unhook_write(void)
-{
-	assert(filter_write != NULL);
-	assert(current_write_filter != NULL);
-	filter_write = NULL;
-	current_write_filter = NULL;
 }
 
 static int open_exec_filter(struct cgit_filter *base, va_list ap)
@@ -170,7 +135,48 @@ void cgit_exec_filter_init(struct cgit_exec_filter *filter, char *cmd, char **ar
 	filter->base.argument_count = 0;
 }
 
+#ifdef NO_LUA
+void cgit_init_filters(void)
+{
+}
+#endif
+
 #ifndef NO_LUA
+static ssize_t (*libc_write)(int fd, const void *buf, size_t count);
+static ssize_t (*filter_write)(struct cgit_filter *base, const void *buf, size_t count) = NULL;
+static struct cgit_filter *current_write_filter = NULL;
+
+void cgit_init_filters(void)
+{
+	libc_write = dlsym(RTLD_NEXT, "write");
+	if (!libc_write)
+		die("Could not locate libc's write function");
+}
+
+ssize_t write(int fd, const void *buf, size_t count)
+{
+	if (fd != STDOUT_FILENO || !filter_write)
+		return libc_write(fd, buf, count);
+	return filter_write(current_write_filter, buf, count);
+}
+
+static inline void hook_write(struct cgit_filter *filter, ssize_t (*new_write)(struct cgit_filter *base, const void *buf, size_t count))
+{
+	/* We want to avoid buggy nested patterns. */
+	assert(filter_write == NULL);
+	assert(current_write_filter == NULL);
+	current_write_filter = filter;
+	filter_write = new_write;
+}
+
+static inline void unhook_write(void)
+{
+	assert(filter_write != NULL);
+	assert(current_write_filter != NULL);
+	filter_write = NULL;
+	current_write_filter = NULL;
+}
+
 struct lua_filter {
 	struct cgit_filter base;
 	char *script_file;
