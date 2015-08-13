@@ -6,7 +6,6 @@
  *   (see COPYING for full license text)
  */
 
-#include <ctype.h>
 #include "cgit.h"
 #include "ui-tree.h"
 #include "html.h"

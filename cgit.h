@@ -25,6 +25,9 @@
 #include <notes.h>
 #include <graph.h>
 
+/* Add isgraph(x) to Git's sane ctype support (see git-compat-util.h) */
+#undef isgraph
+#define isgraph(x) (isprint((x)) && !isspace((x)))
 
 /*
  * Dateformats used on misc. pages
