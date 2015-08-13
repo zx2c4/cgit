@@ -6,8 +6,7 @@
  *   (see COPYING for full license text)
  */
 
-#include <ctype.h>
-#include <stdio.h>
+#include <git-compat-util.h>
 #include "configfile.h"
 
 static int next_char(FILE *f)
