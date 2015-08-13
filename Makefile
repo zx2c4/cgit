@@ -33,7 +33,7 @@ DOC_PDF  = $(patsubst %.txt,%.pdf,$(MAN_TXT))
 
 #-include config.mak
 
-include git/config.mak.uname
+-include git/config.mak.uname
 #
 # Let the user override the above settings.
 #
