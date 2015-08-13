@@ -1,8 +1,6 @@
 #ifndef UI_SHARED_H
 #define UI_SHARED_H
 
-#include <stdbool.h>
-
 extern const char *cgit_httpscheme();
 extern const char *cgit_hosturl();
 extern const char *cgit_rooturl();

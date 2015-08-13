@@ -3,6 +3,8 @@
 
 
 #include <git-compat-util.h>
+#include <stdbool.h>
+
 #include <cache.h>
 #include <grep.h>
 #include <object.h>
