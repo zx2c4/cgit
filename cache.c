@@ -13,12 +13,12 @@
  *
  */
 
-#ifdef HAVE_LINUX_SENDFILE
-#include <sys/sendfile.h>
-#endif
 #include "cgit.h"
 #include "cache.h"
 #include "html.h"
+#ifdef HAVE_LINUX_SENDFILE
+#include <sys/sendfile.h>
+#endif
 
 #define CACHE_BUFSIZE (1024 * 4)
 
