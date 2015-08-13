@@ -8,12 +8,6 @@
 
 #include "cgit.h"
 #include "html.h"
-#include <unistd.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdarg.h>
-#include <string.h>
-#include <errno.h>
 
 /* Percent-encoding of each character, except: a-zA-Z0-9!$()*,./:;@- */
 static const char* url_escape_table[256] = {

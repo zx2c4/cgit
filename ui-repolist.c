@@ -10,7 +10,6 @@
 #include "ui-repolist.h"
 #include "html.h"
 #include "ui-shared.h"
-#include <strings.h>
 
 static time_t read_agefile(char *path)
 {

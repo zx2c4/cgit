@@ -6,7 +6,6 @@
  *   (see COPYING for full license text)
  */
 
-#include <stdio.h>
 #include "cgit.h"
 #include "ui-plain.h"
 #include "html.h"

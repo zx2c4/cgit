@@ -8,13 +8,7 @@
 
 #include "cgit.h"
 #include "html.h"
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <unistd.h>
-#include <string.h>
-#include <stdlib.h>
 #include <dlfcn.h>
-#include <errno.h>
 #ifndef NO_LUA
 #include <lua.h>
 #include <lualib.h>

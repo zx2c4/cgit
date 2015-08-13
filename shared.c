@@ -7,7 +7,6 @@
  */
 
 #include "cgit.h"
-#include <stdio.h>
 
 struct cgit_repolist cgit_repolist;
 struct cgit_context ctx;

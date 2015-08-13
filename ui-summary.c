@@ -13,7 +13,6 @@
 #include "ui-refs.h"
 #include "ui-blob.h"
 #include "ui-shared.h"
-#include <libgen.h>
 
 static int urls;
 
