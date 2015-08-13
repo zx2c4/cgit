@@ -706,8 +706,7 @@ void cgit_print_http_headers(void)
 void cgit_redirect(const char *url, bool permanent)
 {
 	htmlf("Status: %d %s\n", permanent ? 301 : 302, permanent ? "Moved" : "Found");
-	htmlf("Location: %s\n", url);
-	htmlf("\n");
+	htmlf("Location: %s\n\n", url);
 	exit(0);
 }
 
