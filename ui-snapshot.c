@@ -180,21 +180,6 @@ out:
 	return result ? strbuf_detach(&snapshot, NULL) : NULL;
 }
 
-__attribute__((format (printf, 1, 2)))
-static void show_error(char *fmt, ...)
-{
-	va_list ap;
-
-	ctx.page.mimetype = "text/html";
-	cgit_print_http_headers();
-	cgit_print_docstart();
-	cgit_print_pageheader();
-	va_start(ap, fmt);
-	cgit_vprint_error(fmt, ap);
-	va_end(ap);
-	cgit_print_docend();
-}
-
 void cgit_print_snapshot(const char *head, const char *hex,
 			 const char *filename, int dwim)
 {
@@ -202,13 +187,15 @@ void cgit_print_snapshot(const char *head, const char *hex,
 	char *prefix = NULL;
 
 	if (!filename) {
-		show_error("No snapshot name specified");
+		cgit_print_error_page(400, "Bad request",
+				"No snapshot name specified");
 		return;
 	}
 
 	f = get_format(filename);
 	if (!f) {
-		show_error("Unsupported snapshot format: %s", filename);
+		cgit_print_error_page(400, "Bad request",
+				"Unsupported snapshot format: %s", filename);
 		return;
 	}
 
