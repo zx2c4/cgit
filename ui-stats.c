@@ -372,11 +372,13 @@ void cgit_show_stats(void)
 
 	i = cgit_find_stats_period(code, &period);
 	if (!i) {
-		cgit_print_error("Unknown statistics type: %c", code[0]);
+		cgit_print_error_page(404, "Not found",
+			"Unknown statistics type: %c", code[0]);
 		return;
 	}
 	if (i > ctx.repo->max_stats) {
-		cgit_print_error("Statistics type disabled: %s", period->name);
+		cgit_print_error_page(400, "Bad request",
+			"Statistics type disabled: %s", period->name);
 		return;
 	}
 	authors = collect_stats(period);
@@ -387,6 +389,7 @@ void cgit_show_stats(void)
 	if (!top)
 		top = 10;
 
+	cgit_print_layout_start();
 	html("<div class='cgit-panel'>");
 	html("<b>stat options</b>");
 	html("<form method='get' action=''>");
@@ -421,5 +424,6 @@ void cgit_show_stats(void)
 	}
 	html("</h2>");
 	print_authors(&authors, top, period);
+	cgit_print_layout_end();
 }
 
