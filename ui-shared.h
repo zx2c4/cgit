@@ -54,6 +54,9 @@ extern void cgit_object_link(struct object *obj);
 extern void cgit_submodule_link(const char *class, char *path,
 				const char *rev);
 
+extern void cgit_print_layout_start(void);
+extern void cgit_print_layout_end(void);
+
 __attribute__((format (printf,1,2)))
 extern void cgit_print_error(const char *fmt, ...);
 __attribute__((format (printf,1,0)))

@@ -802,6 +802,18 @@ void cgit_print_error_page(int code, const char *msg, const char *fmt, ...)
 	cgit_print_docend();
 }
 
+void cgit_print_layout_start(void)
+{
+	cgit_print_http_headers();
+	cgit_print_docstart();
+	cgit_print_pageheader();
+}
+
+void cgit_print_layout_end(void)
+{
+	cgit_print_docend();
+}
+
 static void add_clone_urls(void (*fn)(const char *), char *txt, char *suffix)
 {
 	struct strbuf **url_list = strbuf_split_str(txt, ' ', 0);
