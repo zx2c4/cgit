@@ -66,13 +66,13 @@ static int print_object(const unsigned char *sha1, const char *path)
 
 	type = sha1_object_info(sha1, &size);
 	if (type == OBJ_BAD) {
-		html_status(404, "Not found", 0);
+		cgit_print_error_page(404, "Not found", "Not found");
 		return 0;
 	}
 
 	buf = read_sha1_file(sha1, &type, &size);
 	if (!buf) {
-		html_status(404, "Not found", 0);
+		cgit_print_error_page(404, "Not found", "Not found");
 		return 0;
 	}
 	ctx.page.mimetype = NULL;
@@ -225,12 +225,12 @@ void cgit_print_plain(void)
 		rev = ctx.qry.head;
 
 	if (get_sha1(rev, sha1)) {
-		html_status(404, "Not found", 0);
+		cgit_print_error_page(404, "Not found", "Not found");
 		return;
 	}
 	commit = lookup_commit_reference(sha1);
 	if (!commit || parse_commit(commit)) {
-		html_status(404, "Not found", 0);
+		cgit_print_error_page(404, "Not found", "Not found");
 		return;
 	}
 	if (!path_items.match) {
@@ -243,7 +243,7 @@ void cgit_print_plain(void)
 		walk_tree_ctx.match_baselen = basedir_len(path_items.match);
 	read_tree_recursive(commit->tree, "", 0, 0, &paths, walk_tree, &walk_tree_ctx);
 	if (!walk_tree_ctx.match)
-		html_status(404, "Not found", 0);
+		cgit_print_error_page(404, "Not found", "Not found");
 	else if (walk_tree_ctx.match == 2)
 		print_dir_tail();
 }
