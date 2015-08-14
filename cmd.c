@@ -142,7 +142,7 @@ static void tree_fn(void)
 }
 
 #define def_cmd(name, want_repo, want_vpath, is_clone) \
-	{#name, name##_fn, NULL, want_repo, want_vpath, is_clone}
+	{#name, name##_fn, want_repo, want_vpath, is_clone}
 
 struct cgit_cmd *cgit_get_cmd(void)
 {
