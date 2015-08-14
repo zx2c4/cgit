@@ -614,13 +614,8 @@ static int prepare_repo_cmd(void)
 	if (get_sha1(ctx.qry.head, sha1)) {
 		char *tmp = xstrdup(ctx.qry.head);
 		ctx.qry.head = ctx.repo->defbranch;
-		ctx.page.status = 404;
-		ctx.page.statusmsg = "Not found";
-		cgit_print_http_headers();
-		cgit_print_docstart();
-		cgit_print_pageheader();
-		cgit_print_error("Invalid branch: %s", tmp);
-		cgit_print_docend();
+		cgit_print_error_page(404, "Not found",
+				"Invalid branch: %s", tmp);
 		free(tmp);
 		return 1;
 	}
@@ -713,18 +708,13 @@ static void process_request(void)
 	cmd = cgit_get_cmd();
 	if (!cmd) {
 		ctx.page.title = "cgit error";
-		ctx.page.status = 404;
-		ctx.page.statusmsg = "Not found";
-		cgit_print_http_headers();
-		cgit_print_docstart();
-		cgit_print_pageheader();
-		cgit_print_error("Invalid request");
-		cgit_print_docend();
+		cgit_print_error_page(404, "Not found", "Invalid request");
 		return;
 	}
 
 	if (!ctx.cfg.enable_http_clone && cmd->is_clone) {
-		html_status(404, "Not found", 0);
+		ctx.page.title = "cgit error";
+		cgit_print_error_page(404, "Not found", "Invalid request");
 		return;
 	}
 
@@ -735,11 +725,8 @@ static void process_request(void)
 	ctx.qry.vpath = cmd->want_vpath ? ctx.qry.path : NULL;
 
 	if (cmd->want_repo && !ctx.repo) {
-		cgit_print_http_headers();
-		cgit_print_docstart();
-		cgit_print_pageheader();
-		cgit_print_error("No repository selected");
-		cgit_print_docend();
+		cgit_print_error_page(400, "Bad request",
+				"No repository selected");
 		return;
 	}
 
