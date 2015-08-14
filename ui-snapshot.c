@@ -213,7 +213,7 @@ void cgit_print_snapshot(const char *head, const char *hex,
 	if (!hex && dwim) {
 		hex = get_ref_from_filename(ctx.repo->url, filename, f);
 		if (hex == NULL) {
-			html_status(404, "Not found", 0);
+			cgit_print_error_page(404, "Not found", "Not found");
 			return;
 		}
 		prefix = xstrdup(filename);
