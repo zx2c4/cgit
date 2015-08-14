@@ -48,6 +48,7 @@ void cgit_print_summary(void)
 	if (ctx.repo->enable_log_linecount)
 		columns++;
 
+	cgit_print_layout_start();
 	html("<table summary='repository info' class='list nowrap'>");
 	cgit_print_branches(ctx.cfg.summary_branches);
 	htmlf("<tr class='nohover'><td colspan='%d'>&nbsp;</td></tr>", columns);
@@ -60,6 +61,7 @@ void cgit_print_summary(void)
 	urls = 0;
 	cgit_add_clone_urls(print_url);
 	html("</table>");
+	cgit_print_layout_end();
 }
 
 /* The caller must free the return value. */
