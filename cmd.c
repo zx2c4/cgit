@@ -171,7 +171,7 @@ struct cgit_cmd *cgit_get_cmd(void)
 		def_cmd(snapshot, 1, 0, 0, 0),
 		def_cmd(stats, 1, 0, 1, 0),
 		def_cmd(summary, 1, 0, 0, 0),
-		def_cmd(tag, 1, 1, 0, 0),
+		def_cmd(tag, 1, 0, 0, 0),
 		def_cmd(tree, 1, 1, 1, 0),
 	};
 	int i;
