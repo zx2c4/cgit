@@ -145,34 +145,34 @@ static void tree_fn(void)
 	cgit_print_tree(ctx.qry.sha1, ctx.qry.path);
 }
 
-#define def_cmp(name, want_repo, want_layout, want_vpath, is_clone) \
-	{#name, name##_fn, name##_pre, want_repo, want_layout, want_vpath, is_clone}
-#define def_cmd(name, want_repo, want_layout, want_vpath, is_clone) \
-	{#name, name##_fn, NULL, want_repo, want_layout, want_vpath, is_clone}
+#define def_cmp(name, want_repo, want_vpath, is_clone) \
+	{#name, name##_fn, name##_pre, want_repo, want_vpath, is_clone}
+#define def_cmd(name, want_repo, want_vpath, is_clone) \
+	{#name, name##_fn, NULL, want_repo, want_vpath, is_clone}
 
 struct cgit_cmd *cgit_get_cmd(void)
 {
 	static struct cgit_cmd cmds[] = {
-		def_cmd(HEAD, 1, 0, 0, 1),
-		def_cmd(atom, 1, 0, 0, 0),
-		def_cmp(about, 0, 0, 0, 0),
-		def_cmd(blob, 1, 0, 0, 0),
-		def_cmd(commit, 1, 0, 1, 0),
-		def_cmd(diff, 1, 0, 1, 0),
-		def_cmd(info, 1, 0, 0, 1),
-		def_cmd(log, 1, 0, 1, 0),
-		def_cmd(ls_cache, 0, 0, 0, 0),
-		def_cmd(objects, 1, 0, 0, 1),
-		def_cmd(patch, 1, 0, 1, 0),
-		def_cmd(plain, 1, 0, 0, 0),
-		def_cmd(rawdiff, 1, 0, 1, 0),
-		def_cmd(refs, 1, 0, 0, 0),
-		def_cmd(repolist, 0, 0, 0, 0),
-		def_cmd(snapshot, 1, 0, 0, 0),
-		def_cmd(stats, 1, 0, 1, 0),
-		def_cmd(summary, 1, 0, 0, 0),
-		def_cmd(tag, 1, 0, 0, 0),
-		def_cmd(tree, 1, 0, 1, 0),
+		def_cmd(HEAD, 1, 0, 1),
+		def_cmd(atom, 1, 0, 0),
+		def_cmp(about, 0, 0, 0),
+		def_cmd(blob, 1, 0, 0),
+		def_cmd(commit, 1, 1, 0),
+		def_cmd(diff, 1, 1, 0),
+		def_cmd(info, 1, 0, 1),
+		def_cmd(log, 1, 1, 0),
+		def_cmd(ls_cache, 0, 0, 0),
+		def_cmd(objects, 1, 0, 1),
+		def_cmd(patch, 1, 1, 0),
+		def_cmd(plain, 1, 0, 0),
+		def_cmd(rawdiff, 1, 1, 0),
+		def_cmd(refs, 1, 0, 0),
+		def_cmd(repolist, 0, 0, 0),
+		def_cmd(snapshot, 1, 0, 0),
+		def_cmd(stats, 1, 1, 0),
+		def_cmd(summary, 1, 0, 0),
+		def_cmd(tag, 1, 0, 0),
+		def_cmd(tree, 1, 1, 0),
 	};
 	int i;
 

@@ -736,16 +736,7 @@ static void process_request(void)
 	if (cmd->pre)
 		cmd->pre();
 
-	if (cmd->want_layout) {
-		cgit_print_http_headers();
-		cgit_print_docstart();
-		cgit_print_pageheader();
-	}
-
 	cmd->fn();
-
-	if (cmd->want_layout)
-		cgit_print_docend();
 }
 
 static int cmp_repos(const void *a, const void *b)
