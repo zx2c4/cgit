@@ -126,12 +126,14 @@ void cgit_print_blob(const char *hex, char *path, const char *head, int file_onl
 
 	if (hex) {
 		if (get_sha1_hex(hex, sha1)) {
-			cgit_print_error("Bad hex value: %s", hex);
+			cgit_print_error_page(400, "Bad request",
+					"Bad hex value: %s", hex);
 			return;
 		}
 	} else {
 		if (get_sha1(head, sha1)) {
-			cgit_print_error("Bad ref: %s", head);
+			cgit_print_error_page(404, "Not found",
+					"Bad ref: %s", head);
 			return;
 		}
 	}
@@ -145,13 +147,15 @@ void cgit_print_blob(const char *hex, char *path, const char *head, int file_onl
 	}
 
 	if (type == OBJ_BAD) {
-		cgit_print_error("Bad object name: %s", hex);
+		cgit_print_error_page(404, "Not found",
+				"Bad object name: %s", hex);
 		return;
 	}
 
 	buf = read_sha1_file(sha1, &type, &size);
 	if (!buf) {
-		cgit_print_error("Error reading object %s", hex);
+		cgit_print_error_page(500, "Internal server error",
+				"Error reading object %s", hex);
 		return;
 	}
 
