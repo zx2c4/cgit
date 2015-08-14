@@ -403,19 +403,22 @@ void cgit_print_diff(const char *new_rev, const char *old_rev,
 	if (!new_rev)
 		new_rev = ctx.qry.head;
 	if (get_sha1(new_rev, new_rev_sha1)) {
-		cgit_print_error("Bad object name: %s", new_rev);
+		cgit_print_error_page(404, "Not found",
+			"Bad object name: %s", new_rev);
 		return;
 	}
 	commit = lookup_commit_reference(new_rev_sha1);
 	if (!commit || parse_commit(commit)) {
-		cgit_print_error("Bad commit: %s", sha1_to_hex(new_rev_sha1));
+		cgit_print_error_page(404, "Not found",
+			"Bad commit: %s", sha1_to_hex(new_rev_sha1));
 		return;
 	}
 	new_tree_sha1 = commit->tree->object.sha1;
 
 	if (old_rev) {
 		if (get_sha1(old_rev, old_rev_sha1)) {
-			cgit_print_error("Bad object name: %s", old_rev);
+			cgit_print_error_page(404, "Not found",
+				"Bad object name: %s", old_rev);
 			return;
 		}
 	} else if (commit->parents && commit->parents->item) {
@@ -427,7 +430,8 @@ void cgit_print_diff(const char *new_rev, const char *old_rev,
 	if (!is_null_sha1(old_rev_sha1)) {
 		commit2 = lookup_commit_reference(old_rev_sha1);
 		if (!commit2 || parse_commit(commit2)) {
-			cgit_print_error("Bad commit: %s", sha1_to_hex(old_rev_sha1));
+			cgit_print_error_page(404, "Not found",
+				"Bad commit: %s", sha1_to_hex(old_rev_sha1));
 			return;
 		}
 		old_tree_sha1 = commit2->tree->object.sha1;
@@ -460,8 +464,10 @@ void cgit_print_diff(const char *new_rev, const char *old_rev,
 	difftype = ctx.qry.has_difftype ? ctx.qry.difftype : ctx.cfg.difftype;
 	use_ssdiff = difftype == DIFF_SSDIFF;
 
-	if (show_ctrls)
+	if (show_ctrls) {
+		cgit_print_layout_start();
 		cgit_print_diff_ctrls();
+	}
 
 	/*
 	 * Clicking on a link to a file in the diff stat should show a diff
@@ -489,4 +495,7 @@ void cgit_print_diff(const char *new_rev, const char *old_rev,
 	if (!use_ssdiff)
 		html("</td></tr>");
 	html("</table>");
+
+	if (show_ctrls)
+		cgit_print_layout_end();
 }
