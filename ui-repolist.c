@@ -345,9 +345,12 @@ void cgit_print_repolist(void)
 
 void cgit_print_site_readme(void)
 {
+	cgit_print_layout_start();
 	if (!ctx.cfg.root_readme)
-		return;
+		goto done;
 	cgit_open_filter(ctx.cfg.about_filter, ctx.cfg.root_readme);
 	html_include(ctx.cfg.root_readme);
 	cgit_close_filter(ctx.cfg.about_filter);
+done:
+	cgit_print_layout_end();
 }

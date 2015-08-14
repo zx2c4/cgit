@@ -101,8 +101,9 @@ void cgit_print_repo_readme(char *path)
 	char *filename, *ref;
 	int free_filename = 0;
 
+	cgit_print_layout_start();
 	if (ctx.repo->readme.nr == 0)
-		return;
+		goto done;
 
 	filename = ctx.repo->readme.items[0].string;
 	ref = ctx.repo->readme.items[0].util;
@@ -111,7 +112,7 @@ void cgit_print_repo_readme(char *path)
 		free_filename = 1;
 		filename = append_readme_path(filename, ref, path);
 		if (!filename)
-			return;
+			goto done;
 	}
 
 	/* Print the calculated readme, either from the git repo or from the
@@ -128,4 +129,7 @@ void cgit_print_repo_readme(char *path)
 	html("</div>");
 	if (free_filename)
 		free(filename);
+
+done:
+	cgit_print_layout_end();
 }
