@@ -112,11 +112,13 @@ static int make_snapshot(const struct cgit_snapshot_format *format,
 	unsigned char sha1[20];
 
 	if (get_sha1(hex, sha1)) {
-		cgit_print_error("Bad object id: %s", hex);
+		cgit_print_error_page(404, "Not found",
+				"Bad object id: %s", hex);
 		return 1;
 	}
 	if (!lookup_commit_reference(sha1)) {
-		cgit_print_error("Not a commit reference: %s", hex);
+		cgit_print_error_page(400, "Bad request",
+				"Not a commit reference: %s", hex);
 		return 1;
 	}
 	ctx.page.etag = sha1_to_hex(sha1);
