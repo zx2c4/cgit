@@ -57,13 +57,13 @@ static void send_file(const char *path)
 	if (stat(path, &st)) {
 		switch (errno) {
 		case ENOENT:
-			html_status(404, "Not found", 0);
+			cgit_print_error_page(404, "Not found", "Not found");
 			break;
 		case EACCES:
-			html_status(403, "Forbidden", 0);
+			cgit_print_error_page(403, "Forbidden", "Forbidden");
 			break;
 		default:
-			html_status(400, "Bad request", 0);
+			cgit_print_error_page(400, "Bad request", "Bad request");
 		}
 		return;
 	}
@@ -78,7 +78,7 @@ static void send_file(const char *path)
 void cgit_clone_info(void)
 {
 	if (!ctx.qry.path || strcmp(ctx.qry.path, "refs")) {
-		html_status(400, "Bad request", 0);
+		cgit_print_error_page(400, "Bad request", "Bad request");
 		return;
 	}
 
@@ -91,7 +91,7 @@ void cgit_clone_info(void)
 void cgit_clone_objects(void)
 {
 	if (!ctx.qry.path) {
-		html_status(400, "Bad request", 0);
+		cgit_print_error_page(400, "Bad request", "Bad request");
 		return;
 	}
 
