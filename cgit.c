@@ -733,9 +733,6 @@ static void process_request(void)
 	if (ctx.repo && prepare_repo_cmd())
 		return;
 
-	if (cmd->pre)
-		cmd->pre();
-
 	cmd->fn();
 }
 

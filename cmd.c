@@ -38,19 +38,15 @@ static void atom_fn(void)
 
 static void about_fn(void)
 {
-	if (ctx.repo)
-		cgit_print_repo_readme(ctx.qry.path);
-	else
+	if (ctx.repo) {
+		if (!ctx.qry.path &&
+		    ctx.qry.url[strlen(ctx.qry.url) - 1] != '/' &&
+		    ctx.env.path_info[strlen(ctx.env.path_info) - 1] != '/')
+			cgit_redirect(fmtalloc("%s/", cgit_currenturl()), true);
+		else
+			cgit_print_repo_readme(ctx.qry.path);
+	} else
 		cgit_print_site_readme();
-}
-
-static void about_pre(void)
-{
-	if (ctx.repo &&
-	    !ctx.qry.path &&
-	    ctx.qry.url[strlen(ctx.qry.url) - 1] != '/' &&
-	    ctx.env.path_info[strlen(ctx.env.path_info) - 1] != '/')
-		cgit_redirect(fmtalloc("%s/", cgit_currenturl()), true);
 }
 
 static void blob_fn(void)
@@ -145,8 +141,6 @@ static void tree_fn(void)
 	cgit_print_tree(ctx.qry.sha1, ctx.qry.path);
 }
 
-#define def_cmp(name, want_repo, want_vpath, is_clone) \
-	{#name, name##_fn, name##_pre, want_repo, want_vpath, is_clone}
 #define def_cmd(name, want_repo, want_vpath, is_clone) \
 	{#name, name##_fn, NULL, want_repo, want_vpath, is_clone}
 
@@ -155,7 +149,7 @@ struct cgit_cmd *cgit_get_cmd(void)
 	static struct cgit_cmd cmds[] = {
 		def_cmd(HEAD, 1, 0, 1),
 		def_cmd(atom, 1, 0, 0),
-		def_cmp(about, 0, 0, 0),
+		def_cmd(about, 0, 0, 0),
 		def_cmd(blob, 1, 0, 0),
 		def_cmd(commit, 1, 1, 0),
 		def_cmd(diff, 1, 1, 0),
