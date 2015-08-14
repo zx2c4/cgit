@@ -442,8 +442,10 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 	compile_grep_patterns(&rev.grep_filter);
 	prepare_revision_walk(&rev);
 
-	if (pager)
+	if (pager) {
+		cgit_print_layout_start();
 		html("<table class='list nowrap'>");
+	}
 
 	html("<tr class='nohover'>");
 	if (commit_graph)
@@ -526,6 +528,7 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 			html("</li>");
 		}
 		html("</ul>");
+		cgit_print_layout_end();
 	} else if ((commit = get_revision(&rev)) != NULL) {
 		htmlf("<tr class='nohover'><td colspan='%d'>", columns);
 		cgit_log_link("[...]", NULL, NULL, ctx.qry.head, NULL,

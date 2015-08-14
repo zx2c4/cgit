@@ -160,7 +160,7 @@ struct cgit_cmd *cgit_get_cmd(void)
 		def_cmd(commit, 1, 0, 1, 0),
 		def_cmd(diff, 1, 0, 1, 0),
 		def_cmd(info, 1, 0, 0, 1),
-		def_cmd(log, 1, 1, 1, 0),
+		def_cmd(log, 1, 0, 1, 0),
 		def_cmd(ls_cache, 0, 0, 0, 0),
 		def_cmd(objects, 1, 0, 0, 1),
 		def_cmd(patch, 1, 0, 1, 0),
