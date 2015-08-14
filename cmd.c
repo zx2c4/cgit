@@ -157,7 +157,7 @@ struct cgit_cmd *cgit_get_cmd(void)
 		def_cmd(atom, 1, 0, 0, 0),
 		def_cmp(about, 0, 0, 0, 0),
 		def_cmd(blob, 1, 0, 0, 0),
-		def_cmd(commit, 1, 1, 1, 0),
+		def_cmd(commit, 1, 0, 1, 0),
 		def_cmd(diff, 1, 1, 1, 0),
 		def_cmd(info, 1, 0, 0, 1),
 		def_cmd(log, 1, 1, 1, 0),

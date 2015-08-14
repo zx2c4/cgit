@@ -27,12 +27,14 @@ void cgit_print_commit(char *hex, const char *prefix)
 		hex = ctx.qry.head;
 
 	if (get_sha1(hex, sha1)) {
-		cgit_print_error("Bad object id: %s", hex);
+		cgit_print_error_page(400, "Bad request",
+				"Bad object id: %s", hex);
 		return;
 	}
 	commit = lookup_commit_reference(sha1);
 	if (!commit) {
-		cgit_print_error("Bad commit reference: %s", hex);
+		cgit_print_error_page(404, "Not found",
+				"Bad commit reference: %s", hex);
 		return;
 	}
 	info = cgit_parse_commit(commit);
@@ -41,6 +43,7 @@ void cgit_print_commit(char *hex, const char *prefix)
 
 	load_ref_decorations(DECORATE_FULL_REFS);
 
+	cgit_print_layout_start();
 	cgit_print_diff_ctrls();
 	html("<table summary='commit info' class='commit-info'>\n");
 	html("<tr><th>author</th><td>");
@@ -139,4 +142,5 @@ void cgit_print_commit(char *hex, const char *prefix)
 	}
 	strbuf_release(&notes);
 	cgit_free_commitinfo(info);
+	cgit_print_layout_end();
 }
