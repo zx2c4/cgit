@@ -166,7 +166,7 @@ struct cgit_cmd *cgit_get_cmd(void)
 		def_cmd(patch, 1, 0, 1, 0),
 		def_cmd(plain, 1, 0, 0, 0),
 		def_cmd(rawdiff, 1, 0, 1, 0),
-		def_cmd(refs, 1, 1, 0, 0),
+		def_cmd(refs, 1, 0, 0, 0),
 		def_cmd(repolist, 0, 0, 0, 0),
 		def_cmd(snapshot, 1, 0, 0, 0),
 		def_cmd(stats, 1, 1, 1, 0),

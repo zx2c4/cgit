@@ -236,7 +236,7 @@ void cgit_print_tags(int maxcount)
 
 void cgit_print_refs(void)
 {
-
+	cgit_print_layout_start();
 	html("<table class='list nowrap'>");
 
 	if (ctx.qry.path && starts_with(ctx.qry.path, "heads"))
@@ -249,4 +249,5 @@ void cgit_print_refs(void)
 		cgit_print_tags(0);
 	}
 	html("</table>");
+	cgit_print_layout_end();
 }
