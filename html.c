@@ -121,13 +121,6 @@ void html_vtxtf(const char *format, va_list ap)
 	strbuf_release(&buf);
 }
 
-void html_status(int code, const char *msg, int more_headers)
-{
-	htmlf("Status: %d %s\n", code, msg);
-	if (!more_headers)
-		html("\n");
-}
-
 void html_txt(const char *txt)
 {
 	const char *t = txt;

@@ -18,7 +18,6 @@ extern void html_vtxtf(const char *format, va_list ap);
 __attribute__((format (printf,1,2)))
 extern void html_attrf(const char *format,...);
 
-extern void html_status(int code, const char *msg, int more_headers);
 extern void html_txt(const char *txt);
 extern void html_ntxt(int len, const char *txt);
 extern void html_attr(const char *txt);
