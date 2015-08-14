@@ -391,4 +391,6 @@ extern int readfile(const char *path, char **buf, size_t *size);
 
 extern char *expand_macros(const char *txt);
 
+extern char *get_mimetype_from_file(const char *filename, const char *ext);
+
 #endif /* CGIT_H */

@@ -16,46 +16,6 @@ struct walk_tree_context {
 	int match;
 };
 
-static char *get_mimetype_from_file(const char *filename, const char *ext)
-{
-	static const char *delimiters;
-	char *result;
-	FILE *fd;
-	char line[1024];
-	char *mimetype;
-	char *token;
-
-	if (!filename)
-		return NULL;
-
-	fd = fopen(filename, "r");
-	if (!fd)
-		return NULL;
-
-	delimiters = " \t\r\n";
-	result = NULL;
-
-	/* loop over all lines in the file */
-	while (!result && fgets(line, sizeof(line), fd)) {
-		mimetype = strtok(line, delimiters);
-
-		/* skip empty lines and comment lines */
-		if (!mimetype || (mimetype[0] == '#'))
-			continue;
-
-		/* loop over all extensions of mimetype */
-		while ((token = strtok(NULL, delimiters))) {
-			if (!strcasecmp(ext, token)) {
-				result = xstrdup(mimetype);
-				break;
-			}
-		}
-	}
-	fclose(fd);
-
-	return result;
-}
-
 static int print_object(const unsigned char *sha1, const char *path)
 {
 	enum object_type type;
