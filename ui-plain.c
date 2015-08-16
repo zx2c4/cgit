@@ -19,10 +19,8 @@ struct walk_tree_context {
 static int print_object(const unsigned char *sha1, const char *path)
 {
 	enum object_type type;
-	char *buf, *ext;
+	char *buf, *mimetype;
 	unsigned long size;
-	struct string_list_item *mime;
-	int freemime;
 
 	type = sha1_object_info(sha1, &size);
 	if (type == OBJ_BAD) {
@@ -35,22 +33,10 @@ static int print_object(const unsigned char *sha1, const char *path)
 		cgit_print_error_page(404, "Not found", "Not found");
 		return 0;
 	}
-	ctx.page.mimetype = NULL;
-	ext = strrchr(path, '.');
-	freemime = 0;
-	if (ext && *(++ext)) {
-		mime = string_list_lookup(&ctx.cfg.mimetypes, ext);
-		if (mime) {
-			ctx.page.mimetype = (char *)mime->util;
-			ctx.page.charset = NULL;
-		} else {
-			ctx.page.mimetype = get_mimetype_from_file(ctx.cfg.mimetype_file, ext);
-			if (ctx.page.mimetype) {
-				freemime = 1;
-				ctx.page.charset = NULL;
-			}
-		}
-	}
+
+	mimetype = get_mimetype_for_filename(path);
+	ctx.page.mimetype = mimetype;
+
 	if (!ctx.page.mimetype) {
 		if (buffer_is_binary(buf, size)) {
 			ctx.page.mimetype = "application/octet-stream";
@@ -64,9 +50,7 @@ static int print_object(const unsigned char *sha1, const char *path)
 	ctx.page.etag = sha1_to_hex(sha1);
 	cgit_print_http_headers();
 	html_raw(buf, size);
-	/* If we allocated this, then casting away const is safe. */
-	if (freemime)
-		free((char*) ctx.page.mimetype);
+	free(mimetype);
 	return 1;
 }
 
