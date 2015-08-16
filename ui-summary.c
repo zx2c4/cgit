@@ -9,9 +9,10 @@
 #include "cgit.h"
 #include "ui-summary.h"
 #include "html.h"
-#include "ui-log.h"
-#include "ui-refs.h"
 #include "ui-blob.h"
+#include "ui-log.h"
+#include "ui-plain.h"
+#include "ui-refs.h"
 #include "ui-shared.h"
 
 static int urls;
@@ -100,8 +101,18 @@ static char* append_readme_path(const char *filename, const char *ref, const cha
 
 void cgit_print_repo_readme(char *path)
 {
-	char *filename, *ref;
+	char *filename, *ref, *mimetype;
 	int free_filename = 0;
+
+	mimetype = get_mimetype_for_filename(path);
+	if (mimetype && (!strncmp(mimetype, "image/", 6) || !strncmp(mimetype, "video/", 6))) {
+		ctx.page.mimetype = mimetype;
+		ctx.page.charset = NULL;
+		cgit_print_plain();
+		free(mimetype);
+		return;
+	}
+	free(mimetype);
 
 	cgit_print_layout_start();
 	if (ctx.repo->readme.nr == 0)
