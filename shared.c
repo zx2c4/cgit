@@ -563,49 +563,39 @@ char *expand_macros(const char *txt)
 
 char *get_mimetype_for_filename(const char *filename)
 {
-	static const char *delimiters;
-	char *ext = NULL, *iterate, *mimetype = NULL, *token;
-	char line[1024];
-	FILE *fd;
+	char *ext, *mimetype, *token, line[1024];
+	FILE *file;
 	struct string_list_item *mime;
 
-	if (filename == NULL)
+	if (!filename)
 		return NULL;
 
 	ext = strrchr(filename, '.');
+	if (!ext)
+		return NULL;
+	++ext;
+	if (!ext[0])
+		return NULL;
+	mime = string_list_lookup(&ctx.cfg.mimetypes, ext);
+	if (mime)
+		return xstrdup(mime->util);
 
-	if (ext && *(++ext)) {
-		mime = string_list_lookup(&ctx.cfg.mimetypes, ext);
-		if (mime) {
-			/* We could just pass the pointer here, but would have to care
-			 * whether or not to free the memory. Instead just dup. */
-			mimetype = xstrdup(mime->util);
-		} else if (ctx.cfg.mimetype_file != NULL) {
-			fd = fopen(ctx.cfg.mimetype_file, "r");
-			if (fd == NULL)
-				return NULL;
-
-			delimiters = " \t\r\n";
-
-			/* loop over all lines in the file */
-			while (mimetype == NULL && fgets(line, sizeof(line), fd)) {
-				iterate = strtok(line, delimiters);
-
-				/* skip empty lines and comment lines */
-				if (iterate == NULL || (iterate[0] == '#'))
-					continue;
-
-				/* loop over all extensions of mimetype */
-				while ((token = strtok(NULL, delimiters))) {
-					if (strcasecmp(ext, token) == 0) {
-						mimetype = xstrdup(iterate);
-						break;
-					}
-				}
+	if (!ctx.cfg.mimetype_file)
+		return NULL;
+	file = fopen(ctx.cfg.mimetype_file, "r");
+	if (!file)
+		return NULL;
+	while (fgets(line, sizeof(line), file)) {
+		if (!line[0] || line[0] == '#')
+			continue;
+		mimetype = strtok(line, " \t\r\n");
+		while ((token = strtok(NULL, " \t\r\n"))) {
+			if (!strcasecmp(ext, token)) {
+				fclose(file);
+				return xstrdup(mimetype);
 			}
-			fclose(fd);
 		}
 	}
-
-	return mimetype;
+	fclose(file);
+	return NULL;
 }
