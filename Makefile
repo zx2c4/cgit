@@ -48,7 +48,7 @@ export CGIT_VERSION CGIT_SCRIPT_NAME CGIT_SCRIPT_PATH CGIT_DATA_PATH CGIT_CONFIG
 QUIET_SUBDIR0  = +$(MAKE) -C # space to separate -C and subdir
 QUIET_SUBDIR1  =
 
-ifneq ($(findstring $(MAKEFLAGS),w),w)
+ifneq ($(findstring w,$(MAKEFLAGS)),w)
 PRINT_DIR = --no-print-directory
 else # "make -w"
 NO_SUBDIR = :
