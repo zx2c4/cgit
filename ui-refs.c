@@ -135,7 +135,7 @@ static int print_tag(struct refinfo *ref)
 		tag = (struct tag *)obj;
 		obj = tag->tagged;
 		info = ref->tag;
-		if (!tag || !info)
+		if (!info)
 			return 1;
 	}
 
