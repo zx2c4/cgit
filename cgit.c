@@ -110,7 +110,7 @@ static void config_cb(const char *name, const char *value)
 		ctx.repo->path = trim_end(value, '/');
 	else if (ctx.repo && starts_with(name, "repo."))
 		repo_config(ctx.repo, name + 5, value);
-	else if (!strcmp(name, "readme") && value != NULL)
+	else if (!strcmp(name, "readme"))
 		string_list_append(&ctx.cfg.readme, xstrdup(value));
 	else if (!strcmp(name, "root-title"))
 		ctx.cfg.root_title = xstrdup(value);
