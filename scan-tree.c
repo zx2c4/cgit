@@ -174,7 +174,7 @@ static void add_repo(const char *base, struct strbuf *path, repo_config_fn fn)
 
 	strbuf_addstr(path, "cgitrc");
 	if (!stat(path->buf, &st))
-		parse_configfile(xstrdup(path->buf), &repo_config);
+		parse_configfile(path->buf, &repo_config);
 
 	strbuf_release(&rel);
 }
