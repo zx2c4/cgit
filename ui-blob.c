@@ -85,7 +85,7 @@ int cgit_print_file(char *path, const char *head, int file_only)
 	if (get_sha1(head, sha1))
 		return -1;
 	type = sha1_object_info(sha1, &size);
-	if (type == OBJ_COMMIT && path) {
+	if (type == OBJ_COMMIT) {
 		commit = lookup_commit_reference(sha1);
 		read_tree_recursive(commit->tree, "", 0, 0, &paths, walk_tree, &walk_tree_ctx);
 		if (!walk_tree_ctx.found_path)
