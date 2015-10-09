@@ -563,7 +563,7 @@ char *expand_macros(const char *txt)
 
 char *get_mimetype_for_filename(const char *filename)
 {
-	char *ext, *mimetype, *token, line[1024];
+	char *ext, *mimetype, *token, line[1024], *saveptr;
 	FILE *file;
 	struct string_list_item *mime;
 
@@ -588,8 +588,8 @@ char *get_mimetype_for_filename(const char *filename)
 	while (fgets(line, sizeof(line), file)) {
 		if (!line[0] || line[0] == '#')
 			continue;
-		mimetype = strtok(line, " \t\r\n");
-		while ((token = strtok(NULL, " \t\r\n"))) {
+		mimetype = strtok_r(line, " \t\r\n", &saveptr);
+		while ((token = strtok_r(NULL, " \t\r\n", &saveptr))) {
 			if (!strcasecmp(ext, token)) {
 				fclose(file);
 				return xstrdup(mimetype);
