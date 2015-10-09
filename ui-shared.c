@@ -730,7 +730,7 @@ void cgit_print_docstart(void)
 		return;
 	}
 
-	const char *host = cgit_hosturl();
+	char *host = cgit_hosturl();
 	html(cgit_doctype);
 	html("<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='en' lang='en'>\n");
 	html("<head>\n");
@@ -755,7 +755,7 @@ void cgit_print_docstart(void)
 
 		html("<link rel='alternate' title='Atom feed' href='");
 		html(cgit_httpscheme());
-		html_attr(cgit_hosturl());
+		html_attr(host);
 		fileurl = cgit_fileurl(ctx.repo->url, "atom", ctx.qry.vpath,
 				       sb.buf);
 		html_attr(fileurl);
@@ -771,6 +771,7 @@ void cgit_print_docstart(void)
 	html("<body>\n");
 	if (ctx.cfg.header)
 		html_include(ctx.cfg.header);
+	free(host);
 }
 
 void cgit_print_docend(void)
