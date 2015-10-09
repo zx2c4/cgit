@@ -157,8 +157,11 @@ static void site_url(const char *page, const char *search, const char *sort, int
 
 	if (always_root || page)
 		html_attr(cgit_rooturl());
-	else
-		html_attr(cgit_currenturl());
+	else {
+		char *currenturl = cgit_currenturl();
+		html_attr(currenturl);
+		free(currenturl);
+	}
 
 	if (page) {
 		htmlf("?p=%s", page);
@@ -1020,19 +1023,21 @@ void cgit_print_pageheader(void)
 		html("<input type='submit' value='search'/>\n");
 		html("</form>\n");
 	} else if (ctx.env.authenticated) {
+		char *currenturl = cgit_currenturl();
 		site_link(NULL, "index", NULL, hc("repolist"), NULL, NULL, 0, 1);
 		if (ctx.cfg.root_readme)
 			site_link("about", "about", NULL, hc("about"),
 				  NULL, NULL, 0, 1);
 		html("</td><td class='form'>");
 		html("<form method='get' action='");
-		html_attr(cgit_currenturl());
+		html_attr(currenturl);
 		html("'>\n");
 		html("<input type='text' name='q' size='10' value='");
 		html_attr(ctx.qry.search);
 		html("'/>\n");
 		html("<input type='submit' value='search'/>\n");
 		html("</form>");
+		free(currenturl);
 	}
 	html("</td></tr></table>\n");
 	if (ctx.env.authenticated && ctx.qry.vpath) {
