@@ -51,6 +51,7 @@ static int print_object(const unsigned char *sha1, const char *path)
 	cgit_print_http_headers();
 	html_raw(buf, size);
 	free(mimetype);
+	free(buf);
 	return 1;
 }
 
