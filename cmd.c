@@ -41,9 +41,13 @@ static void about_fn(void)
 	if (ctx.repo) {
 		if (!ctx.qry.path &&
 		    ctx.qry.url[strlen(ctx.qry.url) - 1] != '/' &&
-		    ctx.env.path_info[strlen(ctx.env.path_info) - 1] != '/')
-			cgit_redirect(fmtalloc("%s/", cgit_currenturl()), true);
-		else
+		    ctx.env.path_info[strlen(ctx.env.path_info) - 1] != '/') {
+			char *currenturl = cgit_currenturl();
+			char *redirect = fmtalloc("%s/", currenturl);
+			cgit_redirect(redirect, true);
+			free(currenturl);
+			free(redirect);
+		} else
 			cgit_print_repo_readme(ctx.qry.path);
 	} else
 		cgit_print_site_readme();
