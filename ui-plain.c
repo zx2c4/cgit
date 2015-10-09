@@ -84,8 +84,10 @@ static void print_dir(const unsigned char *sha1, const char *base,
 		slash = strrchr(fullpath, '/');
 		if (slash)
 			*(slash + 1) = 0;
-		else
+		else {
+			free(fullpath);
 			fullpath = NULL;
+		}
 		html("<li>");
 		cgit_plain_link("../", NULL, NULL, ctx.qry.head, ctx.qry.sha1,
 				fullpath);
