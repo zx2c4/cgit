@@ -4,7 +4,7 @@
 extern const char *cgit_httpscheme();
 extern const char *cgit_hosturl();
 extern const char *cgit_rooturl();
-extern const char *cgit_currenturl();
+extern char *cgit_currenturl();
 extern const char *cgit_loginurl();
 extern char *cgit_repourl(const char *reponame);
 extern char *cgit_fileurl(const char *reponame, const char *pagename,

@@ -65,10 +65,10 @@ const char *cgit_hosturl(void)
 	return fmtalloc("%s:%s", ctx.env.server_name, ctx.env.server_port);
 }
 
-const char *cgit_currenturl(void)
+char *cgit_currenturl(void)
 {
 	if (!ctx.qry.url)
-		return cgit_rooturl();
+		return xstrdup(cgit_rooturl());
 	const char *root = cgit_rooturl();
 	size_t len = strlen(root);
 	if (len && root[len - 1] == '/')
