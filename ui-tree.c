@@ -143,6 +143,7 @@ static int ls_item(const unsigned char *sha1, struct strbuf *base,
 			htmlf("<tr><td colspan='3'>Bad object: %s %s</td></tr>",
 			      name,
 			      sha1_to_hex(sha1));
+			free(name);
 			return 0;
 		}
 	}
