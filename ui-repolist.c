@@ -108,14 +108,16 @@ static int is_in_url(struct cgit_repo *repo)
 
 static void print_sort_header(const char *title, const char *sort)
 {
+	char *currenturl = cgit_currenturl();
 	html("<th class='left'><a href='");
-	html_attr(cgit_currenturl());
+	html_attr(currenturl);
 	htmlf("?s=%s", sort);
 	if (ctx.qry.search) {
 		html("&amp;q=");
 		html_url_arg(ctx.qry.search);
 	}
 	htmlf("'>%s</a></th>", title);
+	free(currenturl);
 }
 
 static void print_header(void)
