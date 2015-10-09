@@ -746,16 +746,19 @@ void cgit_print_docstart(void)
 		html("'/>\n");
 	}
 	if (host && ctx.repo && ctx.qry.head) {
+		char *fileurl;
 		struct strbuf sb = STRBUF_INIT;
 		strbuf_addf(&sb, "h=%s", ctx.qry.head);
 
 		html("<link rel='alternate' title='Atom feed' href='");
 		html(cgit_httpscheme());
 		html_attr(cgit_hosturl());
-		html_attr(cgit_fileurl(ctx.repo->url, "atom", ctx.qry.vpath,
-				       sb.buf));
+		fileurl = cgit_fileurl(ctx.repo->url, "atom", ctx.qry.vpath,
+				       sb.buf);
+		html_attr(fileurl);
 		html("' type='application/atom+xml'/>\n");
 		strbuf_release(&sb);
+		free(fileurl);
 	}
 	if (ctx.repo)
 		cgit_add_clone_urls(print_rel_vcs_link);
@@ -997,9 +1000,12 @@ void cgit_print_pageheader(void)
 					ctx.qry.head, ctx.qry.vpath);
 		html("</td><td class='form'>");
 		html("<form class='right' method='get' action='");
-		if (ctx.cfg.virtual_root)
-			html_url_path(cgit_fileurl(ctx.qry.repo, "log",
-						   ctx.qry.vpath, NULL));
+		if (ctx.cfg.virtual_root) {
+			char *fileurl = cgit_fileurl(ctx.qry.repo, "log",
+						   ctx.qry.vpath, NULL);
+			html_url_path(fileurl);
+			free(fileurl);
+		}
 		html("'>\n");
 		cgit_add_hidden_formfields(1, 0, "log");
 		html("<select name='qt'>\n");
