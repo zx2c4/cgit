@@ -230,11 +230,13 @@ static void print_ssdiff_line(char *class,
 		struct diff_filespec *old_file = cgit_get_current_old_file();
 		char *lineno_str = fmt("n%d", old_line_no);
 		char *id_str = fmt("id=%s#%s", is_null_sha1(old_file->sha1)?"HEAD":sha1_to_hex(old_rev_sha1), lineno_str);
+		char *fileurl = cgit_fileurl(ctx.repo->url, "tree", old_file->path, id_str);
 		html("<td class='lineno'><a href='");
-		html(cgit_fileurl(ctx.repo->url, "tree", old_file->path, id_str));
+		html(fileurl);
 		htmlf("' id='%s'>%s</a>", lineno_str, lineno_str + 1);
 		html("</td>");
 		htmlf("<td class='%s'>", class);
+		free(fileurl);
 	} else if (old_line)
 		htmlf("<td class='lineno'></td><td class='%s'>", class);
 	else
@@ -251,11 +253,13 @@ static void print_ssdiff_line(char *class,
 		struct diff_filespec *new_file = cgit_get_current_new_file();
 		char *lineno_str = fmt("n%d", new_line_no);
 		char *id_str = fmt("id=%s#%s", is_null_sha1(new_file->sha1)?"HEAD":sha1_to_hex(new_rev_sha1), lineno_str);
+		char *fileurl = cgit_fileurl(ctx.repo->url, "tree", new_file->path, id_str);
 		html("<td class='lineno'><a href='");
-		html(cgit_fileurl(ctx.repo->url, "tree", new_file->path, id_str));
+		html(fileurl);
 		htmlf("' id='%s'>%s</a>", lineno_str, lineno_str + 1);
 		html("</td>");
 		htmlf("<td class='%s'>", class);
+		free(fileurl);
 	} else if (new_line)
 		htmlf("<td class='lineno'></td><td class='%s'>", class);
 	else
