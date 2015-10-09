@@ -2,7 +2,7 @@
 #define UI_SHARED_H
 
 extern const char *cgit_httpscheme();
-extern const char *cgit_hosturl();
+extern char *cgit_hosturl();
 extern const char *cgit_rooturl();
 extern char *cgit_currenturl();
 extern const char *cgit_loginurl();
