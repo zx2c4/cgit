@@ -18,8 +18,10 @@ static time_t read_agefile(char *path)
 	char *buf;
 	struct strbuf date_buf = STRBUF_INIT;
 
-	if (readfile(path, &buf, &size))
+	if (readfile(path, &buf, &size)) {
+		free(buf);
 		return -1;
+	}
 
 	if (parse_date(buf, &date_buf) == 0)
 		result = strtoul(date_buf.buf, NULL, 10);
