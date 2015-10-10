@@ -99,6 +99,7 @@ int cgit_print_file(char *path, const char *head, int file_only)
 		return -1;
 	buf[size] = '\0';
 	html_raw(buf, size);
+	free(buf);
 	return 0;
 }
 
