@@ -53,14 +53,17 @@ static void add_entry(struct commit *commit, const char *host)
 	cgit_print_date(info->author_date, FMT_ATOMDATE, 0);
 	html("</published>\n");
 	if (host) {
+		char *pageurl;
 		html("<link rel='alternate' type='text/html' href='");
 		html(cgit_httpscheme());
 		html_attr(host);
-		html_attr(cgit_pageurl(ctx.repo->url, "commit", NULL));
+		pageurl = cgit_pageurl(ctx.repo->url, "commit", NULL);
+		html_attr(pageurl);
 		if (ctx.cfg.virtual_root)
 			delim = '?';
 		htmlf("%cid=%s", delim, hex);
 		html("'/>\n");
+		free(pageurl);
 	}
 	htmlf("<id>%s</id>\n", hex);
 	html("<content type='text'>\n");
