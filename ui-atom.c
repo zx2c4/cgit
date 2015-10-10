@@ -125,11 +125,13 @@ void cgit_print_atom(char *tip, char *path, int max_count)
 	html_txt(ctx.repo->desc);
 	html("</subtitle>\n");
 	if (host) {
+		char *repourl = cgit_repourl(ctx.repo->url);
 		html("<link rel='alternate' type='text/html' href='");
 		html(cgit_httpscheme());
 		html_attr(host);
-		html_attr(cgit_repourl(ctx.repo->url));
+		html_attr(repourl);
 		html("'/>\n");
+		free(repourl);
 	}
 	while ((commit = get_revision(&rev)) != NULL) {
 		add_entry(commit, host);
