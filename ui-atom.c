@@ -80,7 +80,7 @@ static void add_entry(struct commit *commit, const char *host)
 
 void cgit_print_atom(char *tip, char *path, int max_count)
 {
-	const char *host;
+	char *host;
 	const char *argv[] = {NULL, tip, NULL, NULL, NULL};
 	struct commit *commit;
 	struct rev_info rev;
@@ -140,4 +140,5 @@ void cgit_print_atom(char *tip, char *path, int max_count)
 		commit->parents = NULL;
 	}
 	html("</feed>\n");
+	free(host);
 }
