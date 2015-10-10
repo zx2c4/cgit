@@ -215,19 +215,25 @@ static int fill_slot(struct cache_slot *slot)
 		return errno;
 
 	/* Redirect stdout to lockfile */
-	if (dup2(slot->lock_fd, STDOUT_FILENO) == -1)
+	if (dup2(slot->lock_fd, STDOUT_FILENO) == -1) {
+		close(tmp);
 		return errno;
+	}
 
 	/* Generate cache content */
 	slot->fn();
 
 	/* update stat info */
-	if (fstat(slot->lock_fd, &slot->cache_st))
+	if (fstat(slot->lock_fd, &slot->cache_st)) {
+		close(tmp);
 		return errno;
+	}
 
 	/* Restore stdout */
-	if (dup2(tmp, STDOUT_FILENO) == -1)
+	if (dup2(tmp, STDOUT_FILENO) == -1) {
+		close(tmp);
 		return errno;
+	}
 
 	/* Close the temporary filedescriptor */
 	if (close(tmp))
