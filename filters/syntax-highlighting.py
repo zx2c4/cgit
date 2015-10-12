@@ -1,6 +1,6 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
-# This script uses Pygments and Python2. You must have both installed
+# This script uses Pygments and Python3. You must have both installed
 # for this to work.
 #
 # http://pygments.org/
@@ -29,25 +29,24 @@ from pygments.lexers import guess_lexer_for_filename
 from pygments.formatters import HtmlFormatter
 
 
-# read stdin and decode to utf-8. ignore any unkown signs.
-data = sys.stdin.read().decode(encoding='utf-8', errors='ignore')
+data = sys.stdin.read()
 filename = sys.argv[1]
-formatter = HtmlFormatter(encoding='utf-8', style='pastie')
+formatter = HtmlFormatter(style='pastie')
 
 try:
-	lexer = guess_lexer_for_filename(filename, data, encoding='utf-8')
+	lexer = guess_lexer_for_filename(filename, data)
 except ClassNotFound:
 	# check if there is any shebang
 	if data[0:2] == '#!':
-		lexer = guess_lexer(data, encoding='utf-8')
+		lexer = guess_lexer(data)
 	else:
-		lexer = TextLexer(encoding='utf-8')
+		lexer = TextLexer()
 except TypeError:
-	lexer = TextLexer(encoding='utf-8')
+	lexer = TextLexer()
 
 # highlight! :-)
 # printout pygments' css definitions as well
 sys.stdout.write('<style>')
 sys.stdout.write(formatter.get_style_defs('.highlight'))
 sys.stdout.write('</style>')
-highlight(data, lexer, formatter, outfile=sys.stdout)
+sys.stdout.write(highlight(data, lexer, formatter, outfile=None))
