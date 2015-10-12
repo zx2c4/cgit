@@ -1,2 +1,2 @@
 #!/bin/bash
-rst2html.py --template <(echo -e "%(stylesheet)s\n%(body_pre_docinfo)s\n%(docinfo)s\n%(body)s")
+exec rst2html.py --template <(echo -e "%(stylesheet)s\n%(body_pre_docinfo)s\n%(docinfo)s\n%(body)s")
