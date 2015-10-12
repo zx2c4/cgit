@@ -1,5 +1,7 @@
-#!/bin/sh
-cat <<_EOF
+#!/usr/bin/env python
+import markdown
+import sys
+print('''
 <style>
 .markdown-body {
     font-size: 14px;
@@ -277,7 +279,8 @@ cat <<_EOF
     border: none;
 }
 </style>   
-_EOF
-echo "<div class='markdown-body'>"
-markdown_py -o html5
-echo "</div>"
+''')
+print("<div class='markdown-body'>")
+# Note: you may want to run this through bleach for sanitization
+markdown.markdownFromFile(input=sys.stdin, output_format="html5")
+print("</div>")
