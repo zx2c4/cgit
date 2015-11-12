@@ -3,7 +3,7 @@
 # This may be used with the about-filter or repo.about-filter setting in cgitrc.
 # It passes formatting of about pages to differing programs, depending on the usage.
 
-# Markdown support requires perl.
+# Markdown support requires python and markdown-python.
 # RestructuredText support requires python and docutils.
 # Man page support requires groff.
 
