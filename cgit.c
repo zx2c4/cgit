@@ -651,7 +651,7 @@ static inline void open_auth_filter(const char *function)
 static inline void authenticate_post(void)
 {
 	char buffer[MAX_AUTHENTICATION_POST_BYTES];
-	int len;
+	unsigned int len;
 
 	open_auth_filter("authenticate-post");
 	len = ctx.env.content_length;
