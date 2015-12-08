@@ -106,6 +106,15 @@ static int is_in_url(struct cgit_repo *repo)
 	return 0;
 }
 
+static int is_visible(struct cgit_repo *repo)
+{
+	if (repo->hide || repo->ignore)
+		return 0;
+	if (!(is_match(repo) && is_in_url(repo)))
+		return 0;
+	return 1;
+}
+
 static void print_sort_header(const char *title, const char *sort)
 {
 	char *currenturl = cgit_currenturl();
@@ -278,9 +287,7 @@ void cgit_print_repolist(void)
 	html("<table summary='repository list' class='list nowrap'>");
 	for (i = 0; i < cgit_repolist.count; i++) {
 		ctx.repo = &cgit_repolist.repos[i];
-		if (ctx.repo->hide || ctx.repo->ignore)
-			continue;
-		if (!(is_match(ctx.repo) && is_in_url(ctx.repo)))
+		if (!is_visible(ctx.repo))
 			continue;
 		hits++;
 		if (hits <= ctx.qry.ofs)
