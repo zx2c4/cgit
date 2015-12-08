@@ -115,6 +115,17 @@ static int is_visible(struct cgit_repo *repo)
 	return 1;
 }
 
+static int any_repos_visible(void)
+{
+	int i;
+
+	for (i = 0; i < cgit_repolist.count; i++) {
+		if (is_visible(&cgit_repolist.repos[i]))
+			return 1;
+	}
+	return 0;
+}
+
 static void print_sort_header(const char *title, const char *sort)
 {
 	char *currenturl = cgit_currenturl();
@@ -266,6 +277,11 @@ void cgit_print_repolist(void)
 	char *section;
 	int sorted = 0;
 
+	if (!any_repos_visible()) {
+		cgit_print_error_page(404, "Not found", "No repositories found");
+		return;
+	}
+
 	if (ctx.cfg.enable_index_links)
 		++columns;
 	if (ctx.cfg.enable_index_owner)
@@ -347,9 +363,7 @@ void cgit_print_repolist(void)
 		html("</tr>\n");
 	}
 	html("</table>");
-	if (!hits)
-		cgit_print_error("No repositories found");
-	else if (hits > ctx.cfg.max_repo_count)
+	if (hits > ctx.cfg.max_repo_count)
 		print_pager(hits, ctx.cfg.max_repo_count, ctx.qry.search, ctx.qry.sort);
 	cgit_print_docend();
 }
