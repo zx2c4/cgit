@@ -889,6 +889,9 @@ void cgit_add_hidden_formfields(int incl_head, int incl_search,
 
 static const char *hc(const char *page)
 {
+	if (!ctx.qry.page)
+		return NULL;
+
 	return strcmp(ctx.qry.page, page) ? NULL : "active";
 }
 
