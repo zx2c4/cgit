@@ -402,8 +402,8 @@ void cgit_diff_commit(struct commit *commit, filepair_fn fn, const char *prefix)
 	unsigned char *old_sha1 = NULL;
 
 	if (commit->parents)
-		old_sha1 = commit->parents->item->object.sha1;
-	cgit_diff_tree(old_sha1, commit->object.sha1, fn, prefix,
+		old_sha1 = commit->parents->item->object.oid.hash;
+	cgit_diff_tree(old_sha1, commit->object.oid.hash, fn, prefix,
 		       ctx.qry.ignorews);
 }
 

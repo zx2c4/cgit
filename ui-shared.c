@@ -525,7 +525,7 @@ void cgit_object_link(struct object *obj)
 {
 	char *page, *shortrev, *fullrev, *name;
 
-	fullrev = sha1_to_hex(obj->sha1);
+	fullrev = oid_to_hex(&obj->oid);
 	shortrev = xstrdup(fullrev);
 	shortrev[10] = '\0';
 	if (obj->type == OBJ_COMMIT) {

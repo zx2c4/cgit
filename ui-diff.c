@@ -413,7 +413,7 @@ void cgit_print_diff(const char *new_rev, const char *old_rev,
 			"Bad commit: %s", sha1_to_hex(new_rev_sha1));
 		return;
 	}
-	new_tree_sha1 = commit->tree->object.sha1;
+	new_tree_sha1 = commit->tree->object.oid.hash;
 
 	if (old_rev) {
 		if (get_sha1(old_rev, old_rev_sha1)) {
@@ -422,7 +422,7 @@ void cgit_print_diff(const char *new_rev, const char *old_rev,
 			return;
 		}
 	} else if (commit->parents && commit->parents->item) {
-		hashcpy(old_rev_sha1, commit->parents->item->object.sha1);
+		hashcpy(old_rev_sha1, commit->parents->item->object.oid.hash);
 	} else {
 		hashclr(old_rev_sha1);
 	}
@@ -434,7 +434,7 @@ void cgit_print_diff(const char *new_rev, const char *old_rev,
 				"Bad commit: %s", sha1_to_hex(old_rev_sha1));
 			return;
 		}
-		old_tree_sha1 = commit2->tree->object.sha1;
+		old_tree_sha1 = commit2->tree->object.oid.hash;
 	} else {
 		old_tree_sha1 = NULL;
 	}

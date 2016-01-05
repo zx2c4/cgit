@@ -82,14 +82,14 @@ void show_commit_decorations(struct commit *commit)
 				goto next;
 			strncpy(buf, deco->name + 13, sizeof(buf) - 1);
 			cgit_log_link(buf, NULL, "remote-deco", NULL,
-				      sha1_to_hex(commit->object.sha1),
+				      oid_to_hex(&commit->object.oid),
 				      ctx.qry.vpath, 0, NULL, NULL,
 				      ctx.qry.showmsg, 0);
 		}
 		else {
 			strncpy(buf, deco->name, sizeof(buf) - 1);
 			cgit_commit_link(buf, NULL, "deco", ctx.qry.head,
-					 sha1_to_hex(commit->object.sha1),
+					 oid_to_hex(&commit->object.oid),
 					 ctx.qry.vpath);
 		}
 next:
@@ -148,8 +148,8 @@ static int show_commit(struct commit *commit, struct rev_info *revs)
 	rem_lines = 0;
 
 	DIFF_OPT_SET(&revs->diffopt, RECURSIVE);
-	diff_tree_sha1(parent->tree->object.sha1,
-		       commit->tree->object.sha1,
+	diff_tree_sha1(parent->tree->object.oid.hash,
+		       commit->tree->object.oid.hash,
 		       "", &revs->diffopt);
 	diffcore_std(&revs->diffopt);
 
@@ -233,7 +233,7 @@ static void print_commit(struct commit *commit, struct rev_info *revs)
 		}
 	}
 	cgit_commit_link(info->subject, NULL, NULL, ctx.qry.head,
-			 sha1_to_hex(commit->object.sha1), ctx.qry.vpath);
+			 oid_to_hex(&commit->object.oid), ctx.qry.vpath);
 	show_commit_decorations(commit);
 	html("</td><td>");
 	cgit_open_filter(ctx.repo->email_filter, info->author_email, "log");
@@ -269,7 +269,7 @@ static void print_commit(struct commit *commit, struct rev_info *revs)
 				strbuf_addstr(&msgbuf, info->msg);
 				strbuf_addch(&msgbuf, '\n');
 			}
-			format_display_notes(commit->object.sha1,
+			format_display_notes(commit->object.oid.hash,
 					     &msgbuf, PAGE_ENCODING, 0);
 			strbuf_addch(&msgbuf, '\n');
 			strbuf_ltrim(&msgbuf);

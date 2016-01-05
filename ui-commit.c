@@ -69,14 +69,14 @@ void cgit_print_commit(char *hex, const char *prefix)
 	cgit_print_date(info->committer_date, FMT_LONGDATE, ctx.cfg.local_time);
 	html("</td></tr>\n");
 	html("<tr><th>commit</th><td colspan='2' class='sha1'>");
-	tmp = sha1_to_hex(commit->object.sha1);
+	tmp = oid_to_hex(&commit->object.oid);
 	cgit_commit_link(tmp, NULL, NULL, ctx.qry.head, tmp, prefix);
 	html(" (");
 	cgit_patch_link("patch", NULL, NULL, NULL, tmp, prefix);
 	html(")</td></tr>\n");
 	html("<tr><th>tree</th><td colspan='2' class='sha1'>");
 	tmp = xstrdup(hex);
-	cgit_tree_link(sha1_to_hex(commit->tree->object.sha1), NULL, NULL,
+	cgit_tree_link(oid_to_hex(&commit->tree->object.oid), NULL, NULL,
 		       ctx.qry.head, tmp, NULL);
 	if (prefix) {
 		html(" /");
@@ -85,7 +85,7 @@ void cgit_print_commit(char *hex, const char *prefix)
 	free(tmp);
 	html("</td></tr>\n");
 	for (p = commit->parents; p; p = p->next) {
-		parent = lookup_commit_reference(p->item->object.sha1);
+		parent = lookup_commit_reference(p->item->object.oid.hash);
 		if (!parent) {
 			html("<tr><td colspan='3'>");
 			cgit_print_error("Error reading parent commit");
@@ -94,7 +94,7 @@ void cgit_print_commit(char *hex, const char *prefix)
 		}
 		html("<tr><th>parent</th>"
 		     "<td colspan='2' class='sha1'>");
-		tmp = tmp2 = sha1_to_hex(p->item->object.sha1);
+		tmp = tmp2 = oid_to_hex(&p->item->object.oid);
 		if (ctx.repo->enable_subject_links) {
 			parent_info = cgit_parse_commit(parent);
 			tmp2 = parent_info->subject;
@@ -102,7 +102,7 @@ void cgit_print_commit(char *hex, const char *prefix)
 		cgit_commit_link(tmp2, NULL, NULL, ctx.qry.head, tmp, prefix);
 		html(" (");
 		cgit_diff_link("diff", NULL, NULL, ctx.qry.head, hex,
-			       sha1_to_hex(p->item->object.sha1), prefix);
+			       oid_to_hex(&p->item->object.oid), prefix);
 		html(")</td></tr>");
 		parents++;
 	}
@@ -135,7 +135,7 @@ void cgit_print_commit(char *hex, const char *prefix)
 	}
 	if (parents < 3) {
 		if (parents)
-			tmp = sha1_to_hex(commit->parents->item->object.sha1);
+			tmp = oid_to_hex(&commit->parents->item->object.oid);
 		else
 			tmp = NULL;
 		cgit_print_diff(ctx.qry.sha1, tmp, prefix, 0, 0);

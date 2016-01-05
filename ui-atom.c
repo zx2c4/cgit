@@ -19,7 +19,7 @@ static void add_entry(struct commit *commit, const char *host)
 	struct commitinfo *info;
 
 	info = cgit_parse_commit(commit);
-	hex = sha1_to_hex(commit->object.sha1);
+	hex = oid_to_hex(&commit->object.oid);
 	html("<entry>\n");
 	html("<title>");
 	html_txt(info->subject);

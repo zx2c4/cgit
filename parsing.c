@@ -139,7 +139,7 @@ struct commitinfo *cgit_parse_commit(struct commit *commit)
 		return ret;
 
 	if (!skip_prefix(p, "tree ", &p))
-		die("Bad commit: %s", sha1_to_hex(commit->object.sha1));
+		die("Bad commit: %s", oid_to_hex(&commit->object.oid));
 	p += sha1hex_len + 1;
 
 	while (skip_prefix(p, "parent ", &p))
@@ -199,7 +199,7 @@ struct taginfo *cgit_parse_tag(struct tag *tag)
 	const char *p;
 	struct taginfo *ret = NULL;
 
-	data = read_sha1_file(tag->object.sha1, &type, &size);
+	data = read_sha1_file(tag->object.oid.hash, &type, &size);
 	if (!data || type != OBJ_TAG)
 		goto cleanup;
 

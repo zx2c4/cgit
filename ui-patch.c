@@ -48,7 +48,7 @@ void cgit_print_patch(const char *new_rev, const char *old_rev,
 			return;
 		}
 	} else if (commit->parents && commit->parents->item) {
-		hashcpy(old_rev_sha1, commit->parents->item->object.sha1);
+		hashcpy(old_rev_sha1, commit->parents->item->object.oid.hash);
 	} else {
 		hashclr(old_rev_sha1);
 	}

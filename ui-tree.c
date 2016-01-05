@@ -287,7 +287,7 @@ void cgit_print_tree(const char *rev, char *path)
 	walk_tree_ctx.curr_rev = xstrdup(rev);
 
 	if (path == NULL) {
-		ls_tree(commit->tree->object.sha1, NULL, &walk_tree_ctx);
+		ls_tree(commit->tree->object.oid.hash, NULL, &walk_tree_ctx);
 		goto cleanup;
 	}
 

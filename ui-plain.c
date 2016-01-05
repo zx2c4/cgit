@@ -183,7 +183,7 @@ void cgit_print_plain(void)
 	if (!path_items.match) {
 		path_items.match = "";
 		walk_tree_ctx.match_baselen = -1;
-		print_dir(commit->tree->object.sha1, "", 0, "");
+		print_dir(commit->tree->object.oid.hash, "", 0, "");
 		walk_tree_ctx.match = 2;
 	}
 	else
