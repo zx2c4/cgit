@@ -15,7 +15,7 @@ static time_t read_agefile(char *path)
 {
 	time_t result;
 	size_t size;
-	char *buf;
+	char *buf = NULL;
 	struct strbuf date_buf = STRBUF_INIT;
 
 	if (readfile(path, &buf, &size)) {
