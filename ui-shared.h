@@ -1,11 +1,11 @@
 #ifndef UI_SHARED_H
 #define UI_SHARED_H
 
-extern const char *cgit_httpscheme();
-extern char *cgit_hosturl();
-extern const char *cgit_rooturl();
-extern char *cgit_currenturl();
-extern const char *cgit_loginurl();
+extern const char *cgit_httpscheme(void);
+extern char *cgit_hosturl(void);
+extern const char *cgit_rooturl(void);
+extern char *cgit_currenturl(void);
+extern const char *cgit_loginurl(void);
 extern char *cgit_repourl(const char *reponame);
 extern char *cgit_fileurl(const char *reponame, const char *pagename,
 			  const char *filename, const char *query);
@@ -66,7 +66,7 @@ extern void cgit_print_age(time_t t, time_t max_relative, const char *format);
 extern void cgit_print_http_headers(void);
 extern void cgit_redirect(const char *url, bool permanent);
 extern void cgit_print_docstart(void);
-extern void cgit_print_docend();
+extern void cgit_print_docend(void);
 __attribute__((format (printf,3,4)))
 extern void cgit_print_error_page(int code, const char *msg, const char *fmt, ...);
 extern void cgit_print_pageheader(void);

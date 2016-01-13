@@ -3,6 +3,6 @@
 
 extern void cgit_print_branches(int maxcount);
 extern void cgit_print_tags(int maxcount);
-extern void cgit_print_refs();
+extern void cgit_print_refs(void);
 
 #endif /* UI_REFS_H */
