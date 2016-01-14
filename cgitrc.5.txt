@@ -190,6 +190,13 @@ enable-subject-links::
 	in commit view. Default value: "0". See also:
 	"repo.enable-subject-links".
 
+enable-html-serving::
+	Flag which, when set to "1", will allow the /plain handler to serve
+	mimetype headers that result in the file being treated as HTML by the
+	browser. When set to "0", such file types are returned instead as
+	text/plain or application/octet-stream. Default value: "0". See also:
+	"repo.enable-html-serving".
+
 enable-tree-linenumbers::
 	Flag which, when set to "1", will make cgit generate linenumber links
 	for plaintext blobs printed in the tree view. Default value: "1".
@@ -512,6 +519,10 @@ repo.enable-remote-branches::
 repo.enable-subject-links::
 	A flag which can be used to override the global setting
 	`enable-subject-links'. Default value: none.
+
+enable-html-serving::
+	A flag which can be used to override the global setting
+	`enable-html-serving`. Default value: none.
 
 repo.hide::
 	Flag which, when set to "1", hides the repository from the repository

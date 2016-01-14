@@ -37,6 +37,16 @@ static int print_object(const unsigned char *sha1, const char *path)
 	mimetype = get_mimetype_for_filename(path);
 	ctx.page.mimetype = mimetype;
 
+	if (!ctx.repo->enable_html_serving) {
+		html("X-Content-Type-Options: nosniff\n");
+		html("Content-Security-Policy: default-src 'none'\n");
+		if (mimetype) {
+			/* Built-in white list allows PDF and everything that isn't text/ and application/ */
+			if ((!strncmp(mimetype, "text/", 5) || !strncmp(mimetype, "application/", 12)) && strcmp(mimetype, "application/pdf"))
+				ctx.page.mimetype = NULL;
+		}
+	}
+
 	if (!ctx.page.mimetype) {
 		if (buffer_is_binary(buf, size)) {
 			ctx.page.mimetype = "application/octet-stream";

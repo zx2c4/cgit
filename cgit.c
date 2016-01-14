@@ -55,6 +55,8 @@ static void repo_config(struct cgit_repo *repo, const char *name, const char *va
 		repo->enable_remote_branches = atoi(value);
 	else if (!strcmp(name, "enable-subject-links"))
 		repo->enable_subject_links = atoi(value);
+	else if (!strcmp(name, "enable-html-serving"))
+		repo->enable_html_serving = atoi(value);
 	else if (!strcmp(name, "branch-sort")) {
 		if (!strcmp(value, "age"))
 			repo->branch_sort = 1;
@@ -170,6 +172,8 @@ static void config_cb(const char *name, const char *value)
 		ctx.cfg.enable_remote_branches = atoi(value);
 	else if (!strcmp(name, "enable-subject-links"))
 		ctx.cfg.enable_subject_links = atoi(value);
+	else if (!strcmp(name, "enable-html-serving"))
+		ctx.cfg.enable_html_serving = atoi(value);
 	else if (!strcmp(name, "enable-tree-linenumbers"))
 		ctx.cfg.enable_tree_linenumbers = atoi(value);
 	else if (!strcmp(name, "enable-git-config"))
@@ -821,6 +825,7 @@ static void print_repo(FILE *f, struct cgit_repo *repo)
 		fprintf(f, "repo.logo-link=%s\n", repo->logo_link);
 	fprintf(f, "repo.enable-remote-branches=%d\n", repo->enable_remote_branches);
 	fprintf(f, "repo.enable-subject-links=%d\n", repo->enable_subject_links);
+	fprintf(f, "repo.enable-html-serving=%d\n", repo->enable_html_serving);
 	if (repo->branch_sort == 1)
 		fprintf(f, "repo.branch-sort=age\n");
 	if (repo->commit_sort) {
