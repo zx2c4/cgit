@@ -692,9 +692,11 @@ void cgit_print_http_headers(void)
 		htmlf("Content-Type: %s\n", ctx.page.mimetype);
 	if (ctx.page.size)
 		htmlf("Content-Length: %zd\n", ctx.page.size);
-	if (ctx.page.filename)
-		htmlf("Content-Disposition: inline; filename=\"%s\"\n",
-		      ctx.page.filename);
+	if (ctx.page.filename) {
+		html("Content-Disposition: inline; filename=\"");
+		html_header_arg_in_quotes(ctx.page.filename);
+		html("\"\n");
+	}
 	if (!ctx.env.authenticated)
 		html("Cache-Control: no-cache, no-store\n");
 	htmlf("Last-Modified: %s\n", http_date(ctx.page.modified));

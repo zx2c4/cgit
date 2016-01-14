@@ -23,6 +23,7 @@ extern void html_ntxt(int len, const char *txt);
 extern void html_attr(const char *txt);
 extern void html_url_path(const char *txt);
 extern void html_url_arg(const char *txt);
+extern void html_header_arg_in_quotes(const char *txt);
 extern void html_hidden(const char *name, const char *value);
 extern void html_option(const char *value, const char *text, const char *selected_value);
 extern void html_intoption(int value, const char *text, int selected_value);
