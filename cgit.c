@@ -314,8 +314,6 @@ static void querystring_cb(const char *name, const char *value)
 		ctx.qry.path = trim_end(value, '/');
 	} else if (!strcmp(name, "name")) {
 		ctx.qry.name = xstrdup(value);
-	} else if (!strcmp(name, "mimetype")) {
-		ctx.qry.mimetype = xstrdup(value);
 	} else if (!strcmp(name, "s")) {
 		ctx.qry.sort = xstrdup(value);
 	} else if (!strcmp(name, "showmsg")) {

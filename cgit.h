@@ -173,7 +173,6 @@ struct cgit_query {
 	char *sha2;
 	char *path;
 	char *name;
-	char *mimetype;
 	char *url;
 	char *period;
 	int   ofs;

@@ -161,7 +161,6 @@ void cgit_print_blob(const char *hex, char *path, const char *head, int file_onl
 	}
 
 	buf[size] = '\0';
-	ctx.page.mimetype = ctx.qry.mimetype;
 	if (!ctx.page.mimetype) {
 		if (buffer_is_binary(buf, size))
 			ctx.page.mimetype = "application/octet-stream";
