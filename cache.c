@@ -61,8 +61,9 @@ static int open_slot(struct cache_slot *slot)
 	if (bufz)
 		bufkeylen = bufz - slot->buf;
 
-	slot->match = bufkeylen == slot->keylen &&
-	    !memcmp(slot->key, slot->buf, bufkeylen + 1);
+	if (slot->key)
+		slot->match = bufkeylen == slot->keylen &&
+		    !memcmp(slot->key, slot->buf, bufkeylen + 1);
 
 	return 0;
 }
