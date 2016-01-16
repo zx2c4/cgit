@@ -141,7 +141,9 @@ static int show_commit(struct commit *commit, struct rev_info *revs)
 
 	/* When we get here we have precisely one parent. */
 	parent = parents->item;
-	parse_commit(parent);
+	/* If we can't parse the commit, let print_commit() report an error. */
+	if (parse_commit(parent))
+		return 1;
 
 	files = 0;
 	add_lines = 0;
