@@ -21,6 +21,7 @@
 
 
 import sys
+import io
 from pygments import highlight
 from pygments.util import ClassNotFound
 from pygments.lexers import TextLexer
@@ -29,6 +30,8 @@ from pygments.lexers import guess_lexer_for_filename
 from pygments.formatters import HtmlFormatter
 
 
+sys.stdin = io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8')
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 data = sys.stdin.read()
 filename = sys.argv[1]
 formatter = HtmlFormatter(style='pastie')
