@@ -607,26 +607,6 @@ void cgit_submodule_link(const char *class, char *path, const char *rev)
 		path[len - 1] = tail;
 }
 
-static const char *fmt_date(time_t secs, const char *format, int local_time)
-{
-	static char buf[64];
-	struct tm *time;
-
-	if (!secs)
-		return "";
-	if (local_time)
-		time = localtime(&secs);
-	else
-		time = gmtime(&secs);
-	strftime(buf, sizeof(buf)-1, format, time);
-	return buf;
-}
-
-void cgit_print_date(time_t secs, const char *format, int local_time)
-{
-	html_txt(fmt_date(secs, format, local_time));
-}
-
 const struct date_mode *cgit_date_mode(const char *format)
 {
 	static struct date_mode mode;
