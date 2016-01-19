@@ -130,9 +130,11 @@ struct commitinfo {
 	char *author;
 	char *author_email;
 	unsigned long author_date;
+	int author_tz;
 	char *committer;
 	char *committer_email;
 	unsigned long committer_date;
+	int committer_tz;
 	char *subject;
 	char *msg;
 	char *msg_encoding;
@@ -142,6 +144,7 @@ struct taginfo {
 	char *tagger;
 	char *tagger_email;
 	unsigned long tagger_date;
+	int tagger_tz;
 	char *msg;
 };
 

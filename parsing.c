@@ -69,7 +69,7 @@ static char *substr(const char *head, const char *tail)
 	return buf;
 }
 
-static void parse_user(const char *t, char **name, char **email, unsigned long *date)
+static void parse_user(const char *t, char **name, char **email, unsigned long *date, int *tz)
 {
 	struct ident_split ident;
 	unsigned email_len;
@@ -83,6 +83,8 @@ static void parse_user(const char *t, char **name, char **email, unsigned long *
 
 		if (ident.date_begin)
 			*date = strtoul(ident.date_begin, NULL, 10);
+		if (ident.tz_begin)
+			*tz = atoi(ident.tz_begin);
 	}
 }
 
@@ -147,13 +149,13 @@ struct commitinfo *cgit_parse_commit(struct commit *commit)
 
 	if (p && skip_prefix(p, "author ", &p)) {
 		parse_user(p, &ret->author, &ret->author_email,
-			&ret->author_date);
+			&ret->author_date, &ret->author_tz);
 		p = next_header_line(p);
 	}
 
 	if (p && skip_prefix(p, "committer ", &p)) {
 		parse_user(p, &ret->committer, &ret->committer_email,
-			&ret->committer_date);
+			&ret->committer_date, &ret->committer_tz);
 		p = next_header_line(p);
 	}
 
@@ -208,7 +210,7 @@ struct taginfo *cgit_parse_tag(struct tag *tag)
 	for (p = data; !end_of_header(p); p = next_header_line(p)) {
 		if (skip_prefix(p, "tagger ", &p)) {
 			parse_user(p, &ret->tagger, &ret->tagger_email,
-				&ret->tagger_date);
+				&ret->tagger_date, &ret->tagger_tz);
 		}
 	}
 
