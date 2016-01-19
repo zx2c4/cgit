@@ -627,6 +627,15 @@ void cgit_print_date(time_t secs, const char *format, int local_time)
 	html_txt(fmt_date(secs, format, local_time));
 }
 
+const struct date_mode *cgit_date_mode(const char *format)
+{
+	static struct date_mode mode;
+	mode.type = DATE_STRFTIME;
+	mode.strftime_fmt = format;
+	mode.local = ctx.cfg.local_time;
+	return &mode;
+}
+
 static void print_rel_date(time_t t, double value,
 	const char *class, const char *suffix)
 {
