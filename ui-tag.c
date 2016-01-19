@@ -76,7 +76,8 @@ void cgit_print_tag(char *revname)
 		htmlf(" (%s)</td></tr>\n", sha1_to_hex(sha1));
 		if (info->tagger_date > 0) {
 			html("<tr><td>tag date</td><td>");
-			cgit_print_date(info->tagger_date, FMT_LONGDATE, ctx.cfg.local_time);
+			html_txt(show_date(info->tagger_date, info->tagger_tz,
+						cgit_date_mode(FMT_LONGDATE)));
 			html("</td></tr>\n");
 		}
 		if (info->tagger) {

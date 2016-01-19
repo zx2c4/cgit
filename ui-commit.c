@@ -55,7 +55,8 @@ void cgit_print_commit(char *hex, const char *prefix)
 	}
 	cgit_close_filter(ctx.repo->email_filter);
 	html("</td><td class='right'>");
-	cgit_print_date(info->author_date, FMT_LONGDATE, ctx.cfg.local_time);
+	html_txt(show_date(info->author_date, info->author_tz,
+				cgit_date_mode(FMT_LONGDATE)));
 	html("</td></tr>\n");
 	html("<tr><th>committer</th><td>");
 	cgit_open_filter(ctx.repo->email_filter, info->committer_email, "commit");
@@ -66,7 +67,8 @@ void cgit_print_commit(char *hex, const char *prefix)
 	}
 	cgit_close_filter(ctx.repo->email_filter);
 	html("</td><td class='right'>");
-	cgit_print_date(info->committer_date, FMT_LONGDATE, ctx.cfg.local_time);
+	html_txt(show_date(info->committer_date, info->committer_tz,
+				cgit_date_mode(FMT_LONGDATE)));
 	html("</td></tr>\n");
 	html("<tr><th>commit</th><td colspan='2' class='sha1'>");
 	tmp = oid_to_hex(&commit->object.oid);
