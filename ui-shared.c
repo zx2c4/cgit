@@ -636,15 +636,15 @@ const struct date_mode *cgit_date_mode(const char *format)
 	return &mode;
 }
 
-static void print_rel_date(time_t t, double value,
+static void print_rel_date(time_t t, int tz, double value,
 	const char *class, const char *suffix)
 {
 	htmlf("<span class='%s' title='", class);
-	html_attr(fmt_date(t, FMT_LONGDATE, ctx.cfg.local_time));
+	html_attr(show_date(t, tz, cgit_date_mode(FMT_LONGDATE)));
 	htmlf("'>%.0f %s</span>", value, suffix);
 }
 
-void cgit_print_age(time_t t, time_t max_relative)
+void cgit_print_age(time_t t, int tz, time_t max_relative)
 {
 	time_t now, secs;
 
@@ -657,34 +657,34 @@ void cgit_print_age(time_t t, time_t max_relative)
 
 	if (secs > max_relative && max_relative >= 0) {
 		html("<span title='");
-		html_attr(fmt_date(t, FMT_LONGDATE, ctx.cfg.local_time));
+		html_attr(show_date(t, tz, cgit_date_mode(FMT_LONGDATE)));
 		html("'>");
-		cgit_print_date(t, FMT_SHORTDATE, ctx.cfg.local_time);
+		html_txt(show_date(t, tz, cgit_date_mode(FMT_SHORTDATE)));
 		html("</span>");
 		return;
 	}
 
 	if (secs < TM_HOUR * 2) {
-		print_rel_date(t, secs * 1.0 / TM_MIN, "age-mins", "min.");
+		print_rel_date(t, tz, secs * 1.0 / TM_MIN, "age-mins", "min.");
 		return;
 	}
 	if (secs < TM_DAY * 2) {
-		print_rel_date(t, secs * 1.0 / TM_HOUR, "age-hours", "hours");
+		print_rel_date(t, tz, secs * 1.0 / TM_HOUR, "age-hours", "hours");
 		return;
 	}
 	if (secs < TM_WEEK * 2) {
-		print_rel_date(t, secs * 1.0 / TM_DAY, "age-days", "days");
+		print_rel_date(t, tz, secs * 1.0 / TM_DAY, "age-days", "days");
 		return;
 	}
 	if (secs < TM_MONTH * 2) {
-		print_rel_date(t, secs * 1.0 / TM_WEEK, "age-weeks", "weeks");
+		print_rel_date(t, tz, secs * 1.0 / TM_WEEK, "age-weeks", "weeks");
 		return;
 	}
 	if (secs < TM_YEAR * 2) {
-		print_rel_date(t, secs * 1.0 / TM_MONTH, "age-months", "months");
+		print_rel_date(t, tz, secs * 1.0 / TM_MONTH, "age-months", "months");
 		return;
 	}
-	print_rel_date(t, secs * 1.0 / TM_YEAR, "age-years", "years");
+	print_rel_date(t, tz, secs * 1.0 / TM_YEAR, "age-years", "years");
 }
 
 void cgit_print_http_headers(void)

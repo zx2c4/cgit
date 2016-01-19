@@ -204,7 +204,7 @@ static void print_commit(struct commit *commit, struct rev_info *revs)
 	}
 	else {
 		html("<td>");
-		cgit_print_age(commit->date, TM_WEEK * 2);
+		cgit_print_age(info->committer_date, info->committer_tz, TM_WEEK * 2);
 		html("</td>");
 	}
 
@@ -244,7 +244,7 @@ static void print_commit(struct commit *commit, struct rev_info *revs)
 
 	if (revs->graph) {
 		html("</td><td>");
-		cgit_print_age(commit->date, TM_WEEK * 2);
+		cgit_print_age(info->committer_date, info->committer_tz, TM_WEEK * 2);
 	}
 
 	if (!lines_counted && (ctx.repo->enable_log_filecount ||

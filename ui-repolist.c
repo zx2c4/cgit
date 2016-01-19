@@ -79,7 +79,7 @@ static void print_modtime(struct cgit_repo *repo)
 {
 	time_t t;
 	if (get_repo_modtime(repo, &t))
-		cgit_print_age(t, -1);
+		cgit_print_age(t, 0, -1);
 }
 
 static int is_match(struct cgit_repo *repo)
