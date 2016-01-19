@@ -635,7 +635,7 @@ static void print_rel_date(time_t t, double value,
 	htmlf("'>%.0f %s</span>", value, suffix);
 }
 
-void cgit_print_age(time_t t, time_t max_relative, const char *format)
+void cgit_print_age(time_t t, time_t max_relative)
 {
 	time_t now, secs;
 
@@ -650,7 +650,7 @@ void cgit_print_age(time_t t, time_t max_relative, const char *format)
 		html("<span title='");
 		html_attr(fmt_date(t, FMT_LONGDATE, ctx.cfg.local_time));
 		html("'>");
-		cgit_print_date(t, format, ctx.cfg.local_time);
+		cgit_print_date(t, FMT_SHORTDATE, ctx.cfg.local_time);
 		html("</span>");
 		return;
 	}
