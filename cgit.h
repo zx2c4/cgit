@@ -32,8 +32,6 @@
 /*
  * Dateformats used on misc. pages
  */
-#define FMT_LONGDATE "%Y-%m-%d %H:%M:%S (%Z)"
-#define FMT_SHORTDATE "%Y-%m-%d"
 #define FMT_ATOMDATE "%Y-%m-%dT%H:%M:%SZ"
 
 
