@@ -29,11 +29,6 @@
 #undef isgraph
 #define isgraph(x) (isprint((x)) && !isspace((x)))
 
-/*
- * Dateformats used on misc. pages
- */
-#define FMT_ATOMDATE "%Y-%m-%dT%H:%M:%SZ"
-
 
 /*
  * Limits used for relative dates

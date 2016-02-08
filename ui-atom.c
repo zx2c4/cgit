@@ -17,11 +17,6 @@ static void add_entry(struct commit *commit, const char *host)
 	char *hex;
 	char *mail, *t, *t2;
 	struct commitinfo *info;
-	struct date_mode mode = {
-		.type = DATE_STRFTIME,
-		.strftime_fmt = FMT_ATOMDATE,
-		.local = 0,
-	};
 
 	info = cgit_parse_commit(commit);
 	hex = oid_to_hex(&commit->object.oid);
@@ -30,7 +25,8 @@ static void add_entry(struct commit *commit, const char *host)
 	html_txt(info->subject);
 	html("</title>\n");
 	html("<updated>");
-	html_txt(show_date(info->committer_date, 0, &mode));
+	html_txt(show_date(info->committer_date, 0,
+                    date_mode_from_type(DATE_ISO8601_STRICT)));
 	html("</updated>\n");
 	html("<author>\n");
 	if (info->author) {
@@ -55,7 +51,8 @@ static void add_entry(struct commit *commit, const char *host)
 	}
 	html("</author>\n");
 	html("<published>");
-	html_txt(show_date(info->author_date, 0, &mode));
+	html_txt(show_date(info->author_date, 0,
+                    date_mode_from_type(DATE_ISO8601_STRICT)));
 	html("</published>\n");
 	if (host) {
 		char *pageurl;
