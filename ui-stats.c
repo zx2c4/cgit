@@ -184,9 +184,9 @@ static void add_commit(struct string_list *authors, struct commit *commit,
 	period->trunc(date);
 	tmp = xstrdup(period->pretty(date));
 	item = string_list_insert(items, tmp);
-	if (item->util)
-		free(tmp);
 	counter = (uintptr_t *)&item->util;
+	if (*counter)
+		free(tmp);
 	(*counter)++;
 
 	authorstat->total++;
