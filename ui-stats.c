@@ -3,12 +3,6 @@
 #include "html.h"
 #include "ui-shared.h"
 
-#ifdef NO_C99_FORMAT
-#define SZ_FMT "%u"
-#else
-#define SZ_FMT "%zu"
-#endif
-
 struct authorstat {
 	long total;
 	struct string_list list;
@@ -174,6 +168,7 @@ static void add_commit(struct string_list *authors, struct commit *commit,
 	char *tmp;
 	struct tm *date;
 	time_t t;
+	uintptr_t *counter;
 
 	info = cgit_parse_commit(commit);
 	tmp = xstrdup(info->author);
@@ -191,7 +186,9 @@ static void add_commit(struct string_list *authors, struct commit *commit,
 	item = string_list_insert(items, tmp);
 	if (item->util)
 		free(tmp);
-	item->util++;
+	counter = (uintptr_t *)&item->util;
+	(*counter)++;
+
 	authorstat->total++;
 	cgit_free_commitinfo(info);
 }
@@ -286,7 +283,7 @@ static void print_combined_authorrow(struct string_list *authors, int from,
 			items = &authorstat->list;
 			date = string_list_lookup(items, tmp);
 			if (date)
-				subtotal += (size_t)date->util;
+				subtotal += (uintptr_t)date->util;
 		}
 		htmlf("<td class='%s'>%ld</td>", centerclass, subtotal);
 		total += subtotal;
@@ -340,8 +337,8 @@ static void print_authors(struct string_list *authors, int top,
 			if (!date)
 				html("<td>0</td>");
 			else {
-				htmlf("<td>"SZ_FMT"</td>", (size_t)date->util);
-				total += (size_t)date->util;
+				htmlf("<td>%lu</td>", (uintptr_t)date->util);
+				total += (uintptr_t)date->util;
 			}
 		}
 		htmlf("<td class='sum'>%ld</td></tr>", total);
