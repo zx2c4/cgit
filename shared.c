@@ -54,6 +54,7 @@ struct cgit_repo *cgit_add_repo(const char *url)
 	ret->path = NULL;
 	ret->desc = cgit_default_repo_desc;
 	ret->owner = NULL;
+	ret->homepage = NULL;
 	ret->section = ctx.cfg.section;
 	ret->snapshots = ctx.cfg.snapshots;
 	ret->enable_commit_graph = ctx.cfg.enable_commit_graph;

@@ -41,6 +41,8 @@ static void repo_config(struct cgit_repo *repo, const char *name, const char *va
 		repo->desc = xstrdup(value);
 	else if (!strcmp(name, "owner"))
 		repo->owner = xstrdup(value);
+	else if (!strcmp(name, "homepage"))
+		repo->homepage = xstrdup(value);
 	else if (!strcmp(name, "defbranch"))
 		repo->defbranch = xstrdup(value);
 	else if (!strcmp(name, "snapshots"))
@@ -793,6 +795,8 @@ static void print_repo(FILE *f, struct cgit_repo *repo)
 		fprintf(f, "repo.module-link=%s\n", repo->module_link);
 	if (repo->section)
 		fprintf(f, "repo.section=%s\n", repo->section);
+	if (repo->homepage)
+		fprintf(f, "repo.homepage=%s\n", repo->homepage);
 	if (repo->clone_url)
 		fprintf(f, "repo.clone-url=%s\n", repo->clone_url);
 	fprintf(f, "repo.enable-commit-graph=%d\n",

@@ -997,6 +997,11 @@ void cgit_print_pageheader(void)
 		if (ctx.repo->max_stats)
 			cgit_stats_link("stats", NULL, hc("stats"),
 					ctx.qry.head, ctx.qry.vpath);
+		if (ctx.repo->homepage) {
+			html("<a href='");
+			html_attr(ctx.repo->homepage);
+			html("' target='_blank'>homepage</a>");
+		}
 		html("</td><td class='form'>");
 		html("<form class='right' method='get' action='");
 		if (ctx.cfg.virtual_root) {

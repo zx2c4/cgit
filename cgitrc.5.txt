@@ -205,11 +205,11 @@ enable-git-config::
 	Flag which, when set to "1", will allow cgit to use git config to set
 	any repo specific settings. This option is used in conjunction with
 	"scan-path", and must be defined prior, to augment repo-specific
-	settings. The keys gitweb.owner, gitweb.category, and gitweb.description
-	will map to the cgit keys repo.owner, repo.section, and repo.desc,
-	respectively. All git config keys that begin with "cgit." will be mapped
-	to the corresponding "repo." key in cgit. Default value: "0". See also:
-	scan-path, section-from-path.
+	settings. The keys gitweb.owner, gitweb.category, gitweb.description,
+	and gitweb.homepage will map to the cgit keys repo.owner, repo.section,
+	repo.desc, and repo.homepage respectively. All git config keys that begin
+	with "cgit." will be mapped to the corresponding "repo." key in cgit.
+	Default value: "0". See also: scan-path, section-from-path.
 
 favicon::
 	Url used as link to a shortcut icon for cgit. It is suggested to use
@@ -495,6 +495,9 @@ repo.defbranch::
 
 repo.desc::
 	The value to show as repository description. Default value: none.
+
+repo.homepage::
+	The value to show as repository homepage. Default value: none.
 
 repo.email-filter::
 	Override the default email-filter. Default value: none. See also:

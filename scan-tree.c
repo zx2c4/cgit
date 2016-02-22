@@ -61,6 +61,8 @@ static int gitconfig_config(const char *key, const char *value, void *cb)
 		config_fn(repo, "desc", value);
 	else if (!strcmp(key, "gitweb.category"))
 		config_fn(repo, "section", value);
+	else if (!strcmp(key, "gitweb.homepage"))
+		config_fn(repo, "homepage", value);
 	else if (starts_with(key, "cgit."))
 		config_fn(repo, key + 5, value);
 
