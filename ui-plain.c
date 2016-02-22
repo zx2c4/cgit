@@ -143,7 +143,7 @@ static int walk_tree(const unsigned char *sha1, struct strbuf *base,
 			walk_tree_ctx->match = 2;
 			return READ_TREE_RECURSIVE;
 		}
-	} else if (base->len > walk_tree_ctx->match_baselen) {
+	} else if (base->len < INT_MAX && (int)base->len > walk_tree_ctx->match_baselen) {
 		print_dir_entry(sha1, base->buf, base->len, pathname, mode);
 		walk_tree_ctx->match = 2;
 	} else if (S_ISDIR(mode)) {
