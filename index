@@ -35,8 +35,8 @@ Features
 Source Code
 -----------
  * download current or past [releases][]
- * clone the repo using the Git protocol:
-   * git clone git://git.zx2c4.com/cgit
+ * clone the repo:
+   * git clone https://git.zx2c4.com/cgit
  * see the [README][] for build instructions
 
 [releases]: /cgit/refs/tags
