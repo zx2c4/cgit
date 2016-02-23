@@ -18,7 +18,7 @@ div#cgit a:hover {
 }
 
 div#cgit table {
-      border-collapse: collapse;
+	border-collapse: collapse;
 }
 
 div#cgit table#header {
@@ -803,9 +803,9 @@ div#cgit table.ssdiff td.head div.head {
 
 div#cgit table.ssdiff td.foot {
 	border-top: solid 1px #aaa;
-        border-left: none;
-        border-right: none;
-        border-bottom: none;
+	border-left: none;
+	border-right: none;
+	border-bottom: none;
 }
 
 div#cgit table.ssdiff td.space {
