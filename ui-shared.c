@@ -1000,7 +1000,7 @@ void cgit_print_pageheader(void)
 		if (ctx.repo->homepage) {
 			html("<a href='");
 			html_attr(ctx.repo->homepage);
-			html("' target='_blank'>homepage</a>");
+			html("'>homepage</a>");
 		}
 		html("</td><td class='form'>");
 		html("<form class='right' method='get' action='");
