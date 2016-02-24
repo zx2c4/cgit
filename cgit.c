@@ -941,7 +941,7 @@ static void cgit_parse_args(int argc, const char **argv)
 
 	for (i = 1; i < argc; i++) {
 		if (!strcmp(argv[i], "--version")) {
-			printf("CGit %s | http://git.zx2c4.com/cgit/\n\nCompiled in features:\n", CGIT_VERSION);
+			printf("CGit %s | https://git.zx2c4.com/cgit/\n\nCompiled in features:\n", CGIT_VERSION);
 #ifdef NO_LUA
 			printf("[-] ");
 #else

@@ -4,7 +4,7 @@
 -- 	luacrypto >= 0.3
 -- 	<http://mkottman.github.io/luacrypto/>
 -- 	lualdap >= 1.2
--- 	<http://git.zx2c4.com/lualdap/about/>
+-- 	<https://git.zx2c4.com/lualdap/about/>
 --
 
 
