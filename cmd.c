@@ -39,9 +39,10 @@ static void atom_fn(void)
 static void about_fn(void)
 {
 	if (ctx.repo) {
+		size_t path_info_len = ctx.env.path_info ? strlen(ctx.env.path_info) : 0;
 		if (!ctx.qry.path &&
 		    ctx.qry.url[strlen(ctx.qry.url) - 1] != '/' &&
-		    ctx.env.path_info[strlen(ctx.env.path_info) - 1] != '/') {
+		    (!path_info_len || ctx.env.path_info[path_info_len - 1] != '/')) {
 			char *currenturl = cgit_currenturl();
 			char *redirect = fmtalloc("%s/", currenturl);
 			cgit_redirect(redirect, true);
