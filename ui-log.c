@@ -65,36 +65,34 @@ void show_commit_decorations(struct commit *commit)
 		return;
 	html("<span class='decoration'>");
 	while (deco) {
-		if (starts_with(deco->name, "refs/heads/")) {
-			strncpy(buf, deco->name + 11, sizeof(buf) - 1);
+		strncpy(buf, prettify_refname(deco->name), sizeof(buf) - 1);
+		switch(deco->type) {
+		case DECORATION_NONE:
+			/* If the git-core doesn't recognize it,
+			 * don't display anything. */
+			break;
+		case DECORATION_REF_LOCAL:
 			cgit_log_link(buf, NULL, "branch-deco", buf, NULL,
-				      ctx.qry.vpath, 0, NULL, NULL,
-				      ctx.qry.showmsg, 0);
-		}
-		else if (starts_with(deco->name, "tag: refs/tags/")) {
-			strncpy(buf, deco->name + 15, sizeof(buf) - 1);
+				ctx.qry.vpath, 0, NULL, NULL,
+				ctx.qry.showmsg, 0);
+			break;
+		case DECORATION_REF_TAG:
 			cgit_tag_link(buf, NULL, "tag-deco", buf);
-		}
-		else if (starts_with(deco->name, "refs/tags/")) {
-			strncpy(buf, deco->name + 10, sizeof(buf) - 1);
-			cgit_tag_link(buf, NULL, "tag-deco", buf);
-		}
-		else if (starts_with(deco->name, "refs/remotes/")) {
+			break;
+		case DECORATION_REF_REMOTE:
 			if (!ctx.repo->enable_remote_branches)
-				goto next;
-			strncpy(buf, deco->name + 13, sizeof(buf) - 1);
+				break;
 			cgit_log_link(buf, NULL, "remote-deco", NULL,
-				      oid_to_hex(&commit->object.oid),
-				      ctx.qry.vpath, 0, NULL, NULL,
-				      ctx.qry.showmsg, 0);
-		}
-		else {
-			strncpy(buf, deco->name, sizeof(buf) - 1);
+				oid_to_hex(&commit->object.oid),
+				ctx.qry.vpath, 0, NULL, NULL,
+				ctx.qry.showmsg, 0);
+			break;
+		default:
 			cgit_commit_link(buf, NULL, "deco", ctx.qry.head,
-					 oid_to_hex(&commit->object.oid),
-					 ctx.qry.vpath);
+					oid_to_hex(&commit->object.oid),
+					ctx.qry.vpath);
+			break;
 		}
-next:
 		deco = deco->next;
 	}
 	html("</span>");
