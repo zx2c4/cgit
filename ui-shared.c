@@ -702,7 +702,6 @@ void cgit_redirect(const char *url, bool permanent)
 	html("Location: ");
 	html_url_path(url);
 	html("\n\n");
-	exit(0);
 }
 
 static void print_rel_vcs_link(const char *url)
