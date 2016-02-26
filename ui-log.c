@@ -61,6 +61,8 @@ void show_commit_decorations(struct commit *commit)
 
 	buf[sizeof(buf) - 1] = 0;
 	deco = get_name_decoration(&commit->object);
+	if (!deco)
+		return;
 	html("<span class='decoration'>");
 	while (deco) {
 		if (starts_with(deco->name, "refs/heads/")) {
