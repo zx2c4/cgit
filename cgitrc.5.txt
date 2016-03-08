@@ -523,7 +523,7 @@ repo.enable-subject-links::
 	A flag which can be used to override the global setting
 	`enable-subject-links'. Default value: none.
 
-enable-html-serving::
+repo.enable-html-serving::
 	A flag which can be used to override the global setting
 	`enable-html-serving`. Default value: none.
 
