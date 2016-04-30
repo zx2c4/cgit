@@ -246,7 +246,7 @@ void scan_projects(const char *path, const char *projectsfile, repo_config_fn fn
 			projectsfile, strerror(errno), errno);
 		return;
 	}
-	while (strbuf_getline(&line, projects, '\n') != EOF) {
+	while (strbuf_getline(&line, projects) != EOF) {
 		if (!line.len)
 			continue;
 		strbuf_insert(&line, 0, "/", 1);
