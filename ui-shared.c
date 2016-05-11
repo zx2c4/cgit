@@ -944,7 +944,7 @@ static void print_header(void)
 			if (ctx.repo->enable_remote_branches)
 				for_each_remote_ref(print_branch_option, ctx.qry.head);
 			html("</select> ");
-			html("<input type='submit' name='' value='switch'/>");
+			html("<input type='submit' value='switch'/>");
 			html("</form>");
 		}
 	} else
