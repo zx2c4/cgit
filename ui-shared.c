@@ -12,8 +12,7 @@
 #include "html.h"
 
 static const char cgit_doctype[] =
-"<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"\n"
-"  \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n";
+"<!DOCTYPE html>\n";
 
 static char *http_date(time_t t)
 {
@@ -723,7 +722,7 @@ void cgit_print_docstart(void)
 
 	char *host = cgit_hosturl();
 	html(cgit_doctype);
-	html("<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='en' lang='en'>\n");
+	html("<html lang='en'>\n");
 	html("<head>\n");
 	html("<title>");
 	html_txt(ctx.page.title);
