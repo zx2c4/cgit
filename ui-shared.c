@@ -792,13 +792,11 @@ void cgit_print_error_page(int code, const char *msg, const char *fmt, ...)
 	ctx.page.expires = ctx.cfg.cache_dynamic_ttl;
 	ctx.page.status = code;
 	ctx.page.statusmsg = msg;
-	cgit_print_http_headers();
-	cgit_print_docstart();
-	cgit_print_pageheader();
+	cgit_print_layout_start();
 	va_start(ap, fmt);
 	cgit_vprint_error(fmt, ap);
 	va_end(ap);
-	cgit_print_docend();
+	cgit_print_layout_end();
 }
 
 void cgit_print_layout_start(void)
