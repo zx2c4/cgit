@@ -937,7 +937,7 @@ static void print_header(void)
 		cgit_summary_link(ctx.repo->name, ctx.repo->name, NULL, NULL);
 		if (ctx.env.authenticated) {
 			html("</td><td class='form'>");
-			html("<form method='get' action=''>\n");
+			html("<form method='get'>\n");
 			cgit_add_hidden_formfields(0, 1, ctx.qry.page);
 			html("<select name='h' onchange='this.form.submit();'>\n");
 			for_each_branch_ref(print_branch_option, ctx.qry.head);

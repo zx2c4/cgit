@@ -389,7 +389,7 @@ void cgit_show_stats(void)
 	cgit_print_layout_start();
 	html("<div class='cgit-panel'>");
 	html("<b>stat options</b>");
-	html("<form method='get' action=''>");
+	html("<form method='get'>");
 	cgit_add_hidden_formfields(1, 0, "stats");
 	html("<table><tr><td colspan='2'/></tr>");
 	if (ctx.repo->max_stats > 1) {
