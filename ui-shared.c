@@ -1069,18 +1069,34 @@ void cgit_print_filemode(unsigned short mode)
 	html_fileperm(mode);
 }
 
+void cgit_compose_snapshot_prefix(struct strbuf *filename, const char *base,
+				  const char *ref)
+{
+	unsigned char sha1[20];
+
+	/*
+	 * Prettify snapshot names by stripping leading "v" or "V" if the tag
+	 * name starts with {v,V}[0-9] and the prettify mapping is injective,
+	 * i.e. each stripped tag can be inverted without ambiguities.
+	 */
+	if (get_sha1(fmt("refs/tags/%s", ref), sha1) == 0 &&
+	    (ref[0] == 'v' || ref[0] == 'V') && isdigit(ref[1]) &&
+	    ((get_sha1(fmt("refs/tags/%s", ref + 1), sha1) == 0) +
+	     (get_sha1(fmt("refs/tags/v%s", ref + 1), sha1) == 0) +
+	     (get_sha1(fmt("refs/tags/V%s", ref + 1), sha1) == 0) == 1))
+		ref++;
+
+	strbuf_addf(filename, "%s-%s", base, ref);
+}
+
 void cgit_print_snapshot_links(const char *repo, const char *head,
 			       const char *hex, int snapshots)
 {
 	const struct cgit_snapshot_format* f;
 	struct strbuf filename = STRBUF_INIT;
 	size_t prefixlen;
-	unsigned char sha1[20];
 
-	if (get_sha1(fmt("refs/tags/%s", hex), sha1) == 0 &&
-	    (hex[0] == 'v' || hex[0] == 'V') && isdigit(hex[1]))
-		hex++;
-	strbuf_addf(&filename, "%s-%s", cgit_repobasename(repo), hex);
+	cgit_compose_snapshot_prefix(&filename, cgit_repobasename(repo), hex);
 	prefixlen = filename.len;
 	for (f = cgit_snapshot_formats; f->suffix; f++) {
 		if (!(snapshots & f->bit))

@@ -93,34 +93,28 @@ static void print_tag_header(void)
 static void print_tag_downloads(const struct cgit_repo *repo, const char *ref)
 {
 	const struct cgit_snapshot_format* f;
-	struct strbuf filename = STRBUF_INIT;
 	const char *basename;
-	int free_ref = 0;
+	struct strbuf filename = STRBUF_INIT;
+	size_t prefixlen;
 
 	if (!ref || strlen(ref) < 1)
 		return;
 
 	basename = cgit_repobasename(repo->url);
-	if (!starts_with(ref, basename)) {
-		if ((ref[0] == 'v' || ref[0] == 'V') && isdigit(ref[1]))
-			ref++;
-		if (isdigit(ref[0])) {
-			ref = fmtalloc("%s-%s", basename, ref);
-			free_ref = 1;
-		}
-	}
-
+	if (starts_with(ref, basename))
+		strbuf_addstr(&filename, ref);
+	else
+		cgit_compose_snapshot_prefix(&filename, basename, ref);
+	prefixlen = filename.len;
 	for (f = cgit_snapshot_formats; f->suffix; f++) {
 		if (!(repo->snapshots & f->bit))
 			continue;
-		strbuf_reset(&filename);
-		strbuf_addf(&filename, "%s%s", ref, f->suffix);
+		strbuf_setlen(&filename, prefixlen);
+		strbuf_addstr(&filename, f->suffix);
 		cgit_snapshot_link(filename.buf, NULL, NULL, NULL, NULL, filename.buf);
 		html("&nbsp;&nbsp;");
 	}
 
-	if (free_ref)
-		free((char *)ref);
 	strbuf_release(&filename);
 }
 
