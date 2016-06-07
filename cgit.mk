@@ -21,6 +21,8 @@ CGIT_CFLAGS += -DCGIT_CONFIG='"$(CGIT_CONFIG)"'
 CGIT_CFLAGS += -DCGIT_SCRIPT_NAME='"$(CGIT_SCRIPT_NAME)"'
 CGIT_CFLAGS += -DCGIT_CACHE_ROOT='"$(CACHE_ROOT)"'
 
+PKG_CONFIG ?= pkg-config
+
 ifdef NO_C99_FORMAT
 	CFLAGS += -DNO_C99_FORMAT
 endif
@@ -31,7 +33,7 @@ ifdef NO_LUA
 else
 ifeq ($(LUA_PKGCONFIG),)
 	LUA_PKGCONFIG := $(shell for pc in luajit lua lua5.2 lua5.1; do \
-			pkg-config --exists $$pc 2>/dev/null && echo $$pc && break; \
+			$(PKG_CONFIG) --exists $$pc 2>/dev/null && echo $$pc && break; \
 			done)
 	LUA_MODE := autodetected
 else
@@ -39,8 +41,8 @@ else
 endif
 ifneq ($(LUA_PKGCONFIG),)
 	LUA_MESSAGE := linking with $(LUA_MODE) $(LUA_PKGCONFIG)
-	LUA_LIBS := $(shell pkg-config --libs $(LUA_PKGCONFIG) 2>/dev/null)
-	LUA_CFLAGS := $(shell pkg-config --cflags $(LUA_PKGCONFIG) 2>/dev/null)
+	LUA_LIBS := $(shell $(PKG_CONFIG) --libs $(LUA_PKGCONFIG) 2>/dev/null)
+	LUA_CFLAGS := $(shell $(PKG_CONFIG) --cflags $(LUA_PKGCONFIG) 2>/dev/null)
 	CGIT_LIBS += $(LUA_LIBS)
 	CGIT_CFLAGS += $(LUA_CFLAGS)
 else
