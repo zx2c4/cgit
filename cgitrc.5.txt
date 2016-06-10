@@ -676,14 +676,14 @@ commit filter::
 	expected on standard output.
 
 email filter::
-	This filter is given two parameters: the email address of the relevent
+	This filter is given two parameters: the email address of the relevant
 	author and a string indicating the originating page. The filter will
 	then receive the text string to format on standard input and is
 	expected to write to standard output the formatted text to be included
 	in the page.
 
 owner filter::
-	This filter is given no arguments.  The owner text is avilable on
+	This filter is given no arguments.  The owner text is available on
 	standard input and the filter is expected to write to standard
 	output.  The output is included in the Owner column.
 
