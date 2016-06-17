@@ -1,7 +1,11 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import markdown
+import sys
+import io
 from pygments.formatters import HtmlFormatter
-print('''
+sys.stdin = io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8')
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+sys.stdout.write('''
 <style>
 .markdown-body {
     font-size: 14px;
@@ -279,11 +283,12 @@ print('''
     border: none;
 }
 ''')
-print(HtmlFormatter(style='pastie').get_style_defs('.highlight'))
-print('''
+sys.stdout.write(HtmlFormatter(style='pastie').get_style_defs('.highlight'))
+sys.stdout.write('''
 </style>   
 ''')
-print("<div class='markdown-body'>")
+sys.stdout.write("<div class='markdown-body'>")
+sys.stdout.flush()
 # Note: you may want to run this through bleach for sanitization
 markdown.markdownFromFile(output_format="html5", extensions=["markdown.extensions.fenced_code", "markdown.extensions.codehilite", "markdown.extensions.tables"], extension_configs={"markdown.extensions.codehilite":{"css_class":"highlight"}})
-print("</div>")
+sys.stdout.write("</div>")
