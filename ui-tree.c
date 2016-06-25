@@ -306,7 +306,7 @@ void cgit_print_tree(const char *rev, char *path)
 	if (!rev)
 		rev = ctx.qry.head;
 
-	if (get_sha1(rev, sha1)) {
+	if (cgit_get_sha1(rev, sha1)) {
 		cgit_print_error_page(404, "Not found",
 			"Invalid revision name: %s", rev);
 		return;

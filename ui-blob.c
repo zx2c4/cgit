@@ -52,7 +52,7 @@ int cgit_ref_path_exists(const char *path, const char *ref, int file_only)
 		.file_only = file_only
 	};
 
-	if (get_sha1(ref, sha1))
+	if (cgit_get_sha1(ref, sha1))
 		return 0;
 	if (sha1_object_info(sha1, &size) != OBJ_COMMIT)
 		return 0;
@@ -82,7 +82,7 @@ int cgit_print_file(char *path, const char *head, int file_only)
 		.file_only = file_only
 	};
 
-	if (get_sha1(head, sha1))
+	if (cgit_get_sha1(head, sha1))
 		return -1;
 	type = sha1_object_info(sha1, &size);
 	if (type == OBJ_COMMIT) {
@@ -132,7 +132,7 @@ void cgit_print_blob(const char *hex, char *path, const char *head, int file_onl
 			return;
 		}
 	} else {
-		if (get_sha1(head, sha1)) {
+		if (cgit_get_sha1(head, sha1)) {
 			cgit_print_error_page(404, "Not found",
 					"Bad ref: %s", head);
 			return;

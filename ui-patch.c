@@ -24,7 +24,7 @@ void cgit_print_patch(const char *new_rev, const char *old_rev,
 	if (!new_rev)
 		new_rev = ctx.qry.head;
 
-	if (get_sha1(new_rev, new_rev_sha1)) {
+	if (cgit_get_sha1(new_rev, new_rev_sha1)) {
 		cgit_print_error_page(404, "Not found",
 				"Bad object id: %s", new_rev);
 		return;
@@ -37,7 +37,7 @@ void cgit_print_patch(const char *new_rev, const char *old_rev,
 	}
 
 	if (old_rev) {
-		if (get_sha1(old_rev, old_rev_sha1)) {
+		if (cgit_get_sha1(old_rev, old_rev_sha1)) {
 			cgit_print_error_page(404, "Not found",
 					"Bad object id: %s", old_rev);
 			return;

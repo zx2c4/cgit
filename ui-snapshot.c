@@ -111,7 +111,7 @@ static int make_snapshot(const struct cgit_snapshot_format *format,
 {
 	unsigned char sha1[20];
 
-	if (get_sha1(hex, sha1)) {
+	if (cgit_get_sha1(hex, sha1)) {
 		cgit_print_error_page(404, "Not found",
 				"Bad object id: %s", hex);
 		return 1;
@@ -150,7 +150,7 @@ static const char *get_ref_from_filename(const char *url, const char *filename,
 	strbuf_addstr(&snapshot, filename);
 	strbuf_setlen(&snapshot, snapshot.len - strlen(format->suffix));
 
-	if (get_sha1(snapshot.buf, sha1) == 0)
+	if (cgit_get_sha1(snapshot.buf, sha1) == 0)
 		goto out;
 
 	reponame = cgit_repobasename(url);
@@ -162,15 +162,15 @@ static const char *get_ref_from_filename(const char *url, const char *filename,
 		strbuf_splice(&snapshot, 0, new_start - snapshot.buf, "", 0);
 	}
 
-	if (get_sha1(snapshot.buf, sha1) == 0)
+	if (cgit_get_sha1(snapshot.buf, sha1) == 0)
 		goto out;
 
 	strbuf_insert(&snapshot, 0, "v", 1);
-	if (get_sha1(snapshot.buf, sha1) == 0)
+	if (cgit_get_sha1(snapshot.buf, sha1) == 0)
 		goto out;
 
 	strbuf_splice(&snapshot, 0, 1, "V", 1);
-	if (get_sha1(snapshot.buf, sha1) == 0)
+	if (cgit_get_sha1(snapshot.buf, sha1) == 0)
 		goto out;
 
 	result = 0;

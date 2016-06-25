@@ -26,7 +26,7 @@ void cgit_print_commit(char *hex, const char *prefix)
 	if (!hex)
 		hex = ctx.qry.head;
 
-	if (get_sha1(hex, sha1)) {
+	if (cgit_get_sha1(hex, sha1)) {
 		cgit_print_error_page(400, "Bad request",
 				"Bad object id: %s", hex);
 		return;

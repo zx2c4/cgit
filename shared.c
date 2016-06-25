@@ -601,3 +601,8 @@ char *get_mimetype_for_filename(const char *filename)
 	fclose(file);
 	return NULL;
 }
+
+int cgit_get_sha1(const char *name, unsigned char *sha1)
+{
+	return get_sha1(name, sha1);
+}

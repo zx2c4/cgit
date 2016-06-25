@@ -391,4 +391,6 @@ extern char *expand_macros(const char *txt);
 
 extern char *get_mimetype_for_filename(const char *filename);
 
+extern int cgit_get_sha1(const char *name, unsigned char *sha1);
+
 #endif /* CGIT_H */

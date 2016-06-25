@@ -181,7 +181,7 @@ void cgit_print_plain(void)
 	if (!rev)
 		rev = ctx.qry.head;
 
-	if (get_sha1(rev, sha1)) {
+	if (cgit_get_sha1(rev, sha1)) {
 		cgit_print_error_page(404, "Not found", "Not found");
 		return;
 	}

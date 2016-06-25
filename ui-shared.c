@@ -1079,11 +1079,11 @@ void cgit_compose_snapshot_prefix(struct strbuf *filename, const char *base,
 	 * name starts with {v,V}[0-9] and the prettify mapping is injective,
 	 * i.e. each stripped tag can be inverted without ambiguities.
 	 */
-	if (get_sha1(fmt("refs/tags/%s", ref), sha1) == 0 &&
+	if (cgit_get_sha1(fmt("refs/tags/%s", ref), sha1) == 0 &&
 	    (ref[0] == 'v' || ref[0] == 'V') && isdigit(ref[1]) &&
-	    ((get_sha1(fmt("refs/tags/%s", ref + 1), sha1) == 0) +
-	     (get_sha1(fmt("refs/tags/v%s", ref + 1), sha1) == 0) +
-	     (get_sha1(fmt("refs/tags/V%s", ref + 1), sha1) == 0) == 1))
+	    ((cgit_get_sha1(fmt("refs/tags/%s", ref + 1), sha1) == 0) +
+	     (cgit_get_sha1(fmt("refs/tags/v%s", ref + 1), sha1) == 0) +
+	     (cgit_get_sha1(fmt("refs/tags/V%s", ref + 1), sha1) == 0) == 1))
 		ref++;
 
 	strbuf_addf(filename, "%s-%s", base, ref);

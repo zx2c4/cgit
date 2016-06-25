@@ -615,7 +615,7 @@ static int prepare_repo_cmd(void)
 		return 1;
 	}
 
-	if (get_sha1(ctx.qry.head, sha1)) {
+	if (cgit_get_sha1(ctx.qry.head, sha1)) {
 		char *old_head = ctx.qry.head;
 		ctx.qry.head = xstrdup(ctx.repo->defbranch);
 		cgit_print_error_page(404, "Not found",
