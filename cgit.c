@@ -566,6 +566,11 @@ static int prepare_repo_cmd(void)
 	/* The path to the git repository. */
 	setenv("GIT_DIR", ctx.repo->path, 1);
 
+	/*  Set the namespace in the environment,
+	 *  so it gets loaded on the first get_git_namespace() */
+	if (ctx.repo->namespace)
+		setenv("GIT_NAMESPACE", ctx.repo->namespace, 1);
+
 	/* Do not look in /etc/ for gitconfig and gitattributes. */
 	setenv("GIT_CONFIG_NOSYSTEM", "1", 1);
 	setenv("GIT_ATTR_NOSYSTEM", "1", 1);
