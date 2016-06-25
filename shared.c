@@ -602,7 +602,52 @@ char *get_mimetype_for_filename(const char *filename)
 	return NULL;
 }
 
+static int namespaced_dwim_ref_get_sha1(const char *name, unsigned char *sha1)
+{
+	/* The standard git name disambiguation order is:
+	     $name
+	     refs/$name
+	     refs/tags/$name
+	     refs/heads/$name
+	     refs/remotes/$name (not sure why)
+	     refs/remotes/$name/HEAD
+	   we don't care about remotes, so we can skip those,
+	   and we can't specify a prefix for dwm_ref,
+	   so we have to do this ourselves */
+	static const char *namespaced_ref_patterns[] = {
+		"%s%s",
+		"%srefs/%s",
+		"%srefs/tags/%s",
+		"%srefs/heads/%s",
+		NULL,
+	};
+	const char **p;
+
+	for (p = namespaced_ref_patterns; *p; p++) {
+		char *fullref = NULL;
+		const char *r;
+		fullref = mkpathdup(*p, get_git_namespace(), name);
+		r = resolve_ref_unsafe(fullref, RESOLVE_REF_READING, sha1, NULL);
+		free(fullref);
+		if (r)
+			return 0;
+	}
+	return 1;
+}
+
 int cgit_get_sha1(const char *name, unsigned char *sha1)
 {
-	return get_sha1(name, sha1);
+	if (ctx.repo->namespace) {
+		/* If we have a namespace, we can get either a sha1,
+		   or a possibly abbreviated ref.
+		   Advanced ref forms are not supported at this time
+		   as this would require reimplementing all of ref parsing.
+		   If get_sha1_with_context grows support for a namespaced flag
+		   then this code may go away. */
+		if (get_sha1_hex(name, sha1) == 0)
+			return 0;
+		return namespaced_dwim_ref_get_sha1(name, sha1);
+	} else {
+		return get_sha1(name, sha1);
+	}
 }
