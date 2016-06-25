@@ -394,4 +394,6 @@ extern char *get_mimetype_for_filename(const char *filename);
 
 extern int cgit_get_sha1(const char *name, unsigned char *sha1);
 
+extern int cgit_for_each_namespaced_ref_in(const char *prefix, each_ref_fn fn, void *cb_data);
+
 #endif /* CGIT_H */

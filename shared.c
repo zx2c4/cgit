@@ -651,3 +651,13 @@ int cgit_get_sha1(const char *name, unsigned char *sha1)
 		return get_sha1(name, sha1);
 	}
 }
+
+int cgit_for_each_namespaced_ref_in(const char *prefix, each_ref_fn fn, void *cb_data)
+{
+	struct strbuf strbuf = STRBUF_INIT;
+	int ret;
+	strbuf_addf(&strbuf, "%s%s", get_git_namespace(), prefix);
+	ret = for_each_ref_in(strbuf.buf, fn, cb_data);
+	strbuf_release(&strbuf);
+	return ret;
+}
