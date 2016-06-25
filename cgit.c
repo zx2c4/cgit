@@ -45,6 +45,8 @@ static void repo_config(struct cgit_repo *repo, const char *name, const char *va
 		repo->homepage = xstrdup(value);
 	else if (!strcmp(name, "defbranch"))
 		repo->defbranch = xstrdup(value);
+	else if (!strcmp(name, "namespace"))
+		repo->namespace = xstrdup(value);
 	else if (!strcmp(name, "snapshots"))
 		repo->snapshots = ctx.cfg.snapshots & cgit_parse_snapshots_mask(value);
 	else if (!strcmp(name, "enable-commit-graph"))

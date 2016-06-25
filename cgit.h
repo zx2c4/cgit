@@ -87,6 +87,7 @@ struct cgit_repo {
 	struct string_list readme;
 	char *section;
 	char *clone_url;
+	char *namespace;
 	char *logo;
 	char *logo_link;
 	int snapshots;
