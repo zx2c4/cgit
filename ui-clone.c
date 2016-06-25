@@ -86,6 +86,9 @@ void cgit_clone_info(void)
 	ctx.page.filename = "info/refs";
 	cgit_print_http_headers();
 	for_each_ref(print_ref_info, NULL);
+	/* NOTE: we pass an empty prefix because we want to enumerate everything
+	   not just all refs under $namespace/refs/ */
+	cgit_for_each_namespaced_ref_in("", print_ref_info, NULL);
 }
 
 void cgit_clone_objects(void)
@@ -105,5 +108,23 @@ void cgit_clone_objects(void)
 
 void cgit_clone_head(void)
 {
-	send_file(git_path("%s", "HEAD"));
+	if (get_git_namespace()) {
+		unsigned char unused[20];
+		char *namespaced_head = NULL;
+		const char *ref;
+		namespaced_head = mkpathdup("%sHEAD", get_git_namespace());
+		/* NOTE: RESOLVE_REF_NO_RECURSE is required to prevent it resolving HEAD
+		   into a ref outside of the namespace. */
+		ref = resolve_ref_unsafe(namespaced_head, RESOLVE_REF_NO_RECURSE, unused, NULL);
+		if (!ref) {
+			cgit_print_error_page(404, "Not found", "Not found");
+			free(namespaced_head);
+			return;
+		}
+		cgit_print_http_headers();
+		htmlf("ref: %s\n", strip_namespace(ref));
+		free(namespaced_head);
+	} else {
+		send_file(git_path("%s", "HEAD"));
+	}
 }
