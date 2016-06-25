@@ -778,6 +778,8 @@ static void print_repo(FILE *f, struct cgit_repo *repo)
 	fprintf(f, "repo.url=%s\n", repo->url);
 	fprintf(f, "repo.name=%s\n", repo->name);
 	fprintf(f, "repo.path=%s\n", repo->path);
+	if (repo->namespace)
+		fprintf(f, "repo.namespace=%s\n", repo->namespace);
 	if (repo->owner)
 		fprintf(f, "repo.owner=%s\n", repo->owner);
 	if (repo->desc) {
