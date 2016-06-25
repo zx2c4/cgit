@@ -474,11 +474,17 @@ static char *guess_defbranch(void)
 {
 	const char *ref;
 	unsigned char sha1[20];
+	char *namespaced_head = NULL;
 
-	ref = resolve_ref_unsafe("HEAD", 0, sha1, NULL);
-	if (!ref || !starts_with(ref, "refs/heads/"))
+	if (get_git_namespace())
+		namespaced_head = mkpathdup("%sHEAD", get_git_namespace());
+	/* NOTE: RESOLVE_REF_NO_RECURSE is required to prevent it resolving HEAD
+	   into a ref outside of the namespace. */
+	ref = resolve_ref_unsafe(namespaced_head ?: "HEAD", RESOLVE_REF_NO_RECURSE, sha1, NULL);
+	free(namespaced_head);
+	if (!ref || !starts_with(strip_namespace(ref), "refs/heads/"))
 		return "master";
-	return xstrdup(ref + 11);
+	return xstrdup(strip_namespace(ref) + 11);
 }
 /* The caller must free filename and ref after calling this. */
 static inline void parse_readme(const char *readme, char **filename, char **ref, struct cgit_repo *repo)
