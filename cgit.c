@@ -587,7 +587,39 @@ static int prepare_repo_cmd(void)
 	 * load local configuration from the git repository, so we do them both while
 	 * the HOME variables are unset. */
 	setup_git_directory_gently(&nongit);
-	init_display_notes(NULL);
+	if (get_git_namespace()) {
+		struct display_notes_opt opt = {
+			.use_default_notes = 0,
+			.extra_notes_refs = STRING_LIST_INIT_NODUP,
+		};
+		struct strbuf namespaced_note_ref = STRBUF_INIT;
+		struct strbuf glob_escaped = STRBUF_INIT;
+
+		strbuf_add(&namespaced_note_ref, get_git_namespace(),
+		           strlen(get_git_namespace()));
+		strbuf_add(&namespaced_note_ref, "refs/notes/commits",
+		           strlen("refs/notes/commits"));
+
+		if (ref_exists(namespaced_note_ref.buf)) {
+			if (has_glob_specials(namespaced_note_ref.buf)) {
+				for (const char *c = namespaced_note_ref.buf; *c; c++) {
+					if (is_glob_special(*c))
+						strbuf_addchars(&glob_escaped, '\\', 1);
+					strbuf_addchars(&glob_escaped, *c, 1);
+				}
+				string_list_append(&opt.extra_notes_refs, glob_escaped.buf);
+			} else {
+				string_list_append(&opt.extra_notes_refs, namespaced_note_ref.buf);
+			}
+		}
+
+		init_display_notes(&opt);
+		string_list_clear(&opt.extra_notes_refs, 1);
+		strbuf_release(&glob_escaped);
+		strbuf_release(&namespaced_note_ref);
+	} else {
+		init_display_notes(NULL);
+	}
 
 	if (nongit) {
 		const char *name = ctx.repo->name;
