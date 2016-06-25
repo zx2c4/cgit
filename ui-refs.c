@@ -183,9 +183,9 @@ void cgit_print_branches(int maxcount)
 
 	list.refs = NULL;
 	list.alloc = list.count = 0;
-	for_each_branch_ref(cgit_refs_cb, &list);
+	cgit_for_each_namespaced_ref_in("refs/heads/", cgit_refs_cb, &list);
 	if (ctx.repo->enable_remote_branches)
-		for_each_remote_ref(cgit_refs_cb, &list);
+		cgit_for_each_namespaced_ref_in("refs/remotes/", cgit_refs_cb, &list);
 
 	if (maxcount == 0 || maxcount > list.count)
 		maxcount = list.count;
@@ -210,7 +210,7 @@ void cgit_print_tags(int maxcount)
 
 	list.refs = NULL;
 	list.alloc = list.count = 0;
-	for_each_tag_ref(cgit_refs_cb, &list);
+	cgit_for_each_namespaced_ref_in("refs/tags/", cgit_refs_cb, &list);
 	if (list.count == 0)
 		return;
 	qsort(list.refs, list.count, sizeof(*list.refs), cmp_tag_age);
