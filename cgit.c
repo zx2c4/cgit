@@ -458,7 +458,7 @@ static char *find_default_branch(struct cgit_repo *repo)
 	info.req_ref = repo->defbranch;
 	info.first_ref = NULL;
 	info.match = 0;
-	for_each_branch_ref(find_current_ref, &info);
+	cgit_for_each_namespaced_ref_in("refs/heads/", find_current_ref, &info);
 	if (info.match)
 		ref = info.req_ref;
 	else
