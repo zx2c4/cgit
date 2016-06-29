@@ -258,7 +258,8 @@ static void print_commit(struct commit *commit, struct rev_info *revs)
 	if (ctx.repo->enable_log_filecount)
 		htmlf("</td><td>%d", files);
 	if (ctx.repo->enable_log_linecount)
-		htmlf("</td><td>-%d/+%d", rem_lines, add_lines);
+		htmlf("</td><td><span class='deletions'>-%d</span>/"
+			"<span class='insertions'>+%d</span>", rem_lines, add_lines);
 
 	html("</td></tr>\n");
 

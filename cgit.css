@@ -590,6 +590,15 @@ div#cgit span.age-months {
 div#cgit span.age-years {
 	color: #bbb;
 }
+
+div#cgit span.insertions {
+	color: #080;
+}
+
+div#cgit span.deletions {
+	color: #800;
+}
+
 div#cgit div.footer {
 	margin-top: 0.5em;
 	text-align: center;
