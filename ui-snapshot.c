@@ -174,10 +174,10 @@ static const char *get_ref_from_filename(const char *url, const char *filename,
 		goto out;
 
 	result = 0;
-	strbuf_release(&snapshot);
 
 out:
-	return result ? strbuf_detach(&snapshot, NULL) : NULL;
+	strbuf_release(&snapshot);
+	return result ? xstrdup(sha1_to_hex(sha1)) : NULL;
 }
 
 void cgit_print_snapshot(const char *head, const char *hex,
