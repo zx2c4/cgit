@@ -88,6 +88,7 @@ struct cgit_repo {
 	char *section;
 	char *clone_url;
 	char *namespace;
+	char *agefile;
 	char *logo;
 	char *logo_link;
 	int snapshots;

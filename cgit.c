@@ -88,6 +88,8 @@ static void repo_config(struct cgit_repo *repo, const char *name, const char *va
 		repo->logo = xstrdup(value);
 	else if (!strcmp(name, "logo-link") && value != NULL)
 		repo->logo_link = xstrdup(value);
+	else if (!strcmp(name, "agefile") && value != NULL)
+		repo->agefile = xstrdup(value);
 	else if (!strcmp(name, "hide"))
 		repo->hide = atoi(value);
 	else if (!strcmp(name, "ignore"))

@@ -42,7 +42,8 @@ static int get_repo_modtime(const struct cgit_repo *repo, time_t *mtime)
 		*mtime = repo->mtime;
 		return 1;
 	}
-	strbuf_addf(&path, "%s/%s", repo->path, ctx.cfg.agefile);
+	strbuf_addf(&path, "%s/%s", repo->path,
+	            repo->agefile ? repo->agefile : ctx.cfg.agefile);
 	if (stat(path.buf, &s) == 0) {
 		*mtime = read_agefile(path.buf);
 		if (*mtime) {
