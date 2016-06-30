@@ -10,10 +10,23 @@
 # each of your repositories.
 #
 
-agefile="$(git rev-parse --git-dir)"/info/web/last-modified
+agefile="$(git rev-parse --git-dir)"/info/web
+if [ -z "$GIT_NAMESPACE" ]; then
+	agefile="$agefile/last-modified"
+else
+	agefile="$agefile/namespaced/$GIT_NAMESPACE/last-modified"
+fi
+
+old_IFS="$IFS"
+IFS=/
+for comp in $GIT_NAMESPACE; do
+	nsref="${nsref}refs/namespaces/$comp/"
+done
+IFS="$old_IFS"
 
 mkdir -p "$(dirname "$agefile")" &&
 git for-each-ref \
 	--sort=-authordate --count=1 \
 	--format='%(authordate:iso8601)' \
+	$nsref \
 	>"$agefile"
