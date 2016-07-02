@@ -468,6 +468,10 @@ repo.about-filter::
 	Override the default about-filter. Default value: none. See also:
 	"enable-filter-overrides". See also: "FILTER API".
 
+repo.agefile::
+	Override the default agefile. Default value: none. See also:
+	"agefile". See also: "NAMESPACES".
+
 repo.branch-sort::
 	Flag which, when set to "age", enables date ordering in the branch ref
 	list, and when set to "name" enables ordering by branch name. Default
@@ -801,6 +805,16 @@ The config setting for this repository would be:
 
 ....
 repo.namespace = foo/bar
+....
+
+It's also recommended to set a different age file for the namespace.
+The cgit repository contains a contrib script for generating age-files
+for namespaces in a subdirectory.
+
+The corresponding config for the "foo/bar" namespace would be:
+
+....
+repo.agefile = info/web/namespaced/foo/bar/last-modified
 ....
 
 
