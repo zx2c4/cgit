@@ -53,8 +53,8 @@ endif
 
 endif
 
-# Add -ldl to linker flags on non-BSD systems.
-ifeq ($(findstring BSD,$(uname_S)),)
+# Add -ldl to linker flags on systems that commonly use GNU libc.
+ifneq (,$(filter $(uname_S),Linux GNU/kFreeBSD))
 	CGIT_LIBS += -ldl
 endif
 
