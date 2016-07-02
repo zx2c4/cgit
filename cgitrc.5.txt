@@ -570,6 +570,10 @@ repo.max-stats::
 repo.name::
 	The value to show as repository name. Default value: <repo.url>.
 
+repo.namespace::
+	Set the git namespace, so that fetching and cloning only provide refs
+        under refs/namespaces. Default value: none.
+
 repo.owner::
 	A value used to identify the owner of the repository. Default value:
 	none.
@@ -770,6 +774,34 @@ type will never expire, and thus the first time a URL is accessed, the result
 will be cached indefinitely, even if the underlying git repository changes.
 Conversely, when a ttl value is zero, the cache is disabled for that
 particular page type, and the page type is never cached.
+
+
+NAMESPACES
+----------
+
+A namespace may be created by creating a "HEAD" symbolic ref for the namespace,
+which may be done with the following command:
+
+....
+git symbolic-ref $namespace_ref_base/HEAD $namespace_ref_base/refs/heads/master
+....
+
+and adding "repo.namespace" for the repository.
+
+For a namespace called "foo/bar", the base ref would be
+"refs/namespaces/foo/refs/namespaces/bar/",
+so the command to create the HEAD ref is:
+
+....
+git symbolic-ref refs/namespaces/foo/refs/namespaces/bar/HEAD \
+                 refs/namespaces/foo/refs/namespaces/bar/refs/heads/master
+....
+
+The config setting for this repository would be:
+
+....
+repo.namespace = foo/bar
+....
 
 
 EXAMPLE CGITRC FILE
