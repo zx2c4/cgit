@@ -616,11 +616,11 @@ static int prepare_repo_cmd(void)
 	}
 
 	if (get_sha1(ctx.qry.head, sha1)) {
-		char *tmp = xstrdup(ctx.qry.head);
-		ctx.qry.head = ctx.repo->defbranch;
+		char *old_head = ctx.qry.head;
+		ctx.qry.head = xstrdup(ctx.repo->defbranch);
 		cgit_print_error_page(404, "Not found",
-				"Invalid branch: %s", tmp);
-		free(tmp);
+				"Invalid branch: %s", old_head);
+		free(old_head);
 		return 1;
 	}
 	string_list_sort(&ctx.repo->submodules);
