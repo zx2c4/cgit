@@ -321,7 +321,7 @@ void cgit_print_repolist(void)
 		    (last_section != NULL && section == NULL) ||
 		    (last_section != NULL && section != NULL &&
 		     strcmp(section, last_section)))) {
-			htmlf("<tr class='nohover'><td colspan='%d' class='reposection'>",
+			htmlf("<tr class='nohover-highlight'><td colspan='%d' class='reposection'>",
 			      columns);
 			html_txt(section);
 			html("</td></tr>");

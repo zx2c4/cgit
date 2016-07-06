@@ -134,11 +134,31 @@ div#cgit table.list tr.logheader {
 	background: #eee;
 }
 
+div#cgit table.list tr:nth-child(even) {
+	background: #f7f7f7;
+}
+
+div#cgit table.list tr:nth-child(odd) {
+	background: white;
+}
+
 div#cgit table.list tr:hover {
 	background: #eee;
 }
 
+div#cgit table.list tr.nohover {
+	background: white;
+}
+
 div#cgit table.list tr.nohover:hover {
+	background: white;
+}
+
+div#cgit table.list tr.nohover-highlight:hover:nth-child(even) {
+	background: #f7f7f7;
+}
+
+div#cgit table.list tr.nohover-highlight:hover:nth-child(odd) {
 	background: white;
 }
 

@@ -263,8 +263,9 @@ static void print_commit(struct commit *commit, struct rev_info *revs)
 
 	html("</td></tr>\n");
 
-	if (revs->graph || ctx.qry.showmsg) { /* Print a second table row */
-		html("<tr class='nohover'>");
+	if ((revs->graph && !graph_is_commit_finished(revs->graph))
+			|| ctx.qry.showmsg) { /* Print a second table row */
+		html("<tr class='nohover-highlight'>");
 
 		if (ctx.qry.showmsg) {
 			/* Concatenate commit message + notes in msgbuf */
