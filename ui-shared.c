@@ -253,7 +253,7 @@ static char *repolink(const char *title, const char *class, const char *page,
 		}
 		delim = "&amp;";
 	}
-	if (head && strcmp(head, ctx.repo->defbranch)) {
+	if (head && ctx.repo->defbranch && strcmp(head, ctx.repo->defbranch)) {
 		html(delim);
 		html("h=");
 		html_url_arg(head);
