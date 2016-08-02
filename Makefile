@@ -91,6 +91,8 @@ install: all
 	$(INSTALL) -m 0644 cgit.png $(DESTDIR)$(CGIT_DATA_PATH)/cgit.png
 	$(INSTALL) -m 0644 favicon.ico $(DESTDIR)$(CGIT_DATA_PATH)/favicon.ico
 	$(INSTALL) -m 0644 robots.txt $(DESTDIR)$(CGIT_DATA_PATH)/robots.txt
+	$(INSTALL) -m 0755 -d $(DESTDIR)$(CGIT_DATA_PATH)/source-code-pro
+	$(COPYTREE) source-code-pro/* $(DESTDIR)$(CGIT_DATA_PATH)/source-code-pro
 	$(INSTALL) -m 0755 -d $(DESTDIR)$(filterdir)
 	$(COPYTREE) filters/* $(DESTDIR)$(filterdir)
 
