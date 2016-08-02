@@ -1,3 +1,5 @@
+@import url(source-code-pro/source-code-pro.css);
+
 div#cgit {
 	padding: 0em;
 	margin: 0em;
@@ -178,8 +180,11 @@ div#cgit table.list td {
 }
 
 div#cgit table.list td.commitgraph {
-	font-family: monospace;
+	font-family: "Source Code Pro", "Courier New", monospace;
 	white-space: pre;
+}
+div#cgit pre {
+	font-family: "Source Code Pro", "Courier New", monospace;
 }
 
 div#cgit table.list td.commitgraph .column1 {
@@ -207,12 +212,12 @@ div#cgit table.list td.commitgraph .column6 {
 }
 
 div#cgit table.list td.logsubject {
-	font-family: monospace;
+	font-family: "Source Code Pro", "Courier New", monospace;
 	font-weight: bold;
 }
 
 div#cgit table.list td.logmsg {
-	font-family: monospace;
+	font-family: "Source Code Pro", "Courier New", monospace;
 	white-space: pre;
 	padding: 0 0.5em;
 }
@@ -281,17 +286,17 @@ div#cgit div.error {
 }
 
 div#cgit a.ls-blob, div#cgit a.ls-dir, div#cgit .ls-mod {
-	font-family: monospace;
+	font-family: "Source Code Pro", "Courier New", monospace;
 }
 
 div#cgit td.ls-size {
 	text-align: right;
-	font-family: monospace;
+	font-family: "Source Code Pro", "Courier New", monospace;
 	width: 10em;
 }
 
 div#cgit td.ls-mode {
-	font-family: monospace;
+	font-family: "Source Code Pro", "Courier New", monospace;
 	width: 10em;
 }
 
@@ -378,14 +383,14 @@ div#cgit table.bin-blob {
 }
 
 div#cgit table.bin-blob th {
-	font-family: monospace;
+	font-family: "Source Code Pro", "Courier New", monospace;
 	white-space: pre;
 	border: solid 1px #777;
 	padding: 0.5em 1em;
 }
 
 div#cgit table.bin-blob td {
-	font-family: monospace;
+	font-family: "Source Code Pro", "Courier New", monospace;
 	white-space: pre;
 	border-left: solid 1px #777;
 	padding: 0em 1em;
@@ -448,7 +453,7 @@ div#cgit div.commit-subject {
 
 div#cgit div.commit-msg {
 	white-space: pre;
-	font-family: monospace;
+	font-family: "Source Code Pro", "Courier New", monospace;
 }
 
 div#cgit div.notes-header {
@@ -458,7 +463,7 @@ div#cgit div.notes-header {
 
 div#cgit div.notes {
 	white-space: pre;
-	font-family: monospace;
+	font-family: "Source Code Pro", "Courier New", monospace;
 	border: solid 1px #ee9;
 	background-color: #ffd;
 	padding: 0.3em 2em 0.3em 1em;
@@ -548,7 +553,7 @@ div#cgit table.diff {
 }
 
 div#cgit table.diff td {
-	font-family: monospace;
+	font-family: "Source Code Pro", "Courier New", monospace;
 	white-space: pre;
 }
 
@@ -571,7 +576,7 @@ div#cgit table.diff td div.del {
 }
 
 div#cgit .oid {
-	font-family: monospace;
+	font-family: "Source Code Pro", "Courier New", monospace;
 	font-size: 90%;
 }
 
@@ -815,7 +820,7 @@ div#cgit table.ssdiff {
 
 div#cgit table.ssdiff td {
 	font-size: 75%;
-	font-family: monospace;
+	font-family: "Source Code Pro", "Courier New", monospace;
 	white-space: pre;
 	padding: 1px 4px 1px 4px;
 	border-left: solid 1px #aaa;
