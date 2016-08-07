@@ -92,7 +92,7 @@ static char *longest_common_subsequence(char *A, char *B)
 static int line_from_hunk(char *line, char type)
 {
 	char *buf1, *buf2;
-	int len;
+	int len, res;
 
 	buf1 = strchr(line, type);
 	if (buf1 == NULL)
@@ -105,7 +105,7 @@ static int line_from_hunk(char *line, char type)
 	buf2 = xmalloc(len + 1);
 	strncpy(buf2, buf1, len);
 	buf2[len] = '\0';
-	int res = atoi(buf2);
+	res = atoi(buf2);
 	free(buf2);
 	return res;
 }
