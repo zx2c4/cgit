@@ -66,10 +66,11 @@ char *cgit_hosturl(void)
 
 char *cgit_currenturl(void)
 {
-	if (!ctx.qry.url)
-		return xstrdup(cgit_rooturl());
 	const char *root = cgit_rooturl();
 	size_t len = strlen(root);
+
+	if (!ctx.qry.url)
+		return xstrdup(root);
 	if (len && root[len - 1] == '/')
 		return fmtalloc("%s%s", root, ctx.qry.url);
 	return fmtalloc("%s/%s", root, ctx.qry.url);
@@ -349,14 +350,14 @@ void cgit_log_link(const char *name, const char *title, const char *class,
 void cgit_commit_link(char *name, const char *title, const char *class,
 		      const char *head, const char *rev, const char *path)
 {
+	char *delim;
+
 	if (strlen(name) > ctx.cfg.max_msg_len && ctx.cfg.max_msg_len >= 15) {
 		name[ctx.cfg.max_msg_len] = '\0';
 		name[ctx.cfg.max_msg_len - 1] = '.';
 		name[ctx.cfg.max_msg_len - 2] = '.';
 		name[ctx.cfg.max_msg_len - 3] = '.';
 	}
-
-	char *delim;
 
 	delim = repolink(title, class, "commit", head, path);
 	if (rev && ctx.qry.head && strcmp(rev, ctx.qry.head)) {
@@ -714,13 +715,14 @@ static void print_rel_vcs_link(const char *url)
 
 void cgit_print_docstart(void)
 {
+	char *host = cgit_hosturl();
+
 	if (ctx.cfg.embedded) {
 		if (ctx.cfg.header)
 			html_include(ctx.cfg.header);
 		return;
 	}
 
-	char *host = cgit_hosturl();
 	html(cgit_doctype);
 	html("<html lang='en'>\n");
 	html("<head>\n");
