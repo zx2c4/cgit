@@ -39,7 +39,9 @@ static int read_config_line(FILE *f, struct strbuf *name, struct strbuf *value)
 
 	/* Skip comments and preceding spaces. */
 	for(;;) {
-		if (c == '#' || c == ';')
+		if (c == EOF)
+			return 0;
+		else if (c == '#' || c == ';')
 			skip_line(f);
 		else if (!isspace(c))
 			break;
