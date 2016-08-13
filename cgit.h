@@ -344,6 +344,7 @@ extern int cgit_refs_cb(const char *refname, const struct object_id *oid,
 			int flags, void *cb_data);
 
 extern void cgit_free_commitinfo(struct commitinfo *info);
+extern void cgit_free_taginfo(struct taginfo *info);
 
 void cgit_diff_tree_cb(struct diff_queue_struct *q,
 		       struct diff_options *options, void *data);

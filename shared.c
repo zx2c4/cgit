@@ -203,7 +203,7 @@ static struct refinfo *cgit_mk_refinfo(const char *refname, const struct object_
 	return ref;
 }
 
-static void cgit_free_taginfo(struct taginfo *tag)
+void cgit_free_taginfo(struct taginfo *tag)
 {
 	if (tag->tagger)
 		free(tag->tagger);
