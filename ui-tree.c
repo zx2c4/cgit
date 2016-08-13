@@ -324,22 +324,25 @@ static int walk_tree(const unsigned char *sha1, struct strbuf *base,
 		const char *pathname, unsigned mode, int stage, void *cbdata)
 {
 	struct walk_tree_context *walk_tree_ctx = cbdata;
-	static char buffer[PATH_MAX];
 
 	if (walk_tree_ctx->state == 0) {
-		memcpy(buffer, base->buf, base->len);
-		strcpy(buffer + base->len, pathname);
-		if (strcmp(walk_tree_ctx->match_path, buffer))
+		struct strbuf buffer = STRBUF_INIT;
+
+		strbuf_addbuf(&buffer, base);
+		strbuf_addstr(&buffer, pathname);
+		if (strcmp(walk_tree_ctx->match_path, buffer.buf))
 			return READ_TREE_RECURSIVE;
 
 		if (S_ISDIR(mode)) {
 			walk_tree_ctx->state = 1;
-			set_title_from_path(buffer);
+			set_title_from_path(buffer.buf);
+			strbuf_release(&buffer);
 			ls_head();
 			return READ_TREE_RECURSIVE;
 		} else {
 			walk_tree_ctx->state = 2;
-			print_object(sha1, buffer, pathname, walk_tree_ctx->curr_rev);
+			print_object(sha1, buffer.buf, pathname, walk_tree_ctx->curr_rev);
+			strbuf_release(&buffer);
 			return 0;
 		}
 	}
