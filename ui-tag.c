@@ -44,8 +44,6 @@ void cgit_print_tag(char *revname)
 	struct strbuf fullref = STRBUF_INIT;
 	unsigned char sha1[20];
 	struct object *obj;
-	struct tag *tag;
-	struct taginfo *info;
 
 	if (!revname)
 		revname = ctx.qry.head;
@@ -63,6 +61,9 @@ void cgit_print_tag(char *revname)
 		goto cleanup;
 	}
 	if (obj->type == OBJ_TAG) {
+		struct tag *tag;
+		struct taginfo *info;
+
 		tag = lookup_tag(sha1);
 		if (!tag || parse_tag(tag) || !(info = cgit_parse_tag(tag))) {
 			cgit_print_error_page(500, "Internal server error",
@@ -99,6 +100,7 @@ void cgit_print_tag(char *revname)
 		html("</table>\n");
 		print_tag_content(info->msg);
 		cgit_print_layout_end();
+		cgit_free_taginfo(info);
 	} else {
 		cgit_print_layout_start();
 		html("<table class='commit-info'>\n");
