@@ -95,7 +95,7 @@ struct cgit_repo *cgit_get_repoinfo(const char *url)
 	return NULL;
 }
 
-void *cgit_free_commitinfo(struct commitinfo *info)
+void cgit_free_commitinfo(struct commitinfo *info)
 {
 	free(info->author);
 	free(info->author_email);
@@ -105,7 +105,6 @@ void *cgit_free_commitinfo(struct commitinfo *info)
 	free(info->msg);
 	free(info->msg_encoding);
 	free(info);
-	return NULL;
 }
 
 char *trim_end(const char *str, char c)
