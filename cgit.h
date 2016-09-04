@@ -348,14 +348,14 @@ extern void *cgit_free_commitinfo(struct commitinfo *info);
 void cgit_diff_tree_cb(struct diff_queue_struct *q,
 		       struct diff_options *options, void *data);
 
-extern int cgit_diff_files(const unsigned char *old_sha1,
-			   const unsigned char *new_sha1,
+extern int cgit_diff_files(const struct object_id *old_oid,
+			   const struct object_id *new_oid,
 			   unsigned long *old_size, unsigned long *new_size,
 			   int *binary, int context, int ignorews,
 			   linediff_fn fn);
 
-extern void cgit_diff_tree(const unsigned char *old_sha1,
-			   const unsigned char *new_sha1,
+extern void cgit_diff_tree(const struct object_id *old_oid,
+			   const struct object_id *new_oid,
 			   filepair_fn fn, const char *prefix, int ignorews);
 
 extern void cgit_diff_commit(struct commit *commit, filepair_fn fn,

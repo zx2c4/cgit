@@ -1026,7 +1026,7 @@ static int calc_ttl(void)
 	return ctx.cfg.cache_repo_ttl;
 }
 
-int main(int argc, const char **argv)
+int cmd_main(int argc, const char **argv)
 {
 	const char *path;
 	int err, ttl;

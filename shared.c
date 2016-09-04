@@ -263,15 +263,15 @@ void cgit_diff_tree_cb(struct diff_queue_struct *q,
 	}
 }
 
-static int load_mmfile(mmfile_t *file, const unsigned char *sha1)
+static int load_mmfile(mmfile_t *file, const struct object_id *oid)
 {
 	enum object_type type;
 
-	if (is_null_sha1(sha1)) {
+	if (is_null_oid(oid)) {
 		file->ptr = (char *)"";
 		file->size = 0;
 	} else {
-		file->ptr = read_sha1_file(sha1, &type,
+		file->ptr = read_sha1_file(oid->hash, &type,
 		                           (unsigned long *)&file->size);
 	}
 	return 1;
@@ -322,8 +322,8 @@ static int filediff_cb(void *priv, mmbuffer_t *mb, int nbuf)
 	return 0;
 }
 
-int cgit_diff_files(const unsigned char *old_sha1,
-		    const unsigned char *new_sha1, unsigned long *old_size,
+int cgit_diff_files(const struct object_id *old_oid,
+		    const struct object_id *new_oid, unsigned long *old_size,
 		    unsigned long *new_size, int *binary, int context,
 		    int ignorews, linediff_fn fn)
 {
@@ -332,7 +332,7 @@ int cgit_diff_files(const unsigned char *old_sha1,
 	xdemitconf_t emit_params;
 	xdemitcb_t emit_cb;
 
-	if (!load_mmfile(&file1, old_sha1) || !load_mmfile(&file2, new_sha1))
+	if (!load_mmfile(&file1, old_oid) || !load_mmfile(&file2, new_oid))
 		return 1;
 
 	*old_size = file1.size;
@@ -366,8 +366,8 @@ int cgit_diff_files(const unsigned char *old_sha1,
 	return 0;
 }
 
-void cgit_diff_tree(const unsigned char *old_sha1,
-		    const unsigned char *new_sha1,
+void cgit_diff_tree(const struct object_id *old_oid,
+		    const struct object_id *new_oid,
 		    filepair_fn fn, const char *prefix, int ignorews)
 {
 	struct diff_options opt;
@@ -391,21 +391,21 @@ void cgit_diff_tree(const unsigned char *old_sha1,
 	}
 	diff_setup_done(&opt);
 
-	if (old_sha1 && !is_null_sha1(old_sha1))
-		diff_tree_sha1(old_sha1, new_sha1, "", &opt);
+	if (old_oid && !is_null_oid(old_oid))
+		diff_tree_sha1(old_oid->hash, new_oid->hash, "", &opt);
 	else
-		diff_root_tree_sha1(new_sha1, "", &opt);
+		diff_root_tree_sha1(new_oid->hash, "", &opt);
 	diffcore_std(&opt);
 	diff_flush(&opt);
 }
 
 void cgit_diff_commit(struct commit *commit, filepair_fn fn, const char *prefix)
 {
-	unsigned char *old_sha1 = NULL;
+	const struct object_id *old_oid = NULL;
 
 	if (commit->parents)
-		old_sha1 = commit->parents->item->object.oid.hash;
-	cgit_diff_tree(old_sha1, commit->object.oid.hash, fn, prefix,
+		old_oid = &commit->parents->item->object.oid;
+	cgit_diff_tree(old_oid, &commit->object.oid, fn, prefix,
 		       ctx.qry.ignorews);
 }
 

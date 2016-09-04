@@ -12,8 +12,8 @@
 #include "ui-shared.h"
 #include "ui-ssdiff.h"
 
-unsigned char old_rev_sha1[20];
-unsigned char new_rev_sha1[20];
+struct object_id old_rev_oid[1];
+struct object_id new_rev_oid[1];
 
 static int files, slots;
 static int total_adds, total_rems, max_changes;
@@ -21,8 +21,8 @@ static int lines_added, lines_removed;
 
 static struct fileinfo {
 	char status;
-	unsigned char old_sha1[20];
-	unsigned char new_sha1[20];
+	struct object_id old_oid[1];
+	struct object_id new_oid[1];
 	unsigned short old_mode;
 	unsigned short new_mode;
 	char *old_path;
@@ -83,15 +83,15 @@ static void print_fileinfo(struct fileinfo *info)
 
 	html("<tr>");
 	htmlf("<td class='mode'>");
-	if (is_null_sha1(info->new_sha1)) {
+	if (is_null_oid(info->new_oid)) {
 		cgit_print_filemode(info->old_mode);
 	} else {
 		cgit_print_filemode(info->new_mode);
 	}
 
 	if (info->old_mode != info->new_mode &&
-	    !is_null_sha1(info->old_sha1) &&
-	    !is_null_sha1(info->new_sha1)) {
+	    !is_null_oid(info->old_oid) &&
+	    !is_null_oid(info->new_oid)) {
 		html("<span class='modechange'>[");
 		cgit_print_filemode(info->old_mode);
 		html("]</span>");
@@ -160,7 +160,7 @@ static void inspect_filepair(struct diff_filepair *pair)
 	files++;
 	lines_added = 0;
 	lines_removed = 0;
-	cgit_diff_files(pair->one->sha1, pair->two->sha1, &old_size, &new_size,
+	cgit_diff_files(&pair->one->oid, &pair->two->oid, &old_size, &new_size,
 			&binary, 0, ctx.qry.ignorews, count_diff_lines);
 	if (files >= slots) {
 		if (slots == 0)
@@ -170,8 +170,8 @@ static void inspect_filepair(struct diff_filepair *pair)
 		items = xrealloc(items, slots * sizeof(struct fileinfo));
 	}
 	items[files-1].status = pair->status;
-	hashcpy(items[files-1].old_sha1, pair->one->sha1);
-	hashcpy(items[files-1].new_sha1, pair->two->sha1);
+	oidcpy(items[files-1].old_oid, &pair->one->oid);
+	oidcpy(items[files-1].new_oid, &pair->two->oid);
 	items[files-1].old_mode = pair->one->mode;
 	items[files-1].new_mode = pair->two->mode;
 	items[files-1].old_path = xstrdup(pair->one->path);
@@ -187,8 +187,8 @@ static void inspect_filepair(struct diff_filepair *pair)
 	total_rems += lines_removed;
 }
 
-static void cgit_print_diffstat(const unsigned char *old_sha1,
-				const unsigned char *new_sha1,
+static void cgit_print_diffstat(const struct object_id *old_oid,
+				const struct object_id *new_oid,
 				const char *prefix)
 {
 	int i;
@@ -204,7 +204,7 @@ static void cgit_print_diffstat(const unsigned char *old_sha1,
 	html("</div>");
 	html("<table summary='diffstat' class='diffstat'>");
 	max_changes = 0;
-	cgit_diff_tree(old_sha1, new_sha1, inspect_filepair, prefix,
+	cgit_diff_tree(old_oid, new_oid, inspect_filepair, prefix,
 		       ctx.qry.ignorews);
 	for (i = 0; i<files; i++)
 		print_fileinfo(&items[i]);
@@ -238,8 +238,8 @@ static void print_line(char *line, int len)
 	line[len-1] = c;
 }
 
-static void header(unsigned char *sha1, char *path1, int mode1,
-		   unsigned char *sha2, char *path2, int mode2)
+static void header(const struct object_id *oid1, char *path1, int mode1,
+		   const struct object_id *oid2, char *path2, int mode2)
 {
 	char *abbrev1, *abbrev2;
 	int subproject;
@@ -258,8 +258,8 @@ static void header(unsigned char *sha1, char *path1, int mode1,
 		htmlf("<br/>deleted file mode %.6o", mode1);
 
 	if (!subproject) {
-		abbrev1 = xstrdup(find_unique_abbrev(sha1, DEFAULT_ABBREV));
-		abbrev2 = xstrdup(find_unique_abbrev(sha2, DEFAULT_ABBREV));
+		abbrev1 = xstrdup(find_unique_abbrev(oid1->hash, DEFAULT_ABBREV));
+		abbrev2 = xstrdup(find_unique_abbrev(oid2->hash, DEFAULT_ABBREV));
 		htmlf("<br/>index %s..%s", abbrev1, abbrev2);
 		free(abbrev1);
 		free(abbrev2);
@@ -268,24 +268,24 @@ static void header(unsigned char *sha1, char *path1, int mode1,
 			if (mode2 != mode1)
 				htmlf("..%.6o", mode2);
 		}
-		if (is_null_sha1(sha1)) {
+		if (is_null_oid(oid1)) {
 			path1 = "dev/null";
 			html("<br/>--- /");
 		} else
 			html("<br/>--- a/");
 		if (mode1 != 0)
 			cgit_tree_link(path1, NULL, NULL, ctx.qry.head,
-				       sha1_to_hex(old_rev_sha1), path1);
+				       oid_to_hex(old_rev_oid), path1);
 		else
 			html_txt(path1);
-		if (is_null_sha1(sha2)) {
+		if (is_null_oid(oid2)) {
 			path2 = "dev/null";
 			html("<br/>+++ /");
 		} else
 			html("<br/>+++ b/");
 		if (mode2 != 0)
 			cgit_tree_link(path2, NULL, NULL, ctx.qry.head,
-				       sha1_to_hex(new_rev_sha1), path2);
+				       oid_to_hex(new_rev_oid), path2);
 		else
 			html_txt(path2);
 	}
@@ -307,20 +307,20 @@ static void filepair_cb(struct diff_filepair *pair)
 		cgit_ssdiff_header_begin();
 		print_line_fn = cgit_ssdiff_line_cb;
 	}
-	header(pair->one->sha1, pair->one->path, pair->one->mode,
-	       pair->two->sha1, pair->two->path, pair->two->mode);
+	header(&pair->one->oid, pair->one->path, pair->one->mode,
+	       &pair->two->oid, pair->two->path, pair->two->mode);
 	if (use_ssdiff)
 		cgit_ssdiff_header_end();
 	if (S_ISGITLINK(pair->one->mode) || S_ISGITLINK(pair->two->mode)) {
 		if (S_ISGITLINK(pair->one->mode))
-			print_line_fn(fmt("-Subproject %s", sha1_to_hex(pair->one->sha1)), 52);
+			print_line_fn(fmt("-Subproject %s", oid_to_hex(&pair->one->oid)), 52);
 		if (S_ISGITLINK(pair->two->mode))
-			print_line_fn(fmt("+Subproject %s", sha1_to_hex(pair->two->sha1)), 52);
+			print_line_fn(fmt("+Subproject %s", oid_to_hex(&pair->two->oid)), 52);
 		if (use_ssdiff)
 			cgit_ssdiff_footer();
 		return;
 	}
-	if (cgit_diff_files(pair->one->sha1, pair->two->sha1, &old_size,
+	if (cgit_diff_files(&pair->one->oid, &pair->two->oid, &old_size,
 			    &new_size, &binary, ctx.qry.context,
 			    ctx.qry.ignorews, print_line_fn))
 		cgit_print_error("Error running diff");
@@ -402,36 +402,36 @@ void cgit_print_diff(const char *new_rev, const char *old_rev,
 
 	if (!new_rev)
 		new_rev = ctx.qry.head;
-	if (get_sha1(new_rev, new_rev_sha1)) {
+	if (get_oid(new_rev, new_rev_oid)) {
 		cgit_print_error_page(404, "Not found",
 			"Bad object name: %s", new_rev);
 		return;
 	}
-	commit = lookup_commit_reference(new_rev_sha1);
+	commit = lookup_commit_reference(new_rev_oid->hash);
 	if (!commit || parse_commit(commit)) {
 		cgit_print_error_page(404, "Not found",
-			"Bad commit: %s", sha1_to_hex(new_rev_sha1));
+			"Bad commit: %s", oid_to_hex(new_rev_oid));
 		return;
 	}
 	new_tree_sha1 = commit->tree->object.oid.hash;
 
 	if (old_rev) {
-		if (get_sha1(old_rev, old_rev_sha1)) {
+		if (get_oid(old_rev, old_rev_oid)) {
 			cgit_print_error_page(404, "Not found",
 				"Bad object name: %s", old_rev);
 			return;
 		}
 	} else if (commit->parents && commit->parents->item) {
-		hashcpy(old_rev_sha1, commit->parents->item->object.oid.hash);
+		oidcpy(old_rev_oid, &commit->parents->item->object.oid);
 	} else {
-		hashclr(old_rev_sha1);
+		oidclr(old_rev_oid);
 	}
 
-	if (!is_null_sha1(old_rev_sha1)) {
-		commit2 = lookup_commit_reference(old_rev_sha1);
+	if (!is_null_oid(old_rev_oid)) {
+		commit2 = lookup_commit_reference(old_rev_oid->hash);
 		if (!commit2 || parse_commit(commit2)) {
 			cgit_print_error_page(404, "Not found",
-				"Bad commit: %s", sha1_to_hex(old_rev_sha1));
+				"Bad commit: %s", oid_to_hex(old_rev_oid));
 			return;
 		}
 		old_tree_sha1 = commit2->tree->object.oid.hash;
@@ -479,7 +479,7 @@ void cgit_print_diff(const char *new_rev, const char *old_rev,
 	if (difftype == DIFF_STATONLY)
 		ctx.qry.difftype = ctx.cfg.difftype;
 
-	cgit_print_diffstat(old_rev_sha1, new_rev_sha1, prefix);
+	cgit_print_diffstat(old_rev_oid, new_rev_oid, prefix);
 
 	if (difftype == DIFF_STATONLY)
 		return;
@@ -490,7 +490,7 @@ void cgit_print_diff(const char *new_rev, const char *old_rev,
 		html("<table summary='diff' class='diff'>");
 		html("<tr><td>");
 	}
-	cgit_diff_tree(old_rev_sha1, new_rev_sha1, filepair_cb, prefix,
+	cgit_diff_tree(old_rev_oid, new_rev_oid, filepair_cb, prefix,
 		       ctx.qry.ignorews);
 	if (!use_ssdiff)
 		html("</td></tr>");
