@@ -164,10 +164,10 @@ static void add_repo(const char *base, struct strbuf *path, repo_config_fn fn)
 		}
 		if (slash && !n) {
 			*slash = '\0';
-			repo->section = xstrdup(rel.buf);
+			repo->section = get_or_create_section(rel.buf);
 			*slash = '/';
-			if (starts_with(repo->name, repo->section)) {
-				repo->name += strlen(repo->section);
+			if (starts_with(repo->name, repo->section->name)) {
+				repo->name += strlen(repo->section->name);
 				if (*repo->name == '/')
 					repo->name++;
 			}

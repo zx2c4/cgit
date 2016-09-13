@@ -443,13 +443,16 @@ typedef struct {
 
 void cgit_prepare_repo_env(struct cgit_repo * repo)
 {
+	char *section = NULL;
+	if (repo->section)
+		section = repo->section->name;
 	cgit_env_var env_vars[] = {
 		{ .name = "CGIT_REPO_URL", .value = repo->url },
 		{ .name = "CGIT_REPO_NAME", .value = repo->name },
 		{ .name = "CGIT_REPO_PATH", .value = repo->path },
 		{ .name = "CGIT_REPO_OWNER", .value = repo->owner },
 		{ .name = "CGIT_REPO_DEFBRANCH", .value = repo->defbranch },
-		{ .name = "CGIT_REPO_SECTION", .value = repo->section },
+		{ .name = "CGIT_REPO_SECTION", .value = section },
 		{ .name = "CGIT_REPO_CLONE_URL", .value = repo->clone_url }
 	};
 	int env_var_count = ARRAY_SIZE(env_vars);

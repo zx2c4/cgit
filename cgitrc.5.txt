@@ -404,6 +404,11 @@ section::
 	after this option will inherit the current section name. Default value:
 	none.
 
+section-collapse::
+	Name of a section to "collapse" and not display on the index page.
+	Multiple config entries can be specified and each one will be
+	collapsed.
+
 section-sort::
 	Flag which, when set to "1", will sort the sections on the repository
 	listing by name. Set this flag to "0" if the order in the cgitrc file should

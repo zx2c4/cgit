@@ -77,7 +77,7 @@ static void repo_config(struct cgit_repo *repo, const char *name, const char *va
 		item = string_list_append(&repo->submodules, xstrdup(name + 12));
 		item->util = xstrdup(value);
 	} else if (!strcmp(name, "section"))
-		repo->section = xstrdup(value);
+		repo->section = get_or_create_section(value);
 	else if (!strcmp(name, "readme") && value != NULL) {
 		if (repo->readme.items == ctx.cfg.readme.items)
 			memset(&repo->readme, 0, sizeof(repo->readme));
@@ -107,7 +107,7 @@ static void repo_config(struct cgit_repo *repo, const char *name, const char *va
 static void config_cb(const char *name, const char *value)
 {
 	if (!strcmp(name, "section") || !strcmp(name, "repo.group"))
-		ctx.cfg.section = xstrdup(value);
+		ctx.cfg.section = get_or_create_section(value);
 	else if (!strcmp(name, "repo.url"))
 		ctx.repo = cgit_add_repo(value);
 	else if (ctx.repo && !strcmp(name, "repo.path"))
@@ -242,6 +242,8 @@ static void config_cb(const char *name, const char *value)
 		ctx.cfg.section_from_path = atoi(value);
 	else if (!strcmp(name, "repository-sort"))
 		ctx.cfg.repository_sort = xstrdup(value);
+	else if (!strcmp(name, "section-collapse"))
+		get_or_create_section(value)->collapse = 1;
 	else if (!strcmp(name, "section-sort"))
 		ctx.cfg.section_sort = atoi(value);
 	else if (!strcmp(name, "source-filter"))
@@ -385,7 +387,7 @@ static void prepare_context(void)
 	ctx.cfg.root_desc = "a fast webinterface for the git dscm";
 	ctx.cfg.scan_hidden_path = 0;
 	ctx.cfg.script_name = CGIT_SCRIPT_NAME;
-	ctx.cfg.section = "";
+	ctx.cfg.section = NULL;
 	ctx.cfg.repository_sort = "name";
 	ctx.cfg.section_sort = 1;
 	ctx.cfg.summary_branches = 10;
@@ -794,7 +796,7 @@ static void print_repo(FILE *f, struct cgit_repo *repo)
 	if (repo->module_link)
 		fprintf(f, "repo.module-link=%s\n", repo->module_link);
 	if (repo->section)
-		fprintf(f, "repo.section=%s\n", repo->section);
+		fprintf(f, "repo.section=%s\n", repo->section->name);
 	if (repo->homepage)
 		fprintf(f, "repo.homepage=%s\n", repo->homepage);
 	if (repo->clone_url)
@@ -1024,6 +1026,23 @@ static int calc_ttl(void)
 		return ctx.cfg.cache_dynamic_ttl;
 
 	return ctx.cfg.cache_repo_ttl;
+}
+
+struct cgit_section* get_or_create_section(const char *section)
+{
+	struct cgit_section *ptr = ctx.sections;
+	while(ptr) {
+		if (!strcmp(section, ptr->name))
+			return ptr;
+		ptr = ptr->next;
+	}
+	/* Not found insert into head of list */
+	ptr = xmalloc(sizeof(*ptr));
+	ptr->name = xstrdup(section);
+	ptr->collapse = 0;
+	ptr->next = ctx.sections;
+	ctx.sections = ptr;
+	return ptr;
 }
 
 int cmd_main(int argc, const char **argv)

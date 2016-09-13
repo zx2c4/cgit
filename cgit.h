@@ -75,6 +75,12 @@ struct cgit_exec_filter {
 	int pid;
 };
 
+struct cgit_section {
+	unsigned int collapse : 1;
+	char *name;
+	struct cgit_section *next;
+};
+
 struct cgit_repo {
 	char *url;
 	char *name;
@@ -85,7 +91,7 @@ struct cgit_repo {
 	char *defbranch;
 	char *module_link;
 	struct string_list readme;
-	char *section;
+	struct cgit_section *section;
 	char *clone_url;
 	char *logo;
 	char *logo_link;
@@ -208,7 +214,7 @@ struct cgit_config {
 	char *root_desc;
 	char *root_readme;
 	char *script_name;
-	char *section;
+	struct cgit_section *section;
 	char *repository_sort;
 	char *virtual_root;	/* Always ends with '/'. */
 	char *strict_export;
@@ -305,6 +311,7 @@ struct cgit_context {
 	struct cgit_config cfg;
 	struct cgit_repo *repo;
 	struct cgit_page page;
+	struct cgit_section *sections;
 };
 
 typedef int (*write_archive_fn_t)(const char *, const char *);
@@ -321,6 +328,8 @@ extern const char *cgit_version;
 extern struct cgit_repolist cgit_repolist;
 extern struct cgit_context ctx;
 extern const struct cgit_snapshot_format cgit_snapshot_formats[];
+
+extern struct cgit_section* get_or_create_section(const char *section);
 
 extern char *cgit_default_repo_desc;
 extern struct cgit_repo *cgit_add_repo(const char *url);
