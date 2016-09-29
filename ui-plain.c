@@ -164,7 +164,7 @@ static int basedir_len(const char *path)
 void cgit_print_plain(void)
 {
 	const char *rev = ctx.qry.sha1;
-	unsigned char sha1[20];
+	struct object_id oid;
 	struct commit *commit;
 	struct pathspec_item path_items = {
 		.match = ctx.qry.path,
@@ -181,11 +181,11 @@ void cgit_print_plain(void)
 	if (!rev)
 		rev = ctx.qry.head;
 
-	if (get_sha1(rev, sha1)) {
+	if (get_oid(rev, &oid)) {
 		cgit_print_error_page(404, "Not found", "Not found");
 		return;
 	}
-	commit = lookup_commit_reference(sha1);
+	commit = lookup_commit_reference(oid.hash);
 	if (!commit || parse_commit(commit)) {
 		cgit_print_error_page(404, "Not found", "Not found");
 		return;
