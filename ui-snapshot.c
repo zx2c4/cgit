@@ -109,19 +109,19 @@ static int make_snapshot(const struct cgit_snapshot_format *format,
 			 const char *hex, const char *prefix,
 			 const char *filename)
 {
-	unsigned char sha1[20];
+	struct object_id oid;
 
-	if (get_sha1(hex, sha1)) {
+	if (get_oid(hex, &oid)) {
 		cgit_print_error_page(404, "Not found",
 				"Bad object id: %s", hex);
 		return 1;
 	}
-	if (!lookup_commit_reference(sha1)) {
+	if (!lookup_commit_reference(oid.hash)) {
 		cgit_print_error_page(400, "Bad request",
 				"Not a commit reference: %s", hex);
 		return 1;
 	}
-	ctx.page.etag = sha1_to_hex(sha1);
+	ctx.page.etag = oid_to_hex(&oid);
 	ctx.page.mimetype = xstrdup(format->mimetype);
 	ctx.page.filename = xstrdup(filename);
 	cgit_print_http_headers();
@@ -143,14 +143,14 @@ static const char *get_ref_from_filename(const char *url, const char *filename,
 					 const struct cgit_snapshot_format *format)
 {
 	const char *reponame;
-	unsigned char sha1[20];
+	struct object_id oid;
 	struct strbuf snapshot = STRBUF_INIT;
 	int result = 1;
 
 	strbuf_addstr(&snapshot, filename);
 	strbuf_setlen(&snapshot, snapshot.len - strlen(format->suffix));
 
-	if (get_sha1(snapshot.buf, sha1) == 0)
+	if (get_oid(snapshot.buf, &oid) == 0)
 		goto out;
 
 	reponame = cgit_repobasename(url);
@@ -162,15 +162,15 @@ static const char *get_ref_from_filename(const char *url, const char *filename,
 		strbuf_splice(&snapshot, 0, new_start - snapshot.buf, "", 0);
 	}
 
-	if (get_sha1(snapshot.buf, sha1) == 0)
+	if (get_oid(snapshot.buf, &oid) == 0)
 		goto out;
 
 	strbuf_insert(&snapshot, 0, "v", 1);
-	if (get_sha1(snapshot.buf, sha1) == 0)
+	if (get_oid(snapshot.buf, &oid) == 0)
 		goto out;
 
 	strbuf_splice(&snapshot, 0, 1, "V", 1);
-	if (get_sha1(snapshot.buf, sha1) == 0)
+	if (get_oid(snapshot.buf, &oid) == 0)
 		goto out;
 
 	result = 0;
