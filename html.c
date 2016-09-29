@@ -8,6 +8,7 @@
 
 #include "cgit.h"
 #include "html.h"
+#include "url.h"
 
 /* Percent-encoding of each character, except: a-zA-Z0-9!$()*,./:;@- */
 static const char* url_escape_table[256] = {
@@ -337,64 +338,17 @@ int html_include(const char *filename)
 	return 0;
 }
 
-static int hextoint(char c)
+void http_parse_querystring(const char *txt, void (*fn)(const char *name, const char *value))
 {
-	if (c >= 'a' && c <= 'f')
-		return 10 + c - 'a';
-	else if (c >= 'A' && c <= 'F')
-		return 10 + c - 'A';
-	else if (c >= '0' && c <= '9')
-		return c - '0';
-	else
-		return -1;
-}
+	const char *t = txt;
 
-static char *convert_query_hexchar(char *txt)
-{
-	int d1, d2, n;
-	n = strlen(txt);
-	if (n < 3) {
-		*txt = '\0';
-		return txt-1;
-	}
-	d1 = hextoint(*(txt + 1));
-	d2 = hextoint(*(txt + 2));
-	if (d1 < 0 || d2 < 0) {
-		memmove(txt, txt + 3, n - 2);
-		return txt-1;
-	} else {
-		*txt = d1 * 16 + d2;
-		memmove(txt + 1, txt + 3, n - 2);
-		return txt;
-	}
-}
-
-int http_parse_querystring(const char *txt_, void (*fn)(const char *name, const char *value))
-{
-	char *o, *t, *txt, *value = NULL, c;
-
-	if (!txt_)
-		return 0;
-
-	o = t = txt = xstrdup(txt_);
-	while ((c=*t) != '\0') {
-		if (c == '=') {
-			*t = '\0';
-			value = t + 1;
-		} else if (c == '+') {
-			*t = ' ';
-		} else if (c == '%') {
-			t = convert_query_hexchar(t);
-		} else if (c == '&') {
-			*t = '\0';
-			(*fn)(txt, value);
-			txt = t + 1;
-			value = NULL;
+	while (t && *t) {
+		char *name = url_decode_parameter_name(&t);
+		if (*name) {
+			char *value = url_decode_parameter_value(&t);
+			fn(name, value);
+			free(value);
 		}
-		t++;
+		free(name);
 	}
-	if (t != txt)
-		(*fn)(txt, value);
-	free(o);
-	return 0;
 }
