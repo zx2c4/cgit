@@ -325,7 +325,7 @@ static const char *disambiguate_ref(const char *ref, int *must_free_result)
 	struct strbuf longref = STRBUF_INIT;
 
 	strbuf_addf(&longref, "refs/heads/%s", ref);
-	if (get_sha1(longref.buf, oid.hash) == 0) {
+	if (get_oid(longref.buf, &oid) == 0) {
 		*must_free_result = 1;
 		return strbuf_detach(&longref, NULL);
 	}
