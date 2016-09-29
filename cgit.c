@@ -471,13 +471,14 @@ static char *find_default_branch(struct cgit_repo *repo)
 static char *guess_defbranch(void)
 {
 	const char *ref;
-	unsigned char sha1[20];
+	struct object_id oid;
 
-	ref = resolve_ref_unsafe("HEAD", 0, sha1, NULL);
+	ref = resolve_ref_unsafe("HEAD", 0, oid.hash, NULL);
 	if (!ref || !starts_with(ref, "refs/heads/"))
 		return "master";
 	return xstrdup(ref + 11);
 }
+
 /* The caller must free filename and ref after calling this. */
 static inline void parse_readme(const char *readme, char **filename, char **ref, struct cgit_repo *repo)
 {
@@ -557,7 +558,7 @@ static void print_no_repo_clone_urls(const char *url)
 
 static int prepare_repo_cmd(void)
 {
-	unsigned char sha1[20];
+	struct object_id oid;
 	int nongit = 0;
 	int rc;
 
@@ -615,7 +616,7 @@ static int prepare_repo_cmd(void)
 		return 1;
 	}
 
-	if (get_sha1(ctx.qry.head, sha1)) {
+	if (get_oid(ctx.qry.head, &oid)) {
 		char *old_head = ctx.qry.head;
 		ctx.qry.head = xstrdup(ctx.repo->defbranch);
 		cgit_print_error_page(404, "Not found",
