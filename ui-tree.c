@@ -357,7 +357,7 @@ static int walk_tree(const unsigned char *sha1, struct strbuf *base,
  */
 void cgit_print_tree(const char *rev, char *path)
 {
-	unsigned char sha1[20];
+	struct object_id oid;
 	struct commit *commit;
 	struct pathspec_item path_items = {
 		.match = path,
@@ -375,12 +375,12 @@ void cgit_print_tree(const char *rev, char *path)
 	if (!rev)
 		rev = ctx.qry.head;
 
-	if (get_sha1(rev, sha1)) {
+	if (get_oid(rev, &oid)) {
 		cgit_print_error_page(404, "Not found",
 			"Invalid revision name: %s", rev);
 		return;
 	}
-	commit = lookup_commit_reference(sha1);
+	commit = lookup_commit_reference(oid.hash);
 	if (!commit || parse_commit(commit)) {
 		cgit_print_error_page(404, "Not found",
 			"Invalid commit reference: %s", rev);
