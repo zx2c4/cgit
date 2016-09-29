@@ -19,19 +19,19 @@ void cgit_print_commit(char *hex, const char *prefix)
 	struct commitinfo *info, *parent_info;
 	struct commit_list *p;
 	struct strbuf notes = STRBUF_INIT;
-	unsigned char sha1[20];
+	struct object_id oid;
 	char *tmp, *tmp2;
 	int parents = 0;
 
 	if (!hex)
 		hex = ctx.qry.head;
 
-	if (get_sha1(hex, sha1)) {
+	if (get_oid(hex, &oid)) {
 		cgit_print_error_page(400, "Bad request",
 				"Bad object id: %s", hex);
 		return;
 	}
-	commit = lookup_commit_reference(sha1);
+	commit = lookup_commit_reference(oid.hash);
 	if (!commit) {
 		cgit_print_error_page(404, "Not found",
 				"Bad commit reference: %s", hex);
@@ -39,7 +39,7 @@ void cgit_print_commit(char *hex, const char *prefix)
 	}
 	info = cgit_parse_commit(commit);
 
-	format_display_notes(sha1, &notes, PAGE_ENCODING, 0);
+	format_display_notes(oid.hash, &notes, PAGE_ENCODING, 0);
 
 	load_ref_decorations(DECORATE_FULL_REFS);
 
