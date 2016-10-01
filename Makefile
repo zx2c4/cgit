@@ -85,7 +85,7 @@ install: all
 	$(INSTALL) -m 0644 favicon.ico $(DESTDIR)$(CGIT_DATA_PATH)/favicon.ico
 	$(INSTALL) -m 0644 robots.txt $(DESTDIR)$(CGIT_DATA_PATH)/robots.txt
 	$(INSTALL) -m 0755 -d $(DESTDIR)$(filterdir)
-	$(COPYTREE)  filters/* $(DESTDIR)$(filterdir)
+	$(COPYTREE) filters/* $(DESTDIR)$(filterdir)
 
 install-doc: install-man install-html install-pdf
 
