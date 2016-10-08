@@ -55,6 +55,8 @@ static void repo_config(const char *name, const char *value)
 
 static int gitconfig_config(const char *key, const char *value, void *cb)
 {
+	const char *name;
+
 	if (!strcmp(key, "gitweb.owner"))
 		config_fn(repo, "owner", value);
 	else if (!strcmp(key, "gitweb.description"))
@@ -63,8 +65,8 @@ static int gitconfig_config(const char *key, const char *value, void *cb)
 		config_fn(repo, "section", value);
 	else if (!strcmp(key, "gitweb.homepage"))
 		config_fn(repo, "homepage", value);
-	else if (starts_with(key, "cgit."))
-		config_fn(repo, key + 5, value);
+	else if (skip_prefix(key, "cgit.", &name))
+		config_fn(repo, name, value);
 
 	return 0;
 }

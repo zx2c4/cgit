@@ -31,6 +31,7 @@ static void process_cached_repolist(const char *path);
 
 static void repo_config(struct cgit_repo *repo, const char *name, const char *value)
 {
+	const char *path;
 	struct string_list_item *item;
 
 	if (!strcmp(name, "name"))
@@ -73,8 +74,8 @@ static void repo_config(struct cgit_repo *repo, const char *name, const char *va
 		repo->max_stats = cgit_find_stats_period(value, NULL);
 	else if (!strcmp(name, "module-link"))
 		repo->module_link= xstrdup(value);
-	else if (starts_with(name, "module-link.")) {
-		item = string_list_append(&repo->submodules, xstrdup(name + 12));
+	else if (skip_prefix(name, "module-link.", &path)) {
+		item = string_list_append(&repo->submodules, xstrdup(path));
 		item->util = xstrdup(value);
 	} else if (!strcmp(name, "section"))
 		repo->section = xstrdup(value);
@@ -106,14 +107,16 @@ static void repo_config(struct cgit_repo *repo, const char *name, const char *va
 
 static void config_cb(const char *name, const char *value)
 {
+	const char *arg;
+
 	if (!strcmp(name, "section") || !strcmp(name, "repo.group"))
 		ctx.cfg.section = xstrdup(value);
 	else if (!strcmp(name, "repo.url"))
 		ctx.repo = cgit_add_repo(value);
 	else if (ctx.repo && !strcmp(name, "repo.path"))
 		ctx.repo->path = trim_end(value, '/');
-	else if (ctx.repo && starts_with(name, "repo."))
-		repo_config(ctx.repo, name + 5, value);
+	else if (ctx.repo && skip_prefix(name, "repo.", &arg))
+		repo_config(ctx.repo, arg, value);
 	else if (!strcmp(name, "readme"))
 		string_list_append(&ctx.cfg.readme, xstrdup(value));
 	else if (!strcmp(name, "root-title"))
@@ -280,8 +283,8 @@ static void config_cb(const char *name, const char *value)
 			ctx.cfg.branch_sort = 1;
 		if (!strcmp(value, "name"))
 			ctx.cfg.branch_sort = 0;
-	} else if (starts_with(name, "mimetype."))
-		add_mimetype(name + 9, value);
+	} else if (skip_prefix(name, "mimetype.", &arg))
+		add_mimetype(arg, value);
 	else if (!strcmp(name, "include"))
 		parse_configfile(expand_macros(value), config_cb);
 }
@@ -470,13 +473,13 @@ static char *find_default_branch(struct cgit_repo *repo)
 
 static char *guess_defbranch(void)
 {
-	const char *ref;
+	const char *ref, *refname;
 	struct object_id oid;
 
 	ref = resolve_ref_unsafe("HEAD", 0, oid.hash, NULL);
-	if (!ref || !starts_with(ref, "refs/heads/"))
+	if (!ref || !skip_prefix(ref, "refs/heads/", &refname))
 		return "master";
-	return xstrdup(ref + 11);
+	return xstrdup(refname);
 }
 
 /* The caller must free filename and ref after calling this. */
@@ -938,6 +941,7 @@ out:
 static void cgit_parse_args(int argc, const char **argv)
 {
 	int i;
+	const char *arg;
 	int scan = 0;
 
 	for (i = 1; i < argc; i++) {
@@ -958,28 +962,28 @@ static void cgit_parse_args(int argc, const char **argv)
 
 			exit(0);
 		}
-		if (starts_with(argv[i], "--cache=")) {
-			ctx.cfg.cache_root = xstrdup(argv[i] + 8);
+		if (skip_prefix(argv[i], "--cache=", &arg)) {
+			ctx.cfg.cache_root = xstrdup(arg);
 		} else if (!strcmp(argv[i], "--nocache")) {
 			ctx.cfg.nocache = 1;
 		} else if (!strcmp(argv[i], "--nohttp")) {
 			ctx.env.no_http = "1";
-		} else if (starts_with(argv[i], "--query=")) {
-			ctx.qry.raw = xstrdup(argv[i] + 8);
-		} else if (starts_with(argv[i], "--repo=")) {
-			ctx.qry.repo = xstrdup(argv[i] + 7);
-		} else if (starts_with(argv[i], "--page=")) {
-			ctx.qry.page = xstrdup(argv[i] + 7);
-		} else if (starts_with(argv[i], "--head=")) {
-			ctx.qry.head = xstrdup(argv[i] + 7);
+		} else if (skip_prefix(argv[i], "--query=", &arg)) {
+			ctx.qry.raw = xstrdup(arg);
+		} else if (skip_prefix(argv[i], "--repo=", &arg)) {
+			ctx.qry.repo = xstrdup(arg);
+		} else if (skip_prefix(argv[i], "--page=", &arg)) {
+			ctx.qry.page = xstrdup(arg);
+		} else if (skip_prefix(argv[i], "--head=", &arg)) {
+			ctx.qry.head = xstrdup(arg);
 			ctx.qry.has_symref = 1;
-		} else if (starts_with(argv[i], "--sha1=")) {
-			ctx.qry.sha1 = xstrdup(argv[i] + 7);
+		} else if (skip_prefix(argv[i], "--sha1=", &arg)) {
+			ctx.qry.sha1 = xstrdup(arg);
 			ctx.qry.has_sha1 = 1;
-		} else if (starts_with(argv[i], "--ofs=")) {
-			ctx.qry.ofs = atoi(argv[i] + 6);
-		} else if (starts_with(argv[i], "--scan-tree=") ||
-		           starts_with(argv[i], "--scan-path=")) {
+		} else if (skip_prefix(argv[i], "--ofs=", &arg)) {
+			ctx.qry.ofs = atoi(arg);
+		} else if (skip_prefix(argv[i], "--scan-tree=", &arg) ||
+		           skip_prefix(argv[i], "--scan-path=", &arg)) {
 			/*
 			 * HACK: The global snapshot bit mask defines the set
 			 * of allowed snapshot formats, but the config file
@@ -993,7 +997,7 @@ static void cgit_parse_args(int argc, const char **argv)
 			 */
 			ctx.cfg.snapshots = 0xFF;
 			scan++;
-			scan_tree(argv[i] + 12, repo_config);
+			scan_tree(arg, repo_config);
 		}
 	}
 	if (scan) {
