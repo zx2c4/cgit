@@ -158,21 +158,6 @@ char *strlpart(char *txt, int maxlen)
 	return result;
 }
 
-char *strrpart(char *txt, int maxlen)
-{
-	char *result;
-
-	if (!txt)
-		return txt;
-
-	if (strlen(txt) <= maxlen)
-		return txt;
-	result = xmalloc(maxlen + 1);
-	memcpy(result + 3, txt + strlen(txt) - maxlen + 4, maxlen - 3);
-	result[0] = result[1] = result[2] = '.';
-	return result;
-}
-
 void cgit_add_ref(struct reflist *list, struct refinfo *ref)
 {
 	size_t size;
