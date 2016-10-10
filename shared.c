@@ -142,22 +142,6 @@ void strbuf_ensure_end(struct strbuf *sb, char c)
 		strbuf_addch(sb, c);
 }
 
-char *strlpart(char *txt, int maxlen)
-{
-	char *result;
-
-	if (!txt)
-		return txt;
-
-	if (strlen(txt) <= maxlen)
-		return txt;
-	result = xmalloc(maxlen + 1);
-	memcpy(result, txt, maxlen - 3);
-	result[maxlen-1] = result[maxlen-2] = result[maxlen-3] = '.';
-	result[maxlen] = '\0';
-	return result;
-}
-
 void cgit_add_ref(struct reflist *list, struct refinfo *ref)
 {
 	size_t size;

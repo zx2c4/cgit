@@ -333,7 +333,6 @@ extern int chk_non_negative(int result, char *msg);
 
 extern char *trim_end(const char *str, char c);
 extern char *ensure_end(const char *str, char c);
-extern char *strlpart(char *txt, int maxlen);
 
 extern void strbuf_ensure_end(struct strbuf *sb, char c);
 
