@@ -343,13 +343,15 @@ void cgit_print_repolist(void)
 				html_txt(ctx.repo->owner);
 				cgit_close_filter(ctx.repo->owner_filter);
 			} else {
+				char *currenturl = cgit_currenturl();
 				html("<a href='");
-				html_attr(cgit_currenturl());
+				html_attr(currenturl);
 				html("?q=");
 				html_url_arg(ctx.repo->owner);
 				html("'>");
 				html_txt(ctx.repo->owner);
 				html("</a>");
+				free(currenturl);
 			}
 			html("</td><td>");
 		}
