@@ -13,7 +13,7 @@
 
 struct walk_tree_context {
 	const char *match_path;
-	struct object_id matched_oid;
+	struct object_id *matched_oid;
 	unsigned int found_path:1;
 	unsigned int file_only:1;
 };
@@ -28,7 +28,7 @@ static int walk_tree(const unsigned char *sha1, struct strbuf *base,
 	if (strncmp(base->buf, walk_tree_ctx->match_path, base->len)
 		|| strcmp(walk_tree_ctx->match_path + base->len, pathname))
 		return READ_TREE_RECURSIVE;
-	hashcpy(walk_tree_ctx->matched_oid.hash, sha1);
+	hashcpy(walk_tree_ctx->matched_oid->hash, sha1);
 	walk_tree_ctx->found_path = 1;
 	return 0;
 }
@@ -47,7 +47,7 @@ int cgit_ref_path_exists(const char *path, const char *ref, int file_only)
 	};
 	struct walk_tree_context walk_tree_ctx = {
 		.match_path = path,
-		.matched_oid = oid,
+		.matched_oid = &oid,
 		.found_path = 0,
 		.file_only = file_only
 	};
@@ -77,7 +77,7 @@ int cgit_print_file(char *path, const char *head, int file_only)
 	};
 	struct walk_tree_context walk_tree_ctx = {
 		.match_path = path,
-		.matched_oid = oid,
+		.matched_oid = &oid,
 		.found_path = 0,
 		.file_only = file_only
 	};
@@ -120,7 +120,7 @@ void cgit_print_blob(const char *hex, char *path, const char *head, int file_onl
 	};
 	struct walk_tree_context walk_tree_ctx = {
 		.match_path = path,
-		.matched_oid = oid,
+		.matched_oid = &oid,
 		.found_path = 0,
 		.file_only = file_only
 	};
