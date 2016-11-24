@@ -18,8 +18,8 @@ void cgit_print_patch(const char *new_rev, const char *old_rev,
 	struct commit *commit;
 	struct object_id new_rev_oid, old_rev_oid;
 	char rev_range[2 * 40 + 3];
-	const char *rev_argv[] = { NULL, "--reverse", "--format=email", rev_range, "--", prefix };
-	int rev_argc = ARRAY_SIZE(rev_argv);
+	const char *rev_argv[] = { NULL, "--reverse", "--format=email", rev_range, "--", prefix, NULL };
+	int rev_argc = ARRAY_SIZE(rev_argv) - 1;
 	char *patchname;
 
 	if (!prefix)
@@ -85,8 +85,7 @@ void cgit_print_patch(const char *new_rev, const char *old_rev,
 			DIFF_FORMAT_PATCH | DIFF_FORMAT_SUMMARY;
 	if (prefix)
 		rev.diffopt.stat_sep = fmt("(limited to '%s')\n\n", prefix);
-	setup_revisions(ARRAY_SIZE(rev_argv), rev_argv, &rev,
-			NULL);
+	setup_revisions(rev_argc, rev_argv, &rev, NULL);
 	prepare_revision_walk(&rev);
 
 	while ((commit = get_revision(&rev)) != NULL) {
