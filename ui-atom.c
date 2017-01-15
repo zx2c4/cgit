@@ -63,7 +63,7 @@ static void add_entry(struct commit *commit, const char *host)
 		html_attr(pageurl);
 		if (ctx.cfg.virtual_root)
 			delim = '?';
-		htmlf("%cid=%s", delim, hex);
+		html_attrf("%cid=%s", delim, hex);
 		html("'/>\n");
 		free(pageurl);
 	}
