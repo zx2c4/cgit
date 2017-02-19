@@ -21,6 +21,7 @@ void cgit_parse_url(const char *url)
 	struct cgit_repo *repo;
 
 	ctx.repo = NULL;
+	ctx.qry.page = NULL;
 	if (!url || url[0] == '\0')
 		return;
 
@@ -53,7 +54,6 @@ void cgit_parse_url(const char *url)
 		}
 		if (cmd[1])
 			ctx.qry.page = xstrdup(cmd + 1);
-		return;
 	}
 }
 
