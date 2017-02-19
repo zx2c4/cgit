@@ -1039,7 +1039,7 @@ void cgit_print_pageheader(void)
 		free(currenturl);
 	}
 	html("</td></tr></table>\n");
-	if (ctx.env.authenticated && ctx.qry.vpath) {
+	if (ctx.env.authenticated && ctx.repo && ctx.qry.vpath) {
 		html("<div class='path'>");
 		html("path: ");
 		cgit_print_path_crumbs(ctx.qry.vpath);
