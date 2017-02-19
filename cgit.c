@@ -726,17 +726,17 @@ static void process_request(void)
 		return;
 	}
 
-	/* If cmd->want_vpath is set, assume ctx.qry.path contains a "virtual"
-	 * in-project path limit to be made available at ctx.qry.vpath.
-	 * Otherwise, no path limit is in effect (ctx.qry.vpath = NULL).
-	 */
-	ctx.qry.vpath = cmd->want_vpath ? ctx.qry.path : NULL;
-
 	if (cmd->want_repo && !ctx.repo) {
 		cgit_print_error_page(400, "Bad request",
 				"No repository selected");
 		return;
 	}
+
+	/* If cmd->want_vpath is set, assume ctx.qry.path contains a "virtual"
+	 * in-project path limit to be made available at ctx.qry.vpath.
+	 * Otherwise, no path limit is in effect (ctx.qry.vpath = NULL).
+	 */
+	ctx.qry.vpath = cmd->want_vpath ? ctx.qry.path : NULL;
 
 	if (ctx.repo && prepare_repo_cmd())
 		return;
