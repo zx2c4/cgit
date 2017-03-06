@@ -135,7 +135,7 @@ static int walk_tree(const unsigned char *sha1, struct strbuf *base,
 	struct walk_tree_context *walk_tree_ctx = cbdata;
 
 	if (base->len == walk_tree_ctx->match_baselen) {
-		if (S_ISREG(mode)) {
+		if (S_ISREG(mode) || S_ISLNK(mode)) {
 			if (print_object(sha1, pathname))
 				walk_tree_ctx->match = 1;
 		} else if (S_ISDIR(mode)) {
