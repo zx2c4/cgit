@@ -30,9 +30,6 @@ if email[-1] == '>':
 
 page = sys.argv[2]
 
-sys.stdin = codecs.getreader("utf-8")(sys.stdin.detach())
-sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
-
 md5 = hashlib.md5(email.encode()).hexdigest()
 text = sys.stdin.read().strip()
 

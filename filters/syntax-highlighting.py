@@ -29,9 +29,6 @@ from pygments.lexers import guess_lexer
 from pygments.lexers import guess_lexer_for_filename
 from pygments.formatters import HtmlFormatter
 
-
-sys.stdin = io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8', errors='replace')
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
 data = sys.stdin.read()
 filename = sys.argv[1]
 formatter = HtmlFormatter(style='pastie')
@@ -52,4 +49,4 @@ except TypeError:
 sys.stdout.write('<style>')
 sys.stdout.write(formatter.get_style_defs('.highlight'))
 sys.stdout.write('</style>')
-sys.stdout.write(highlight(data, lexer, formatter, outfile=None))
+highlight(data, lexer, formatter, outfile=sys.stdout)

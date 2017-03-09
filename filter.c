@@ -55,6 +55,8 @@ static int open_exec_filter(struct cgit_filter *base, va_list ap)
 		close(filter->pipe_fh[1]);
 		chk_non_negative(dup2(filter->pipe_fh[0], STDIN_FILENO),
 			"Unable to use pipe as STDIN");
+		/* Always input/output utf-8 for a Python filter. */
+		setenv("PYTHONIOENCODING", "utf-8", 1);
 		execvp(filter->cmd, filter->argv);
 		die_errno("Unable to exec subprocess %s", filter->cmd);
 	}
