@@ -184,27 +184,6 @@ static int cmp(const char *s1, const char *s2)
 	return 0;
 }
 
-static int sort_section(const void *a, const void *b)
-{
-	const struct cgit_repo *r1 = a;
-	const struct cgit_repo *r2 = b;
-	int result;
-	time_t t;
-
-	result = cmp(r1->section, r2->section);
-	if (!result) {
-		if (!strcmp(ctx.cfg.repository_sort, "age")) {
-			// get_repo_modtime caches the value in r->mtime, so we don't
-			// have to worry about inefficiencies here.
-			if (get_repo_modtime(r1, &t) && get_repo_modtime(r2, &t))
-				result = r2->mtime - r1->mtime;
-		}
-		if (!result)
-			result = cmp(r1->name, r2->name);
-	}
-	return result;
-}
-
 static int sort_name(const void *a, const void *b)
 {
 	const struct cgit_repo *r1 = a;
@@ -239,6 +218,23 @@ static int sort_idle(const void *a, const void *b)
 	get_repo_modtime(r1, &t1);
 	get_repo_modtime(r2, &t2);
 	return t2 - t1;
+}
+
+static int sort_section(const void *a, const void *b)
+{
+	const struct cgit_repo *r1 = a;
+	const struct cgit_repo *r2 = b;
+	int result;
+	time_t t;
+
+	result = cmp(r1->section, r2->section);
+	if (!result) {
+		if (!strcmp(ctx.cfg.repository_sort, "age"))
+			result = sort_idle(r1, r2);
+		if (!result)
+			result = cmp(r1->name, r2->name);
+	}
+	return result;
 }
 
 struct sortcolumn {
