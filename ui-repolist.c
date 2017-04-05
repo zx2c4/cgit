@@ -225,7 +225,6 @@ static int sort_section(const void *a, const void *b)
 	const struct cgit_repo *r1 = a;
 	const struct cgit_repo *r2 = b;
 	int result;
-	time_t t;
 
 	result = cmp(r1->section, r2->section);
 	if (!result) {
