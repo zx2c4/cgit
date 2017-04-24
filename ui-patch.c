@@ -92,6 +92,4 @@ void cgit_print_patch(const char *new_rev, const char *old_rev,
 		log_tree_commit(&rev, commit);
 		printf("-- \ncgit %s\n\n", cgit_version);
 	}
-
-	fflush(stdout);
 }

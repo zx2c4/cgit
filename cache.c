@@ -224,6 +224,12 @@ static int fill_slot(struct cache_slot *slot)
 	/* Generate cache content */
 	slot->fn();
 
+	/* Make sure any buffered data is flushed to the file */
+	if (fflush(stdout)) {
+		close(tmp);
+		return errno;
+	}
+
 	/* update stat info */
 	if (fstat(slot->lock_fd, &slot->cache_st)) {
 		close(tmp);
