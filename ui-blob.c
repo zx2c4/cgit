@@ -38,7 +38,7 @@ int cgit_ref_path_exists(const char *path, const char *ref, int file_only)
 	struct object_id oid;
 	unsigned long size;
 	struct pathspec_item path_items = {
-		.match = path,
+		.match = xstrdup(path),
 		.len = strlen(path)
 	};
 	struct pathspec paths = {
@@ -53,10 +53,13 @@ int cgit_ref_path_exists(const char *path, const char *ref, int file_only)
 	};
 
 	if (get_oid(ref, &oid))
-		return 0;
+		goto done;
 	if (sha1_object_info(oid.hash, &size) != OBJ_COMMIT)
-		return 0;
+		goto done;
 	read_tree_recursive(lookup_commit_reference(oid.hash)->tree, "", 0, 0, &paths, walk_tree, &walk_tree_ctx);
+
+done:
+	free(path_items.match);
 	return walk_tree_ctx.found_path;
 }
 

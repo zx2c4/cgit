@@ -352,7 +352,7 @@ void cgit_diff_tree(const struct object_id *old_oid,
 	opt.format_callback = cgit_diff_tree_cb;
 	opt.format_callback_data = fn;
 	if (prefix) {
-		item.match = prefix;
+		item.match = xstrdup(prefix);
 		item.len = strlen(prefix);
 		opt.pathspec.nr = 1;
 		opt.pathspec.items = &item;
@@ -365,6 +365,8 @@ void cgit_diff_tree(const struct object_id *old_oid,
 		diff_root_tree_sha1(new_oid->hash, "", &opt);
 	diffcore_std(&opt);
 	diff_flush(&opt);
+
+	free(item.match);
 }
 
 void cgit_diff_commit(struct commit *commit, filepair_fn fn, const char *prefix)
