@@ -150,9 +150,9 @@ static int show_commit(struct commit *commit, struct rev_info *revs)
 	rem_lines = 0;
 
 	DIFF_OPT_SET(&revs->diffopt, RECURSIVE);
-	diff_tree_sha1(parent->tree->object.oid.hash,
-		       commit->tree->object.oid.hash,
-		       "", &revs->diffopt);
+	diff_tree_oid(&parent->tree->object.oid,
+		      &commit->tree->object.oid,
+		      "", &revs->diffopt);
 	diffcore_std(&revs->diffopt);
 
 	found = !diff_queue_is_empty();
@@ -273,7 +273,7 @@ static void print_commit(struct commit *commit, struct rev_info *revs)
 				strbuf_addstr(&msgbuf, info->msg);
 				strbuf_addch(&msgbuf, '\n');
 			}
-			format_display_notes(commit->object.oid.hash,
+			format_display_notes(&commit->object.oid,
 					     &msgbuf, PAGE_ENCODING, 0);
 			strbuf_addch(&msgbuf, '\n');
 			strbuf_ltrim(&msgbuf);
@@ -436,7 +436,7 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 	setup_revisions(rev_argv.argc, rev_argv.argv, &rev, NULL);
 	load_ref_decorations(DECORATE_FULL_REFS);
 	rev.show_decorations = 1;
-	rev.grep_filter.regflags |= REG_ICASE;
+	rev.grep_filter.ignore_case = 1;
 
 	rev.diffopt.detect_rename = 1;
 	rev.diffopt.rename_limit = ctx.cfg.renamelimit;

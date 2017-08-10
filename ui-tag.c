@@ -54,7 +54,7 @@ void cgit_print_tag(char *revname)
 			"Bad tag reference: %s", revname);
 		goto cleanup;
 	}
-	obj = parse_object(oid.hash);
+	obj = parse_object(&oid);
 	if (!obj) {
 		cgit_print_error_page(500, "Internal server error",
 			"Bad object id: %s", oid_to_hex(&oid));
@@ -64,7 +64,7 @@ void cgit_print_tag(char *revname)
 		struct tag *tag;
 		struct taginfo *info;
 
-		tag = lookup_tag(oid.hash);
+		tag = lookup_tag(&oid);
 		if (!tag || parse_tag(tag) || !(info = cgit_parse_tag(tag))) {
 			cgit_print_error_page(500, "Internal server error",
 				"Bad tag object: %s", revname);

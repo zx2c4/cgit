@@ -17,7 +17,7 @@ static int print_ref_info(const char *refname, const struct object_id *oid,
 {
 	struct object *obj;
 
-	if (!(obj = parse_object(oid->hash)))
+	if (!(obj = parse_object(oid)))
 		return 0;
 
 	htmlf("%s\t%s\n", oid_to_hex(oid), refname);

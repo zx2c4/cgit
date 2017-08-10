@@ -31,7 +31,7 @@ void cgit_print_commit(char *hex, const char *prefix)
 				"Bad object id: %s", hex);
 		return;
 	}
-	commit = lookup_commit_reference(oid.hash);
+	commit = lookup_commit_reference(&oid);
 	if (!commit) {
 		cgit_print_error_page(404, "Not found",
 				"Bad commit reference: %s", hex);
@@ -39,7 +39,7 @@ void cgit_print_commit(char *hex, const char *prefix)
 	}
 	info = cgit_parse_commit(commit);
 
-	format_display_notes(oid.hash, &notes, PAGE_ENCODING, 0);
+	format_display_notes(&oid, &notes, PAGE_ENCODING, 0);
 
 	load_ref_decorations(DECORATE_FULL_REFS);
 
@@ -87,7 +87,7 @@ void cgit_print_commit(char *hex, const char *prefix)
 	free(tmp);
 	html("</td></tr>\n");
 	for (p = commit->parents; p; p = p->next) {
-		parent = lookup_commit_reference(p->item->object.oid.hash);
+		parent = lookup_commit_reference(&p->item->object.oid);
 		if (!parent) {
 			html("<tr><td colspan='3'>");
 			cgit_print_error("Error reading parent commit");

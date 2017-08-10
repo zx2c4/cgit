@@ -116,7 +116,7 @@ static int make_snapshot(const struct cgit_snapshot_format *format,
 				"Bad object id: %s", hex);
 		return 1;
 	}
-	if (!lookup_commit_reference(oid.hash)) {
+	if (!lookup_commit_reference(&oid)) {
 		cgit_print_error_page(400, "Bad request",
 				"Not a commit reference: %s", hex);
 		return 1;

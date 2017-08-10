@@ -10,6 +10,7 @@
 #include "scan-tree.h"
 #include "configfile.h"
 #include "html.h"
+#include <config.h>
 
 /* return 1 if path contains a objects/ directory and a HEAD file */
 static int is_git_dir(const char *path)
@@ -48,7 +49,7 @@ out:
 static struct cgit_repo *repo;
 static repo_config_fn config_fn;
 
-static void repo_config(const char *name, const char *value)
+static void scan_tree_repo_config(const char *name, const char *value)
 {
 	config_fn(repo, name, value);
 }
@@ -178,7 +179,7 @@ static void add_repo(const char *base, struct strbuf *path, repo_config_fn fn)
 
 	strbuf_addstr(path, "cgitrc");
 	if (!stat(path->buf, &st))
-		parse_configfile(path->buf, &repo_config);
+		parse_configfile(path->buf, &scan_tree_repo_config);
 
 	strbuf_release(&rel);
 }

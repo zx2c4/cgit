@@ -160,7 +160,7 @@ static struct refinfo *cgit_mk_refinfo(const char *refname, const struct object_
 
 	ref = xmalloc(sizeof (struct refinfo));
 	ref->refname = xstrdup(refname);
-	ref->object = parse_object(oid->hash);
+	ref->object = parse_object(oid);
 	switch (ref->object->type) {
 	case OBJ_TAG:
 		ref->tag = cgit_parse_tag((struct tag *)ref->object);
@@ -360,9 +360,9 @@ void cgit_diff_tree(const struct object_id *old_oid,
 	diff_setup_done(&opt);
 
 	if (old_oid && !is_null_oid(old_oid))
-		diff_tree_sha1(old_oid->hash, new_oid->hash, "", &opt);
+		diff_tree_oid(old_oid, new_oid, "", &opt);
 	else
-		diff_root_tree_sha1(new_oid->hash, "", &opt);
+		diff_root_tree_oid(new_oid, "", &opt);
 	diffcore_std(&opt);
 	diff_flush(&opt);
 

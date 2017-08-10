@@ -157,7 +157,7 @@ static void print_object(const unsigned char *sha1, char *path, const char *base
 
 struct single_tree_ctx {
 	struct strbuf *path;
-	unsigned char sha1[GIT_SHA1_RAWSZ];
+	struct object_id oid;
 	char *name;
 	size_t count;
 };
@@ -177,7 +177,7 @@ static int single_tree_cb(const unsigned char *sha1, struct strbuf *base,
 	}
 
 	ctx->name = xstrdup(pathname);
-	hashcpy(ctx->sha1, sha1);
+	hashcpy(ctx->oid.hash, sha1);
 	strbuf_addf(ctx->path, "/%s", pathname);
 	return 0;
 }
@@ -195,13 +195,13 @@ static void write_tree_link(const unsigned char *sha1, char *name,
 		.nr = 0
 	};
 
-	hashcpy(tree_ctx.sha1, sha1);
+	hashcpy(tree_ctx.oid.hash, sha1);
 
 	while (tree_ctx.count == 1) {
 		cgit_tree_link(name, NULL, "ls-dir", ctx.qry.head, rev,
 			       fullpath->buf);
 
-		tree = lookup_tree(tree_ctx.sha1);
+		tree = lookup_tree(&tree_ctx.oid);
 		if (!tree)
 			return;
 
@@ -300,17 +300,17 @@ static void ls_tail(void)
 	cgit_print_layout_end();
 }
 
-static void ls_tree(const unsigned char *sha1, char *path, struct walk_tree_context *walk_tree_ctx)
+static void ls_tree(const struct object_id *oid, char *path, struct walk_tree_context *walk_tree_ctx)
 {
 	struct tree *tree;
 	struct pathspec paths = {
 		.nr = 0
 	};
 
-	tree = parse_tree_indirect(sha1);
+	tree = parse_tree_indirect(oid);
 	if (!tree) {
 		cgit_print_error_page(404, "Not found",
-			"Not a tree object: %s", sha1_to_hex(sha1));
+			"Not a tree object: %s", sha1_to_hex(oid->hash));
 		return;
 	}
 
@@ -380,7 +380,7 @@ void cgit_print_tree(const char *rev, char *path)
 			"Invalid revision name: %s", rev);
 		return;
 	}
-	commit = lookup_commit_reference(oid.hash);
+	commit = lookup_commit_reference(&oid);
 	if (!commit || parse_commit(commit)) {
 		cgit_print_error_page(404, "Not found",
 			"Invalid commit reference: %s", rev);
@@ -390,7 +390,7 @@ void cgit_print_tree(const char *rev, char *path)
 	walk_tree_ctx.curr_rev = xstrdup(rev);
 
 	if (path == NULL) {
-		ls_tree(commit->tree->object.oid.hash, NULL, &walk_tree_ctx);
+		ls_tree(&commit->tree->object.oid, NULL, &walk_tree_ctx);
 		goto cleanup;
 	}
 
