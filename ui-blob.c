@@ -56,7 +56,7 @@ int cgit_ref_path_exists(const char *path, const char *ref, int file_only)
 		goto done;
 	if (sha1_object_info(oid.hash, &size) != OBJ_COMMIT)
 		goto done;
-	read_tree_recursive(lookup_commit_reference(oid.hash)->tree, "", 0, 0, &paths, walk_tree, &walk_tree_ctx);
+	read_tree_recursive(lookup_commit_reference(&oid)->tree, "", 0, 0, &paths, walk_tree, &walk_tree_ctx);
 
 done:
 	free(path_items.match);
@@ -89,7 +89,7 @@ int cgit_print_file(char *path, const char *head, int file_only)
 		return -1;
 	type = sha1_object_info(oid.hash, &size);
 	if (type == OBJ_COMMIT) {
-		commit = lookup_commit_reference(oid.hash);
+		commit = lookup_commit_reference(&oid);
 		read_tree_recursive(commit->tree, "", 0, 0, &paths, walk_tree, &walk_tree_ctx);
 		if (!walk_tree_ctx.found_path)
 			return -1;
@@ -145,7 +145,7 @@ void cgit_print_blob(const char *hex, char *path, const char *head, int file_onl
 	type = sha1_object_info(oid.hash, &size);
 
 	if ((!hex) && type == OBJ_COMMIT && path) {
-		commit = lookup_commit_reference(oid.hash);
+		commit = lookup_commit_reference(&oid);
 		read_tree_recursive(commit->tree, "", 0, 0, &paths, walk_tree, &walk_tree_ctx);
 		type = sha1_object_info(oid.hash, &size);
 	}

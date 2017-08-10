@@ -185,7 +185,7 @@ void cgit_print_plain(void)
 		cgit_print_error_page(404, "Not found", "Not found");
 		return;
 	}
-	commit = lookup_commit_reference(oid.hash);
+	commit = lookup_commit_reference(&oid);
 	if (!commit || parse_commit(commit)) {
 		cgit_print_error_page(404, "Not found", "Not found");
 		return;

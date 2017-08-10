@@ -385,7 +385,7 @@ void cgit_print_diff(const char *new_rev, const char *old_rev,
 		     const char *prefix, int show_ctrls, int raw)
 {
 	struct commit *commit, *commit2;
-	const unsigned char *old_tree_sha1, *new_tree_sha1;
+	const struct object_id *old_tree_oid, *new_tree_oid;
 	diff_type difftype;
 
 	/*
@@ -407,13 +407,13 @@ void cgit_print_diff(const char *new_rev, const char *old_rev,
 			"Bad object name: %s", new_rev);
 		return;
 	}
-	commit = lookup_commit_reference(new_rev_oid->hash);
+	commit = lookup_commit_reference(new_rev_oid);
 	if (!commit || parse_commit(commit)) {
 		cgit_print_error_page(404, "Not found",
 			"Bad commit: %s", oid_to_hex(new_rev_oid));
 		return;
 	}
-	new_tree_sha1 = commit->tree->object.oid.hash;
+	new_tree_oid = &commit->tree->object.oid;
 
 	if (old_rev) {
 		if (get_oid(old_rev, old_rev_oid)) {
@@ -428,15 +428,15 @@ void cgit_print_diff(const char *new_rev, const char *old_rev,
 	}
 
 	if (!is_null_oid(old_rev_oid)) {
-		commit2 = lookup_commit_reference(old_rev_oid->hash);
+		commit2 = lookup_commit_reference(old_rev_oid);
 		if (!commit2 || parse_commit(commit2)) {
 			cgit_print_error_page(404, "Not found",
 				"Bad commit: %s", oid_to_hex(old_rev_oid));
 			return;
 		}
-		old_tree_sha1 = commit2->tree->object.oid.hash;
+		old_tree_oid = &commit2->tree->object.oid;
 	} else {
-		old_tree_sha1 = NULL;
+		old_tree_oid = NULL;
 	}
 
 	if (raw) {
@@ -449,11 +449,11 @@ void cgit_print_diff(const char *new_rev, const char *old_rev,
 
 		ctx.page.mimetype = "text/plain";
 		cgit_print_http_headers();
-		if (old_tree_sha1) {
-			diff_tree_sha1(old_tree_sha1, new_tree_sha1, "",
+		if (old_tree_oid) {
+			diff_tree_oid(old_tree_oid, new_tree_oid, "",
 				       &diffopt);
 		} else {
-			diff_root_tree_sha1(new_tree_sha1, "", &diffopt);
+			diff_root_tree_oid(new_tree_oid, "", &diffopt);
 		}
 		diffcore_std(&diffopt);
 		diff_flush(&diffopt);
