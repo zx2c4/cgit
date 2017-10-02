@@ -30,7 +30,7 @@ extern void cgit_log_link(const char *name, const char *title,
 			  const char *class, const char *head, const char *rev,
 			  const char *path, int ofs, const char *grep,
 			  const char *pattern, int showmsg, int follow);
-extern void cgit_commit_link(char *name, const char *title,
+extern void cgit_commit_link(const char *name, const char *title,
 			     const char *class, const char *head,
 			     const char *rev, const char *path);
 extern void cgit_patch_link(const char *name, const char *title,

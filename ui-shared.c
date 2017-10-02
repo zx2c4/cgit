@@ -347,17 +347,10 @@ void cgit_log_link(const char *name, const char *title, const char *class,
 	html("</a>");
 }
 
-void cgit_commit_link(char *name, const char *title, const char *class,
+void cgit_commit_link(const char *name, const char *title, const char *class,
 		      const char *head, const char *rev, const char *path)
 {
 	char *delim;
-
-	if (strlen(name) > ctx.cfg.max_msg_len && ctx.cfg.max_msg_len >= 15) {
-		name[ctx.cfg.max_msg_len] = '\0';
-		name[ctx.cfg.max_msg_len - 1] = '.';
-		name[ctx.cfg.max_msg_len - 2] = '.';
-		name[ctx.cfg.max_msg_len - 3] = '.';
-	}
 
 	delim = repolink(title, class, "commit", head, path);
 	if (rev && ctx.qry.head && strcmp(rev, ctx.qry.head)) {
@@ -387,9 +380,13 @@ void cgit_commit_link(char *name, const char *title, const char *class,
 		html("follow=1");
 	}
 	html("'>");
-	if (name[0] != '\0')
-		html_txt(name);
-	else
+	if (name[0] != '\0') {
+		if (strlen(name) > ctx.cfg.max_msg_len && ctx.cfg.max_msg_len >= 15) {
+			html_ntxt(name, ctx.cfg.max_msg_len - 3);
+			html("...");
+		} else
+			html_txt(name);
+	} else
 		html_txt("(no commit message)");
 	html("</a>");
 }
