@@ -19,7 +19,7 @@ __attribute__((format (printf,1,2)))
 extern void html_attrf(const char *format,...);
 
 extern void html_txt(const char *txt);
-extern void html_ntxt(int len, const char *txt);
+extern ssize_t html_ntxt(const char *txt, size_t len);
 extern void html_attr(const char *txt);
 extern void html_url_path(const char *txt);
 extern void html_url_arg(const char *txt);

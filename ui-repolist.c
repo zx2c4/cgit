@@ -329,7 +329,8 @@ void cgit_print_repolist(void)
 		repourl = cgit_repourl(ctx.repo->url);
 		html_link_open(repourl, NULL, NULL);
 		free(repourl);
-		html_ntxt(ctx.cfg.max_repodesc_len, ctx.repo->desc);
+		if (html_ntxt(ctx.repo->desc, ctx.cfg.max_repodesc_len) < 0)
+			html("...");
 		html_link_close();
 		html("</td><td>");
 		if (ctx.cfg.enable_index_owner) {

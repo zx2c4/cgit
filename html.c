@@ -124,29 +124,20 @@ void html_vtxtf(const char *format, va_list ap)
 
 void html_txt(const char *txt)
 {
-	const char *t = txt;
-	while (t && *t) {
-		int c = *t;
-		if (c == '<' || c == '>' || c == '&') {
-			html_raw(txt, t - txt);
-			if (c == '>')
-				html("&gt;");
-			else if (c == '<')
-				html("&lt;");
-			else if (c == '&')
-				html("&amp;");
-			txt = t + 1;
-		}
-		t++;
-	}
-	if (t != txt)
-		html(txt);
+	if (txt)
+		html_ntxt(txt, strlen(txt));
 }
 
-void html_ntxt(int len, const char *txt)
+ssize_t html_ntxt(const char *txt, size_t len)
 {
 	const char *t = txt;
-	while (t && *t && len--) {
+	ssize_t slen;
+
+	if (len > SSIZE_MAX)
+		return -1;
+
+	slen = (ssize_t) len;
+	while (t && *t && slen--) {
 		int c = *t;
 		if (c == '<' || c == '>' || c == '&') {
 			html_raw(txt, t - txt);
@@ -162,8 +153,7 @@ void html_ntxt(int len, const char *txt)
 	}
 	if (t != txt)
 		html_raw(txt, t - txt);
-	if (len < 0)
-		html("...");
+	return slen;
 }
 
 void html_attrf(const char *fmt, ...)
