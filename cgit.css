@@ -329,6 +329,14 @@ div#cgit table.ssdiff td.lineno a:hover {
 	color: black;
 }
 
+div#cgit table.blame tr:nth-child(even) {
+	background: #eee;
+}
+
+div#cgit table.blame tr:nth-child(odd) {
+	background: white;
+}
+
 div#cgit table.bin-blob {
 	margin-top: 0.5em;
 	border: solid 1px black;

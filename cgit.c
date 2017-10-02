@@ -167,6 +167,8 @@ static void config_cb(const char *name, const char *value)
 		ctx.cfg.enable_index_links = atoi(value);
 	else if (!strcmp(name, "enable-index-owner"))
 		ctx.cfg.enable_index_owner = atoi(value);
+	else if (!strcmp(name, "enable-blame"))
+		ctx.cfg.enable_blame = atoi(value);
 	else if (!strcmp(name, "enable-commit-graph"))
 		ctx.cfg.enable_commit_graph = atoi(value);
 	else if (!strcmp(name, "enable-log-filecount"))

@@ -141,6 +141,11 @@ embedded::
 	suitable for embedding in other html pages. Default value: none. See
 	also: "noheader".
 
+enable-blame::
+	Flag which, when set to "1", will allow cgit to provide a "blame" page
+	for files, and will make it generate links to that page in appropriate
+	places. Default value: "0".
+
 enable-commit-graph::
 	Flag which, when set to "1", will make cgit print an ASCII-art commit
 	history graph to the left of the commit messages in the repository
@@ -797,6 +802,10 @@ enable-http-clone=1
 
 # Show extra links for each repository on the index page
 enable-index-links=1
+
+
+# Enable blame page and create links to it from tree page
+enable-blame=1
 
 
 # Enable ASCII art commit history graph on the log pages

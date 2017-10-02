@@ -1,6 +1,6 @@
 /* cmd.c: the cgit command dispatcher
  *
- * Copyright (C) 2006-2014 cgit Development Team <cgit@lists.zx2c4.com>
+ * Copyright (C) 2006-2017 cgit Development Team <cgit@lists.zx2c4.com>
  *
  * Licensed under GNU General Public License v2
  *   (see COPYING for full license text)
@@ -11,6 +11,7 @@
 #include "cache.h"
 #include "ui-shared.h"
 #include "ui-atom.h"
+#include "ui-blame.h"
 #include "ui-blob.h"
 #include "ui-clone.h"
 #include "ui-commit.h"
@@ -61,6 +62,14 @@ static void about_fn(void)
 		}
 	} else
 		cgit_print_site_readme();
+}
+
+static void blame_fn(void)
+{
+	if (ctx.cfg.enable_blame)
+		cgit_print_blame();
+	else
+		cgit_print_error_page(403, "Forbidden", "Blame is disabled");
 }
 
 static void blob_fn(void)
@@ -164,6 +173,7 @@ struct cgit_cmd *cgit_get_cmd(void)
 		def_cmd(HEAD, 1, 0, 1),
 		def_cmd(atom, 1, 0, 0),
 		def_cmd(about, 0, 0, 0),
+		def_cmd(blame, 1, 1, 0),
 		def_cmd(blob, 1, 0, 0),
 		def_cmd(commit, 1, 1, 0),
 		def_cmd(diff, 1, 1, 0),
