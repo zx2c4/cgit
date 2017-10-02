@@ -1111,3 +1111,34 @@ void cgit_print_snapshot_links(const char *repo, const char *head,
 	}
 	strbuf_release(&filename);
 }
+
+void cgit_set_title_from_path(const char *path)
+{
+	size_t path_len, path_index, path_last_end;
+	char *new_title;
+
+	if (!path)
+		return;
+
+	path_len = strlen(path);
+	new_title = xmalloc(path_len + 3 + strlen(ctx.page.title) + 1);
+	new_title[0] = '\0';
+
+	for (path_index = path_len, path_last_end = path_len; path_index-- > 0;) {
+		if (path[path_index] == '/') {
+			if (path_index == path_len - 1) {
+				path_last_end = path_index - 1;
+				continue;
+			}
+			strncat(new_title, &path[path_index + 1], path_last_end - path_index - 1);
+			strcat(new_title, "\\");
+			path_last_end = path_index;
+		}
+	}
+	if (path_last_end)
+		strncat(new_title, path, path_last_end);
+
+	strcat(new_title, " - ");
+	strcat(new_title, ctx.page.title);
+	ctx.page.title = new_title;
+}

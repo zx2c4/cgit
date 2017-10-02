@@ -84,37 +84,6 @@ static void print_binary_buffer(char *buf, unsigned long size)
 	html("</table>\n");
 }
 
-static void set_title_from_path(const char *path)
-{
-	size_t path_len, path_index, path_last_end;
-	char *new_title;
-
-	if (!path)
-		return;
-
-	path_len = strlen(path);
-	new_title = xmalloc(path_len + 3 + strlen(ctx.page.title) + 1);
-	new_title[0] = '\0';
-
-	for (path_index = path_len, path_last_end = path_len; path_index-- > 0;) {
-		if (path[path_index] == '/') {
-			if (path_index == path_len - 1) {
-				path_last_end = path_index - 1;
-				continue;
-			}
-			strncat(new_title, &path[path_index + 1], path_last_end - path_index - 1);
-			strcat(new_title, "\\");
-			path_last_end = path_index;
-		}
-	}
-	if (path_last_end)
-		strncat(new_title, path, path_last_end);
-
-	strcat(new_title, " - ");
-	strcat(new_title, ctx.page.title);
-	ctx.page.title = new_title;
-}
-
 static void print_object(const unsigned char *sha1, char *path, const char *basename, const char *rev)
 {
 	enum object_type type;
@@ -135,7 +104,7 @@ static void print_object(const unsigned char *sha1, char *path, const char *base
 		return;
 	}
 
-	set_title_from_path(path);
+	cgit_set_title_from_path(path);
 
 	cgit_print_layout_start();
 	htmlf("blob: %s (", sha1_to_hex(sha1));
@@ -335,7 +304,7 @@ static int walk_tree(const unsigned char *sha1, struct strbuf *base,
 
 		if (S_ISDIR(mode)) {
 			walk_tree_ctx->state = 1;
-			set_title_from_path(buffer.buf);
+			cgit_set_title_from_path(buffer.buf);
 			strbuf_release(&buffer);
 			ls_head();
 			return READ_TREE_RECURSIVE;
