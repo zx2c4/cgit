@@ -1,6 +1,6 @@
 /* ui-shared.c: common web output functions
  *
- * Copyright (C) 2006-2014 cgit Development Team <cgit@lists.zx2c4.com>
+ * Copyright (C) 2006-2017 cgit Development Team <cgit@lists.zx2c4.com>
  *
  * Licensed under GNU General Public License v2
  *   (see COPYING for full license text)
@@ -304,6 +304,12 @@ void cgit_plain_link(const char *name, const char *title, const char *class,
 	reporevlink("plain", name, title, class, head, rev, path);
 }
 
+void cgit_blame_link(const char *name, const char *title, const char *class,
+		     const char *head, const char *rev, const char *path)
+{
+	reporevlink("blame", name, title, class, head, rev, path);
+}
+
 void cgit_log_link(const char *name, const char *title, const char *class,
 		   const char *head, const char *rev, const char *path,
 		   int ofs, const char *grep, const char *pattern, int showmsg,
@@ -476,6 +482,10 @@ static void cgit_self_link(char *name, const char *title, const char *class)
 			       ctx.qry.path);
 	else if (!strcmp(ctx.qry.page, "plain"))
 		cgit_plain_link(name, title, class, ctx.qry.head,
+				ctx.qry.has_sha1 ? ctx.qry.sha1 : NULL,
+				ctx.qry.path);
+	else if (!strcmp(ctx.qry.page, "blame"))
+		cgit_blame_link(name, title, class, ctx.qry.head,
 				ctx.qry.has_sha1 ? ctx.qry.sha1 : NULL,
 				ctx.qry.path);
 	else if (!strcmp(ctx.qry.page, "log"))
@@ -983,8 +993,12 @@ void cgit_print_pageheader(void)
 		cgit_log_link("log", NULL, hc("log"), ctx.qry.head,
 			      NULL, ctx.qry.vpath, 0, NULL, NULL,
 			      ctx.qry.showmsg, ctx.qry.follow);
-		cgit_tree_link("tree", NULL, hc("tree"), ctx.qry.head,
-			       ctx.qry.sha1, ctx.qry.vpath);
+		if (ctx.qry.page && !strcmp(ctx.qry.page, "blame"))
+			cgit_blame_link("blame", NULL, hc("blame"), ctx.qry.head,
+				        ctx.qry.sha1, ctx.qry.vpath);
+		else
+			cgit_tree_link("tree", NULL, hc("tree"), ctx.qry.head,
+				       ctx.qry.sha1, ctx.qry.vpath);
 		cgit_commit_link("commit", NULL, hc("commit"),
 				 ctx.qry.head, ctx.qry.sha1, ctx.qry.vpath);
 		cgit_diff_link("diff", NULL, hc("diff"), ctx.qry.head,
