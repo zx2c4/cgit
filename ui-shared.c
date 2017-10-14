@@ -1027,7 +1027,7 @@ void cgit_print_pageheader(void)
 		html_option("committer", "committer", ctx.qry.grep);
 		html_option("range", "range", ctx.qry.grep);
 		html("</select>\n");
-		html("<input class='txt' type='text' size='10' name='q' value='");
+		html("<input class='txt' type='search' size='10' name='q' value='");
 		html_attr(ctx.qry.search);
 		html("'/>\n");
 		html("<input type='submit' value='search'/>\n");
@@ -1042,7 +1042,7 @@ void cgit_print_pageheader(void)
 		html("<form method='get' action='");
 		html_attr(currenturl);
 		html("'>\n");
-		html("<input type='text' name='q' size='10' value='");
+		html("<input type='search' name='q' size='10' value='");
 		html_attr(ctx.qry.search);
 		html("'/>\n");
 		html("<input type='submit' value='search'/>\n");
