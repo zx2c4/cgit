@@ -20,11 +20,10 @@ void cgit_parse_url(const char *url)
 	char *c, *cmd, *p;
 	struct cgit_repo *repo;
 
-	ctx.repo = NULL;
-	ctx.qry.page = NULL;
 	if (!url || url[0] == '\0')
 		return;
 
+	ctx.qry.page = NULL;
 	ctx.repo = cgit_get_repoinfo(url);
 	if (ctx.repo) {
 		ctx.qry.repo = ctx.repo->url;
