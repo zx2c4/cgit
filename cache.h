@@ -19,7 +19,7 @@ typedef void (*cache_fill_fn)(void);
  *   fn      content generator function for this key
  *
  * Return value
- *   0 indicates success, everyting else is an error
+ *   0 indicates success, everything else is an error
  */
 extern int cache_process(int size, const char *path, const char *key, int ttl,
 			 cache_fill_fn fn);

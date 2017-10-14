@@ -1,6 +1,6 @@
 #!/bin/sh
 # This script can be used to implement syntax highlighting in the cgit
-# tree-view by refering to this file with the source-filter or repo.source-
+# tree-view by referring to this file with the source-filter or repo.source-
 # filter options in cgitrc.
 #
 # This script requires a shell supporting the ${var##pattern} syntax.

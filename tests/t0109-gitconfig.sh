@@ -10,16 +10,16 @@ test -n "$(which strace 2>/dev/null)" || {
 }
 
 test_no_home_access () {
-	non_existant_path="/path/to/some/place/that/does/not/possibly/exist"
-	while test -d "$non_existant_path"; do
-		non_existant_path="$non_existant_path/$(date +%N)"
+	non_existent_path="/path/to/some/place/that/does/not/possibly/exist"
+	while test -d "$non_existent_path"; do
+		non_existent_path="$non_existent_path/$(date +%N)"
 	done &&
 	strace \
-		-E HOME="$non_existant_path" \
+		-E HOME="$non_existent_path" \
 		-E CGIT_CONFIG="$PWD/cgitrc" \
 		-E QUERY_STRING="url=$1" \
 		-e access -f -o strace.out cgit &&
-	test_must_fail grep "$non_existant_path" strace.out
+	test_must_fail grep "$non_existent_path" strace.out
 }
 
 test_no_home_access_success() {

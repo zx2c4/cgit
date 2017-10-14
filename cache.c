@@ -318,7 +318,7 @@ static int process_slot(struct cache_slot *slot)
 	/* If the cache slot does not exist (or its key doesn't match the
 	 * current key), lets try to create a new cache slot for this
 	 * request. If this fails (for whatever reason), lets just generate
-	 * the content without caching it and fool the caller to belive
+	 * the content without caching it and fool the caller to believe
 	 * everything worked out (but print a warning on stdout).
 	 */
 
