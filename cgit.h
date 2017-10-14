@@ -71,7 +71,6 @@ struct cgit_exec_filter {
 	char *cmd;
 	char **argv;
 	int old_stdout;
-	int pipe_fh[2];
 	int pid;
 };
 

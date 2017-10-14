@@ -42,6 +42,7 @@ void cgit_cleanup_filters(void)
 static int open_exec_filter(struct cgit_filter *base, va_list ap)
 {
 	struct cgit_exec_filter *filter = (struct cgit_exec_filter *)base;
+	int pipe_fh[2];
 	int i;
 
 	for (i = 0; i < filter->base.argument_count; i++)
@@ -49,19 +50,19 @@ static int open_exec_filter(struct cgit_filter *base, va_list ap)
 
 	filter->old_stdout = chk_positive(dup(STDOUT_FILENO),
 		"Unable to duplicate STDOUT");
-	chk_zero(pipe(filter->pipe_fh), "Unable to create pipe to subprocess");
+	chk_zero(pipe(pipe_fh), "Unable to create pipe to subprocess");
 	filter->pid = chk_non_negative(fork(), "Unable to create subprocess");
 	if (filter->pid == 0) {
-		close(filter->pipe_fh[1]);
-		chk_non_negative(dup2(filter->pipe_fh[0], STDIN_FILENO),
+		close(pipe_fh[1]);
+		chk_non_negative(dup2(pipe_fh[0], STDIN_FILENO),
 			"Unable to use pipe as STDIN");
 		execvp(filter->cmd, filter->argv);
 		die_errno("Unable to exec subprocess %s", filter->cmd);
 	}
-	close(filter->pipe_fh[0]);
-	chk_non_negative(dup2(filter->pipe_fh[1], STDOUT_FILENO),
+	close(pipe_fh[0]);
+	chk_non_negative(dup2(pipe_fh[1], STDOUT_FILENO),
 		"Unable to use pipe as STDOUT");
-	close(filter->pipe_fh[1]);
+	close(pipe_fh[1]);
 	return 0;
 }
 
