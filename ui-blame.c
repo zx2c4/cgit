@@ -45,11 +45,17 @@ static void emit_blame_entry_hash(struct blame_entry *ent)
 {
 	struct blame_origin *suspect = ent->suspect;
 	struct object_id *oid = &suspect->commit->object.oid;
+	unsigned long line = 0;
 
 	char *detail = emit_suspect_detail(suspect);
+	html("<span class='sha1'>");
 	cgit_commit_link(find_unique_abbrev(oid->hash, DEFAULT_ABBREV), detail,
 			 NULL, ctx.qry.head, oid_to_hex(oid), suspect->path);
+	html("</span>");
 	free(detail);
+
+	while (line++ < ent->num_lines)
+		html("\n");
 }
 
 static void emit_blame_entry_linenumber(struct blame_entry *ent)
@@ -70,24 +76,6 @@ static void emit_blame_entry_line(struct blame_scoreboard *sb,
 	cpend = blame_nth_line(sb, ent->lno + ent->num_lines);
 
 	html_ntxt(cp, cpend - cp);
-}
-
-static void emit_blame_entry(struct blame_scoreboard *sb,
-			     struct blame_entry *ent)
-{
-	html("<tr><td class='sha1 hashes'>");
-	emit_blame_entry_hash(ent);
-	html("</td>\n");
-
-	if (ctx.cfg.enable_tree_linenumbers) {
-		html("<td class='linenumbers'><pre>");
-		emit_blame_entry_linenumber(ent);
-		html("</pre></td>\n");
-	}
-
-	html("<td class='lines'><pre><code>");
-	emit_blame_entry_line(sb, ent);
-	html("</code></pre></td></tr>\n");
 }
 
 struct walk_tree_context {
@@ -147,15 +135,43 @@ static void print_object(const unsigned char *sha1, const char *path,
 		return;
 	}
 
-	html("<table class='blame blob'>");
+	html("<table class='blame blob'>\n<tr>\n");
+
+	/* Commit hashes */
+	html("<td class='hashes'>");
+	for (ent = sb.ent; ent; ent = ent->next) {
+		html("<div class='alt'><pre>");
+		emit_blame_entry_hash(ent);
+		html("</pre></div>");
+	}
+	html("</td>\n");
+
+	/* Line numbers */
+	if (ctx.cfg.enable_tree_linenumbers) {
+		html("<td class='linenumbers'>");
+		for (ent = sb.ent; ent; ent = ent->next) {
+			html("<div class='alt'><pre>");
+			emit_blame_entry_linenumber(ent);
+			html("</pre></div>");
+		}
+		html("</td>\n");
+	}
+
+	/* Lines */
+	html("<td class='lines'>");
 	for (ent = sb.ent; ent; ) {
 		struct blame_entry *e = ent->next;
-		emit_blame_entry(&sb, ent);
+		html("<div class='alt'><pre><code>");
+		emit_blame_entry_line(&sb, ent);
+		html("</code></pre></div>");
 		free(ent);
 		ent = e;
 	}
-	html("</table>\n");
+	html("</td>\n");
+
 	free((void *)sb.final_buf);
+
+	html("</tr>\n</table>\n");
 
 	cgit_print_layout_end();
 }

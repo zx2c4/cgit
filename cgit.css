@@ -330,11 +330,26 @@ div#cgit table.ssdiff td.lineno a:hover {
 	color: black;
 }
 
-div#cgit table.blame tr:nth-child(even) {
+div#cgit table.blame td.hashes,
+div#cgit table.blame td.lines,
+div#cgit table.blame td.linenumbers {
+	padding: 0;
+}
+
+div#cgit table.blame td.hashes div.alt,
+div#cgit table.blame td.lines div.alt {
+	padding: 0 0.5em 0 0.5em;
+}
+
+div#cgit table.blame td.linenumbers div.alt {
+	padding: 0 0.5em 0 0;
+}
+
+div#cgit table.blame div.alt:nth-child(even) {
 	background: #eee;
 }
 
-div#cgit table.blame tr:nth-child(odd) {
+div#cgit table.blame div.alt:nth-child(odd) {
 	background: white;
 }
 
