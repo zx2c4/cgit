@@ -41,36 +41,52 @@ static char *emit_suspect_detail(struct blame_origin *suspect)
 	return strbuf_detach(&detail, NULL);
 }
 
-static void emit_blame_entry(struct blame_scoreboard *sb,
-			     struct blame_entry *ent)
+static void emit_blame_entry_hash(struct blame_entry *ent)
 {
 	struct blame_origin *suspect = ent->suspect;
 	struct object_id *oid = &suspect->commit->object.oid;
-	const char *numberfmt = "<a id='n%1$d' href='#n%1$d'>%1$d</a>\n";
-	const char *cp, *cpend;
 
 	char *detail = emit_suspect_detail(suspect);
-
-	html("<tr><td class='sha1 hashes'>");
 	cgit_commit_link(find_unique_abbrev(oid->hash, DEFAULT_ABBREV), detail,
 			 NULL, ctx.qry.head, oid_to_hex(oid), suspect->path);
-	html("</td>\n");
-
 	free(detail);
+}
 
-	if (ctx.cfg.enable_tree_linenumbers) {
-		unsigned long lineno = ent->lno;
-		html("<td class='linenumbers'><pre>");
-		while (lineno < ent->lno + ent->num_lines)
-			htmlf(numberfmt, ++lineno);
-		html("</pre></td>\n");
-	}
+static void emit_blame_entry_linenumber(struct blame_entry *ent)
+{
+	const char *numberfmt = "<a id='n%1$d' href='#n%1$d'>%1$d</a>\n";
+
+	unsigned long lineno = ent->lno;
+	while (lineno < ent->lno + ent->num_lines)
+		htmlf(numberfmt, ++lineno);
+}
+
+static void emit_blame_entry_line(struct blame_scoreboard *sb,
+				  struct blame_entry *ent)
+{
+	const char *cp, *cpend;
 
 	cp = blame_nth_line(sb, ent->lno);
 	cpend = blame_nth_line(sb, ent->lno + ent->num_lines);
 
-	html("<td class='lines'><pre><code>");
 	html_ntxt(cp, cpend - cp);
+}
+
+static void emit_blame_entry(struct blame_scoreboard *sb,
+			     struct blame_entry *ent)
+{
+	html("<tr><td class='sha1 hashes'>");
+	emit_blame_entry_hash(ent);
+	html("</td>\n");
+
+	if (ctx.cfg.enable_tree_linenumbers) {
+		html("<td class='linenumbers'><pre>");
+		emit_blame_entry_linenumber(ent);
+		html("</pre></td>\n");
+	}
+
+	html("<td class='lines'><pre><code>");
+	emit_blame_entry_line(sb, ent);
 	html("</code></pre></td></tr>\n");
 }
 
