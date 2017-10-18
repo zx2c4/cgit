@@ -51,7 +51,7 @@ static void emit_blame_entry(struct blame_scoreboard *sb,
 
 	char *detail = emit_suspect_detail(suspect);
 
-	html("<tr><td class='sha1 lines'>");
+	html("<tr><td class='sha1 hashes'>");
 	cgit_commit_link(find_unique_abbrev(oid->hash, DEFAULT_ABBREV), detail,
 			 NULL, ctx.qry.head, oid_to_hex(oid), suspect->path);
 	html("</td>\n");

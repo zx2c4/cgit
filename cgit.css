@@ -300,6 +300,7 @@ div#cgit table.blob {
 	border-top: solid 1px black;
 }
 
+div#cgit table.blob td.hashes,
 div#cgit table.blob td.lines {
 	margin: 0; padding: 0 0 0 0.5em;
 	vertical-align: top;
