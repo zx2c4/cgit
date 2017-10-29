@@ -67,15 +67,29 @@ static void emit_blame_entry_linenumber(struct blame_entry *ent)
 		htmlf(numberfmt, ++lineno);
 }
 
-static void emit_blame_entry_line(struct blame_scoreboard *sb,
-				  struct blame_entry *ent)
+static void emit_blame_entry_line_background(struct blame_scoreboard *sb,
+					     struct blame_entry *ent)
 {
-	const char *cp, *cpend;
+	unsigned long line;
+	size_t len, maxlen = 2;
+	const char* pos, *endpos;
 
-	cp = blame_nth_line(sb, ent->lno);
-	cpend = blame_nth_line(sb, ent->lno + ent->num_lines);
+	for (line = ent->lno; line < ent->lno + ent->num_lines; line++) {
+		html("\n");
+		pos = blame_nth_line(sb, line);
+		endpos = blame_nth_line(sb, line + 1);
+		len = 0;
+		while (pos < endpos) {
+			len++;
+			if (*pos++ == '\t')
+				len = (len + 7) & ~7;
+		}
+		if (len > maxlen)
+			maxlen = len;
+	}
 
-	html_ntxt(cp, cpend - cp);
+	for (len = 0; len < maxlen - 1; len++)
+		html(" ");
 }
 
 struct walk_tree_context {
@@ -88,6 +102,7 @@ static void print_object(const unsigned char *sha1, const char *path,
 			 const char *basename, const char *rev)
 {
 	enum object_type type;
+	char *buf;
 	unsigned long size;
 	struct argv_array rev_argv = ARGV_ARRAY_INIT;
 	struct rev_info revs;
@@ -99,6 +114,13 @@ static void print_object(const unsigned char *sha1, const char *path,
 	if (type == OBJ_BAD) {
 		cgit_print_error_page(404, "Not found", "Bad object name: %s",
 				      sha1_to_hex(sha1));
+		return;
+	}
+
+	buf = read_sha1_file(sha1, &type, &size);
+	if (!buf) {
+		cgit_print_error_page(500, "Internal server error",
+			"Error reading object %s", sha1_to_hex(sha1));
 		return;
 	}
 
@@ -157,19 +179,36 @@ static void print_object(const unsigned char *sha1, const char *path,
 		html("</td>\n");
 	}
 
-	/* Lines */
-	html("<td class='lines'>");
+	html("<td class='lines'><div>");
+
+	/* Colored bars behind lines */
+	html("<div>");
 	for (ent = sb.ent; ent; ) {
 		struct blame_entry *e = ent->next;
-		html("<div class='alt'><pre><code>");
-		emit_blame_entry_line(&sb, ent);
-		html("</code></pre></div>");
+		html("<div class='alt'><pre>");
+		emit_blame_entry_line_background(&sb, ent);
+		html("</pre></div>");
 		free(ent);
 		ent = e;
 	}
-	html("</td>\n");
+	html("</div>");
 
 	free((void *)sb.final_buf);
+
+	/* Lines */
+	html("<pre><code>");
+	if (ctx.repo->source_filter) {
+		char *filter_arg = xstrdup(basename);
+		cgit_open_filter(ctx.repo->source_filter, filter_arg);
+		html_raw(buf, size);
+		cgit_close_filter(ctx.repo->source_filter);
+		free(filter_arg);
+	} else {
+		html_txt(buf);
+	}
+	html("</code></pre>");
+
+	html("</div></td>\n");
 
 	html("</tr>\n</table>\n");
 

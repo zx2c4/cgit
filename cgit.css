@@ -353,6 +353,16 @@ div#cgit table.blame div.alt:nth-child(odd) {
 	background: white;
 }
 
+div#cgit table.blame td.lines > div {
+	position: relative;
+}
+
+div#cgit table.blame td.lines > div > pre {
+	padding: 0 0 0 0.5em;
+	position: absolute;
+	top: 0;
+}
+
 div#cgit table.bin-blob {
 	margin-top: 0.5em;
 	border: solid 1px black;
