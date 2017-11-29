@@ -11,6 +11,7 @@
 #include "ui-clone.h"
 #include "html.h"
 #include "ui-shared.h"
+#include "packfile.h"
 
 static int print_ref_info(const char *refname, const struct object_id *oid,
                           int flags, void *cb_data)
