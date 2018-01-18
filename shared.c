@@ -346,7 +346,7 @@ void cgit_diff_tree(const struct object_id *old_oid,
 	opt.output_format = DIFF_FORMAT_CALLBACK;
 	opt.detect_rename = 1;
 	opt.rename_limit = ctx.cfg.renamelimit;
-	DIFF_OPT_SET(&opt, RECURSIVE);
+	opt.flags.recursive = 1;
 	if (ignorews)
 		DIFF_XDL_SET(&opt, IGNORE_WHITESPACE);
 	opt.format_callback = cgit_diff_tree_cb;

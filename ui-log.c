@@ -119,8 +119,7 @@ static int show_commit(struct commit *commit, struct rev_info *revs)
 	struct commit_list *parents = commit->parents;
 	struct commit *parent;
 	int found = 0, saved_fmt;
-	unsigned saved_flags = revs->diffopt.flags;
-
+	struct diff_flags saved_flags = revs->diffopt.flags;
 
 	/* Always show if we're not in "follow" mode with a single file. */
 	if (!ctx.qry.follow)
@@ -149,7 +148,7 @@ static int show_commit(struct commit *commit, struct rev_info *revs)
 	add_lines = 0;
 	rem_lines = 0;
 
-	DIFF_OPT_SET(&revs->diffopt, RECURSIVE);
+	revs->diffopt.flags.recursive = 1;
 	diff_tree_oid(&parent->tree->object.oid,
 		      &commit->tree->object.oid,
 		      "", &revs->diffopt);
@@ -434,7 +433,7 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 	rev.ignore_missing = 1;
 	rev.simplify_history = 1;
 	setup_revisions(rev_argv.argc, rev_argv.argv, &rev, NULL);
-	load_ref_decorations(DECORATE_FULL_REFS);
+	load_ref_decorations(NULL, DECORATE_FULL_REFS);
 	rev.show_decorations = 1;
 	rev.grep_filter.ignore_case = 1;
 

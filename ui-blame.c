@@ -101,7 +101,7 @@ static void print_object(const unsigned char *sha1, const char *path,
 	argv_array_push(&rev_argv, "blame");
 	argv_array_push(&rev_argv, rev);
 	init_revisions(&revs, NULL);
-	DIFF_OPT_SET(&revs.diffopt, ALLOW_TEXTCONV);
+	revs.diffopt.flags.allow_textconv = 1;
 	setup_revisions(rev_argv.argc, rev_argv.argv, &revs, NULL);
 	init_scoreboard(&sb);
 	sb.revs = &revs;

@@ -444,7 +444,7 @@ void cgit_print_diff(const char *new_rev, const char *old_rev,
 
 		diff_setup(&diffopt);
 		diffopt.output_format = DIFF_FORMAT_PATCH;
-		DIFF_OPT_SET(&diffopt, RECURSIVE);
+		diffopt.flags.recursive = 1;
 		diff_setup_done(&diffopt);
 
 		ctx.page.mimetype = "text/plain";

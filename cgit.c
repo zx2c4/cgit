@@ -478,7 +478,7 @@ static char *guess_defbranch(void)
 	const char *ref, *refname;
 	struct object_id oid;
 
-	ref = resolve_ref_unsafe("HEAD", 0, oid.hash, NULL);
+	ref = resolve_ref_unsafe("HEAD", 0, &oid, NULL);
 	if (!ref || !skip_prefix(ref, "refs/heads/", &refname))
 		return "master";
 	return xstrdup(refname);

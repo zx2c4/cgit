@@ -41,7 +41,7 @@ void cgit_print_commit(char *hex, const char *prefix)
 
 	format_display_notes(&oid, &notes, PAGE_ENCODING, 0);
 
-	load_ref_decorations(DECORATE_FULL_REFS);
+	load_ref_decorations(NULL, DECORATE_FULL_REFS);
 
 	cgit_print_layout_start();
 	cgit_print_diff_ctrls();
