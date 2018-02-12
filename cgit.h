@@ -81,6 +81,7 @@ struct cgit_repo {
 	char *name;
 	char *path;
 	char *desc;
+	char *extra_head_content;
 	char *owner;
 	char *homepage;
 	char *defbranch;

@@ -775,6 +775,8 @@ void cgit_print_docstart(void)
 		cgit_add_clone_urls(print_rel_vcs_link);
 	if (ctx.cfg.head_include)
 		html_include(ctx.cfg.head_include);
+	if (ctx.repo && ctx.repo->extra_head_content)
+		html(ctx.repo->extra_head_content);
 	html("</head>\n");
 	html("<body>\n");
 	if (ctx.cfg.header)

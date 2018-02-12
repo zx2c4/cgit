@@ -53,6 +53,7 @@ struct cgit_repo *cgit_add_repo(const char *url)
 	ret->name = ret->url;
 	ret->path = NULL;
 	ret->desc = cgit_default_repo_desc;
+	ret->extra_head_content = NULL;
 	ret->owner = NULL;
 	ret->homepage = NULL;
 	ret->section = ctx.cfg.section;

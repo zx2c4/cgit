@@ -509,6 +509,10 @@ repo.enable-subject-links::
 	A flag which can be used to override the global setting
 	`enable-subject-links'. Default value: none.
 
+repo.extra-head-content::
+	This value will be added verbatim to the head section of each page
+	displayed for this repo. Default value: none.
+
 repo.hide::
 	Flag which, when set to "1", hides the repository from the repository
 	index. The repository can still be accessed by providing a direct path.

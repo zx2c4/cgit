@@ -46,6 +46,8 @@ static void repo_config(struct cgit_repo *repo, const char *name, const char *va
 		repo->homepage = xstrdup(value);
 	else if (!strcmp(name, "defbranch"))
 		repo->defbranch = xstrdup(value);
+	else if (!strcmp(name, "extra-head-content"))
+		repo->extra_head_content = xstrdup(value);
 	else if (!strcmp(name, "snapshots"))
 		repo->snapshots = ctx.cfg.snapshots & cgit_parse_snapshots_mask(value);
 	else if (!strcmp(name, "enable-commit-graph"))
@@ -797,6 +799,8 @@ static void print_repo(FILE *f, struct cgit_repo *repo)
 	}
 	if (repo->defbranch)
 		fprintf(f, "repo.defbranch=%s\n", repo->defbranch);
+	if (repo->extra_head_content)
+		fprintf(f, "repo.extra-head-content=%s\n", repo->extra_head_content);
 	if (repo->module_link)
 		fprintf(f, "repo.module-link=%s\n", repo->module_link);
 	if (repo->section)
