@@ -561,12 +561,8 @@ static void print_no_repo_clone_urls(const char *url)
         html("</a></td></tr>\n");
 }
 
-static int prepare_repo_cmd(void)
+static void prepare_repo_env(int *nongit)
 {
-	struct object_id oid;
-	int nongit = 0;
-	int rc;
-
 	/* The path to the git repository. */
 	setenv("GIT_DIR", ctx.repo->path, 1);
 
@@ -579,8 +575,13 @@ static int prepare_repo_cmd(void)
 	/* Setup the git directory and initialize the notes system. Both of these
 	 * load local configuration from the git repository, so we do them both while
 	 * the HOME variables are unset. */
-	setup_git_directory_gently(&nongit);
+	setup_git_directory_gently(nongit);
 	init_display_notes(NULL);
+}
+static int prepare_repo_cmd(int nongit)
+{
+	struct object_id oid;
+	int rc;
 
 	if (nongit) {
 		const char *name = ctx.repo->name;
@@ -700,6 +701,7 @@ static inline void authenticate_cookie(void)
 static void process_request(void)
 {
 	struct cgit_cmd *cmd;
+	int nongit = 0;
 
 	/* If we're not yet authenticated, no matter what page we're on,
 	 * display the authentication body from the auth_filter. This should
@@ -714,6 +716,9 @@ static void process_request(void)
 		cgit_print_docend();
 		return;
 	}
+
+	if (ctx.repo)
+		prepare_repo_env(&nongit);
 
 	cmd = cgit_get_cmd();
 	if (!cmd) {
@@ -740,7 +745,7 @@ static void process_request(void)
 	 */
 	ctx.qry.vpath = cmd->want_vpath ? ctx.qry.path : NULL;
 
-	if (ctx.repo && prepare_repo_cmd())
+	if (ctx.repo && prepare_repo_cmd(nongit))
 		return;
 
 	cmd->fn();
