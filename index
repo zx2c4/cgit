@@ -46,13 +46,13 @@ Packages
 --------
  * [Arch Linux][archlinux]
  * [Gentoo][gentoo]
- * [Fedora][fedora]
+ * [Fedora/RHEL/CentOS][fedora]
  * [OS X][macports]
  * [OpenSUSE][OpenSUSE]
  * [NetBSD][pkgsrc]
 
 [archlinux]:    https://www.archlinux.org/packages/?name=cgit
-[fedora]:       https://admin.fedoraproject.org/pkgdb/acls/name/cgit
+[fedora]:       https://apps.fedoraproject.org/packages/cgit
 [gentoo]:       http://packages.gentoo.org/package/www-apps/cgit
 [macports]:     http://trac.macports.org/browser/trunk/dports/www/cgit
 [opensuse]:     https://build.opensuse.org/package/show?package=cgit&project=devel%3Atools%3Ascm
