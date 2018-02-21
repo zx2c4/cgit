@@ -134,7 +134,7 @@ doc-pdf: $(DOC_PDF)
 	a2x -f manpage $<
 
 $(DOC_HTML): %.html : %.txt
-	a2x -f xhtml --stylesheet=cgit-doc.css $<
+	a2x -f xhtml --stylesheet=cgit-doc.css --xsltproc-opts="--param generate.consistent.ids 1" $<
 
 $(DOC_PDF): %.pdf : %.txt
 	a2x -f pdf cgitrc.5.txt
