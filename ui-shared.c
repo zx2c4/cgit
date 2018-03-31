@@ -1111,7 +1111,8 @@ void cgit_compose_snapshot_prefix(struct strbuf *filename, const char *base,
 	strbuf_addf(filename, "%s-%s", base, ref);
 }
 
-void cgit_print_snapshot_links(const struct cgit_repo *repo, const char *ref)
+void cgit_print_snapshot_links(const struct cgit_repo *repo, const char *ref,
+			       const char *separator)
 {
 	const struct cgit_snapshot_format* f;
 	struct strbuf filename = STRBUF_INIT;
@@ -1132,7 +1133,7 @@ void cgit_print_snapshot_links(const struct cgit_repo *repo, const char *ref)
 		strbuf_addstr(&filename, f->suffix);
 		cgit_snapshot_link(filename.buf, NULL, NULL, NULL, NULL,
 				   filename.buf);
-		html("<br/>");
+		html(separator);
 	}
 	strbuf_release(&filename);
 }
