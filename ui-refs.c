@@ -97,9 +97,6 @@ static void print_tag_downloads(const struct cgit_repo *repo, const char *ref)
 	struct strbuf filename = STRBUF_INIT;
 	size_t prefixlen;
 
-	if (!ref || strlen(ref) < 1)
-		return;
-
 	basename = cgit_snapshot_prefix(repo);
 	if (starts_with(ref, basename))
 		strbuf_addstr(&filename, ref);
