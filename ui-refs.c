@@ -90,31 +90,6 @@ static void print_tag_header(void)
 	     "<th class='left' colspan='2'>Age</th></tr>\n");
 }
 
-static void print_tag_downloads(const struct cgit_repo *repo, const char *ref)
-{
-	const struct cgit_snapshot_format* f;
-	const char *basename;
-	struct strbuf filename = STRBUF_INIT;
-	size_t prefixlen;
-
-	basename = cgit_snapshot_prefix(repo);
-	if (starts_with(ref, basename))
-		strbuf_addstr(&filename, ref);
-	else
-		cgit_compose_snapshot_prefix(&filename, basename, ref);
-	prefixlen = filename.len;
-	for (f = cgit_snapshot_formats; f->suffix; f++) {
-		if (!(repo->snapshots & f->bit))
-			continue;
-		strbuf_setlen(&filename, prefixlen);
-		strbuf_addstr(&filename, f->suffix);
-		cgit_snapshot_link(filename.buf, NULL, NULL, NULL, NULL, filename.buf);
-		html("&nbsp;&nbsp;");
-	}
-
-	strbuf_release(&filename);
-}
-
 static int print_tag(struct refinfo *ref)
 {
 	struct tag *tag = NULL;
@@ -134,7 +109,7 @@ static int print_tag(struct refinfo *ref)
 	cgit_tag_link(name, NULL, NULL, name);
 	html("</td><td>");
 	if (ctx.repo->snapshots && (obj->type == OBJ_COMMIT))
-		print_tag_downloads(ctx.repo, name);
+		cgit_print_snapshot_links(ctx.repo, name, "&nbsp;&nbsp;");
 	else
 		cgit_object_link(obj);
 	html("</td><td>");
