@@ -194,7 +194,7 @@ void cgit_print_snapshot(const char *head, const char *hex,
 	}
 
 	f = get_format(filename);
-	if (!f) {
+	if (!f || !(ctx.repo->snapshots & f->bit)) {
 		cgit_print_error_page(400, "Bad request",
 				"Unsupported snapshot format: %s", filename);
 		return;
