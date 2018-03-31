@@ -139,7 +139,8 @@ static int make_snapshot(const struct cgit_snapshot_format *format,
  * pending a 'v' or a 'V' to the remaining snapshot name ("0.7.2" ->
  * "v0.7.2") gives us something valid.
  */
-static const char *get_ref_from_filename(const char *url, const char *filename,
+static const char *get_ref_from_filename(const struct cgit_repo *repo,
+					 const char *filename,
 					 const struct cgit_snapshot_format *format)
 {
 	const char *reponame;
@@ -153,7 +154,7 @@ static const char *get_ref_from_filename(const char *url, const char *filename,
 	if (get_oid(snapshot.buf, &oid) == 0)
 		goto out;
 
-	reponame = cgit_repobasename(url);
+	reponame = cgit_repobasename(repo->url);
 	if (starts_with(snapshot.buf, reponame)) {
 		const char *new_start = snapshot.buf;
 		new_start += strlen(reponame);
@@ -200,7 +201,7 @@ void cgit_print_snapshot(const char *head, const char *hex,
 	}
 
 	if (!hex && dwim) {
-		hex = get_ref_from_filename(ctx.repo->url, filename, f);
+		hex = get_ref_from_filename(ctx.repo, filename, f);
 		if (hex == NULL) {
 			cgit_print_error_page(404, "Not found", "Not found");
 			return;
