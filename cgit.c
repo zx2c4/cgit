@@ -79,6 +79,8 @@ static void repo_config(struct cgit_repo *repo, const char *name, const char *va
 		item->util = xstrdup(value);
 	} else if (!strcmp(name, "section"))
 		repo->section = xstrdup(value);
+	else if (!strcmp(name, "snapshot-prefix"))
+		repo->snapshot_prefix = xstrdup(value);
 	else if (!strcmp(name, "readme") && value != NULL) {
 		if (repo->readme.items == ctx.cfg.readme.items)
 			memset(&repo->readme, 0, sizeof(repo->readme));

@@ -78,6 +78,7 @@ extern void cgit_compose_snapshot_prefix(struct strbuf *filename,
 					 const char *base, const char *ref);
 extern void cgit_print_snapshot_links(const struct cgit_repo *repo,
 				      const char *head, const char *hex);
+extern const char *cgit_snapshot_prefix(const struct cgit_repo *repo);
 extern void cgit_add_hidden_formfields(int incl_head, int incl_search,
 				       const char *page);
 

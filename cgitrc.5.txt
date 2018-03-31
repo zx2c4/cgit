@@ -599,6 +599,13 @@ repo.snapshots::
 	restricted by the global "snapshots" setting. Default value:
 	<snapshots>.
 
+repo.snapshot-prefix::
+	Prefix to use for snapshot links instead of the repository basename.
+	For example, the "linux-stable" repository may wish to set this to
+	"linux" so that snapshots are in the format "linux-3.15.4" instead
+	of "linux-stable-3.15.4".  Default value: <empty> meaning to use
+	the repository basename.
+
 repo.section::
 	Override the current section name for this repository. Default value:
 	none.

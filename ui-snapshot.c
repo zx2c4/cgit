@@ -154,7 +154,7 @@ static const char *get_ref_from_filename(const struct cgit_repo *repo,
 	if (get_oid(snapshot.buf, &oid) == 0)
 		goto out;
 
-	reponame = cgit_repobasename(repo->url);
+	reponame = cgit_snapshot_prefix(repo);
 	if (starts_with(snapshot.buf, reponame)) {
 		const char *new_start = snapshot.buf;
 		new_start += strlen(reponame);
@@ -214,7 +214,7 @@ void cgit_print_snapshot(const char *head, const char *hex,
 		hex = head;
 
 	if (!prefix)
-		prefix = xstrdup(cgit_repobasename(ctx.repo->url));
+		prefix = xstrdup(cgit_snapshot_prefix(ctx.repo));
 
 	make_snapshot(f, hex, prefix, filename);
 	free(prefix);

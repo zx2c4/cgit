@@ -152,6 +152,14 @@ const char *cgit_repobasename(const char *reponame)
 	return rvbuf;
 }
 
+const char *cgit_snapshot_prefix(const struct cgit_repo *repo)
+{
+	if (repo->snapshot_prefix)
+		return repo->snapshot_prefix;
+
+	return cgit_repobasename(repo->url);
+}
+
 static void site_url(const char *page, const char *search, const char *sort, int ofs, int always_root)
 {
 	char *delim = "?";
@@ -1110,7 +1118,7 @@ void cgit_print_snapshot_links(const struct cgit_repo *repo, const char *head,
 	struct strbuf filename = STRBUF_INIT;
 	size_t prefixlen;
 
-	cgit_compose_snapshot_prefix(&filename, cgit_repobasename(repo->url), hex);
+	cgit_compose_snapshot_prefix(&filename, cgit_snapshot_prefix(repo), hex);
 	prefixlen = filename.len;
 	for (f = cgit_snapshot_formats; f->suffix; f++) {
 		if (!(repo->snapshots & f->bit))
