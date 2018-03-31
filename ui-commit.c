@@ -110,8 +110,7 @@ void cgit_print_commit(char *hex, const char *prefix)
 	}
 	if (ctx.repo->snapshots) {
 		html("<tr><th>download</th><td colspan='2' class='sha1'>");
-		cgit_print_snapshot_links(ctx.qry.repo, ctx.qry.head,
-					  hex, ctx.repo->snapshots);
+		cgit_print_snapshot_links(ctx.repo, ctx.qry.head, hex);
 		html("</td></tr>");
 	}
 	html("</table>\n");
