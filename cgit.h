@@ -374,6 +374,8 @@ extern void cgit_parse_url(const char *url);
 extern const char *cgit_repobasename(const char *reponame);
 
 extern int cgit_parse_snapshots_mask(const char *str);
+extern const struct object_id *cgit_snapshot_get_sig(const char *ref,
+						     const struct cgit_snapshot_format *f);
 
 extern int cgit_open_filter(struct cgit_filter *filter, ...);
 extern int cgit_close_filter(struct cgit_filter *filter);

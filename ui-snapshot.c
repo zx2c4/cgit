@@ -94,6 +94,31 @@ const struct cgit_snapshot_format cgit_snapshot_formats[] = {
 	{ NULL }
 };
 
+static struct notes_tree snapshot_sig_notes[ARRAY_SIZE(cgit_snapshot_formats)];
+
+const struct object_id *cgit_snapshot_get_sig(const char *ref,
+					      const struct cgit_snapshot_format *f)
+{
+	struct notes_tree *tree;
+	struct object_id oid;
+
+	if (get_oid(ref, &oid))
+		return NULL;
+
+	tree = &snapshot_sig_notes[f - &cgit_snapshot_formats[0]];
+	if (!tree->initialized) {
+		struct strbuf notes_ref = STRBUF_INIT;
+
+		strbuf_addf(&notes_ref, "refs/notes/signatures/%s",
+			    f->suffix + 1);
+
+		init_notes(tree, notes_ref.buf, combine_notes_ignore, 0);
+		strbuf_release(&notes_ref);
+	}
+
+	return get_note(tree, &oid);
+}
+
 static const struct cgit_snapshot_format *get_format(const char *filename)
 {
 	const struct cgit_snapshot_format *fmt;
@@ -126,6 +151,39 @@ static int make_snapshot(const struct cgit_snapshot_format *format,
 	ctx.page.filename = xstrdup(filename);
 	cgit_print_http_headers();
 	format->write_func(hex, prefix);
+	return 0;
+}
+
+static int write_sig(const struct cgit_snapshot_format *format,
+		     const char *hex, const char *archive,
+		     const char *filename)
+{
+	const struct object_id *note = cgit_snapshot_get_sig(hex, format);
+	enum object_type type;
+	unsigned long size;
+	char *buf;
+
+	if (!note) {
+		cgit_print_error_page(404, "Not found",
+				"No signature for %s", archive);
+		return 0;
+	}
+
+	buf = read_sha1_file(note->hash, &type, &size);
+	if (!buf) {
+		cgit_print_error_page(404, "Not found", "Not found");
+		return 0;
+	}
+
+	html("X-Content-Type-Options: nosniff\n");
+	html("Content-Security-Policy: default-src 'none'\n");
+	ctx.page.etag = oid_to_hex(note);
+	ctx.page.mimetype = xstrdup("application/pgp-signature");
+	ctx.page.filename = xstrdup(filename);
+	cgit_print_http_headers();
+
+	html_raw(buf, size);
+	free(buf);
 	return 0;
 }
 
@@ -185,12 +243,23 @@ void cgit_print_snapshot(const char *head, const char *hex,
 			 const char *filename, int dwim)
 {
 	const struct cgit_snapshot_format* f;
+	const char *sig_filename = NULL;
+	char *adj_filename = NULL;
 	char *prefix = NULL;
 
 	if (!filename) {
 		cgit_print_error_page(400, "Bad request",
 				"No snapshot name specified");
 		return;
+	}
+
+	if (ends_with(filename, ".asc")) {
+		sig_filename = filename;
+
+		/* Strip ".asc" from filename for common format processing */
+		adj_filename = xstrdup(filename);
+		adj_filename[strlen(adj_filename) - 4] = '\0';
+		filename = adj_filename;
 	}
 
 	f = get_format(filename);
@@ -216,6 +285,11 @@ void cgit_print_snapshot(const char *head, const char *hex,
 	if (!prefix)
 		prefix = xstrdup(cgit_snapshot_prefix(ctx.repo));
 
-	make_snapshot(f, hex, prefix, filename);
+	if (sig_filename)
+		write_sig(f, hex, filename, sig_filename);
+	else
+		make_snapshot(f, hex, prefix, filename);
+
 	free(prefix);
+	free(adj_filename);
 }

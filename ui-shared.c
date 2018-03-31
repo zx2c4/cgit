@@ -1133,6 +1133,13 @@ void cgit_print_snapshot_links(const struct cgit_repo *repo, const char *ref,
 		strbuf_addstr(&filename, f->suffix);
 		cgit_snapshot_link(filename.buf, NULL, NULL, NULL, NULL,
 				   filename.buf);
+		if (cgit_snapshot_get_sig(ref, f)) {
+			strbuf_addstr(&filename, ".asc");
+			html(" (");
+			cgit_snapshot_link("sig", NULL, NULL, NULL, NULL,
+					   filename.buf);
+			html(")");
+		}
 		html(separator);
 	}
 	strbuf_release(&filename);
