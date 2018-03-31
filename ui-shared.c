@@ -1115,9 +1115,15 @@ void cgit_print_snapshot_links(const struct cgit_repo *repo, const char *ref)
 {
 	const struct cgit_snapshot_format* f;
 	struct strbuf filename = STRBUF_INIT;
+	const char *basename;
 	size_t prefixlen;
 
-	cgit_compose_snapshot_prefix(&filename, cgit_snapshot_prefix(repo), ref);
+	basename = cgit_snapshot_prefix(repo);
+	if (starts_with(ref, basename))
+		strbuf_addstr(&filename, ref);
+	else
+		cgit_compose_snapshot_prefix(&filename, basename, ref);
+
 	prefixlen = filename.len;
 	for (f = cgit_snapshot_formats; f->suffix; f++) {
 		if (!(repo->snapshots & f->bit))
