@@ -545,7 +545,7 @@ void cgit_object_link(struct object *obj)
 		page = "tag";
 	else
 		page = "blob";
-	name = fmt("%s %s...", typename(obj->type), shortrev);
+	name = fmt("%s %s...", type_name(obj->type), shortrev);
 	reporevlink(page, name, NULL, NULL, ctx.qry.head, fullrev, NULL);
 }
 
