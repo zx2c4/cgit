@@ -239,7 +239,7 @@ static int load_mmfile(mmfile_t *file, const struct object_id *oid)
 		file->ptr = (char *)"";
 		file->size = 0;
 	} else {
-		file->ptr = read_sha1_file(oid->hash, &type,
+		file->ptr = read_object_file(oid, &type,
 		                           (unsigned long *)&file->size);
 	}
 	return 1;

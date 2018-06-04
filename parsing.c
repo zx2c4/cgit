@@ -200,7 +200,7 @@ struct taginfo *cgit_parse_tag(struct tag *tag)
 	const char *p;
 	struct taginfo *ret = NULL;
 
-	data = read_sha1_file(tag->object.oid.hash, &type, &size);
+	data = read_object_file(&tag->object.oid, &type, &size);
 	if (!data || type != OBJ_TAG)
 		goto cleanup;
 

@@ -258,8 +258,8 @@ static void header(const struct object_id *oid1, char *path1, int mode1,
 		htmlf("<br/>deleted file mode %.6o", mode1);
 
 	if (!subproject) {
-		abbrev1 = xstrdup(find_unique_abbrev(oid1->hash, DEFAULT_ABBREV));
-		abbrev2 = xstrdup(find_unique_abbrev(oid2->hash, DEFAULT_ABBREV));
+		abbrev1 = xstrdup(find_unique_abbrev(oid1, DEFAULT_ABBREV));
+		abbrev2 = xstrdup(find_unique_abbrev(oid2, DEFAULT_ABBREV));
 		htmlf("<br/>index %s..%s", abbrev1, abbrev2);
 		free(abbrev1);
 		free(abbrev2);
@@ -413,7 +413,7 @@ void cgit_print_diff(const char *new_rev, const char *old_rev,
 			"Bad commit: %s", oid_to_hex(new_rev_oid));
 		return;
 	}
-	new_tree_oid = &commit->tree->object.oid;
+	new_tree_oid = &commit->maybe_tree->object.oid;
 
 	if (old_rev) {
 		if (get_oid(old_rev, old_rev_oid)) {
@@ -434,7 +434,7 @@ void cgit_print_diff(const char *new_rev, const char *old_rev,
 				"Bad commit: %s", oid_to_hex(old_rev_oid));
 			return;
 		}
-		old_tree_oid = &commit2->tree->object.oid;
+		old_tree_oid = &commit2->maybe_tree->object.oid;
 	} else {
 		old_tree_oid = NULL;
 	}

@@ -12,6 +12,7 @@
 #include "html.h"
 #include "ui-shared.h"
 #include "packfile.h"
+#include "object-store.h"
 
 static int print_ref_info(const char *refname, const struct object_id *oid,
                           int flags, void *cb_data)
@@ -38,8 +39,8 @@ static void print_pack_info(void)
 	ctx.page.mimetype = "text/plain";
 	ctx.page.filename = "objects/info/packs";
 	cgit_print_http_headers();
-	prepare_packed_git();
-	for (pack = packed_git; pack; pack = pack->next) {
+	reprepare_packed_git(the_repository);
+	for (pack = get_packed_git(the_repository); pack; pack = pack->next) {
 		if (pack->pack_local) {
 			offset = strrchr(pack->pack_name, '/');
 			if (offset && offset[1] != '\0')

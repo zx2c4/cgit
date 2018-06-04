@@ -16,19 +16,19 @@ struct walk_tree_context {
 	int match;
 };
 
-static int print_object(const unsigned char *sha1, const char *path)
+static int print_object(const struct object_id *oid, const char *path)
 {
 	enum object_type type;
 	char *buf, *mimetype;
 	unsigned long size;
 
-	type = sha1_object_info(sha1, &size);
+	type = oid_object_info(the_repository, oid, &size);
 	if (type == OBJ_BAD) {
 		cgit_print_error_page(404, "Not found", "Not found");
 		return 0;
 	}
 
-	buf = read_sha1_file(sha1, &type, &size);
+	buf = read_object_file(oid, &type, &size);
 	if (!buf) {
 		cgit_print_error_page(404, "Not found", "Not found");
 		return 0;
@@ -57,7 +57,7 @@ static int print_object(const unsigned char *sha1, const char *path)
 	}
 	ctx.page.filename = path;
 	ctx.page.size = size;
-	ctx.page.etag = sha1_to_hex(sha1);
+	ctx.page.etag = oid_to_hex(oid);
 	cgit_print_http_headers();
 	html_raw(buf, size);
 	free(mimetype);
@@ -73,7 +73,7 @@ static char *buildpath(const char *base, int baselen, const char *path)
 		return fmtalloc("%.*s/", baselen, base);
 }
 
-static void print_dir(const unsigned char *sha1, const char *base,
+static void print_dir(const struct object_id *oid, const char *base,
 		      int baselen, const char *path)
 {
 	char *fullpath, *slash;
@@ -81,7 +81,7 @@ static void print_dir(const unsigned char *sha1, const char *base,
 
 	fullpath = buildpath(base, baselen, path);
 	slash = (fullpath[0] == '/' ? "" : "/");
-	ctx.page.etag = sha1_to_hex(sha1);
+	ctx.page.etag = oid_to_hex(oid);
 	cgit_print_http_headers();
 	htmlf("<html><head><title>%s", slash);
 	html_txt(fullpath);
@@ -106,7 +106,7 @@ static void print_dir(const unsigned char *sha1, const char *base,
 	free(fullpath);
 }
 
-static void print_dir_entry(const unsigned char *sha1, const char *base,
+static void print_dir_entry(const struct object_id *oid, const char *base,
 			    int baselen, const char *path, unsigned mode)
 {
 	char *fullpath;
@@ -116,7 +116,7 @@ static void print_dir_entry(const unsigned char *sha1, const char *base,
 		fullpath[strlen(fullpath) - 1] = 0;
 	html("  <li>");
 	if (S_ISGITLINK(mode)) {
-		cgit_submodule_link(NULL, fullpath, sha1_to_hex(sha1));
+		cgit_submodule_link(NULL, fullpath, oid_to_hex(oid));
 	} else
 		cgit_plain_link(path, NULL, NULL, ctx.qry.head, ctx.qry.sha1,
 				fullpath);
@@ -129,22 +129,22 @@ static void print_dir_tail(void)
 	html(" </ul>\n</body></html>\n");
 }
 
-static int walk_tree(const unsigned char *sha1, struct strbuf *base,
+static int walk_tree(const struct object_id *oid, struct strbuf *base,
 		const char *pathname, unsigned mode, int stage, void *cbdata)
 {
 	struct walk_tree_context *walk_tree_ctx = cbdata;
 
 	if (base->len == walk_tree_ctx->match_baselen) {
 		if (S_ISREG(mode) || S_ISLNK(mode)) {
-			if (print_object(sha1, pathname))
+			if (print_object(oid, pathname))
 				walk_tree_ctx->match = 1;
 		} else if (S_ISDIR(mode)) {
-			print_dir(sha1, base->buf, base->len, pathname);
+			print_dir(oid, base->buf, base->len, pathname);
 			walk_tree_ctx->match = 2;
 			return READ_TREE_RECURSIVE;
 		}
 	} else if (base->len < INT_MAX && (int)base->len > walk_tree_ctx->match_baselen) {
-		print_dir_entry(sha1, base->buf, base->len, pathname, mode);
+		print_dir_entry(oid, base->buf, base->len, pathname, mode);
 		walk_tree_ctx->match = 2;
 	} else if (S_ISDIR(mode)) {
 		return READ_TREE_RECURSIVE;
@@ -193,12 +193,12 @@ void cgit_print_plain(void)
 	if (!path_items.match) {
 		path_items.match = "";
 		walk_tree_ctx.match_baselen = -1;
-		print_dir(commit->tree->object.oid.hash, "", 0, "");
+		print_dir(&commit->maybe_tree->object.oid, "", 0, "");
 		walk_tree_ctx.match = 2;
 	}
 	else
 		walk_tree_ctx.match_baselen = basedir_len(path_items.match);
-	read_tree_recursive(commit->tree, "", 0, 0, &paths, walk_tree, &walk_tree_ctx);
+	read_tree_recursive(commit->maybe_tree, "", 0, 0, &paths, walk_tree, &walk_tree_ctx);
 	if (!walk_tree_ctx.match)
 		cgit_print_error_page(404, "Not found", "Not found");
 	else if (walk_tree_ctx.match == 2)

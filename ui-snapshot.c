@@ -174,7 +174,7 @@ static int write_sig(const struct cgit_snapshot_format *format,
 		return 0;
 	}
 
-	buf = read_sha1_file(note->hash, &type, &size);
+	buf = read_object_file(note, &type, &size);
 	if (!buf) {
 		cgit_print_error_page(404, "Not found", "Not found");
 		return 0;

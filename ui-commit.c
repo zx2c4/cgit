@@ -78,7 +78,7 @@ void cgit_print_commit(char *hex, const char *prefix)
 	html(")</td></tr>\n");
 	html("<tr><th>tree</th><td colspan='2' class='sha1'>");
 	tmp = xstrdup(hex);
-	cgit_tree_link(oid_to_hex(&commit->tree->object.oid), NULL, NULL,
+	cgit_tree_link(oid_to_hex(&commit->maybe_tree->object.oid), NULL, NULL,
 		       ctx.qry.head, tmp, NULL);
 	if (prefix) {
 		html(" /");
