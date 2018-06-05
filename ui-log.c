@@ -65,6 +65,8 @@ void show_commit_decorations(struct commit *commit)
 		return;
 	html("<span class='decoration'>");
 	while (deco) {
+		struct object_id peeled;
+		int is_annotated = 0;
 		strncpy(buf, prettify_refname(deco->name), sizeof(buf) - 1);
 		switch(deco->type) {
 		case DECORATION_NONE:
@@ -77,7 +79,9 @@ void show_commit_decorations(struct commit *commit)
 				ctx.qry.showmsg, 0);
 			break;
 		case DECORATION_REF_TAG:
-			cgit_tag_link(buf, NULL, "tag-deco", buf);
+			if (!peel_ref(deco->name, &peeled))
+				is_annotated = !oidcmp(&commit->object.oid, &peeled);
+			cgit_tag_link(buf, NULL, is_annotated ? "tag-annotated-deco" : "tag-deco", buf);
 			break;
 		case DECORATION_REF_REMOTE:
 			if (!ctx.repo->enable_remote_branches)

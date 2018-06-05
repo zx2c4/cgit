@@ -685,6 +685,14 @@ div#cgit a.tag-deco {
 	border: solid 1px #777700;
 }
 
+div#cgit a.tag-annotated-deco {
+	color: #000;
+	margin: 0px 0.5em;
+	padding: 0px 0.25em;
+	background-color: #ffcc88;
+	border: solid 1px #777700;
+}
+
 div#cgit a.remote-deco {
 	color: #000;
 	margin: 0px 0.5em;
