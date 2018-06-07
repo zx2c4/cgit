@@ -390,6 +390,9 @@ int cgit_parse_snapshots_mask(const char *str)
 	if (atoi(str))
 		return 1;
 
+	if (strcmp(str, "all") == 0)
+		return INT_MAX;
+
 	string_list_split(&tokens, str, ' ', -1);
 	string_list_remove_empty_items(&tokens, 0);
 

@@ -429,6 +429,7 @@ snapshots::
 	Text which specifies the default set of snapshot formats that cgit
 	generates links for. The value is a space-separated list of zero or
 	more of the values "tar", "tar.gz", "tar.bz2", "tar.xz" and "zip".
+	The special value "all" enables all snapshot formats.
 	Default value: none.
 
 source-filter::
