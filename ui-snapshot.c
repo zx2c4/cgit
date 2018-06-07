@@ -86,6 +86,7 @@ static int write_tar_xz_archive(const char *hex, const char *prefix)
 }
 
 const struct cgit_snapshot_format cgit_snapshot_formats[] = {
+	/* .tar must remain the 0 index */
 	{ ".tar",	"application/x-tar",	write_tar_archive	},
 	{ ".tar.gz",	"application/x-gzip",	write_tar_gzip_archive	},
 	{ ".tar.bz2",	"application/x-bzip2",	write_tar_bzip2_archive	},
@@ -268,7 +269,7 @@ void cgit_print_snapshot(const char *head, const char *hex,
 	}
 
 	f = get_format(filename);
-	if (!f || !(ctx.repo->snapshots & cgit_snapshot_format_bit(f))) {
+	if (!f || (!sig_filename && !(ctx.repo->snapshots & cgit_snapshot_format_bit(f)))) {
 		cgit_print_error_page(400, "Bad request",
 				"Unsupported snapshot format: %s", filename);
 		return;
