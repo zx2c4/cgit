@@ -107,7 +107,7 @@ void cgit_print_tag(char *revname)
 		htmlf("<tr><td>tag name</td><td>");
 		html_txt(revname);
 		html("</td></tr>\n");
-		html("<tr><td>Tagged object</td><td class='sha1'>");
+		html("<tr><td>tagged object</td><td class='sha1'>");
 		cgit_object_link(obj);
 		html("</td></tr>\n");
 		if (ctx.repo->snapshots)
