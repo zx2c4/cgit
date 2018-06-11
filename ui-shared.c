@@ -1127,7 +1127,7 @@ void cgit_print_snapshot_links(const struct cgit_repo *repo, const char *ref,
 
 	prefixlen = filename.len;
 	for (f = cgit_snapshot_formats; f->suffix; f++) {
-		if (!(repo->snapshots & f->bit))
+		if (!(repo->snapshots & cgit_snapshot_format_bit(f)))
 			continue;
 		strbuf_setlen(&filename, prefixlen);
 		strbuf_addstr(&filename, f->suffix);

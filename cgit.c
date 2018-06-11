@@ -765,7 +765,7 @@ static char *build_snapshot_setting(int bitmap)
 	struct strbuf result = STRBUF_INIT;
 
 	for (f = cgit_snapshot_formats; f->suffix; f++) {
-		if (f->bit & bitmap) {
+		if (cgit_snapshot_format_bit(f) & bitmap) {
 			if (result.len)
 				strbuf_addch(&result, ' ');
 			strbuf_addstr(&result, f->suffix);

@@ -400,7 +400,7 @@ int cgit_parse_snapshots_mask(const char *str)
 		for (f = cgit_snapshot_formats; f->suffix; f++) {
 			if (!strcmp(item->string, f->suffix) ||
 			    !strcmp(item->string, f->suffix + 1)) {
-				rv |= f->bit;
+				rv |= cgit_snapshot_format_bit(f);
 				break;
 			}
 		}

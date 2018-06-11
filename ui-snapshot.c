@@ -86,11 +86,11 @@ static int write_tar_xz_archive(const char *hex, const char *prefix)
 }
 
 const struct cgit_snapshot_format cgit_snapshot_formats[] = {
-	{ ".zip", "application/x-zip", write_zip_archive, 0x01 },
-	{ ".tar.gz", "application/x-gzip", write_tar_gzip_archive, 0x02 },
-	{ ".tar.bz2", "application/x-bzip2", write_tar_bzip2_archive, 0x04 },
-	{ ".tar", "application/x-tar", write_tar_archive, 0x08 },
-	{ ".tar.xz", "application/x-xz", write_tar_xz_archive, 0x10 },
+	{ ".tar",	"application/x-tar",	write_tar_archive	},
+	{ ".tar.gz",	"application/x-gzip",	write_tar_gzip_archive	},
+	{ ".tar.bz2",	"application/x-bzip2",	write_tar_bzip2_archive	},
+	{ ".tar.xz",	"application/x-xz",	write_tar_xz_archive	},
+	{ ".zip",	"application/x-zip",	write_zip_archive	},
 	{ NULL }
 };
 
@@ -128,6 +128,11 @@ static const struct cgit_snapshot_format *get_format(const char *filename)
 			return fmt;
 	}
 	return NULL;
+}
+
+const unsigned cgit_snapshot_format_bit(const struct cgit_snapshot_format *f)
+{
+	return BIT(f - &cgit_snapshot_formats[0]);
 }
 
 static int make_snapshot(const struct cgit_snapshot_format *format,
@@ -263,7 +268,7 @@ void cgit_print_snapshot(const char *head, const char *hex,
 	}
 
 	f = get_format(filename);
-	if (!f || !(ctx.repo->snapshots & f->bit)) {
+	if (!f || !(ctx.repo->snapshots & cgit_snapshot_format_bit(f))) {
 		cgit_print_error_page(400, "Bad request",
 				"Unsupported snapshot format: %s", filename);
 		return;

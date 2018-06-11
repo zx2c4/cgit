@@ -46,6 +46,8 @@
  */
 #define PAGE_ENCODING "UTF-8"
 
+#define BIT(x)	(1U << (x))
+
 typedef void (*configfn)(const char *name, const char *value);
 typedef void (*filepair_fn)(struct diff_filepair *pair);
 typedef void (*linediff_fn)(char *line, int len);
@@ -314,7 +316,6 @@ struct cgit_snapshot_format {
 	const char *suffix;
 	const char *mimetype;
 	write_archive_fn_t write_func;
-	int bit;
 };
 
 extern const char *cgit_version;
@@ -376,6 +377,7 @@ extern const char *cgit_repobasename(const char *reponame);
 extern int cgit_parse_snapshots_mask(const char *str);
 extern const struct object_id *cgit_snapshot_get_sig(const char *ref,
 						     const struct cgit_snapshot_format *f);
+extern const unsigned cgit_snapshot_format_bit(const struct cgit_snapshot_format *f);
 
 extern int cgit_open_filter(struct cgit_filter *filter, ...);
 extern int cgit_close_filter(struct cgit_filter *filter);
