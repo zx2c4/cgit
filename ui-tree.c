@@ -127,6 +127,8 @@ static void print_object(const unsigned char *sha1, char *path, const char *base
 		print_binary_buffer(buf, size);
 	else
 		print_text_buffer(basename, buf, size);
+
+	free(buf);
 }
 
 struct single_tree_ctx {
