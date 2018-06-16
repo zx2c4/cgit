@@ -24,6 +24,12 @@ DOC_MAN5 = $(patsubst %.txt,%,$(MAN5_TXT))
 DOC_HTML = $(patsubst %.txt,%.html,$(MAN_TXT))
 DOC_PDF  = $(patsubst %.txt,%.pdf,$(MAN_TXT))
 
+ASCIIDOC = asciidoc
+ASCIIDOC_EXTRA =
+ASCIIDOC_HTML = xhtml11
+ASCIIDOC_COMMON = $(ASCIIDOC) $(ASCIIDOC_EXTRA)
+TXT_TO_HTML = $(ASCIIDOC_COMMON) -b $(ASCIIDOC_HTML)
+
 # Define NO_C99_FORMAT if your formatted IO functions (printf/scanf et.al.)
 # do not support the 'size specifiers' introduced by C99, namely ll, hh,
 # j, z, t. (representing long long int, char, intmax_t, size_t, ptrdiff_t).
@@ -134,7 +140,8 @@ doc-pdf: $(DOC_PDF)
 	a2x -f manpage $<
 
 $(DOC_HTML): %.html : %.txt
-	a2x -f xhtml --stylesheet=cgit-doc.css --xsltproc-opts="--param generate.consistent.ids 1" $<
+	$(TXT_TO_HTML) -o $@+ $< && \
+	mv $@+ $@
 
 $(DOC_PDF): %.pdf : %.txt
 	a2x -f pdf cgitrc.5.txt
