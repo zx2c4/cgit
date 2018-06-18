@@ -197,8 +197,6 @@ struct cgit_config {
 	char *footer;
 	char *head_include;
 	char *header;
-	char *index_header;
-	char *index_info;
 	char *logo;
 	char *logo_link;
 	char *mimetype_file;
@@ -248,7 +246,6 @@ struct cgit_config {
 	int max_repodesc_len;
 	int max_blob_size;
 	int max_stats;
-	int nocache;
 	int noplainemail;
 	int noheader;
 	int renamelimit;

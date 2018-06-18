@@ -111,7 +111,7 @@ static void config_cb(const char *name, const char *value)
 {
 	const char *arg;
 
-	if (!strcmp(name, "section") || !strcmp(name, "repo.group"))
+	if (!strcmp(name, "section"))
 		ctx.cfg.section = xstrdup(value);
 	else if (!strcmp(name, "repo.url"))
 		ctx.repo = cgit_add_repo(value);
@@ -139,20 +139,14 @@ static void config_cb(const char *name, const char *value)
 		ctx.cfg.header = xstrdup(value);
 	else if (!strcmp(name, "logo"))
 		ctx.cfg.logo = xstrdup(value);
-	else if (!strcmp(name, "index-header"))
-		ctx.cfg.index_header = xstrdup(value);
-	else if (!strcmp(name, "index-info"))
-		ctx.cfg.index_info = xstrdup(value);
 	else if (!strcmp(name, "logo-link"))
 		ctx.cfg.logo_link = xstrdup(value);
 	else if (!strcmp(name, "module-link"))
 		ctx.cfg.module_link = xstrdup(value);
 	else if (!strcmp(name, "strict-export"))
 		ctx.cfg.strict_export = xstrdup(value);
-	else if (!strcmp(name, "virtual-root")) {
+	else if (!strcmp(name, "virtual-root"))
 		ctx.cfg.virtual_root = ensure_end(value, '/');
-	} else if (!strcmp(name, "nocache"))
-		ctx.cfg.nocache = atoi(value);
 	else if (!strcmp(name, "noplainemail"))
 		ctx.cfg.noplainemail = atoi(value);
 	else if (!strcmp(name, "noheader"))
@@ -236,7 +230,7 @@ static void config_cb(const char *name, const char *value)
 	else if (!strcmp(name, "project-list"))
 		ctx.cfg.project_list = xstrdup(expand_macros(value));
 	else if (!strcmp(name, "scan-path"))
-		if (!ctx.cfg.nocache && ctx.cfg.cache_size)
+		if (ctx.cfg.cache_size)
 			process_cached_repolist(expand_macros(value));
 		else if (ctx.cfg.project_list)
 			scan_projects(expand_macros(value),
@@ -355,7 +349,6 @@ static void prepare_context(void)
 {
 	memset(&ctx, 0, sizeof(ctx));
 	ctx.cfg.agefile = "info/web/last-modified";
-	ctx.cfg.nocache = 0;
 	ctx.cfg.cache_size = 0;
 	ctx.cfg.cache_max_create_time = 5;
 	ctx.cfg.cache_root = CGIT_CACHE_ROOT;
@@ -973,8 +966,6 @@ static void cgit_parse_args(int argc, const char **argv)
 		}
 		if (skip_prefix(argv[i], "--cache=", &arg)) {
 			ctx.cfg.cache_root = xstrdup(arg);
-		} else if (!strcmp(argv[i], "--nocache")) {
-			ctx.cfg.nocache = 1;
 		} else if (!strcmp(argv[i], "--nohttp")) {
 			ctx.env.no_http = "1";
 		} else if (skip_prefix(argv[i], "--query=", &arg)) {
@@ -1095,8 +1086,6 @@ int cmd_main(int argc, const char **argv)
 	else
 		ctx.page.expires += ttl * 60;
 	if (!ctx.env.authenticated || (ctx.env.request_method && !strcmp(ctx.env.request_method, "HEAD")))
-		ctx.cfg.nocache = 1;
-	if (ctx.cfg.nocache)
 		ctx.cfg.cache_size = 0;
 	err = cache_process(ctx.cfg.cache_size, ctx.cfg.cache_root,
 			    ctx.qry.raw, ttl, process_request);

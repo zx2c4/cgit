@@ -238,18 +238,6 @@ include::
 	Name of a configfile to include before the rest of the current config-
 	file is parsed. Default value: none. See also: "MACRO EXPANSION".
 
-index-header::
-	The content of the file specified with this option will be included
-	verbatim above the repository index. This setting is deprecated, and
-	will not be supported by cgit-1.0 (use root-readme instead). Default
-	value: none.
-
-index-info::
-	The content of the file specified with this option will be included
-	verbatim below the heading on the repository index page. This setting
-	is deprecated, and will not be supported by cgit-1.0 (use root-desc
-	instead). Default value: none.
-
 local-time::
 	Flag which, if set to "1", makes cgit print commit and tag times in the
 	servers timezone. Default value: "0".
@@ -323,11 +311,6 @@ module-link::
 	formatstring are the path and SHA1 of the submodule commit. Default
 	value: none.
 
-nocache::
-	If set to the value "1" caching will be disabled. This settings is
-	deprecated, and will not be honored starting with cgit-1.0. Default
-	value: "0".
-
 noplainemail::
 	If set to "1" showing full author email addresses will be disabled.
 	Default value: "0".
@@ -358,10 +341,6 @@ renamelimit::
 	Maximum number of files to consider when detecting renames. The value
 	 "-1" uses the compiletime value in git (for further info, look at
 	  `man git-diff`). Default value: "-1".
-
-repo.group::
-	Legacy alias for "section". This option is deprecated and will not be
-	supported in cgit-1.0.
 
 repository-sort::
 	The way in which repositories in each section are sorted. Valid values

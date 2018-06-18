@@ -977,8 +977,6 @@ static void print_header(void)
 	} else {
 		if (ctx.cfg.root_desc)
 			html_txt(ctx.cfg.root_desc);
-		else if (ctx.cfg.index_info)
-			html_include(ctx.cfg.index_info);
 	}
 	html("</td></tr></table>\n");
 }

@@ -288,9 +288,6 @@ void cgit_print_repolist(void)
 	cgit_print_docstart();
 	cgit_print_pageheader();
 
-	if (ctx.cfg.index_header)
-		html_include(ctx.cfg.index_header);
-
 	if (ctx.qry.sort)
 		sorted = sort_repolist(ctx.qry.sort);
 	else if (ctx.cfg.section_sort)
