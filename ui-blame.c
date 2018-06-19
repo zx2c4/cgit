@@ -154,7 +154,7 @@ static void print_object(const unsigned char *sha1, const char *path,
 		htmlf("<div class='error'>blob size (%ldKB)"
 		      " exceeds display size limit (%dKB).</div>",
 		      size / 1024, ctx.cfg.max_blob_size);
-		return;
+		goto cleanup;
 	}
 
 	html("<table class='blame blob'>\n<tr>\n");
@@ -213,6 +213,9 @@ static void print_object(const unsigned char *sha1, const char *path,
 	html("</tr>\n</table>\n");
 
 	cgit_print_layout_end();
+
+cleanup:
+	free(buf);
 }
 
 static int walk_tree(const unsigned char *sha1, struct strbuf *base,
