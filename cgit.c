@@ -23,7 +23,7 @@ static void add_mimetype(const char *name, const char *value)
 {
 	struct string_list_item *item;
 
-	item = string_list_insert(&ctx.cfg.mimetypes, xstrdup(name));
+	item = string_list_insert(&ctx.cfg.mimetypes, name);
 	item->util = xstrdup(value);
 }
 
@@ -414,7 +414,7 @@ static void prepare_context(void)
 	ctx.page.modified = time(NULL);
 	ctx.page.expires = ctx.page.modified;
 	ctx.page.etag = NULL;
-	memset(&ctx.cfg.mimetypes, 0, sizeof(struct string_list));
+	string_list_init(&ctx.cfg.mimetypes, 1);
 	if (ctx.env.script_name)
 		ctx.cfg.script_name = xstrdup(ctx.env.script_name);
 	if (ctx.env.query_string)
