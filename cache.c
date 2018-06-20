@@ -29,6 +29,7 @@ struct cache_slot {
 	cache_fill_fn fn;
 	int cache_fd;
 	int lock_fd;
+	int stdout_fd;
 	const char *cache_name;
 	const char *lock_name;
 	int match;
@@ -197,6 +198,13 @@ static int unlock_slot(struct cache_slot *slot, int replace_old_slot)
 	else
 		err = unlink(slot->lock_name);
 
+	/* Restore stdout and close the temporary FD. */
+	if (slot->stdout_fd >= 0) {
+		dup2(slot->stdout_fd, STDOUT_FILENO);
+		close(slot->stdout_fd);
+		slot->stdout_fd = -1;
+	}
+
 	if (err)
 		return errno;
 
@@ -208,42 +216,24 @@ static int unlock_slot(struct cache_slot *slot, int replace_old_slot)
  */
 static int fill_slot(struct cache_slot *slot)
 {
-	int tmp;
-
 	/* Preserve stdout */
-	tmp = dup(STDOUT_FILENO);
-	if (tmp == -1)
+	slot->stdout_fd = dup(STDOUT_FILENO);
+	if (slot->stdout_fd == -1)
 		return errno;
 
 	/* Redirect stdout to lockfile */
-	if (dup2(slot->lock_fd, STDOUT_FILENO) == -1) {
-		close(tmp);
+	if (dup2(slot->lock_fd, STDOUT_FILENO) == -1)
 		return errno;
-	}
 
 	/* Generate cache content */
 	slot->fn();
 
 	/* Make sure any buffered data is flushed to the file */
-	if (fflush(stdout)) {
-		close(tmp);
+	if (fflush(stdout))
 		return errno;
-	}
 
 	/* update stat info */
-	if (fstat(slot->lock_fd, &slot->cache_st)) {
-		close(tmp);
-		return errno;
-	}
-
-	/* Restore stdout */
-	if (dup2(tmp, STDOUT_FILENO) == -1) {
-		close(tmp);
-		return errno;
-	}
-
-	/* Close the temporary filedescriptor */
-	if (close(tmp))
+	if (fstat(slot->lock_fd, &slot->cache_st))
 		return errno;
 
 	return 0;
@@ -393,6 +383,7 @@ int cache_process(int size, const char *path, const char *key, int ttl,
 	strbuf_addstr(&lockname, ".lock");
 	slot.fn = fn;
 	slot.ttl = ttl;
+	slot.stdout_fd = -1;
 	slot.cache_name = filename.buf;
 	slot.lock_name = lockname.buf;
 	slot.key = key;
