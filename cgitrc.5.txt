@@ -54,14 +54,10 @@ branch-sort::
 	list, and when set to "name" enables ordering by branch name. Default
 	value: "name".
 
-cache-root::
-	Path used to store the cgit cache entries. Default value:
-	"/var/cache/cgit". See also: "MACRO EXPANSION".
-
-cache-static-ttl::
+cache-about-ttl::
 	Number which specifies the time-to-live, in minutes, for the cached
-	version of repository pages accessed with a fixed SHA1. See also:
-	"CACHE". Default value: -1".
+	version of the repository about page. See also: "CACHE". Default
+	value: "15".
 
 cache-dynamic-ttl::
 	Number which specifies the time-to-live, in minutes, for the cached
@@ -73,6 +69,10 @@ cache-repo-ttl::
 	version of the repository summary page. See also: "CACHE". Default
 	value: "5".
 
+cache-root::
+	Path used to store the cgit cache entries. Default value:
+	"/var/cache/cgit". See also: "MACRO EXPANSION".
+
 cache-root-ttl::
 	Number which specifies the time-to-live, in minutes, for the cached
 	version of the repository index page. See also: "CACHE". Default
@@ -83,22 +83,22 @@ cache-scanrc-ttl::
 	of scanning a path for git repositories. See also: "CACHE". Default
 	value: "15".
 
-cache-about-ttl::
-	Number which specifies the time-to-live, in minutes, for the cached
-	version of the repository about page. See also: "CACHE". Default
-	value: "15".
-
-cache-snapshot-ttl::
-	Number which specifies the time-to-live, in minutes, for the cached
-	version of snapshots. See also: "CACHE". Default value: "5".
+case-sensitive-sort::
+	Sort items in the repo list case sensitively. Default value: "1".
+	See also: repository-sort, section-sort.
 
 cache-size::
 	The maximum number of entries in the cgit cache. When set to "0",
 	caching is disabled. See also: "CACHE". Default value: "0"
 
-case-sensitive-sort::
-	Sort items in the repo list case sensitively. Default value: "1".
-	See also: repository-sort, section-sort.
+cache-snapshot-ttl::
+	Number which specifies the time-to-live, in minutes, for the cached
+	version of snapshots. See also: "CACHE". Default value: "5".
+
+cache-static-ttl::
+	Number which specifies the time-to-live, in minutes, for the cached
+	version of repository pages accessed with a fixed SHA1. See also:
+	"CACHE". Default value: -1".
 
 clone-prefix::
 	Space-separated list of common prefixes which, when combined with a
@@ -159,11 +159,28 @@ enable-follow-links::
 	Flag which, when set to "1", allows users to follow a file in the log
 	view.  Default value: "0".
 
+enable-git-config::
+	Flag which, when set to "1", will allow cgit to use git config to set
+	any repo specific settings. This option is used in conjunction with
+	"scan-path", and must be defined prior, to augment repo-specific
+	settings. The keys gitweb.owner, gitweb.category, gitweb.description,
+	and gitweb.homepage will map to the cgit keys repo.owner, repo.section,
+	repo.desc, and repo.homepage respectively. All git config keys that begin
+	with "cgit." will be mapped to the corresponding "repo." key in cgit.
+	Default value: "0". See also: scan-path, section-from-path.
+
 enable-http-clone::
-	If set to "1", cgit will act as an dumb HTTP endpoint for git clones.
+	If set to "1", cgit will act as a dumb HTTP endpoint for git clones.
 	You can add "http://$HTTP_HOST$SCRIPT_NAME/$CGIT_REPO_URL" to clone-url
 	to expose this feature. If you use an alternate way of serving git
 	repositories, you may wish to disable this. Default value: "1".
+
+enable-html-serving::
+	Flag which, when set to "1", will allow the /plain handler to serve
+	mimetype headers that result in the file being treated as HTML by the
+	browser. When set to "0", such file types are returned instead as
+	text/plain or application/octet-stream. Default value: "0". See also:
+	"repo.enable-html-serving".
 
 enable-index-links::
 	Flag which, when set to "1", will make cgit generate extra links for
@@ -195,26 +212,9 @@ enable-subject-links::
 	in commit view. Default value: "0". See also:
 	"repo.enable-subject-links".
 
-enable-html-serving::
-	Flag which, when set to "1", will allow the /plain handler to serve
-	mimetype headers that result in the file being treated as HTML by the
-	browser. When set to "0", such file types are returned instead as
-	text/plain or application/octet-stream. Default value: "0". See also:
-	"repo.enable-html-serving".
-
 enable-tree-linenumbers::
 	Flag which, when set to "1", will make cgit generate linenumber links
 	for plaintext blobs printed in the tree view. Default value: "1".
-
-enable-git-config::
-	Flag which, when set to "1", will allow cgit to use git config to set
-	any repo specific settings. This option is used in conjunction with
-	"scan-path", and must be defined prior, to augment repo-specific
-	settings. The keys gitweb.owner, gitweb.category, gitweb.description,
-	and gitweb.homepage will map to the cgit keys repo.owner, repo.section,
-	repo.desc, and repo.homepage respectively. All git config keys that begin
-	with "cgit." will be mapped to the corresponding "repo." key in cgit.
-	Default value: "0". See also: scan-path, section-from-path.
 
 favicon::
 	Url used as link to a shortcut icon for cgit. It is suggested to use
@@ -251,18 +251,13 @@ logo-link::
 	calculated url of the repository index page will be used. Default
 	value: none.
 
-owner-filter::
-	Specifies a command which will be invoked to format the Owner
-	column of the main page.  The command will get the owner on STDIN,
-	and the STDOUT from the command will be included verbatim in the
-	table.  This can be used to link to additional context such as an
-	owners home page.  When active this filter is used instead of the
-	default owner query url.  Default value: none.
-	See also: "FILTER API".
-
 max-atom-items::
 	Specifies the number of items to display in atom feeds view. Default
 	value: "10".
+
+max-blob-size::
+	Specifies the maximum size of a blob to display HTML for in KBytes.
+	Default value: "0" (limit disabled).
 
 max-commit-count::
 	Specifies the number of entries to list per page in "log" view. Default
@@ -279,10 +274,6 @@ max-repo-count::
 max-repodesc-length::
 	Specifies the maximum number of repo description characters to display
 	on the repository index page. Default value: "80".
-
-max-blob-size::
-	Specifies the maximum size of a blob to display HTML for in KBytes.
-	Default value: "0" (limit disabled).
 
 max-stats::
 	Set the default maximum statistics period. Valid values are "week",
@@ -318,6 +309,15 @@ noplainemail::
 noheader::
 	Flag which, when set to "1", will make cgit omit the standard header
 	on all pages. Default value: none. See also: "embedded".
+
+owner-filter::
+	Specifies a command which will be invoked to format the Owner
+	column of the main page.  The command will get the owner on STDIN,
+	and the STDOUT from the command will be included verbatim in the
+	table.  This can be used to link to additional context such as an
+	owners home page.  When active this filter is used instead of the
+	default owner query url.  Default value: none.
+	See also: "FILTER API".
 
 project-list::
 	A list of subdirectories inside of scan-path, relative to it, that
@@ -481,9 +481,6 @@ repo.defbranch::
 repo.desc::
 	The value to show as repository description. Default value: none.
 
-repo.homepage::
-	The value to show as repository homepage. Default value: none.
-
 repo.email-filter::
 	Override the default email-filter. Default value: none. See also:
 	"enable-filter-overrides". See also: "FILTER API".
@@ -491,6 +488,10 @@ repo.email-filter::
 repo.enable-commit-graph::
 	A flag which can be used to disable the global setting
 	`enable-commit-graph'. Default value: none.
+
+repo.enable-html-serving::
+	A flag which can be used to override the global setting
+	`enable-html-serving`. Default value: none.
 
 repo.enable-log-filecount::
 	A flag which can be used to disable the global setting
@@ -508,14 +509,13 @@ repo.enable-subject-links::
 	A flag which can be used to override the global setting
 	`enable-subject-links'. Default value: none.
 
-repo.enable-html-serving::
-	A flag which can be used to override the global setting
-	`enable-html-serving`. Default value: none.
-
 repo.hide::
 	Flag which, when set to "1", hides the repository from the repository
 	index. The repository can still be accessed by providing a direct path.
 	Default value: "0". See also: "repo.ignore".
+
+repo.homepage::
+	The value to show as repository homepage. Default value: none.
 
 repo.ignore::
 	Flag which, when set to "1", ignores the repository. The repository
@@ -530,10 +530,6 @@ repo.logo-link::
 	Url loaded when clicking on the cgit logo image. If unspecified the
 	calculated url of the repository index page will be used. Default
 	value: global logo-link.
-
-repo.owner-filter::
-	Override the default owner-filter. Default value: none. See also:
-	"enable-filter-overrides". See also: "FILTER API".
 
 repo.module-link::
 	Text which will be used as the formatstring for a hyperlink when a
@@ -559,6 +555,10 @@ repo.owner::
 	A value used to identify the owner of the repository. Default value:
 	none.
 
+repo.owner-filter::
+	Override the default owner-filter. Default value: none. See also:
+	"enable-filter-overrides". See also: "FILTER API".
+
 repo.path::
 	An absolute path to the repository directory. For non-bare repositories
 	this is the .git-directory. Default value: none.
@@ -574,6 +574,10 @@ repo.readme::
 	are no non-public files located in the same directory as the readme
 	file. Default value: <readme>.
 
+repo.section::
+	Override the current section name for this repository. Default value:
+	none.
+
 repo.snapshots::
 	A mask of snapshot formats for this repo that cgit generates links for,
 	restricted by the global "snapshots" setting. Default value:
@@ -585,10 +589,6 @@ repo.snapshot-prefix::
 	"linux" so that snapshots are in the format "linux-3.15.4" instead
 	of "linux-stable-3.15.4".  Default value: <empty> meaning to use
 	the repository basename.
-
-repo.section::
-	Override the current section name for this repository. Default value:
-	none.
 
 repo.source-filter::
 	Override the default source-filter. Default value: none. See also:
@@ -662,30 +662,6 @@ about filter::
 	The about text that is to be filtered is available on standard input
 	and the filtered text is expected on standard output.
 
-commit filter::
-	This filter is given no arguments. The commit message text that is to
-	be filtered is available on standard input and the filtered text is
-	expected on standard output.
-
-email filter::
-	This filter is given two parameters: the email address of the relevant
-	author and a string indicating the originating page. The filter will
-	then receive the text string to format on standard input and is
-	expected to write to standard output the formatted text to be included
-	in the page.
-
-owner filter::
-	This filter is given no arguments.  The owner text is available on
-	standard input and the filter is expected to write to standard
-	output.  The output is included in the Owner column.
-
-source filter::
-	This filter is given a single parameter: the filename of the source
-	file to filter. The filter can use the filename to determine (for
-	example) the syntax highlighting mode. The contents of the source
-	file that is to be filtered is available on standard input and the
-	filtered contents is expected on standard output.
-
 auth filter::
 	The authentication filter receives 12 parameters:
 	  - filter action, explained below, which specifies which action the
@@ -711,6 +687,30 @@ auth filter::
 
 	Please see `filters/simple-authentication.lua` for a clear example
 	script that may be modified.
+
+commit filter::
+	This filter is given no arguments. The commit message text that is to
+	be filtered is available on standard input and the filtered text is
+	expected on standard output.
+
+email filter::
+	This filter is given two parameters: the email address of the relevant
+	author and a string indicating the originating page. The filter will
+	then receive the text string to format on standard input and is
+	expected to write to standard output the formatted text to be included
+	in the page.
+
+owner filter::
+	This filter is given no arguments.  The owner text is available on
+	standard input and the filter is expected to write to standard
+	output.  The output is included in the Owner column.
+
+source filter::
+	This filter is given a single parameter: the filename of the source
+	file to filter. The filter can use the filename to determine (for
+	example) the syntax highlighting mode. The contents of the source
+	file that is to be filtered is available on standard input and the
+	filtered contents is expected on standard output.
 
 
 All filters are handed the following environment variables:
