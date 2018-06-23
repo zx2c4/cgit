@@ -264,6 +264,7 @@ struct cgit_config {
 	int branch_sort;
 	int commit_sort;
 	struct string_list mimetypes;
+	struct string_list js;
 	struct cgit_filter *about_filter;
 	struct cgit_filter *commit_filter;
 	struct cgit_filter *source_filter;

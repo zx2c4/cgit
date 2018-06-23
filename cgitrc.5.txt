@@ -239,6 +239,11 @@ include::
 	Name of a configfile to include before the rest of the current config-
 	file is parsed. Default value: none. See also: "MACRO EXPANSION".
 
+js::
+	Url which specifies the javascript script document to include in all cgit
+	pages.  Default value: "/cgit.js".  Setting this to an empty string will
+	disable generation of the link to this file in the head section.
+
 local-time::
 	Flag which, if set to "1", makes cgit print commit and tag times in the
 	servers timezone. Default value: "0".
