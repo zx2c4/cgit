@@ -25,6 +25,7 @@
 #include <utf8.h>
 #include <notes.h>
 #include <graph.h>
+#include <inttypes.h>
 
 /* Add isgraph(x) to Git's sane ctype support (see git-compat-util.h) */
 #undef isgraph

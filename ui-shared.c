@@ -673,7 +673,7 @@ const struct date_mode *cgit_date_mode(enum date_mode_type type)
 static void print_rel_date(time_t t, int tz, double value,
 	const char *class, const char *suffix)
 {
-	htmlf("<span class='%s' title='", class);
+	htmlf("<span class='%s' data-ut='%" PRIu64 "' title='", class, (uint64_t)t);
 	html_attr(show_date(t, tz, cgit_date_mode(DATE_ISO8601)));
 	htmlf("'>%.0f %s</span>", value, suffix);
 }
