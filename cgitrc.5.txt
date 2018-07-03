@@ -759,13 +759,29 @@ the environment variables defined in "FILTER API":
 
 
 CACHE
-------
+-----
 
 All cache ttl values are in minutes. Negative ttl values indicate that a page
 type will never expire, and thus the first time a URL is accessed, the result
 will be cached indefinitely, even if the underlying git repository changes.
 Conversely, when a ttl value is zero, the cache is disabled for that
 particular page type, and the page type is never cached.
+
+SIGNATURES
+----------
+
+Cgit can host .asc signatures corresponding to various snapshot formats,
+through use of git notes. For example, the following command may be used to
+add a signature to a .tar.xz archive:
+
+    git notes --ref=refs/notes/signatures/tar.xz add -C "$(
+	    gpg --output - --armor --detach-sign cgit-1.1.tar.xz |
+	    git hash-object -w --stdin
+    )" v1.1
+
+If it is instead desirable to attach a signature of the underlying .tar, this
+will be linked, as a special case, beside a .tar.* link that does not have its
+own signature.
 
 
 EXAMPLE CGITRC FILE
