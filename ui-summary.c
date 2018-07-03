@@ -129,7 +129,7 @@ void cgit_print_repo_readme(char *path)
 	}
 
 	/* Print the calculated readme, either from the git repo or from the
-	 * filesystem, while applying the about-filter.
+	 * filesystem, while applying the render-filter.
 	 */
 	html("<div id='summary'>");
 	cgit_open_filter(ctx.repo->about_filter, filename);

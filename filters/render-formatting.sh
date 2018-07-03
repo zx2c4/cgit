@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# This may be used with the about-filter or repo.about-filter setting in cgitrc.
+# This may be used with the render-filter or repo.render-filter setting in cgitrc.
 # It passes formatting of about pages to differing programs, depending on the usage.
 
 # Markdown support requires python and markdown-python.

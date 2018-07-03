@@ -96,7 +96,7 @@ static void repo_config(struct cgit_repo *repo, const char *name, const char *va
 	else if (!strcmp(name, "ignore"))
 		repo->ignore = atoi(value);
 	else if (ctx.cfg.enable_filter_overrides) {
-		if (!strcmp(name, "about-filter"))
+		if (!strcmp(name, "render-filter"))
 			repo->about_filter = cgit_new_filter(value, ABOUT);
 		else if (!strcmp(name, "commit-filter"))
 			repo->commit_filter = cgit_new_filter(value, COMMIT);
@@ -205,7 +205,7 @@ static void config_cb(const char *name, const char *value)
 		ctx.cfg.cache_snapshot_ttl = atoi(value);
 	else if (!strcmp(name, "case-sensitive-sort"))
 		ctx.cfg.case_sensitive_sort = atoi(value);
-	else if (!strcmp(name, "about-filter"))
+	else if (!strcmp(name, "render-filter"))
 		ctx.cfg.about_filter = cgit_new_filter(value, ABOUT);
 	else if (!strcmp(name, "commit-filter"))
 		ctx.cfg.commit_filter = cgit_new_filter(value, COMMIT);
@@ -816,7 +816,7 @@ static void print_repo(FILE *f, struct cgit_repo *repo)
 	fprintf(f, "repo.enable-log-linecount=%d\n",
 	        repo->enable_log_linecount);
 	if (repo->about_filter && repo->about_filter != ctx.cfg.about_filter)
-		cgit_fprintf_filter(repo->about_filter, f, "repo.about-filter=");
+		cgit_fprintf_filter(repo->about_filter, f, "repo.render-filter=");
 	if (repo->commit_filter && repo->commit_filter != ctx.cfg.commit_filter)
 		cgit_fprintf_filter(repo->commit_filter, f, "repo.commit-filter=");
 	if (repo->source_filter && repo->source_filter != ctx.cfg.source_filter)

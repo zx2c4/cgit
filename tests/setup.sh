@@ -134,7 +134,7 @@ repo.desc=spaced repo
 repo.url=filter-exec
 repo.path=$PWD/repos/filter/.git
 repo.desc=filtered repo
-repo.about-filter=exec:$FILTER_DIRECTORY/dump.sh
+repo.render-filter=exec:$FILTER_DIRECTORY/dump.sh
 repo.commit-filter=exec:$FILTER_DIRECTORY/dump.sh
 repo.email-filter=exec:$FILTER_DIRECTORY/dump.sh
 repo.source-filter=exec:$FILTER_DIRECTORY/dump.sh
@@ -146,7 +146,7 @@ EOF
 repo.url=filter-lua
 repo.path=$PWD/repos/filter/.git
 repo.desc=filtered repo
-repo.about-filter=lua:$FILTER_DIRECTORY/dump.lua
+repo.render-filter=lua:$FILTER_DIRECTORY/dump.lua
 repo.commit-filter=lua:$FILTER_DIRECTORY/dump.lua
 repo.email-filter=lua:$FILTER_DIRECTORY/dump.lua
 repo.source-filter=lua:$FILTER_DIRECTORY/dump.lua

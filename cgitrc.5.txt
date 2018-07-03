@@ -26,7 +26,7 @@ defined, use its value instead.
 
 GLOBAL SETTINGS
 ---------------
-about-filter::
+render-filter::
 	Specifies a command which will be invoked to format the content of
 	about pages (both top-level and for each repository). The command will
 	get the content of the about-file on its STDIN, the name of the file
@@ -449,8 +449,8 @@ virtual-root::
 
 REPOSITORY SETTINGS
 -------------------
-repo.about-filter::
-	Override the default about-filter. Default value: none. See also:
+repo.render-filter::
+	Override the default render-filter. Default value: none. See also:
 	"enable-filter-overrides". See also: "FILTER API".
 
 repo.branch-sort::
@@ -877,7 +877,7 @@ source-filter=/var/www/cgit/filters/syntax-highlighting.py
 
 # Format markdown, restructuredtext, manpages, text files, and html files
 # through the right converters
-about-filter=/var/www/cgit/filters/about-formatting.sh
+render-filter=/var/www/cgit/filters/about-formatting.sh
 
 ##
 ## Search for these files in the root of the default branch of repositories
