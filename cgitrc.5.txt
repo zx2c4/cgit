@@ -126,7 +126,8 @@ commit-sort::
 
 css::
 	Url which specifies the css document to include in all cgit pages.
-	Default value: "/cgit.css".
+	Default value: "/cgit.css".  May be given multiple times, each
+	css URL path is added in the head section of the document in turn.
 
 email-filter::
 	Specifies a command which will be invoked to format names and email

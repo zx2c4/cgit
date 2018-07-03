@@ -195,7 +195,6 @@ struct cgit_config {
 	char *cache_root;
 	char *clone_prefix;
 	char *clone_url;
-	char *css;
 	char *favicon;
 	char *footer;
 	char *head_include;
@@ -206,6 +205,7 @@ struct cgit_config {
 	char *module_link;
 	char *project_list;
 	struct string_list readme;
+	struct string_list css;
 	char *robots;
 	char *root_title;
 	char *root_desc;

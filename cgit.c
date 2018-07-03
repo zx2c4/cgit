@@ -142,7 +142,7 @@ static void config_cb(const char *name, const char *value)
 	else if (!strcmp(name, "root-readme"))
 		ctx.cfg.root_readme = xstrdup(value);
 	else if (!strcmp(name, "css"))
-		ctx.cfg.css = xstrdup(value);
+		string_list_append(&ctx.cfg.css, xstrdup(value));
 	else if (!strcmp(name, "favicon"))
 		ctx.cfg.favicon = xstrdup(value);
 	else if (!strcmp(name, "footer"))
@@ -378,7 +378,6 @@ static void prepare_context(void)
 	ctx.cfg.case_sensitive_sort = 1;
 	ctx.cfg.branch_sort = 0;
 	ctx.cfg.commit_sort = 0;
-	ctx.cfg.css = "/cgit.css";
 	ctx.cfg.logo = "/cgit.png";
 	ctx.cfg.favicon = "/favicon.ico";
 	ctx.cfg.local_time = 0;

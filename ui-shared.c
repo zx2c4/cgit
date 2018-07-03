@@ -768,6 +768,18 @@ static void print_rel_vcs_link(const char *url)
 	html(" Git repository'/>\n");
 }
 
+static int emit_css_link(struct string_list_item *s, void *arg)
+{
+	html("<link rel='stylesheet' type='text/css' href='");
+	if (s)
+		html_attr(s->string);
+	else
+		html_attr((const char *)arg);
+	html("'/>\n");
+
+	return 0;
+}
+
 void cgit_print_docstart(void)
 {
 	char *host = cgit_hosturl();
@@ -787,9 +799,12 @@ void cgit_print_docstart(void)
 	htmlf("<meta name='generator' content='cgit %s'/>\n", cgit_version);
 	if (ctx.cfg.robots && *ctx.cfg.robots)
 		htmlf("<meta name='robots' content='%s'/>\n", ctx.cfg.robots);
-	html("<link rel='stylesheet' type='text/css' href='");
-	html_attr(ctx.cfg.css);
-	html("'/>\n");
+
+	if (ctx.cfg.css.items)
+		for_each_string_list(&ctx.cfg.css, emit_css_link, NULL);
+	else
+		emit_css_link(NULL, "/cgit.css");
+
 	if (ctx.cfg.favicon) {
 		html("<link rel='shortcut icon' href='");
 		html_attr(ctx.cfg.favicon);
