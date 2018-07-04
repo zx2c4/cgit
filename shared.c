@@ -476,15 +476,16 @@ static int is_token_char(char c)
 static char *expand_macro(char *name, int maxlength)
 {
 	char *value;
-	int len;
+	size_t len;
 
 	len = 0;
 	value = getenv(name);
 	if (value) {
-		len = strlen(value);
+		len = strlen(value) + 1;
 		if (len > maxlength)
 			len = maxlength;
-		strncpy(name, value, len);
+		strlcpy(name, value, len);
+		--len;
 	}
 	return name + len;
 }

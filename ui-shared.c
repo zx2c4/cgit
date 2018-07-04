@@ -133,20 +133,25 @@ const char *cgit_repobasename(const char *reponame)
 	static char rvbuf[1024];
 	int p;
 	const char *rv;
-	strncpy(rvbuf, reponame, sizeof(rvbuf));
-	if (rvbuf[sizeof(rvbuf)-1])
+	size_t len;
+
+	len = strlcpy(rvbuf, reponame, sizeof(rvbuf));
+	if (len >= sizeof(rvbuf))
 		die("cgit_repobasename: truncated repository name '%s'", reponame);
-	p = strlen(rvbuf)-1;
+	p = len - 1;
 	/* strip trailing slashes */
-	while (p && rvbuf[p] == '/') rvbuf[p--] = 0;
+	while (p && rvbuf[p] == '/')
+		rvbuf[p--] = '\0';
 	/* strip trailing .git */
 	if (p >= 3 && starts_with(&rvbuf[p-3], ".git")) {
-		p -= 3; rvbuf[p--] = 0;
+		p -= 3;
+		rvbuf[p--] = '\0';
 	}
 	/* strip more trailing slashes if any */
-	while ( p && rvbuf[p] == '/') rvbuf[p--] = 0;
+	while (p && rvbuf[p] == '/')
+		rvbuf[p--] = '\0';
 	/* find last slash in the remaining string */
-	rv = strrchr(rvbuf,'/');
+	rv = strrchr(rvbuf, '/');
 	if (rv)
 		return ++rv;
 	return rvbuf;
