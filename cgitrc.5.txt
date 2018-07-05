@@ -775,14 +775,25 @@ through use of git notes. For example, the following command may be used to
 add a signature to a .tar.xz archive:
 
     git notes --ref=refs/notes/signatures/tar.xz add -C "$(
-	    gpg --output - --armor --detach-sign cgit-1.1.tar.xz |
-	    git hash-object -w --stdin
+	gpg --output - --armor --detach-sign cgit-1.1.tar.xz |
+	git hash-object -w --stdin
     )" v1.1
 
 If it is instead desirable to attach a signature of the underlying .tar, this
 will be linked, as a special case, beside a .tar.* link that does not have its
-own signature.
+own signature. For example, a signature of a tarball of the latest tag might
+be added with a similar command:
 
+    tag="$(git describe --abbrev=0)"
+    git notes --ref=refs/notes/signatures/tar add -C "$(
+        git archive --format tar --prefix "cgit-${tag#v}/" "$tag" |
+        gpg --output - --armor --detach-sign |
+        git hash-object -w --stdin
+    )" "$tag"
+
+Since git-archive(1) is expected to produce stable output between versions,
+this allows one to generate a long-term signature of the contents of a given
+tag.
 
 EXAMPLE CGITRC FILE
 -------------------
