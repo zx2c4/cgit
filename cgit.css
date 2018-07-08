@@ -711,6 +711,7 @@ div#cgit a.deco {
 
 div#cgit div.commit-subject a.branch-deco,
 div#cgit div.commit-subject a.tag-deco,
+div#cgit div.commit-subject a.tag-annotated-deco,
 div#cgit div.commit-subject a.remote-deco,
 div#cgit div.commit-subject a.deco {
 	margin-left: 1em;
