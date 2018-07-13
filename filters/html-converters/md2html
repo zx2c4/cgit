@@ -3,6 +3,7 @@ import markdown
 import sys
 import io
 from pygments.formatters import HtmlFormatter
+from markdown.extensions.toc import TocExtension
 sys.stdin = io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8')
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 sys.stdout.write('''
@@ -48,9 +49,13 @@ sys.stdout.write('''
     line-height: 1;
     padding-left: 0;
     margin-left: -22px;
-    top: 15%}
+    top: 15%;
+}
 .markdown-body h1:hover a.anchor .mini-icon-link, .markdown-body h2:hover a.anchor .mini-icon-link, .markdown-body h3:hover a.anchor .mini-icon-link, .markdown-body h4:hover a.anchor .mini-icon-link, .markdown-body h5:hover a.anchor .mini-icon-link, .markdown-body h6:hover a.anchor .mini-icon-link {
     display: inline-block;
+}
+div#cgit .markdown-body h1 a.toclink, div#cgit .markdown-body h2 a.toclink, div#cgit .markdown-body h3 a.toclink, div#cgit .markdown-body h4 a.toclink, div#cgit .markdown-body h5 a.toclink, div#cgit .markdown-body h6 a.toclink {
+    color: black;
 }
 .markdown-body h1 tt, .markdown-body h1 code, .markdown-body h2 tt, .markdown-body h2 code, .markdown-body h3 tt, .markdown-body h3 code, .markdown-body h4 tt, .markdown-body h4 code, .markdown-body h5 tt, .markdown-body h5 code, .markdown-body h6 tt, .markdown-body h6 code {
     font-size: inherit;
@@ -290,5 +295,13 @@ sys.stdout.write('''
 sys.stdout.write("<div class='markdown-body'>")
 sys.stdout.flush()
 # Note: you may want to run this through bleach for sanitization
-markdown.markdownFromFile(output_format="html5", extensions=["markdown.extensions.fenced_code", "markdown.extensions.codehilite", "markdown.extensions.tables"], extension_configs={"markdown.extensions.codehilite":{"css_class":"highlight"}})
+markdown.markdownFromFile(
+	output_format="html5",
+	extensions=[
+		"markdown.extensions.fenced_code",
+		"markdown.extensions.codehilite",
+		"markdown.extensions.tables",
+		TocExtension(anchorlink=True)],
+	extension_configs={
+		"markdown.extensions.codehilite":{"css_class":"highlight"}})
 sys.stdout.write("</div>")
