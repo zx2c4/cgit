@@ -106,7 +106,7 @@ local lualdap = require("lualdap")
 
 function gentoo_ldap_user_groups(username, password)
 	-- Ensure the user is alphanumeric
-	if username:match("%W") then
+	if username == nil or username:match("%W") then
 		return nil
 	end
 
