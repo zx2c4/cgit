@@ -659,13 +659,13 @@ static inline void open_auth_filter(const char *function)
 static inline void authenticate_post(void)
 {
 	char buffer[MAX_AUTHENTICATION_POST_BYTES];
-	unsigned int len;
+	ssize_t len;
 
 	open_auth_filter("authenticate-post");
 	len = ctx.env.content_length;
 	if (len > MAX_AUTHENTICATION_POST_BYTES)
 		len = MAX_AUTHENTICATION_POST_BYTES;
-	if (read(STDIN_FILENO, buffer, len) < 0)
+	if ((len = read(STDIN_FILENO, buffer, len)) < 0)
 		die_errno("Could not read POST from stdin");
 	if (write(STDOUT_FILENO, buffer, len) < 0)
 		die_errno("Could not write POST to stdout");
