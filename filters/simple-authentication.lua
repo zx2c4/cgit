@@ -231,7 +231,7 @@ function validate_value(expected_field, cookie)
 	end
 
 	-- Lua hashes strings, so these comparisons are time invariant.
-	if hmac ~= crypto.hmac.digest("sha1", field .. "|" .. value .. "|" .. tostring(expiration) .. "|" .. salt, secret) then
+	if hmac ~= crypto.hmac.digest("sha256", field .. "|" .. value .. "|" .. tostring(expiration) .. "|" .. salt, secret) then
 		return nil
 	end
 
@@ -256,7 +256,7 @@ function secure_value(field, value, expiration)
 	value = url_encode(value)
 	field = url_encode(field)
 	authstr = field .. "|" .. value .. "|" .. tostring(expiration) .. "|" .. salt
-	authstr = authstr .. "|" .. crypto.hmac.digest("sha1", authstr, secret)
+	authstr = authstr .. "|" .. crypto.hmac.digest("sha256", authstr, secret)
 	return authstr
 end
 
