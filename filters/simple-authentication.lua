@@ -3,7 +3,12 @@
 -- Requirements:
 -- 	luacrypto >= 0.3
 -- 	<http://mkottman.github.io/luacrypto/>
+-- 	luaposix
+-- 	<https://github.com/luaposix/luaposix>
 --
+local sysstat = require("posix.sys.stat")
+local unistd = require("posix.unistd")
+local crypto = require("crypto")
 
 
 --
@@ -31,11 +36,9 @@ local users = {
 	bob		= "ilikelua"
 }
 
--- All cookies will be authenticated based on this secret. Make it something
--- totally random and impossible to guess. It should be large.
-local secret = "BE SURE TO CUSTOMIZE THIS STRING TO SOMETHING BIG AND RANDOM"
-
-
+-- Set this to a path this script can write to for storing a persistent
+-- cookie secret, which should be guarded.
+local secret_filename = "/var/cache/cgit/auth-secret"
 
 --
 --
@@ -191,7 +194,38 @@ end
 --
 --
 
-local crypto = require("crypto")
+local secret = nil
+
+-- Loads a secret from a file, creates a secret, or returns one from memory.
+function get_secret()
+	if secret ~= nil then
+		return secret
+	end
+	local secret_file = io.open(secret_filename, "r")
+	if secret_file == nil then
+		local old_umask = sysstat.umask(63)
+		local temporary_filename = secret_filename .. ".tmp." .. crypto.hex(crypto.rand.bytes(16))
+		local temporary_file = io.open(temporary_filename, "w")
+		if temporary_file == nil then
+			os.exit(177)
+		end
+		temporary_file:write(crypto.hex(crypto.rand.bytes(32)))
+		temporary_file:close()
+		unistd.link(temporary_filename, secret_filename) -- Intentionally fails in the case that another process is doing the same.
+		unistd.unlink(temporary_filename)
+		sysstat.umask(old_umask)
+		secret_file = io.open(secret_filename, "r")
+	end
+	if secret_file == nil then
+		os.exit(177)
+	end
+	secret = secret_file:read()
+	secret_file:close()
+	if secret:len() ~= 64 then
+		os.exit(177)
+	end
+	return secret
+end
 
 -- Returns value of cookie if cookie is valid. Otherwise returns nil.
 function validate_value(expected_field, cookie)
@@ -231,7 +265,7 @@ function validate_value(expected_field, cookie)
 	end
 
 	-- Lua hashes strings, so these comparisons are time invariant.
-	if hmac ~= crypto.hmac.digest("sha256", field .. "|" .. value .. "|" .. tostring(expiration) .. "|" .. salt, secret) then
+	if hmac ~= crypto.hmac.digest("sha256", field .. "|" .. value .. "|" .. tostring(expiration) .. "|" .. salt, get_secret()) then
 		return nil
 	end
 
@@ -256,7 +290,7 @@ function secure_value(field, value, expiration)
 	value = url_encode(value)
 	field = url_encode(field)
 	authstr = field .. "|" .. value .. "|" .. tostring(expiration) .. "|" .. salt
-	authstr = authstr .. "|" .. crypto.hmac.digest("sha256", authstr, secret)
+	authstr = authstr .. "|" .. crypto.hmac.digest("sha256", authstr, get_secret())
 	return authstr
 end
 
