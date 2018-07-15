@@ -23,17 +23,11 @@ local protected_repos = {
 	qt		= { jason = true, bob = true }
 }
 
--- Please note that, in production, you'll want to replace this simple lookup
--- table with either a table of salted and hashed passwords (using something
--- smart like scrypt), or replace this table lookup with an external support,
--- such as consulting your system's pam / shadow system, or an external
--- database, or an external validating web service. For testing, or for
--- extremely low-security usage, you may be able, however, to get away with
--- compromising on hardcoding the passwords in cleartext, as we have done here.
+-- A list of users and hashes, generated with `mkpasswd -m sha-512 -R 300000`.
 local users = {
-	jason		= "secretpassword",
-	laurent		= "s3cr3t",
-	bob		= "ilikelua"
+	jason		= "$6$rounds=300000$YYJct3n/o.ruYK$HhpSeuCuW1fJkpvMZOZzVizeLsBKcGA/aF2UPuV5v60JyH2MVSG6P511UMTj2F3H75.IT2HIlnvXzNb60FcZH1",
+	laurent		= "$6$rounds=300000$dP0KNHwYb3JKigT$pN/LG7rWxQ4HniFtx5wKyJXBJUKP7R01zTNZ0qSK/aivw8ywGAOdfYiIQFqFhZFtVGvr11/7an.nesvm8iJUi.",
+	bob		= "$6$rounds=300000$jCLCCt6LUpTz$PI1vvd1yaVYcCzqH8QAJFcJ60b6W/6sjcOsU7mAkNo7IE8FRGW1vkjF8I/T5jt/auv5ODLb1L4S2s.CAyZyUC"
 }
 
 -- Set this to a path this script can write to for storing a persistent
@@ -48,7 +42,7 @@ local secret_filename = "/var/cache/cgit/auth-secret"
 
 -- Sets HTTP cookie headers based on post and sets up redirection.
 function authenticate_post()
-	local password = users[post["username"]]
+	local hash = users[post["username"]]
 	local redirect = validate_value("redirect", post["redirect"])
 
 	if redirect == nil then
@@ -58,8 +52,7 @@ function authenticate_post()
 
 	redirect_to(redirect)
 
-	-- Lua hashes strings, so these comparisons are time invariant.
-	if password == nil or password ~= post["password"] then
+	if hash == nil or hash ~= unistd.crypt(post["password"], hash) then
 		set_cookie("cgitauth", "")
 	else
 		-- One week expiration time
