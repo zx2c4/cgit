@@ -237,9 +237,11 @@ static void config_cb(const char *name, const char *value)
 		ctx.cfg.max_repodesc_len = atoi(value);
 	else if (!strcmp(name, "max-blob-size"))
 		ctx.cfg.max_blob_size = atoi(value);
-	else if (!strcmp(name, "max-repo-count"))
+	else if (!strcmp(name, "max-repo-count")) {
 		ctx.cfg.max_repo_count = atoi(value);
-	else if (!strcmp(name, "max-commit-count"))
+		if (ctx.cfg.max_repo_count <= 0)
+			ctx.cfg.max_repo_count = INT_MAX;
+	} else if (!strcmp(name, "max-commit-count"))
 		ctx.cfg.max_commit_count = atoi(value);
 	else if (!strcmp(name, "project-list"))
 		ctx.cfg.project_list = xstrdup(expand_macros(value));

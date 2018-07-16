@@ -269,7 +269,8 @@ max-message-length::
 
 max-repo-count::
 	Specifies the number of entries to list per page on the	repository
-	index page. Default value: "50".
+	index page. The value "0" shows all repositories without limitation.
+	Default value: "50".
 
 max-repodesc-length::
 	Specifies the maximum number of repo description characters to display
