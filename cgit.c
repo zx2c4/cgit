@@ -830,6 +830,8 @@ static void print_repo(FILE *f, struct cgit_repo *repo)
 		fprintf(f, "repo.snapshots=%s\n", tmp ? tmp : "");
 		free(tmp);
 	}
+	if (repo->snapshot_prefix)
+		fprintf(f, "repo.snapshot-prefix=%s\n", repo->snapshot_prefix);
 	if (repo->max_stats != ctx.cfg.max_stats)
 		fprintf(f, "repo.max-stats=%s\n",
 		        cgit_find_stats_periodname(repo->max_stats));
