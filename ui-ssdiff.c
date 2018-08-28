@@ -103,8 +103,7 @@ static int line_from_hunk(char *line, char type)
 		return 0;
 	len = buf2 - buf1;
 	buf2 = xmalloc(len + 1);
-	strncpy(buf2, buf1, len);
-	buf2[len] = '\0';
+	strlcpy(buf2, buf1, len + 1);
 	res = atoi(buf2);
 	free(buf2);
 	return res;
