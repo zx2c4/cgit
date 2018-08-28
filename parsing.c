@@ -63,8 +63,7 @@ static char *substr(const char *head, const char *tail)
 	if (tail < head)
 		return xstrdup("");
 	buf = xmalloc(tail - head + 1);
-	strncpy(buf, head, tail - head);
-	buf[tail - head] = '\0';
+	strlcpy(buf, head, tail - head + 1);
 	return buf;
 }
 
