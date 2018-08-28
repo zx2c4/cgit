@@ -234,7 +234,7 @@ static void print_commit(struct commit *commit, struct rev_info *revs)
 			strbuf_add(&msgbuf, "\n\n", 2);
 
 			/* Place wrap_symbol at position i in info->subject */
-			strcpy(info->subject + i, wrap_symbol);
+			strlcpy(info->subject + i, wrap_symbol, subject_len - i + 1);
 		}
 	}
 	cgit_commit_link(info->subject, NULL, NULL, ctx.qry.head,
