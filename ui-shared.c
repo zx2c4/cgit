@@ -1159,7 +1159,7 @@ void cgit_print_snapshot_links(const struct cgit_repo *repo, const char *ref,
 
 void cgit_set_title_from_path(const char *path)
 {
-	size_t path_len, path_index, path_last_end;
+	size_t path_len, path_index, path_last_end, line_len;
 	char *new_title;
 
 	if (!path)
@@ -1176,14 +1176,18 @@ void cgit_set_title_from_path(const char *path)
 				continue;
 			}
 			strncat(new_title, &path[path_index + 1], path_last_end - path_index - 1);
-			strcat(new_title, "\\");
+			line_len = strlen(new_title);
+			new_title[line_len++] = '\\';
+			new_title[line_len] = '\0';
 			path_last_end = path_index;
 		}
 	}
 	if (path_last_end)
 		strncat(new_title, path, path_last_end);
 
-	strcat(new_title, " - ");
-	strcat(new_title, ctx.page.title);
+	line_len = strlen(new_title);
+	memcpy(&new_title[line_len], " - ", 3);
+	new_title[line_len + 3] = '\0';
+	strncat(new_title, ctx.page.title, sizeof(new_title) - strlen(new_title) - 1);
 	ctx.page.title = new_title;
 }
