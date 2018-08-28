@@ -77,7 +77,7 @@ static void parse_user(const char *t, char **name, char **email, unsigned long *
 
 		email_len = ident.mail_end - ident.mail_begin;
 		*email = xmalloc(strlen("<") + email_len + strlen(">") + 1);
-		sprintf(*email, "<%.*s>", email_len, ident.mail_begin);
+		xsnprintf(*email, email_len + 3, "<%.*s>", email_len, ident.mail_begin);
 
 		if (ident.date_begin)
 			*date = strtoul(ident.date_begin, NULL, 10);
