@@ -161,7 +161,7 @@ static struct refinfo *cgit_mk_refinfo(const char *refname, const struct object_
 
 	ref = xmalloc(sizeof (struct refinfo));
 	ref->refname = xstrdup(refname);
-	ref->object = parse_object(oid);
+	ref->object = parse_object(the_repository, oid);
 	switch (ref->object->type) {
 	case OBJ_TAG:
 		ref->tag = cgit_parse_tag((struct tag *)ref->object);

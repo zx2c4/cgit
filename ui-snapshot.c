@@ -37,7 +37,7 @@ static int write_archive_type(const char *format, const char *hex, const char *p
 	/* argv_array guarantees a trailing NULL entry. */
 	memcpy(nargv, argv.argv, sizeof(char *) * (argv.argc + 1));
 
-	result = write_archive(argv.argc, nargv, NULL, NULL, 0);
+	result = write_archive(argv.argc, nargv, NULL, the_repository, NULL, 0);
 	argv_array_clear(&argv);
 	free(nargv);
 	return result;
@@ -147,7 +147,7 @@ static int make_snapshot(const struct cgit_snapshot_format *format,
 				"Bad object id: %s", hex);
 		return 1;
 	}
-	if (!lookup_commit_reference(&oid)) {
+	if (!lookup_commit_reference(the_repository, &oid)) {
 		cgit_print_error_page(400, "Bad request",
 				"Not a commit reference: %s", hex);
 		return 1;

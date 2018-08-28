@@ -407,7 +407,7 @@ void cgit_print_diff(const char *new_rev, const char *old_rev,
 			"Bad object name: %s", new_rev);
 		return;
 	}
-	commit = lookup_commit_reference(new_rev_oid);
+	commit = lookup_commit_reference(the_repository, new_rev_oid);
 	if (!commit || parse_commit(commit)) {
 		cgit_print_error_page(404, "Not found",
 			"Bad commit: %s", oid_to_hex(new_rev_oid));
@@ -428,7 +428,7 @@ void cgit_print_diff(const char *new_rev, const char *old_rev,
 	}
 
 	if (!is_null_oid(old_rev_oid)) {
-		commit2 = lookup_commit_reference(old_rev_oid);
+		commit2 = lookup_commit_reference(the_repository, old_rev_oid);
 		if (!commit2 || parse_commit(commit2)) {
 			cgit_print_error_page(404, "Not found",
 				"Bad commit: %s", oid_to_hex(old_rev_oid));

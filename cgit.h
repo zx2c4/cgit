@@ -8,6 +8,7 @@
 #include <cache.h>
 #include <grep.h>
 #include <object.h>
+#include <object-store.h>
 #include <tree.h>
 #include <commit.h>
 #include <tag.h>

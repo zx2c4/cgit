@@ -177,7 +177,7 @@ static void write_tree_link(const struct object_id *oid, char *name,
 		cgit_tree_link(name, NULL, "ls-dir", ctx.qry.head, rev,
 			       fullpath->buf);
 
-		tree = lookup_tree(&tree_ctx.oid);
+		tree = lookup_tree(the_repository, &tree_ctx.oid);
 		if (!tree)
 			return;
 
@@ -359,7 +359,7 @@ void cgit_print_tree(const char *rev, char *path)
 			"Invalid revision name: %s", rev);
 		return;
 	}
-	commit = lookup_commit_reference(&oid);
+	commit = lookup_commit_reference(the_repository, &oid);
 	if (!commit || parse_commit(commit)) {
 		cgit_print_error_page(404, "Not found",
 			"Invalid commit reference: %s", rev);

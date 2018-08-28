@@ -129,7 +129,7 @@ struct commitinfo *cgit_parse_commit(struct commit *commit)
 {
 	const int sha1hex_len = 40;
 	struct commitinfo *ret;
-	const char *p = get_cached_commit_buffer(commit, NULL);
+	const char *p = get_cached_commit_buffer(the_repository, commit, NULL);
 	const char *t;
 
 	ret = xcalloc(1, sizeof(struct commitinfo));

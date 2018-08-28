@@ -19,12 +19,12 @@ static int print_ref_info(const char *refname, const struct object_id *oid,
 {
 	struct object *obj;
 
-	if (!(obj = parse_object(oid)))
+	if (!(obj = parse_object(the_repository, oid)))
 		return 0;
 
 	htmlf("%s\t%s\n", oid_to_hex(oid), refname);
 	if (obj->type == OBJ_TAG) {
-		if (!(obj = deref_tag(obj, refname, 0)))
+		if (!(obj = deref_tag(the_repository, obj, refname, 0)))
 			return 0;
 		htmlf("%s\t%s^{}\n", oid_to_hex(&obj->oid), refname);
 	}
