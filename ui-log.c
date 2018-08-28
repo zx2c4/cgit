@@ -67,7 +67,7 @@ void show_commit_decorations(struct commit *commit)
 	while (deco) {
 		struct object_id peeled;
 		int is_annotated = 0;
-		strncpy(buf, prettify_refname(deco->name), sizeof(buf) - 1);
+		strlcpy(buf, prettify_refname(deco->name), sizeof(buf));
 		switch(deco->type) {
 		case DECORATION_NONE:
 			/* If the git-core doesn't recognize it,
