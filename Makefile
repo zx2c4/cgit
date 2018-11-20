@@ -15,7 +15,7 @@ pdfdir = $(docdir)
 mandir = $(prefix)/share/man
 SHA1_HEADER = <openssl/sha.h>
 GIT_VER = 2.19.1
-GIT_URL = https://www.kernel.org/pub/software/scm/git/git-$(GIT_VER).tar.gz
+GIT_URL = https://www.kernel.org/pub/software/scm/git/git-$(GIT_VER).tar.xz
 INSTALL = install
 COPYTREE = cp -r
 MAN5_TXT = $(wildcard *.5.txt)
@@ -157,7 +157,7 @@ clean-doc:
 	$(RM) cgitrc.5 cgitrc.5.html cgitrc.5.pdf cgitrc.5.xml cgitrc.5.fo
 
 get-git:
-	curl -L $(GIT_URL) | tar -xzf - && rm -rf git && mv git-$(GIT_VER) git
+	curl -L $(GIT_URL) | tar -xJf - && rm -rf git && mv git-$(GIT_VER) git
 
 tags:
 	$(QUIET_TAGS)find . -name '*.[ch]' | xargs ctags
