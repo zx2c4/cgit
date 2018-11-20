@@ -156,6 +156,7 @@ static int make_snapshot(const struct cgit_snapshot_format *format,
 	ctx.page.mimetype = xstrdup(format->mimetype);
 	ctx.page.filename = xstrdup(filename);
 	cgit_print_http_headers();
+	init_archivers();
 	format->write_func(hex, prefix);
 	return 0;
 }

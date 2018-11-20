@@ -325,7 +325,7 @@ int cgit_diff_files(const struct object_id *old_oid,
 		diff_params.flags |= XDF_IGNORE_WHITESPACE;
 	emit_params.ctxlen = context > 0 ? context : 3;
 	emit_params.flags = XDL_EMIT_FUNCNAMES;
-	emit_cb.outf = filediff_cb;
+	emit_cb.out_line = filediff_cb;
 	emit_cb.priv = fn;
 	xdl_diff(&file1, &file2, &diff_params, &emit_params, &emit_cb);
 	if (file1.size)
