@@ -645,7 +645,7 @@ static inline void open_auth_filter(const char *function)
 		ctx.env.https ? ctx.env.https : "",
 		ctx.qry.repo ? ctx.qry.repo : "",
 		ctx.qry.page ? ctx.qry.page : "",
-		ctx.qry.url ? ctx.qry.url : "",
+		cgit_currentfullurl(),
 		cgit_loginurl());
 }
 

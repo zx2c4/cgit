@@ -68,13 +68,46 @@ char *cgit_hosturl(void)
 char *cgit_currenturl(void)
 {
 	const char *root = cgit_rooturl();
-	size_t len = strlen(root);
 
 	if (!ctx.qry.url)
 		return xstrdup(root);
-	if (len && root[len - 1] == '/')
+	if (root[0] && root[strlen(root) - 1] == '/')
 		return fmtalloc("%s%s", root, ctx.qry.url);
 	return fmtalloc("%s/%s", root, ctx.qry.url);
+}
+
+char *cgit_currentfullurl(void)
+{
+	const char *root = cgit_rooturl();
+	const char *orig_query = ctx.env.query_string ? ctx.env.query_string : "";
+	size_t len = strlen(orig_query);
+	char *query = xmalloc(len + 2), *start_url, *ret;
+
+	/* Remove all url=... parts from query string */
+	memcpy(query + 1, orig_query, len + 1);
+	query[0] = '?';
+	start_url = query;
+	while ((start_url = strstr(start_url, "url=")) != NULL) {
+		if (start_url[-1] == '?' || start_url[-1] == '&') {
+			const char *end_url = strchr(start_url, '&');
+			if (end_url)
+				memmove(start_url, end_url + 1, strlen(end_url));
+			else
+				start_url[0] = '\0';
+		} else
+			++start_url;
+	}
+	if (!query[1])
+		query[0] = '\0';
+
+	if (!ctx.qry.url)
+		ret = fmtalloc("%s%s", root, query);
+	else if (root[0] && root[strlen(root) - 1] == '/')
+		ret = fmtalloc("%s%s%s", root, ctx.qry.url, query);
+	else
+		ret = fmtalloc("%s/%s%s", root, ctx.qry.url, query);
+	free(query);
+	return ret;
 }
 
 const char *cgit_rooturl(void)

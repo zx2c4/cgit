@@ -5,6 +5,7 @@ extern const char *cgit_httpscheme(void);
 extern char *cgit_hosturl(void);
 extern const char *cgit_rooturl(void);
 extern char *cgit_currenturl(void);
+extern char *cgit_currentfullurl(void);
 extern const char *cgit_loginurl(void);
 extern char *cgit_repourl(const char *reponame);
 extern char *cgit_fileurl(const char *reponame, const char *pagename,
