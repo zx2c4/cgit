@@ -131,6 +131,7 @@ static void print_object(const struct object_id *oid, const char *path,
 	setup_revisions(rev_argv.argc, rev_argv.argv, &revs, NULL);
 	init_scoreboard(&sb);
 	sb.revs = &revs;
+	sb.repo = the_repository;
 	setup_scoreboard(&sb, path, &o);
 	o->suspects = blame_entry_prepend(NULL, 0, sb.num_lines, o);
 	prio_queue_put(&sb.commits, o->commit);
