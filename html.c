@@ -17,7 +17,7 @@ static const char* url_escape_table[256] = {
 	"%10", "%11", "%12", "%13", "%14", "%15", "%16", "%17",
 	"%18", "%19", "%1a", "%1b", "%1c", "%1d", "%1e", "%1f",
 	"%20", NULL,  "%22", "%23", NULL,  "%25", "%26", "%27",
-	NULL,  NULL,  NULL,  "%2b", NULL,  NULL,  NULL,  NULL,
+	NULL,  NULL,  NULL,  "%252b", NULL,  NULL,  NULL,  NULL,
 	NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,
 	NULL,  NULL,  NULL,  NULL,  "%3c", "%3d", "%3e", "%3f",
 	NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,
@@ -200,7 +200,7 @@ void html_url_path(const char *txt)
 	while (t && *t) {
 		unsigned char c = *t;
 		const char *e = url_escape_table[c];
-		if (e && c != '+' && c != '&') {
+		if (e && c != '&') {
 			html_raw(txt, t - txt);
 			html(e);
 			txt = t + 1;
