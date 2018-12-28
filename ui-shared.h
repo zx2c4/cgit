@@ -24,6 +24,9 @@ extern void cgit_tag_link(const char *name, const char *title,
 extern void cgit_tree_link(const char *name, const char *title,
 			   const char *class, const char *head,
 			   const char *rev, const char *path);
+extern void cgit_about_link(const char *name, const char *title,
+			    const char *class, const char *head,
+			    const char *rev, const char *path);
 extern void cgit_plain_link(const char *name, const char *title,
 			    const char *class, const char *head,
 			    const char *rev, const char *path);

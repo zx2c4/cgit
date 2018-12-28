@@ -112,6 +112,9 @@ static void print_object(const struct object_id *oid, const char *path, const ch
 
 	cgit_print_layout_start();
 	htmlf("blob: %s (", oid_to_hex(oid));
+	cgit_about_link("about", NULL, NULL, ctx.qry.head,
+		        rev, path);
+	html(") (");
 	cgit_plain_link("plain", NULL, NULL, ctx.qry.head,
 		        rev, path);
 	if (ctx.repo->enable_blame && !is_binary) {
