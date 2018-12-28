@@ -346,6 +346,12 @@ void cgit_tree_link(const char *name, const char *title, const char *class,
 	reporevlink("tree", name, title, class, head, rev, path);
 }
 
+void cgit_about_link(const char *name, const char *title, const char *class,
+		     const char *head, const char *rev, const char *path)
+{
+	reporevlink("about", name, title, class, head, rev, path);
+}
+
 void cgit_plain_link(const char *name, const char *title, const char *class,
 		     const char *head, const char *rev, const char *path)
 {
