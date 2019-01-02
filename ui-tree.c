@@ -272,6 +272,9 @@ static int ls_item(const struct object_id *oid, struct strbuf *base,
 	if (!S_ISGITLINK(mode))
 		cgit_plain_link("plain", NULL, "button", ctx.qry.head,
 				walk_tree_ctx->curr_rev, fullpath.buf);
+	if (!S_ISDIR(mode))
+		cgit_about_link("about", NULL, "button", ctx.qry.head,
+				walk_tree_ctx->curr_rev, fullpath.buf);
 	if (!S_ISDIR(mode) && ctx.repo->enable_blame)
 		cgit_blame_link("blame", NULL, "button", ctx.qry.head,
 				walk_tree_ctx->curr_rev, fullpath.buf);
