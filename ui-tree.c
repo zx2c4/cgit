@@ -84,7 +84,7 @@ static void print_binary_buffer(char *buf, unsigned long size)
 	html("</table>\n");
 }
 
-static void print_object(const struct object_id *oid, char *path, const char *basename, const char *rev)
+static void print_object(const struct object_id *oid, const char *path, const char *basename, const char *rev)
 {
 	enum object_type type;
 	char *buf;
@@ -279,7 +279,7 @@ static void ls_tail(void)
 	cgit_print_layout_end();
 }
 
-static void ls_tree(const struct object_id *oid, char *path, struct walk_tree_context *walk_tree_ctx)
+static void ls_tree(const struct object_id *oid, const char *path, struct walk_tree_context *walk_tree_ctx)
 {
 	struct tree *tree;
 	struct pathspec paths = {

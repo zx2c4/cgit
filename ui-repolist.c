@@ -11,7 +11,7 @@
 #include "html.h"
 #include "ui-shared.h"
 
-static time_t read_agefile(char *path)
+static time_t read_agefile(const char *path)
 {
 	time_t result;
 	size_t size;

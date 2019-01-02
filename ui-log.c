@@ -362,7 +362,7 @@ static char *next_token(char **src)
 }
 
 void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern,
-		    char *path, int pager, int commit_graph, int commit_sort)
+		    const char *path, int pager, int commit_graph, int commit_sort)
 {
 	struct rev_info rev;
 	struct commit *commit;

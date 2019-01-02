@@ -83,7 +83,7 @@ static void add_entry(struct commit *commit, const char *host)
 }
 
 
-void cgit_print_atom(char *tip, char *path, int max_count)
+void cgit_print_atom(char *tip, const char *path, int max_count)
 {
 	char *host;
 	const char *argv[] = {NULL, tip, NULL, NULL, NULL};

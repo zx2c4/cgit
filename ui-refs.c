@@ -136,7 +136,7 @@ static int print_tag(struct refinfo *ref)
 	return 0;
 }
 
-static void print_refs_link(char *path)
+static void print_refs_link(const char *path)
 {
 	html("<tr class='nohover'><td colspan='5'>");
 	cgit_refs_link("[...]", NULL, NULL, ctx.qry.head, NULL, path);

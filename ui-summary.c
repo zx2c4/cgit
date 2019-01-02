@@ -99,7 +99,7 @@ static char* append_readme_path(const char *filename, const char *ref, const cha
 	return full_path;
 }
 
-void cgit_print_repo_readme(char *path)
+void cgit_print_repo_readme(const char *path)
 {
 	char *filename, *ref, *mimetype;
 	int free_filename = 0;
