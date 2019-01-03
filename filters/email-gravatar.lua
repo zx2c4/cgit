@@ -3,15 +3,24 @@
 -- prefix in filters. It is much faster than the corresponding python script.
 --
 -- Requirements:
--- 	luacrypto >= 0.3
--- 	<http://mkottman.github.io/luacrypto/>
+-- 	luaossl
+-- 	<http://25thandclement.com/~william/projects/luaossl.html>
 --
 
-local crypto = require("crypto")
+local digest = require("openssl.digest")
+
+function md5_hex(input)
+	local b = digest.new("md5"):final(input)
+	local x = ""
+	for i = 1, #b do
+		x = x .. string.format("%.2x", string.byte(b, i))
+	end
+	return x
+end
 
 function filter_open(email, page)
 	buffer = ""
-	md5 = crypto.digest("md5", email:sub(2, -2):lower())
+	md5 = md5_hex(email:sub(2, -2):lower())
 end
 
 function filter_close()

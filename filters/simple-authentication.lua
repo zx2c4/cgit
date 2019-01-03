@@ -1,15 +1,15 @@
 -- This script may be used with the auth-filter. Be sure to configure it as you wish.
 --
 -- Requirements:
--- 	luacrypto >= 0.3
--- 	<http://mkottman.github.io/luacrypto/>
+-- 	luaossl
+-- 	<http://25thandclement.com/~william/projects/luaossl.html>
 -- 	luaposix
 -- 	<https://github.com/luaposix/luaposix>
 --
 local sysstat = require("posix.sys.stat")
 local unistd = require("posix.unistd")
-local crypto = require("crypto")
-
+local rand = require("openssl.rand")
+local hmac = require("openssl.hmac")
 
 --
 --
@@ -180,6 +180,13 @@ function get_cookie(cookies, name)
 	return url_decode(string.match(cookies, ";" .. name .. "=(.-);"))
 end
 
+function tohex(b)
+	local x = ""
+	for i = 1, #b do
+		x = x .. string.format("%.2x", string.byte(b, i))
+	end
+	return x
+end
 
 --
 --
@@ -197,12 +204,12 @@ function get_secret()
 	local secret_file = io.open(secret_filename, "r")
 	if secret_file == nil then
 		local old_umask = sysstat.umask(63)
-		local temporary_filename = secret_filename .. ".tmp." .. crypto.hex(crypto.rand.bytes(16))
+		local temporary_filename = secret_filename .. ".tmp." .. tohex(rand.bytes(16))
 		local temporary_file = io.open(temporary_filename, "w")
 		if temporary_file == nil then
 			os.exit(177)
 		end
-		temporary_file:write(crypto.hex(crypto.rand.bytes(32)))
+		temporary_file:write(tohex(rand.bytes(32)))
 		temporary_file:close()
 		unistd.link(temporary_filename, secret_filename) -- Intentionally fails in the case that another process is doing the same.
 		unistd.unlink(temporary_filename)
@@ -227,7 +234,7 @@ function validate_value(expected_field, cookie)
 	local field = ""
 	local expiration = 0
 	local salt = ""
-	local hmac = ""
+	local chmac = ""
 
 	if cookie == nil or cookie:len() < 3 or cookie:sub(1, 1) == "|" then
 		return nil
@@ -246,19 +253,19 @@ function validate_value(expected_field, cookie)
 		elseif i == 3 then
 			salt = component
 		elseif i == 4 then
-			hmac = component
+			chmac = component
 		else
 			break
 		end
 		i = i + 1
 	end
 
-	if hmac == nil or hmac:len() == 0 then
+	if chmac == nil or chmac:len() == 0 then
 		return nil
 	end
 
 	-- Lua hashes strings, so these comparisons are time invariant.
-	if hmac ~= crypto.hmac.digest("sha256", field .. "|" .. value .. "|" .. tostring(expiration) .. "|" .. salt, get_secret()) then
+	if chmac ~= tohex(hmac.new(get_secret(), "sha256"):final(field .. "|" .. value .. "|" .. tostring(expiration) .. "|" .. salt)) then
 		return nil
 	end
 
@@ -279,11 +286,11 @@ function secure_value(field, value, expiration)
 	end
 
 	local authstr = ""
-	local salt = crypto.hex(crypto.rand.bytes(16))
+	local salt = tohex(rand.bytes(16))
 	value = url_encode(value)
 	field = url_encode(field)
 	authstr = field .. "|" .. value .. "|" .. tostring(expiration) .. "|" .. salt
-	authstr = authstr .. "|" .. crypto.hmac.digest("sha256", authstr, get_secret())
+	authstr = authstr .. "|" .. tohex(hmac.new(get_secret(), "sha256"):final(authstr))
 	return authstr
 end
 
