@@ -50,6 +50,7 @@ Packages
  * [OS X][macports]
  * [OpenSUSE][OpenSUSE]
  * [NetBSD][pkgsrc]
+ * [FreeBSD][freshports]
 
 [archlinux]:    https://www.archlinux.org/packages/?name=cgit
 [fedora]:       https://apps.fedoraproject.org/packages/cgit
@@ -57,3 +58,4 @@ Packages
 [macports]:     http://trac.macports.org/browser/trunk/dports/www/cgit
 [opensuse]:     https://build.opensuse.org/package/show?package=cgit&project=devel%3Atools%3Ascm
 [pkgsrc]:       http://pkgsrc.se/wip/cgit
+[freshports]:   https://www.freshports.org/devel/cgit/
