@@ -117,7 +117,7 @@ static char *replace_tabs(char *line)
 	int n_tabs = 0;
 	int i;
 	char *result;
-	int result_len;
+	size_t result_len;
 
 	if (linelen == 0) {
 		result = xmalloc(1);
@@ -136,10 +136,12 @@ static char *replace_tabs(char *line)
 	for (;;) {
 		cur_buf = strchr(prev_buf, '\t');
 		if (!cur_buf) {
-			strncat(result, prev_buf, result_len);
+			linelen = strlen(result);
+			strlcpy(&result[linelen], prev_buf, result_len - linelen + 1);
 			break;
 		} else {
-			strncat(result, prev_buf, cur_buf - prev_buf);
+			linelen = strlen(result);
+			strlcpy(&result[linelen], prev_buf, cur_buf - prev_buf + 1);
 			linelen = strlen(result);
 			memset(&result[linelen], ' ', 8 - (linelen % 8));
 			result[linelen + 8 - (linelen % 8)] = '\0';
