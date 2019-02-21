@@ -71,7 +71,7 @@ void cgit_print_tag(char *revname)
 		}
 		cgit_print_layout_start();
 		html("<table class='commit-info'>\n");
-		htmlf("<tr><td>tag name</td><td>");
+		html("<tr><td>tag name</td><td>");
 		html_txt(revname);
 		htmlf(" (%s)</td></tr>\n", oid_to_hex(&oid));
 		if (info->tagger_date > 0) {
@@ -103,7 +103,7 @@ void cgit_print_tag(char *revname)
 	} else {
 		cgit_print_layout_start();
 		html("<table class='commit-info'>\n");
-		htmlf("<tr><td>tag name</td><td>");
+		html("<tr><td>tag name</td><td>");
 		html_txt(revname);
 		html("</td></tr>\n");
 		html("<tr><td>tagged object</td><td class='sha1'>");

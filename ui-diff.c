@@ -82,7 +82,7 @@ static void print_fileinfo(struct fileinfo *info)
 	}
 
 	html("<tr>");
-	htmlf("<td class='mode'>");
+	html("<td class='mode'>");
 	if (is_null_oid(info->new_oid)) {
 		cgit_print_filemode(info->old_mode);
 	} else {
