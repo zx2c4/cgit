@@ -3,17 +3,16 @@ cgit Quick Facts
 
  * web interface ([cgi][]) for [Git][git] repositories, written in [C][]
  * licensed under [GPLv2][]
- * discussions, patches etc. go to the [list][] ([signup][], [archive][], [gmane][]).
+ * discussions, patches etc. go to the [list][] ([signup][], [archive][]).
  * common questions are answered in the [FAQ][faq].
 
-[cgi]:     http://www.ietf.org/rfc/rfc3875.txt
-[git]:     http://git-scm.org
-[C]:       http://en.wikipedia.org/wiki/C_%28programming_language%29
-[GPLv2]:   http://www.gnu.org/licenses/gpl-2.0.html
+[cgi]:     https://tools.ietf.org/html/rfc3875
+[git]:     https://git-scm.com/
+[C]:       https://en.wikipedia.org/wiki/C_%28programming_language%29
+[GPLv2]:   https://www.gnu.org/licenses/gpl-2.0.html
 [list]:    mailto:cgit@lists.zx2c4.com
-[signup]:  http://lists.zx2c4.com/mailman/listinfo/cgit
-[archive]: http://lists.zx2c4.com/pipermail/cgit/
-[gmane]:   http://dir.gmane.org/gmane.comp.version-control.cgit
+[signup]:  https://lists.zx2c4.com/mailman/listinfo/cgit
+[archive]: https://lists.zx2c4.com/pipermail/cgit/
 [faq]:     faq
 
 Features
@@ -54,8 +53,8 @@ Packages
 
 [archlinux]:    https://www.archlinux.org/packages/?name=cgit
 [fedora]:       https://apps.fedoraproject.org/packages/cgit
-[gentoo]:       http://packages.gentoo.org/package/www-apps/cgit
-[macports]:     http://trac.macports.org/browser/trunk/dports/www/cgit
-[opensuse]:     https://build.opensuse.org/package/show?package=cgit&project=devel%3Atools%3Ascm
-[pkgsrc]:       http://pkgsrc.se/wip/cgit
+[gentoo]:       https://packages.gentoo.org/packages/www-apps/cgit
+[macports]:     https://trac.macports.org/browser/trunk/dports/www/cgit
+[opensuse]:     https://software.opensuse.org/package/cgit
+[pkgsrc]:       http://pkgsrc.se/www/cgit
 [freshports]:   https://www.freshports.org/devel/cgit/
