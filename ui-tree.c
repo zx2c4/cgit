@@ -185,8 +185,8 @@ static void write_tree_link(const struct object_id *oid, char *name,
 		tree_ctx.name = NULL;
 		tree_ctx.count = 0;
 
-		read_tree_recursive(tree, "", 0, 1, &paths, single_tree_cb,
-				    &tree_ctx);
+		read_tree_recursive(the_repository, tree, "", 0, 1,
+			&paths, single_tree_cb, &tree_ctx);
 
 		if (tree_ctx.count != 1)
 			break;
@@ -294,7 +294,8 @@ static void ls_tree(const struct object_id *oid, const char *path, struct walk_t
 	}
 
 	ls_head();
-	read_tree_recursive(tree, "", 0, 1, &paths, ls_item, walk_tree_ctx);
+	read_tree_recursive(the_repository, tree, "", 0, 1,
+		&paths, ls_item, walk_tree_ctx);
 	ls_tail();
 }
 
@@ -373,7 +374,8 @@ void cgit_print_tree(const char *rev, char *path)
 		goto cleanup;
 	}
 
-	read_tree_recursive(commit->maybe_tree, "", 0, 0, &paths, walk_tree, &walk_tree_ctx);
+	read_tree_recursive(the_repository, commit->maybe_tree, "", 0, 0,
+		&paths, walk_tree, &walk_tree_ctx);
 	if (walk_tree_ctx.state == 1)
 		ls_tail();
 	else if (walk_tree_ctx.state == 2)
