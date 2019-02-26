@@ -66,7 +66,7 @@ static void about_fn(void)
 
 static void blame_fn(void)
 {
-	if (ctx.cfg.enable_blame)
+	if (ctx.repo->enable_blame)
 		cgit_print_blame();
 	else
 		cgit_print_error_page(403, "Forbidden", "Blame is disabled");

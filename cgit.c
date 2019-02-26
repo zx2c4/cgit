@@ -50,6 +50,8 @@ static void repo_config(struct cgit_repo *repo, const char *name, const char *va
 		repo->extra_head_content = xstrdup(value);
 	else if (!strcmp(name, "snapshots"))
 		repo->snapshots = ctx.cfg.snapshots & cgit_parse_snapshots_mask(value);
+	else if (!strcmp(name, "enable-blame"))
+		repo->enable_blame = atoi(value);
 	else if (!strcmp(name, "enable-commit-graph"))
 		repo->enable_commit_graph = atoi(value);
 	else if (!strcmp(name, "enable-log-filecount"))
@@ -809,6 +811,8 @@ static void print_repo(FILE *f, struct cgit_repo *repo)
 		fprintf(f, "repo.homepage=%s\n", repo->homepage);
 	if (repo->clone_url)
 		fprintf(f, "repo.clone-url=%s\n", repo->clone_url);
+	fprintf(f, "repo.enable-blame=%d\n",
+	        repo->enable_blame);
 	fprintf(f, "repo.enable-commit-graph=%d\n",
 	        repo->enable_commit_graph);
 	fprintf(f, "repo.enable-log-filecount=%d\n",

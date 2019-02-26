@@ -94,6 +94,7 @@ struct cgit_repo {
 	char *logo_link;
 	char *snapshot_prefix;
 	int snapshots;
+	int enable_blame;
 	int enable_commit_graph;
 	int enable_log_filecount;
 	int enable_log_linecount;

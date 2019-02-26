@@ -110,7 +110,7 @@ static void print_object(const struct object_id *oid, const char *path, const ch
 	htmlf("blob: %s (", oid_to_hex(oid));
 	cgit_plain_link("plain", NULL, NULL, ctx.qry.head,
 		        rev, path);
-	if (ctx.cfg.enable_blame) {
+	if (ctx.repo->enable_blame) {
 		html(") (");
 		cgit_blame_link("blame", NULL, NULL, ctx.qry.head,
 			        rev, path);
@@ -251,7 +251,7 @@ static int ls_item(const struct object_id *oid, struct strbuf *base,
 	if (!S_ISGITLINK(mode))
 		cgit_plain_link("plain", NULL, "button", ctx.qry.head,
 				walk_tree_ctx->curr_rev, fullpath.buf);
-	if (!S_ISDIR(mode) && ctx.cfg.enable_blame)
+	if (!S_ISDIR(mode) && ctx.repo->enable_blame)
 		cgit_blame_link("blame", NULL, "button", ctx.qry.head,
 				walk_tree_ctx->curr_rev, fullpath.buf);
 	html("</td></tr>\n");

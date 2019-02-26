@@ -485,6 +485,10 @@ repo.email-filter::
 	Override the default email-filter. Default value: none. See also:
 	"enable-filter-overrides". See also: "FILTER API".
 
+repo.enable-blame::
+	A flag which can be used to disable the global setting
+	`enable-blame'. Default value: none.
+
 repo.enable-commit-graph::
 	A flag which can be used to disable the global setting
 	`enable-commit-graph'. Default value: none.
