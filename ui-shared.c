@@ -995,7 +995,7 @@ static void print_header(void)
 	if (ctx.repo) {
 		cgit_index_link("index", NULL, NULL, NULL, NULL, 0, 1);
 		html(" : ");
-		cgit_summary_link(ctx.repo->name, ctx.repo->name, NULL, NULL);
+		cgit_summary_link(ctx.repo->name, NULL, NULL, NULL);
 		if (ctx.env.authenticated) {
 			html("</td><td class='form'>");
 			html("<form method='get'>\n");

@@ -321,7 +321,7 @@ void cgit_print_repolist(void)
 		}
 		htmlf("<tr><td class='%s'>",
 		      !sorted && section ? "sublevel-repo" : "toplevel-repo");
-		cgit_summary_link(ctx.repo->name, ctx.repo->name, NULL, NULL);
+		cgit_summary_link(ctx.repo->name, NULL, NULL, NULL);
 		html("</td><td>");
 		repourl = cgit_repourl(ctx.repo->url);
 		html_link_open(repourl, NULL, NULL);
