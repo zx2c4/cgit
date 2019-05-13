@@ -19,6 +19,16 @@
 
 const char *cgit_version = CGIT_VERSION;
 
+__attribute__((constructor))
+static void constructor_environment()
+{
+	/* Do not look in /etc/ for gitconfig and gitattributes. */
+	setenv("GIT_CONFIG_NOSYSTEM", "1", 1);
+	setenv("GIT_ATTR_NOSYSTEM", "1", 1);
+	unsetenv("HOME");
+	unsetenv("XDG_CONFIG_HOME");
+}
+
 static void add_mimetype(const char *name, const char *value)
 {
 	struct string_list_item *item;
@@ -565,18 +575,13 @@ static void prepare_repo_env(int *nongit)
 	/* The path to the git repository. */
 	setenv("GIT_DIR", ctx.repo->path, 1);
 
-	/* Do not look in /etc/ for gitconfig and gitattributes. */
-	setenv("GIT_CONFIG_NOSYSTEM", "1", 1);
-	setenv("GIT_ATTR_NOSYSTEM", "1", 1);
-	unsetenv("HOME");
-	unsetenv("XDG_CONFIG_HOME");
-
 	/* Setup the git directory and initialize the notes system. Both of these
 	 * load local configuration from the git repository, so we do them both while
 	 * the HOME variables are unset. */
 	setup_git_directory_gently(nongit);
 	init_display_notes(NULL);
 }
+
 static int prepare_repo_cmd(int nongit)
 {
 	struct object_id oid;
