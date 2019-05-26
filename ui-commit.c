@@ -39,7 +39,7 @@ void cgit_print_commit(char *hex, const char *prefix)
 	}
 	info = cgit_parse_commit(commit);
 
-	format_display_notes(&oid, &notes, PAGE_ENCODING, 0);
+	format_display_notes(&oid, &notes, PAGE_ENCODING, 1);
 
 	load_ref_decorations(NULL, DECORATE_FULL_REFS);
 
