@@ -33,7 +33,7 @@ test_expect_success 'test submodule version matches Makefile' '
 				sed -e "s/^[0-9]* \\([0-9a-f]*\\) [0-9]	.*$/\\1/") &&
 			cd git &&
 			git describe --match "v[0-9]*" $sm_sha1
-		) | sed -e "s/^v//" >sm_version &&
+		) | sed -e "s/^v//" -e "s/-/./" >sm_version &&
 		test_cmp sm_version makefile_version
 	fi
 '
