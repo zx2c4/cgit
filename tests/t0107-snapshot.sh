@@ -38,6 +38,48 @@ test_expect_success 'verify untarred file-5' '
 	test_line_count = 1 master/file-5
 '
 
+if test -n "$(which lzip 2>/dev/null)"; then
+	test_set_prereq LZIP
+else
+	say 'Skipping LZIP validation tests: lzip not found'
+fi
+
+test_expect_success LZIP 'get foo/snapshot/master.tar.lz' '
+	cgit_url "foo/snapshot/master.tar.lz" >tmp
+'
+
+test_expect_success LZIP 'check html headers' '
+	head -n 1 tmp |
+	grep "Content-Type: application/x-lzip" &&
+
+	head -n 2 tmp |
+	grep "Content-Disposition: inline; filename=.master.tar.lz."
+'
+
+test_expect_success LZIP 'strip off the header lines' '
+	strip_headers <tmp >master.tar.lz
+'
+
+test_expect_success LZIP 'verify lzip format' '
+	lzip --test master.tar.lz &&
+	cp master.tar.lz /tmp/.
+'
+
+test_expect_success LZIP 'untar' '
+	rm -rf master &&
+	tar --lzip -xf master.tar.lz
+'
+
+test_expect_success LZIP 'count files' '
+	ls master/ >output &&
+	test_line_count = 5 output
+'
+
+test_expect_success LZIP 'verify untarred file-5' '
+	grep "^5$" master/file-5 &&
+	test_line_count = 1 master/file-5
+'
+
 test_expect_success 'get foo/snapshot/master.zip' '
 	cgit_url "foo/snapshot/master.zip" >tmp
 '

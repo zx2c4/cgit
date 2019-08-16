@@ -79,6 +79,12 @@ static int write_tar_bzip2_archive(const char *hex, const char *prefix)
 	return write_compressed_tar_archive(hex, prefix, argv);
 }
 
+static int write_tar_lzip_archive(const char *hex, const char *prefix)
+{
+	char *argv[] = { "lzip", NULL };
+	return write_compressed_tar_archive(hex, prefix, argv);
+}
+
 static int write_tar_xz_archive(const char *hex, const char *prefix)
 {
 	char *argv[] = { "xz", NULL };
@@ -90,6 +96,7 @@ const struct cgit_snapshot_format cgit_snapshot_formats[] = {
 	{ ".tar",	"application/x-tar",	write_tar_archive	},
 	{ ".tar.gz",	"application/x-gzip",	write_tar_gzip_archive	},
 	{ ".tar.bz2",	"application/x-bzip2",	write_tar_bzip2_archive	},
+	{ ".tar.lz",	"application/x-lzip",	write_tar_lzip_archive	},
 	{ ".tar.xz",	"application/x-xz",	write_tar_xz_archive	},
 	{ ".zip",	"application/x-zip",	write_zip_archive	},
 	{ NULL }
