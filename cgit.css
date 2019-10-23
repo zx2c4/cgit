@@ -661,11 +661,12 @@ div#cgit div.footer {
 	margin-top: 0.5em;
 	text-align: center;
 	font-size: 80%;
-	color: #ccc;
+	color: black;
+	opacity: 0.3;
 }
 
 div#cgit div.footer a {
-	color: #ccc;
+	color: black;
 	text-decoration: none;
 }
 
