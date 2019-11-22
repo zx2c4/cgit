@@ -20,7 +20,7 @@ static time_t read_agefile(const char *path)
 
 	if (readfile(path, &buf, &size)) {
 		free(buf);
-		return -1;
+		return 0;
 	}
 
 	if (parse_date(buf, &date_buf) == 0)
