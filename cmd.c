@@ -51,13 +51,10 @@ static void about_fn(void)
 			free(redirect);
 		} else if (ctx.repo->readme.nr)
 			cgit_print_repo_readme(ctx.qry.path);
-		else if (ctx.repo->homepage)
-			cgit_redirect(ctx.repo->homepage, false);
 		else {
-			char *currenturl = cgit_currenturl();
-			char *redirect = fmtalloc("%s../", currenturl);
+			char *redirect = fmtalloc("%s%s/summary/",
+				ctx.cfg.virtual_root, ctx.repo->url);
 			cgit_redirect(redirect, false);
-			free(currenturl);
 			free(redirect);
 		}
 	} else
@@ -195,10 +192,13 @@ struct cgit_cmd *cgit_get_cmd(void)
 	int i;
 
 	if (ctx.qry.page == NULL) {
-		if (ctx.repo)
-			ctx.qry.page = "summary";
-		else
-			ctx.qry.page = "repolist";
+		if (ctx.repo) {
+			if (ctx.repo->default_page && *ctx.repo->default_page)
+				ctx.qry.page = ctx.repo->default_page;
+			else
+				ctx.qry.page = ctx.cfg.default_page;
+		} else
+			ctx.qry.page = ctx.cfg.root_default_page;
 	}
 
 	for (i = 0; i < sizeof(cmds)/sizeof(*cmds); i++)

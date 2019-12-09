@@ -328,10 +328,16 @@ static void reporevlink(const char *page, const char *name, const char *title,
 	html("</a>");
 }
 
+void cgit_repo_link(const char *name, const char *title, const char *class,
+			const char *head)
+{
+	reporevlink(NULL, name, title, class, head, NULL, NULL);
+}
+
 void cgit_summary_link(const char *name, const char *title, const char *class,
 		       const char *head)
 {
-	reporevlink(NULL, name, title, class, head, NULL, NULL);
+	reporevlink("summary", name, title, class, head, NULL, NULL);
 }
 
 void cgit_tag_link(const char *name, const char *title, const char *class,
@@ -1035,7 +1041,7 @@ static void print_header(void)
 	if (ctx.repo) {
 		cgit_index_link("index", NULL, NULL, NULL, NULL, 0, 1);
 		html(" : ");
-		cgit_summary_link(ctx.repo->name, NULL, NULL, NULL);
+		cgit_repo_link(ctx.repo->name, NULL, NULL, NULL);
 		if (ctx.env.authenticated) {
 			html("</td><td class='form'>");
 			html("<form method='get'>\n");
@@ -1130,7 +1136,7 @@ void cgit_print_pageheader(void)
 		html("</form>\n");
 	} else if (ctx.env.authenticated) {
 		char *currenturl = cgit_currenturl();
-		site_link(NULL, "index", NULL, hc("repolist"), NULL, NULL, 0, 1);
+		site_link("repolist", "index", NULL, hc("repolist"), NULL, NULL, 0, 1);
 		if (ctx.cfg.root_readme)
 			site_link("about", "about", NULL, hc("about"),
 				  NULL, NULL, 0, 1);

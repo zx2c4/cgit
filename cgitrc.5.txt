@@ -129,6 +129,12 @@ css::
 	Default value: "/cgit.css".  May be given multiple times, each
 	css URL path is added in the head section of the document in turn.
 
+default-page::
+	Specifies the default page for repositories. This setting is only used
+	if `repo.default-page` is unspecified. Possible values: "about",
+	"summary", "refs", "log", "tree", "commit", "diff", "stats".  Default
+	value: "summary".
+
 email-filter::
 	Specifies a command which will be invoked to format names and email
 	address of committers, authors, and taggers, as represented in various
@@ -359,6 +365,10 @@ robots::
 	Text used as content for the "robots" meta-tag. Default value:
 	"index, nofollow".
 
+root-default-page::
+	Specifies the default root page. Possible values are "repolist" and
+	"about". Default value: "repolist".
+
 root-desc::
 	Text printed below the heading on the repository index page. Default
 	value: "a fast webinterface for the git dscm".
@@ -481,6 +491,10 @@ repo.commit-sort::
 	commit log, and when set to "topo" enables strict topological
 	ordering. If unset, the default ordering of "git log" is used. Default
 	value: unset.
+
+repo.default-page::
+	Specifies the default page for the repository. Default value: global
+	default-page.
 
 repo.defbranch::
 	The name of the default branch for this repository. If no such branch
