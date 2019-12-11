@@ -9,6 +9,12 @@ test -n "$(which strace 2>/dev/null)" || {
 	exit
 }
 
+strace true 2>/dev/null || {
+	skip_all='Skipping access validation tests: strace not functional'
+	test_done
+	exit
+}
+
 test_no_home_access () {
 	non_existent_path="/path/to/some/place/that/does/not/possibly/exist"
 	while test -d "$non_existent_path"; do
