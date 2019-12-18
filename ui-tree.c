@@ -89,6 +89,7 @@ static void print_object(const struct object_id *oid, const char *path, const ch
 	enum object_type type;
 	char *buf;
 	unsigned long size;
+	bool is_binary;
 
 	type = oid_object_info(the_repository, oid, &size);
 	if (type == OBJ_BAD) {
@@ -103,6 +104,7 @@ static void print_object(const struct object_id *oid, const char *path, const ch
 			"Error reading object %s", oid_to_hex(oid));
 		return;
 	}
+	is_binary = buffer_is_binary(buf, size);
 
 	cgit_set_title_from_path(path);
 
@@ -110,7 +112,7 @@ static void print_object(const struct object_id *oid, const char *path, const ch
 	htmlf("blob: %s (", oid_to_hex(oid));
 	cgit_plain_link("plain", NULL, NULL, ctx.qry.head,
 		        rev, path);
-	if (ctx.repo->enable_blame) {
+	if (ctx.repo->enable_blame && !is_binary) {
 		html(") (");
 		cgit_blame_link("blame", NULL, NULL, ctx.qry.head,
 			        rev, path);
@@ -123,7 +125,7 @@ static void print_object(const struct object_id *oid, const char *path, const ch
 		return;
 	}
 
-	if (buffer_is_binary(buf, size))
+	if (is_binary)
 		print_binary_buffer(buf, size);
 	else
 		print_text_buffer(basename, buf, size);

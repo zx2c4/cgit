@@ -152,6 +152,10 @@ static void print_object(const struct object_id *oid, const char *path,
 	cgit_tree_link("tree", NULL, NULL, ctx.qry.head, rev, path);
 	html(")\n");
 
+	if (buffer_is_binary(buf, size)) {
+		html("<div class='error'>blob is binary.</div>");
+		goto cleanup;
+	}
 	if (ctx.cfg.max_blob_size && size / 1024 > ctx.cfg.max_blob_size) {
 		htmlf("<div class='error'>blob size (%ldKB)"
 		      " exceeds display size limit (%dKB).</div>",
