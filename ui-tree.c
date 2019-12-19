@@ -204,9 +204,11 @@ static int ls_item(const struct object_id *oid, struct strbuf *base,
 	struct walk_tree_context *walk_tree_ctx = cbdata;
 	char *name;
 	struct strbuf fullpath = STRBUF_INIT;
+	struct strbuf linkpath = STRBUF_INIT;
 	struct strbuf class = STRBUF_INIT;
 	enum object_type type;
 	unsigned long size = 0;
+	char *buf;
 
 	name = xstrdup(pathname);
 	strbuf_addf(&fullpath, "%s%s%s", ctx.qry.path ? ctx.qry.path : "",
@@ -218,8 +220,7 @@ static int ls_item(const struct object_id *oid, struct strbuf *base,
 			htmlf("<tr><td colspan='3'>Bad object: %s %s</td></tr>",
 			      name,
 			      oid_to_hex(oid));
-			free(name);
-			return 0;
+			goto cleanup;
 		}
 	}
 
@@ -239,6 +240,21 @@ static int ls_item(const struct object_id *oid, struct strbuf *base,
 		cgit_tree_link(name, NULL, class.buf, ctx.qry.head,
 			       walk_tree_ctx->curr_rev, fullpath.buf);
 	}
+	if (S_ISLNK(mode)) {
+		html(" -> ");
+		buf = read_object_file(oid, &type, &size);
+		if (!buf) {
+			htmlf("Error reading object: %s", oid_to_hex(oid));
+			goto cleanup;
+		}
+		strbuf_addbuf(&linkpath, &fullpath);
+		strbuf_addf(&linkpath, "/../%s", buf);
+		strbuf_normalize_path(&linkpath);
+		cgit_tree_link(buf, NULL, class.buf, ctx.qry.head,
+			walk_tree_ctx->curr_rev, linkpath.buf);
+		free(buf);
+		strbuf_release(&linkpath);
+	}
 	htmlf("</td><td class='ls-size'>%li</td>", size);
 
 	html("<td>");
@@ -255,6 +271,8 @@ static int ls_item(const struct object_id *oid, struct strbuf *base,
 		cgit_blame_link("blame", NULL, "button", ctx.qry.head,
 				walk_tree_ctx->curr_rev, fullpath.buf);
 	html("</td></tr>\n");
+
+cleanup:
 	free(name);
 	strbuf_release(&fullpath);
 	strbuf_release(&class);
