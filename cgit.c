@@ -579,7 +579,7 @@ static void prepare_repo_env(int *nongit)
 	 * load local configuration from the git repository, so we do them both while
 	 * the HOME variables are unset. */
 	setup_git_directory_gently(nongit);
-	init_display_notes(NULL);
+	load_display_notes(NULL);
 }
 
 static int prepare_repo_cmd(int nongit)
