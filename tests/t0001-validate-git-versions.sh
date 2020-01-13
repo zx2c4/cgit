@@ -1,5 +1,9 @@
 #!/bin/sh
 
+if [ "${CGIT_TEST_NO_GIT_VERSION}" = "YesPlease" ]; then
+	exit 0
+fi
+
 test_description='Check Git version is correct'
 CGIT_TEST_NO_CREATE_REPOS=YesPlease
 . ./setup.sh
