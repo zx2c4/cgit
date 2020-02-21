@@ -43,6 +43,7 @@ void cgit_print_commit(char *hex, const char *prefix)
 
 	load_ref_decorations(NULL, DECORATE_FULL_REFS);
 
+	ctx.page.title = fmtalloc("%s - %s", info->subject, ctx.page.title);
 	cgit_print_layout_start();
 	cgit_print_diff_ctrls();
 	html("<table summary='commit info' class='commit-info'>\n");
