@@ -407,9 +407,12 @@ side-by-side-diffs::
 snapshots::
 	Text which specifies the default set of snapshot formats that cgit
 	generates links for. The value is a space-separated list of zero or
-	more of the values "tar", "tar.gz", "tar.bz2", "tar.xz", "tar.lz" and
-	"zip". The special value "all" enables all snapshot formats.
-	Default value: none.
+	more of the values "tar", "tar.gz", "tar.bz2", "tar.lz", "tar.xz",
+	"tar.zst" and "zip". The special value "all" enables all snapshot
+	formats. Default value: none.
+	All compressors use default settings. Some settings can be influenced
+	with environment variables, for example set ZSTD_CLEVEL=10 in web
+	server environment for higher (but slower) zstd compression.
 
 source-filter::
 	Specifies a command which will be invoked to format plaintext blobs

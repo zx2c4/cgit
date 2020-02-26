@@ -122,6 +122,48 @@ test_expect_success XZ 'verify untarred file-5' '
 	test_line_count = 1 master/file-5
 '
 
+if test -n "$(which zstd 2>/dev/null)"; then
+	test_set_prereq ZSTD
+else
+	say 'Skipping ZSTD validation tests: zstd not found'
+fi
+
+test_expect_success ZSTD 'get foo/snapshot/master.tar.zst' '
+	cgit_url "foo/snapshot/master.tar.zst" >tmp
+'
+
+test_expect_success ZSTD 'check html headers' '
+	head -n 1 tmp |
+	grep "Content-Type: application/x-zstd" &&
+
+	head -n 2 tmp |
+	grep "Content-Disposition: inline; filename=.master.tar.zst."
+'
+
+test_expect_success ZSTD 'strip off the header lines' '
+	strip_headers <tmp >master.tar.zst
+'
+
+test_expect_success ZSTD 'verify zstd format' '
+	zstd --test master.tar.zst &&
+	cp master.tar.zst /tmp/.
+'
+
+test_expect_success ZSTD 'untar' '
+	rm -rf master &&
+	tar --zstd -xf master.tar.zst
+'
+
+test_expect_success ZSTD 'count files' '
+	ls master/ >output &&
+	test_line_count = 5 output
+'
+
+test_expect_success ZSTD 'verify untarred file-5' '
+	grep "^5$" master/file-5 &&
+	test_line_count = 1 master/file-5
+'
+
 test_expect_success 'get foo/snapshot/master.zip' '
 	cgit_url "foo/snapshot/master.zip" >tmp
 '
