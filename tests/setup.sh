@@ -104,7 +104,7 @@ virtual-root=/
 cache-root=$PWD/cache
 
 cache-size=1021
-snapshots=tar.gz tar.bz tar.lz zip
+snapshots=tar.gz tar.bz tar.lz tar.xz zip
 enable-log-filecount=1
 enable-log-linecount=1
 summary-log=5
