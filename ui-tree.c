@@ -370,12 +370,14 @@ void cgit_print_tree(const char *rev, char *path)
 	walk_tree_ctx.curr_rev = xstrdup(rev);
 
 	if (path == NULL) {
-		ls_tree(&commit->maybe_tree->object.oid, NULL, &walk_tree_ctx);
+		ls_tree(get_commit_tree_oid(commit), NULL, &walk_tree_ctx);
 		goto cleanup;
 	}
 
-	read_tree_recursive(the_repository, commit->maybe_tree, "", 0, 0,
-		&paths, walk_tree, &walk_tree_ctx);
+	read_tree_recursive(the_repository,
+			    repo_get_commit_tree(the_repository, commit),
+			    "", 0, 0,
+			    &paths, walk_tree, &walk_tree_ctx);
 	if (walk_tree_ctx.state == 1)
 		ls_tail();
 	else if (walk_tree_ctx.state == 2)

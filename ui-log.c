@@ -153,8 +153,8 @@ static int show_commit(struct commit *commit, struct rev_info *revs)
 	rem_lines = 0;
 
 	revs->diffopt.flags.recursive = 1;
-	diff_tree_oid(&parent->maybe_tree->object.oid,
-		      &commit->maybe_tree->object.oid,
+	diff_tree_oid(get_commit_tree_oid(parent),
+		      get_commit_tree_oid(commit),
 		      "", &revs->diffopt);
 	diffcore_std(&revs->diffopt);
 

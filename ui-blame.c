@@ -290,8 +290,10 @@ void cgit_print_blame(void)
 	walk_tree_ctx.match_baselen = (path_items.match) ?
 				       basedir_len(path_items.match) : -1;
 
-	read_tree_recursive(the_repository, commit->maybe_tree, "", 0, 0,
-		&paths, walk_tree, &walk_tree_ctx);
+	read_tree_recursive(the_repository,
+			    repo_get_commit_tree(the_repository, commit),
+			    "", 0, 0,
+			    &paths, walk_tree, &walk_tree_ctx);
 	if (!walk_tree_ctx.state)
 		cgit_print_error_page(404, "Not found", "Not found");
 	else if (walk_tree_ctx.state == 2)

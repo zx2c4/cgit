@@ -413,7 +413,7 @@ void cgit_print_diff(const char *new_rev, const char *old_rev,
 			"Bad commit: %s", oid_to_hex(new_rev_oid));
 		return;
 	}
-	new_tree_oid = &commit->maybe_tree->object.oid;
+	new_tree_oid = get_commit_tree_oid(commit);
 
 	if (old_rev) {
 		if (get_oid(old_rev, old_rev_oid)) {
@@ -434,7 +434,7 @@ void cgit_print_diff(const char *new_rev, const char *old_rev,
 				"Bad commit: %s", oid_to_hex(old_rev_oid));
 			return;
 		}
-		old_tree_oid = &commit2->maybe_tree->object.oid;
+		old_tree_oid = get_commit_tree_oid(commit2);
 	} else {
 		old_tree_oid = NULL;
 	}
