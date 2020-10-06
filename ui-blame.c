@@ -10,7 +10,7 @@
 #include "ui-blame.h"
 #include "html.h"
 #include "ui-shared.h"
-#include "argv-array.h"
+#include "strvec.h"
 #include "blame.h"
 
 
@@ -104,7 +104,7 @@ static void print_object(const struct object_id *oid, const char *path,
 	enum object_type type;
 	char *buf;
 	unsigned long size;
-	struct argv_array rev_argv = ARGV_ARRAY_INIT;
+	struct strvec rev_argv = STRVEC_INIT;
 	struct rev_info revs;
 	struct blame_scoreboard sb;
 	struct blame_origin *o;
@@ -124,11 +124,11 @@ static void print_object(const struct object_id *oid, const char *path,
 		return;
 	}
 
-	argv_array_push(&rev_argv, "blame");
-	argv_array_push(&rev_argv, rev);
+	strvec_push(&rev_argv, "blame");
+	strvec_push(&rev_argv, rev);
 	init_revisions(&revs, NULL);
 	revs.diffopt.flags.allow_textconv = 1;
-	setup_revisions(rev_argv.argc, rev_argv.argv, &revs, NULL);
+	setup_revisions(rev_argv.nr, rev_argv.v, &revs, NULL);
 	init_scoreboard(&sb);
 	sb.revs = &revs;
 	sb.repo = the_repository;

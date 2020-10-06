@@ -13,32 +13,32 @@
 
 static int write_archive_type(const char *format, const char *hex, const char *prefix)
 {
-	struct argv_array argv = ARGV_ARRAY_INIT;
+	struct strvec argv = STRVEC_INIT;
 	const char **nargv;
 	int result;
-	argv_array_push(&argv, "snapshot");
-	argv_array_push(&argv, format);
+	strvec_push(&argv, "snapshot");
+	strvec_push(&argv, format);
 	if (prefix) {
 		struct strbuf buf = STRBUF_INIT;
 		strbuf_addstr(&buf, prefix);
 		strbuf_addch(&buf, '/');
-		argv_array_push(&argv, "--prefix");
-		argv_array_push(&argv, buf.buf);
+		strvec_push(&argv, "--prefix");
+		strvec_push(&argv, buf.buf);
 		strbuf_release(&buf);
 	}
-	argv_array_push(&argv, hex);
+	strvec_push(&argv, hex);
 	/*
 	 * Now we need to copy the pointers to arguments into a new
 	 * structure because write_archive will rearrange its arguments
 	 * which may result in duplicated/missing entries causing leaks
-	 * or double-frees in argv_array_clear.
+	 * or double-frees in strvec_clear.
 	 */
-	nargv = xmalloc(sizeof(char *) * (argv.argc + 1));
-	/* argv_array guarantees a trailing NULL entry. */
-	memcpy(nargv, argv.argv, sizeof(char *) * (argv.argc + 1));
+	nargv = xmalloc(sizeof(char *) * (argv.nr + 1));
+	/* strvec guarantees a trailing NULL entry. */
+	memcpy(nargv, argv.v, sizeof(char *) * (argv.nr + 1));
 
-	result = write_archive(argv.argc, nargv, NULL, the_repository, NULL, 0);
-	argv_array_clear(&argv);
+	result = write_archive(argv.nr, nargv, NULL, the_repository, NULL, 0);
+	strvec_clear(&argv);
 	free(nargv);
 	return result;
 }

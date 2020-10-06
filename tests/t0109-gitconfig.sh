@@ -25,7 +25,7 @@ test_no_home_access () {
 		-E CGIT_CONFIG="$PWD/cgitrc" \
 		-E QUERY_STRING="url=$1" \
 		-e access -f -o strace.out cgit &&
-	test_must_fail grep "$non_existent_path" strace.out
+	! grep "$non_existent_path" strace.out
 }
 
 test_no_home_access_success() {

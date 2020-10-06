@@ -14,7 +14,7 @@
 #include <tag.h>
 #include <diff.h>
 #include <diffcore.h>
-#include <argv-array.h>
+#include <strvec.h>
 #include <refs.h>
 #include <revision.h>
 #include <log-tree.h>
