@@ -127,7 +127,6 @@ static int end_of_header(const char *p)
 
 struct commitinfo *cgit_parse_commit(struct commit *commit)
 {
-	const int oid_hex_len = 40;
 	struct commitinfo *ret;
 	const char *p = repo_get_commit_buffer(the_repository, commit, NULL);
 	const char *t;
@@ -140,10 +139,10 @@ struct commitinfo *cgit_parse_commit(struct commit *commit)
 
 	if (!skip_prefix(p, "tree ", &p))
 		die("Bad commit: %s", oid_to_hex(&commit->object.oid));
-	p += oid_hex_len + 1;
+	p += the_hash_algo->hexsz + 1;
 
 	while (skip_prefix(p, "parent ", &p))
-		p += oid_hex_len + 1;
+		p += the_hash_algo->hexsz + 1;
 
 	if (p && skip_prefix(p, "author ", &p)) {
 		parse_user(p, &ret->author, &ret->author_email,

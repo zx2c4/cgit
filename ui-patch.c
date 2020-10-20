@@ -61,7 +61,7 @@ void cgit_print_patch(const char *new_rev, const char *old_rev,
 	}
 
 	if (is_null_oid(&old_rev_oid)) {
-		memcpy(rev_range, oid_to_hex(&new_rev_oid), GIT_SHA1_HEXSZ + 1);
+		memcpy(rev_range, oid_to_hex(&new_rev_oid), the_hash_algo->hexsz + 1);
 	} else {
 		xsnprintf(rev_range, REV_RANGE_LEN, "%s..%s", oid_to_hex(&old_rev_oid),
 			oid_to_hex(&new_rev_oid));

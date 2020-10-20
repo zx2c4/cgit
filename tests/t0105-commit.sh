@@ -25,7 +25,7 @@ test_expect_success 'get root commit' '
 '
 
 test_expect_success 'root commit contains diffstat' '
-	grep "<a href=./foo/diff/file-1.id=[0-9a-f]\{40\}.>file-1</a>" tmp
+	grep "<a href=./foo/diff/file-1.id=[0-9a-f]\{40,64\}.>file-1</a>" tmp
 '
 
 test_expect_success 'root commit contains diff' '

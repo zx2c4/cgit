@@ -19,7 +19,7 @@ regex=''
 
 # This expression generates links to commits referenced by their SHA1.
 regex=$regex'
-s|\b([0-9a-fA-F]{7,40})\b|<a href="./?id=\1">\1</a>|g'
+s|\b([0-9a-fA-F]{7,64})\b|<a href="./?id=\1">\1</a>|g'
 
 # This expression generates links to a fictional bugtracker.
 regex=$regex'
