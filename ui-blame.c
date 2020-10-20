@@ -48,7 +48,7 @@ static void emit_blame_entry_hash(struct blame_entry *ent)
 	unsigned long line = 0;
 
 	char *detail = emit_suspect_detail(suspect);
-	html("<span class='sha1'>");
+	html("<span class='oid'>");
 	cgit_commit_link(find_unique_abbrev(oid, DEFAULT_ABBREV), detail,
 			 NULL, ctx.qry.head, oid_to_hex(oid), suspect->path);
 	html("</span>");
@@ -256,7 +256,7 @@ static int basedir_len(const char *path)
 
 void cgit_print_blame(void)
 {
-	const char *rev = ctx.qry.sha1;
+	const char *rev = ctx.qry.oid;
 	struct object_id oid;
 	struct commit *commit;
 	struct pathspec_item path_items = {

@@ -74,22 +74,22 @@ static void blame_fn(void)
 
 static void blob_fn(void)
 {
-	cgit_print_blob(ctx.qry.sha1, ctx.qry.path, ctx.qry.head, 0);
+	cgit_print_blob(ctx.qry.oid, ctx.qry.path, ctx.qry.head, 0);
 }
 
 static void commit_fn(void)
 {
-	cgit_print_commit(ctx.qry.sha1, ctx.qry.path);
+	cgit_print_commit(ctx.qry.oid, ctx.qry.path);
 }
 
 static void diff_fn(void)
 {
-	cgit_print_diff(ctx.qry.sha1, ctx.qry.sha2, ctx.qry.path, 1, 0);
+	cgit_print_diff(ctx.qry.oid, ctx.qry.oid2, ctx.qry.path, 1, 0);
 }
 
 static void rawdiff_fn(void)
 {
-	cgit_print_diff(ctx.qry.sha1, ctx.qry.sha2, ctx.qry.path, 1, 1);
+	cgit_print_diff(ctx.qry.oid, ctx.qry.oid2, ctx.qry.path, 1, 1);
 }
 
 static void info_fn(void)
@@ -99,7 +99,7 @@ static void info_fn(void)
 
 static void log_fn(void)
 {
-	cgit_print_log(ctx.qry.sha1, ctx.qry.ofs, ctx.cfg.max_commit_count,
+	cgit_print_log(ctx.qry.oid, ctx.qry.ofs, ctx.cfg.max_commit_count,
 		       ctx.qry.grep, ctx.qry.search, ctx.qry.path, 1,
 		       ctx.repo->enable_commit_graph,
 		       ctx.repo->commit_sort);
@@ -125,7 +125,7 @@ static void repolist_fn(void)
 
 static void patch_fn(void)
 {
-	cgit_print_patch(ctx.qry.sha1, ctx.qry.sha2, ctx.qry.path);
+	cgit_print_patch(ctx.qry.oid, ctx.qry.oid2, ctx.qry.path);
 }
 
 static void plain_fn(void)
@@ -140,7 +140,7 @@ static void refs_fn(void)
 
 static void snapshot_fn(void)
 {
-	cgit_print_snapshot(ctx.qry.head, ctx.qry.sha1, ctx.qry.path,
+	cgit_print_snapshot(ctx.qry.head, ctx.qry.oid, ctx.qry.path,
 			    ctx.qry.nohead);
 }
 
@@ -156,12 +156,12 @@ static void summary_fn(void)
 
 static void tag_fn(void)
 {
-	cgit_print_tag(ctx.qry.sha1);
+	cgit_print_tag(ctx.qry.oid);
 }
 
 static void tree_fn(void)
 {
-	cgit_print_tree(ctx.qry.sha1, ctx.qry.path);
+	cgit_print_tree(ctx.qry.oid, ctx.qry.path);
 }
 
 #define def_cmd(name, want_repo, want_vpath, is_clone) \

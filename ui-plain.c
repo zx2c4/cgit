@@ -99,7 +99,7 @@ static void print_dir(const struct object_id *oid, const char *base,
 			fullpath = NULL;
 		}
 		html("<li>");
-		cgit_plain_link("../", NULL, NULL, ctx.qry.head, ctx.qry.sha1,
+		cgit_plain_link("../", NULL, NULL, ctx.qry.head, ctx.qry.oid,
 				fullpath);
 		html("</li>\n");
 	}
@@ -118,7 +118,7 @@ static void print_dir_entry(const struct object_id *oid, const char *base,
 	if (S_ISGITLINK(mode)) {
 		cgit_submodule_link(NULL, fullpath, oid_to_hex(oid));
 	} else
-		cgit_plain_link(path, NULL, NULL, ctx.qry.head, ctx.qry.sha1,
+		cgit_plain_link(path, NULL, NULL, ctx.qry.head, ctx.qry.oid,
 				fullpath);
 	html("</li>\n");
 	free(fullpath);
@@ -163,7 +163,7 @@ static int basedir_len(const char *path)
 
 void cgit_print_plain(void)
 {
-	const char *rev = ctx.qry.sha1;
+	const char *rev = ctx.qry.oid;
 	struct object_id oid;
 	struct commit *commit;
 	struct pathspec_item path_items = {

@@ -463,7 +463,7 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 	if (pager) {
 		html(" (");
 		cgit_log_link(ctx.qry.showmsg ? "Collapse" : "Expand", NULL,
-			      NULL, ctx.qry.head, ctx.qry.sha1,
+			      NULL, ctx.qry.head, ctx.qry.oid,
 			      ctx.qry.vpath, ctx.qry.ofs, ctx.qry.grep,
 			      ctx.qry.search, ctx.qry.showmsg ? 0 : 1,
 			      ctx.qry.follow);
@@ -519,7 +519,7 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 		if (ofs > 0) {
 			html("<li>");
 			cgit_log_link("[prev]", NULL, NULL, ctx.qry.head,
-				      ctx.qry.sha1, ctx.qry.vpath,
+				      ctx.qry.oid, ctx.qry.vpath,
 				      ofs - cnt, ctx.qry.grep,
 				      ctx.qry.search, ctx.qry.showmsg,
 				      ctx.qry.follow);
@@ -528,7 +528,7 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 		if ((commit = get_revision(&rev)) != NULL) {
 			html("<li>");
 			cgit_log_link("[next]", NULL, NULL, ctx.qry.head,
-				      ctx.qry.sha1, ctx.qry.vpath,
+				      ctx.qry.oid, ctx.qry.vpath,
 				      ofs + cnt, ctx.qry.grep,
 				      ctx.qry.search, ctx.qry.showmsg,
 				      ctx.qry.follow);

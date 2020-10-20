@@ -97,8 +97,8 @@ static void print_fileinfo(struct fileinfo *info)
 		html("]</span>");
 	}
 	htmlf("</td><td class='%s'>", class);
-	cgit_diff_link(info->new_path, NULL, NULL, ctx.qry.head, ctx.qry.sha1,
-		       ctx.qry.sha2, info->new_path);
+	cgit_diff_link(info->new_path, NULL, NULL, ctx.qry.head, ctx.qry.oid,
+		       ctx.qry.oid2, info->new_path);
 	if (info->status == DIFF_STATUS_COPIED || info->status == DIFF_STATUS_RENAMED) {
 		htmlf(" (%s from ",
 		      info->status == DIFF_STATUS_COPIED ? "copied" : "renamed");
@@ -194,8 +194,8 @@ static void cgit_print_diffstat(const struct object_id *old_oid,
 	int i;
 
 	html("<div class='diffstat-header'>");
-	cgit_diff_link("Diffstat", NULL, NULL, ctx.qry.head, ctx.qry.sha1,
-		       ctx.qry.sha2, NULL);
+	cgit_diff_link("Diffstat", NULL, NULL, ctx.qry.head, ctx.qry.oid,
+		       ctx.qry.oid2, NULL);
 	if (prefix) {
 		html(" (limited to '");
 		html_txt(prefix);

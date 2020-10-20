@@ -561,7 +561,7 @@ div#cgit table.diff td div.del {
 	color: red;
 }
 
-div#cgit .sha1 {
+div#cgit .oid {
 	font-family: monospace;
 	font-size: 90%;
 }

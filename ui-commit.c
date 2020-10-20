@@ -70,13 +70,13 @@ void cgit_print_commit(char *hex, const char *prefix)
 	html_txt(show_date(info->committer_date, info->committer_tz,
 				cgit_date_mode(DATE_ISO8601)));
 	html("</td></tr>\n");
-	html("<tr><th>commit</th><td colspan='2' class='sha1'>");
+	html("<tr><th>commit</th><td colspan='2' class='oid'>");
 	tmp = oid_to_hex(&commit->object.oid);
 	cgit_commit_link(tmp, NULL, NULL, ctx.qry.head, tmp, prefix);
 	html(" (");
 	cgit_patch_link("patch", NULL, NULL, NULL, tmp, prefix);
 	html(")</td></tr>\n");
-	html("<tr><th>tree</th><td colspan='2' class='sha1'>");
+	html("<tr><th>tree</th><td colspan='2' class='oid'>");
 	tmp = xstrdup(hex);
 	cgit_tree_link(oid_to_hex(get_commit_tree_oid(commit)), NULL, NULL,
 		       ctx.qry.head, tmp, NULL);
@@ -95,7 +95,7 @@ void cgit_print_commit(char *hex, const char *prefix)
 			continue;
 		}
 		html("<tr><th>parent</th>"
-		     "<td colspan='2' class='sha1'>");
+		     "<td colspan='2' class='oid'>");
 		tmp = tmp2 = oid_to_hex(&p->item->object.oid);
 		if (ctx.repo->enable_subject_links) {
 			parent_info = cgit_parse_commit(parent);
@@ -109,7 +109,7 @@ void cgit_print_commit(char *hex, const char *prefix)
 		parents++;
 	}
 	if (ctx.repo->snapshots) {
-		html("<tr><th>download</th><td colspan='2' class='sha1'>");
+		html("<tr><th>download</th><td colspan='2' class='oid'>");
 		cgit_print_snapshot_links(ctx.repo, hex, "<br/>");
 		html("</td></tr>");
 	}
@@ -139,7 +139,7 @@ void cgit_print_commit(char *hex, const char *prefix)
 			tmp = oid_to_hex(&commit->parents->item->object.oid);
 		else
 			tmp = NULL;
-		cgit_print_diff(ctx.qry.sha1, tmp, prefix, 0, 0);
+		cgit_print_diff(ctx.qry.oid, tmp, prefix, 0, 0);
 	}
 	strbuf_release(&notes);
 	cgit_free_commitinfo(info);

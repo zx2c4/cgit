@@ -521,45 +521,45 @@ static void cgit_self_link(char *name, const char *title, const char *class)
 	else if (!strcmp(ctx.qry.page, "summary"))
 		cgit_summary_link(name, title, class, ctx.qry.head);
 	else if (!strcmp(ctx.qry.page, "tag"))
-		cgit_tag_link(name, title, class, ctx.qry.has_sha1 ?
-			       ctx.qry.sha1 : ctx.qry.head);
+		cgit_tag_link(name, title, class, ctx.qry.has_oid ?
+			       ctx.qry.oid : ctx.qry.head);
 	else if (!strcmp(ctx.qry.page, "tree"))
 		cgit_tree_link(name, title, class, ctx.qry.head,
-			       ctx.qry.has_sha1 ? ctx.qry.sha1 : NULL,
+			       ctx.qry.has_oid ? ctx.qry.oid : NULL,
 			       ctx.qry.path);
 	else if (!strcmp(ctx.qry.page, "plain"))
 		cgit_plain_link(name, title, class, ctx.qry.head,
-				ctx.qry.has_sha1 ? ctx.qry.sha1 : NULL,
+				ctx.qry.has_oid ? ctx.qry.oid : NULL,
 				ctx.qry.path);
 	else if (!strcmp(ctx.qry.page, "blame"))
 		cgit_blame_link(name, title, class, ctx.qry.head,
-				ctx.qry.has_sha1 ? ctx.qry.sha1 : NULL,
+				ctx.qry.has_oid ? ctx.qry.oid : NULL,
 				ctx.qry.path);
 	else if (!strcmp(ctx.qry.page, "log"))
 		cgit_log_link(name, title, class, ctx.qry.head,
-			      ctx.qry.has_sha1 ? ctx.qry.sha1 : NULL,
+			      ctx.qry.has_oid ? ctx.qry.oid : NULL,
 			      ctx.qry.path, ctx.qry.ofs,
 			      ctx.qry.grep, ctx.qry.search,
 			      ctx.qry.showmsg, ctx.qry.follow);
 	else if (!strcmp(ctx.qry.page, "commit"))
 		cgit_commit_link(name, title, class, ctx.qry.head,
-				 ctx.qry.has_sha1 ? ctx.qry.sha1 : NULL,
+				 ctx.qry.has_oid ? ctx.qry.oid : NULL,
 				 ctx.qry.path);
 	else if (!strcmp(ctx.qry.page, "patch"))
 		cgit_patch_link(name, title, class, ctx.qry.head,
-				ctx.qry.has_sha1 ? ctx.qry.sha1 : NULL,
+				ctx.qry.has_oid ? ctx.qry.oid : NULL,
 				ctx.qry.path);
 	else if (!strcmp(ctx.qry.page, "refs"))
 		cgit_refs_link(name, title, class, ctx.qry.head,
-			       ctx.qry.has_sha1 ? ctx.qry.sha1 : NULL,
+			       ctx.qry.has_oid ? ctx.qry.oid : NULL,
 			       ctx.qry.path);
 	else if (!strcmp(ctx.qry.page, "snapshot"))
 		cgit_snapshot_link(name, title, class, ctx.qry.head,
-				   ctx.qry.has_sha1 ? ctx.qry.sha1 : NULL,
+				   ctx.qry.has_oid ? ctx.qry.oid : NULL,
 				   ctx.qry.path);
 	else if (!strcmp(ctx.qry.page, "diff"))
 		cgit_diff_link(name, title, class, ctx.qry.head,
-			       ctx.qry.sha1, ctx.qry.sha2,
+			       ctx.qry.oid, ctx.qry.oid2,
 			       ctx.qry.path);
 	else if (!strcmp(ctx.qry.page, "stats"))
 		cgit_stats_link(name, title, class, ctx.qry.head,
@@ -918,10 +918,10 @@ void cgit_add_hidden_formfields(int incl_head, int incl_search,
 	    strcmp(ctx.qry.head, ctx.repo->defbranch))
 		html_hidden("h", ctx.qry.head);
 
-	if (ctx.qry.sha1)
-		html_hidden("id", ctx.qry.sha1);
-	if (ctx.qry.sha2)
-		html_hidden("id2", ctx.qry.sha2);
+	if (ctx.qry.oid)
+		html_hidden("id", ctx.qry.oid);
+	if (ctx.qry.oid2)
+		html_hidden("id2", ctx.qry.oid2);
 	if (ctx.qry.showmsg)
 		html_hidden("showmsg", "1");
 
@@ -1038,20 +1038,20 @@ void cgit_print_pageheader(void)
 		cgit_summary_link("summary", NULL, hc("summary"),
 				  ctx.qry.head);
 		cgit_refs_link("refs", NULL, hc("refs"), ctx.qry.head,
-			       ctx.qry.sha1, NULL);
+			       ctx.qry.oid, NULL);
 		cgit_log_link("log", NULL, hc("log"), ctx.qry.head,
 			      NULL, ctx.qry.vpath, 0, NULL, NULL,
 			      ctx.qry.showmsg, ctx.qry.follow);
 		if (ctx.qry.page && !strcmp(ctx.qry.page, "blame"))
 			cgit_blame_link("blame", NULL, hc("blame"), ctx.qry.head,
-				        ctx.qry.sha1, ctx.qry.vpath);
+				        ctx.qry.oid, ctx.qry.vpath);
 		else
 			cgit_tree_link("tree", NULL, hc("tree"), ctx.qry.head,
-				       ctx.qry.sha1, ctx.qry.vpath);
+				       ctx.qry.oid, ctx.qry.vpath);
 		cgit_commit_link("commit", NULL, hc("commit"),
-				 ctx.qry.head, ctx.qry.sha1, ctx.qry.vpath);
+				 ctx.qry.head, ctx.qry.oid, ctx.qry.vpath);
 		cgit_diff_link("diff", NULL, hc("diff"), ctx.qry.head,
-			       ctx.qry.sha1, ctx.qry.sha2, ctx.qry.vpath);
+			       ctx.qry.oid, ctx.qry.oid2, ctx.qry.vpath);
 		if (ctx.repo->max_stats)
 			cgit_stats_link("stats", NULL, hc("stats"),
 					ctx.qry.head, ctx.qry.vpath);

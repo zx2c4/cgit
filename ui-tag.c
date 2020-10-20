@@ -33,7 +33,7 @@ static void print_tag_content(char *buf)
 
 static void print_download_links(char *revname)
 {
-	html("<tr><th>download</th><td class='sha1'>");
+	html("<tr><th>download</th><td class='oid'>");
 	cgit_print_snapshot_links(ctx.repo, revname, "<br/>");
 	html("</td></tr>");
 }
@@ -91,7 +91,7 @@ void cgit_print_tag(char *revname)
 			cgit_close_filter(ctx.repo->email_filter);
 			html("</td></tr>\n");
 		}
-		html("<tr><td>tagged object</td><td class='sha1'>");
+		html("<tr><td>tagged object</td><td class='oid'>");
 		cgit_object_link(tag->tagged);
 		html("</td></tr>\n");
 		if (ctx.repo->snapshots)
@@ -106,7 +106,7 @@ void cgit_print_tag(char *revname)
 		html("<tr><td>tag name</td><td>");
 		html_txt(revname);
 		html("</td></tr>\n");
-		html("<tr><td>tagged object</td><td class='sha1'>");
+		html("<tr><td>tagged object</td><td class='oid'>");
 		cgit_object_link(obj);
 		html("</td></tr>\n");
 		if (ctx.repo->snapshots)
