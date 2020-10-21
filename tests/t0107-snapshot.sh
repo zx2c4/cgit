@@ -61,8 +61,7 @@ test_expect_success LZIP 'strip off the header lines' '
 '
 
 test_expect_success LZIP 'verify lzip format' '
-	lzip --test master.tar.lz &&
-	cp master.tar.lz /tmp/.
+	lzip --test master.tar.lz
 '
 
 test_expect_success LZIP 'untar' '
@@ -103,8 +102,7 @@ test_expect_success XZ 'strip off the header lines' '
 '
 
 test_expect_success XZ 'verify xz format' '
-	xz --test master.tar.xz &&
-	cp master.tar.xz /tmp/.
+	xz --test master.tar.xz
 '
 
 test_expect_success XZ 'untar' '
@@ -145,8 +143,7 @@ test_expect_success ZSTD 'strip off the header lines' '
 '
 
 test_expect_success ZSTD 'verify zstd format' '
-	zstd --test master.tar.zst &&
-	cp master.tar.zst /tmp/.
+	zstd --test master.tar.zst
 '
 
 test_expect_success ZSTD 'untar' '
