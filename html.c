@@ -59,7 +59,7 @@ char *fmt(const char *format, ...)
 	va_start(args, format);
 	len = vsnprintf(buf[bufidx], sizeof(buf[bufidx]), format, args);
 	va_end(args);
-	if (len > sizeof(buf[bufidx])) {
+	if (len >= sizeof(buf[bufidx])) {
 		fprintf(stderr, "[html.c] string truncated: %s\n", format);
 		exit(1);
 	}
