@@ -166,7 +166,7 @@ static void add_commit(struct string_list *authors, struct commit *commit,
 	struct authorstat *authorstat;
 	struct string_list *items;
 	char *tmp;
-	struct tm *date;
+	struct tm date;
 	time_t t;
 	uintptr_t *counter;
 
@@ -180,9 +180,9 @@ static void add_commit(struct string_list *authors, struct commit *commit,
 	authorstat = author->util;
 	items = &authorstat->list;
 	t = info->committer_date;
-	date = gmtime(&t);
-	period->trunc(date);
-	tmp = xstrdup(period->pretty(date));
+	gmtime_r(&t, &date);
+	period->trunc(&date);
+	tmp = xstrdup(period->pretty(&date));
 	item = string_list_insert(items, tmp);
 	counter = (uintptr_t *)&item->util;
 	if (*counter)
@@ -215,15 +215,15 @@ static struct string_list collect_stats(const struct cgit_period *period)
 	int argc = 3;
 	time_t now;
 	long i;
-	struct tm *tm;
+	struct tm tm;
 	char tmp[11];
 
 	time(&now);
-	tm = gmtime(&now);
-	period->trunc(tm);
+	gmtime_r(&now, &tm);
+	period->trunc(&tm);
 	for (i = 1; i < period->count; i++)
-		period->dec(tm);
-	strftime(tmp, sizeof(tmp), "%Y-%m-%d", tm);
+		period->dec(&tm);
+	strftime(tmp, sizeof(tmp), "%Y-%m-%d", &tm);
 	argv[2] = xstrdup(fmt("--since=%s", tmp));
 	if (ctx.qry.path) {
 		argv[3] = "--";
@@ -261,21 +261,21 @@ static void print_combined_authorrow(struct string_list *authors, int from,
 	struct string_list_item *date;
 	time_t now;
 	long i, j, total, subtotal;
-	struct tm *tm;
+	struct tm tm;
 	char *tmp;
 
 	time(&now);
-	tm = gmtime(&now);
-	period->trunc(tm);
+	gmtime_r(&now, &tm);
+	period->trunc(&tm);
 	for (i = 1; i < period->count; i++)
-		period->dec(tm);
+		period->dec(&tm);
 
 	total = 0;
 	htmlf("<tr><td class='%s'>%s</td>", leftclass,
 		fmt(name, to - from + 1));
 	for (j = 0; j < period->count; j++) {
-		tmp = period->pretty(tm);
-		period->inc(tm);
+		tmp = period->pretty(&tm);
+		period->inc(&tm);
 		subtotal = 0;
 		for (i = from; i <= to; i++) {
 			author = &authors->items[i];
@@ -300,20 +300,20 @@ static void print_authors(struct string_list *authors, int top,
 	struct string_list_item *date;
 	time_t now;
 	long i, j, total;
-	struct tm *tm;
+	struct tm tm;
 	char *tmp;
 
 	time(&now);
-	tm = gmtime(&now);
-	period->trunc(tm);
+	gmtime_r(&now, &tm);
+	period->trunc(&tm);
 	for (i = 1; i < period->count; i++)
-		period->dec(tm);
+		period->dec(&tm);
 
 	html("<table class='stats'><tr><th>Author</th>");
 	for (j = 0; j < period->count; j++) {
-		tmp = period->pretty(tm);
+		tmp = period->pretty(&tm);
 		htmlf("<th>%s</th>", tmp);
-		period->inc(tm);
+		period->inc(&tm);
 	}
 	html("<th>Total</th></tr>\n");
 
@@ -329,10 +329,10 @@ static void print_authors(struct string_list *authors, int top,
 		items = &authorstat->list;
 		total = 0;
 		for (j = 0; j < period->count; j++)
-			period->dec(tm);
+			period->dec(&tm);
 		for (j = 0; j < period->count; j++) {
-			tmp = period->pretty(tm);
-			period->inc(tm);
+			tmp = period->pretty(&tm);
+			period->inc(&tm);
 			date = string_list_lookup(items, tmp);
 			if (!date)
 				html("<td>0</td>");

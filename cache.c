@@ -401,12 +401,12 @@ int cache_process(int size, const char *path, const char *key, int ttl,
 static char *sprintftime(const char *format, time_t time)
 {
 	static char buf[64];
-	struct tm *tm;
+	struct tm tm;
 
 	if (!time)
 		return NULL;
-	tm = gmtime(&time);
-	strftime(buf, sizeof(buf)-1, format, tm);
+	gmtime_r(&time, &tm);
+	strftime(buf, sizeof(buf)-1, format, &tm);
 	return buf;
 }
 
