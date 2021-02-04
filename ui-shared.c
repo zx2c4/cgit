@@ -1016,7 +1016,13 @@ static void print_header(void)
 	if (ctx.repo) {
 		html_txt(ctx.repo->desc);
 		html("</td><td class='sub right'>");
-		html_txt(ctx.repo->owner);
+		if (ctx.repo->owner_filter) {
+			cgit_open_filter(ctx.repo->owner_filter);
+			html_txt(ctx.repo->owner);
+			cgit_close_filter(ctx.repo->owner_filter);
+		} else {
+			html_txt(ctx.repo->owner);
+		}
 	} else {
 		if (ctx.cfg.root_desc)
 			html_txt(ctx.cfg.root_desc);
