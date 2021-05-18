@@ -139,8 +139,7 @@ struct single_tree_ctx {
 };
 
 static int single_tree_cb(const struct object_id *oid, struct strbuf *base,
-			  const char *pathname, unsigned mode, int stage,
-			  void *cbdata)
+			  const char *pathname, unsigned mode, void *cbdata)
 {
 	struct single_tree_ctx *ctx = cbdata;
 
@@ -185,8 +184,7 @@ static void write_tree_link(const struct object_id *oid, char *name,
 		tree_ctx.name = NULL;
 		tree_ctx.count = 0;
 
-		read_tree_recursive(the_repository, tree, "", 0, 1,
-			&paths, single_tree_cb, &tree_ctx);
+		read_tree(the_repository, tree, &paths, single_tree_cb, &tree_ctx);
 
 		if (tree_ctx.count != 1)
 			break;
@@ -199,7 +197,7 @@ static void write_tree_link(const struct object_id *oid, char *name,
 }
 
 static int ls_item(const struct object_id *oid, struct strbuf *base,
-		const char *pathname, unsigned mode, int stage, void *cbdata)
+		const char *pathname, unsigned mode, void *cbdata)
 {
 	struct walk_tree_context *walk_tree_ctx = cbdata;
 	char *name;
@@ -294,14 +292,13 @@ static void ls_tree(const struct object_id *oid, const char *path, struct walk_t
 	}
 
 	ls_head();
-	read_tree_recursive(the_repository, tree, "", 0, 1,
-		&paths, ls_item, walk_tree_ctx);
+	read_tree(the_repository, tree, &paths, ls_item, walk_tree_ctx);
 	ls_tail();
 }
 
 
 static int walk_tree(const struct object_id *oid, struct strbuf *base,
-		const char *pathname, unsigned mode, int stage, void *cbdata)
+		const char *pathname, unsigned mode, void *cbdata)
 {
 	struct walk_tree_context *walk_tree_ctx = cbdata;
 
@@ -326,7 +323,7 @@ static int walk_tree(const struct object_id *oid, struct strbuf *base,
 			return 0;
 		}
 	}
-	ls_item(oid, base, pathname, mode, stage, walk_tree_ctx);
+	ls_item(oid, base, pathname, mode, walk_tree_ctx);
 	return 0;
 }
 
@@ -374,10 +371,8 @@ void cgit_print_tree(const char *rev, char *path)
 		goto cleanup;
 	}
 
-	read_tree_recursive(the_repository,
-			    repo_get_commit_tree(the_repository, commit),
-			    "", 0, 0,
-			    &paths, walk_tree, &walk_tree_ctx);
+	read_tree(the_repository, repo_get_commit_tree(the_repository, commit),
+		  &paths, walk_tree, &walk_tree_ctx);
 	if (walk_tree_ctx.state == 1)
 		ls_tail();
 	else if (walk_tree_ctx.state == 2)

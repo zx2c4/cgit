@@ -130,7 +130,7 @@ static void print_dir_tail(void)
 }
 
 static int walk_tree(const struct object_id *oid, struct strbuf *base,
-		const char *pathname, unsigned mode, int stage, void *cbdata)
+		const char *pathname, unsigned mode, void *cbdata)
 {
 	struct walk_tree_context *walk_tree_ctx = cbdata;
 
@@ -198,9 +198,8 @@ void cgit_print_plain(void)
 	}
 	else
 		walk_tree_ctx.match_baselen = basedir_len(path_items.match);
-	read_tree_recursive(the_repository,
-		            repo_get_commit_tree(the_repository, commit),
-		            "", 0, 0, &paths, walk_tree, &walk_tree_ctx);
+	read_tree(the_repository, repo_get_commit_tree(the_repository, commit),
+		  &paths, walk_tree, &walk_tree_ctx);
 	if (!walk_tree_ctx.match)
 		cgit_print_error_page(404, "Not found", "Not found");
 	else if (walk_tree_ctx.match == 2)
