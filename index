@@ -1,9 +1,10 @@
 cgit Quick Facts
 ----------------
 
- * web interface ([cgi][]) for [Git][git] repositories, written in [C][]
- * licensed under [GPLv2][]
+ * web interface ([cgi][]) for [Git][git] repositories, written in [C][].
+ * licensed under [GPLv2][].
  * discussions, patches etc. go to the [list][] ([signup][], [archive][]).
+ * real time chat available in #cgit on Libera.Chat.
  * common questions are answered in the [FAQ][faq].
 
 [cgi]:     https://tools.ietf.org/html/rfc3875

@@ -5,7 +5,7 @@ This is a compilation of frequently asked questions on the cgit mailing
 list. If you've got a cgit problem and cannot find an answer here, please
 send a request to cgit@lists.zx2c4.com (and consider sending a patch to the
 cgit wiki branch to update this faq if you get a nice answer to your
-question).
+question). The project also maintains the #cgit channel on Libera.Chat.
 
 ### Why doesn't cgit find/show my repo?
 
