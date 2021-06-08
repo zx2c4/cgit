@@ -67,16 +67,11 @@ static void add_entry(struct commit *commit, const char *host)
 		html("'/>\n");
 		free(pageurl);
 	}
-	htmlf("<id>%s</id>\n", hex);
+	html("<id>");
+	html_txtf("urn:%s:%s", the_hash_algo->name, hex);
+	html("</id>\n");
 	html("<content type='text'>\n");
 	html_txt(info->msg);
-	html("</content>\n");
-	html("<content type='xhtml'>\n");
-	html("<div xmlns='http://www.w3.org/1999/xhtml'>\n");
-	html("<pre>\n");
-	html_txt(info->msg);
-	html("</pre>\n");
-	html("</div>\n");
 	html("</content>\n");
 	html("</entry>\n");
 	cgit_free_commitinfo(info);
@@ -90,6 +85,7 @@ void cgit_print_atom(char *tip, const char *path, int max_count)
 	struct commit *commit;
 	struct rev_info rev;
 	int argc = 2;
+	bool first = true;
 
 	if (ctx.qry.show_all)
 		argv[1] = "--all";
@@ -130,15 +126,28 @@ void cgit_print_atom(char *tip, const char *path, int max_count)
 	html_txt(ctx.repo->desc);
 	html("</subtitle>\n");
 	if (host) {
+		char *fullurl = cgit_currentfullurl();
 		char *repourl = cgit_repourl(ctx.repo->url);
-		html("<link rel='alternate' type='text/html' href='");
-		html(cgit_httpscheme());
-		html_attr(host);
-		html_attr(repourl);
+		html("<id>");
+		html_txtf("%s%s%s", cgit_httpscheme(), host, fullurl);
+		html("</id>\n");
+		html("<link rel='self' href='");
+		html_attrf("%s%s%s", cgit_httpscheme(), host, fullurl);
 		html("'/>\n");
+		html("<link rel='alternate' type='text/html' href='");
+		html_attrf("%s%s%s", cgit_httpscheme(), host, repourl);
+		html("'/>\n");
+		free(fullurl);
 		free(repourl);
 	}
 	while ((commit = get_revision(&rev)) != NULL) {
+		if (first) {
+			html("<updated>");
+			html_txt(show_date(commit->date, 0,
+				date_mode_from_type(DATE_ISO8601_STRICT)));
+			html("</updated>\n");
+			first = false;
+		}
 		add_entry(commit, host);
 		free_commit_buffer(the_repository->parsed_objects, commit);
 		free_commit_list(commit->parents);
