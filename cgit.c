@@ -428,7 +428,7 @@ static void prepare_context(void)
 	ctx.page.modified = time(NULL);
 	ctx.page.expires = ctx.page.modified;
 	ctx.page.etag = NULL;
-	string_list_init(&ctx.cfg.mimetypes, 1);
+	string_list_init_dup(&ctx.cfg.mimetypes);
 	if (ctx.env.script_name)
 		ctx.cfg.script_name = xstrdup(ctx.env.script_name);
 	if (ctx.env.query_string)
