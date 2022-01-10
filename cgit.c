@@ -507,9 +507,11 @@ static inline void parse_readme(const char *readme, char **filename, char **ref,
 	/* Check if the readme is tracked in the git repo. */
 	colon = strchr(readme, ':');
 	if (colon && strlen(colon) > 1) {
-		/* If it starts with a colon, we want to use
-		 * the default branch */
-		if (colon == readme && repo->defbranch)
+		/* If it starts with a colon, we want to use head given
+		 * from query or the default branch */
+		if (colon == readme && ctx.qry.head)
+			*ref = xstrdup(ctx.qry.head);
+		else if (colon == readme && repo->defbranch)
 			*ref = xstrdup(repo->defbranch);
 		else
 			*ref = xstrndup(readme, colon - readme);

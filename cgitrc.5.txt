@@ -579,11 +579,11 @@ repo.readme::
 	verbatim as the "About" page for this repo. You may also specify a
 	git refspec by head or by hash by prepending the refspec followed by
 	a colon. For example, "master:docs/readme.mkd". If the value begins
-	with a colon, i.e. ":docs/readme.rst", the default branch of the
-	repository will be used. Sharing any file will expose that entire
-	directory tree to the "/about/PATH" endpoints, so be sure that there
-	are no non-public files located in the same directory as the readme
-	file. Default value: <readme>.
+	with a colon, i.e. ":docs/readme.rst", the head giving in query or
+	the default branch of the repository will be used. Sharing any file
+	will expose that entire directory tree to the "/about/PATH" endpoints,
+	so be sure that there are no non-public files located in the same
+	directory as the readme file. Default value: <readme>.
 
 repo.section::
 	Override the current section name for this repository. Default value:
