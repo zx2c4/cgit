@@ -363,6 +363,10 @@ div#cgit table.blame td.lines > div > pre {
 	top: 0;
 }
 
+div#cgit table.blame .oid {
+	font-size: 100%;
+}
+
 div#cgit table.bin-blob {
 	margin-top: 0.5em;
 	border: solid 1px black;
