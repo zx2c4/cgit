@@ -54,6 +54,15 @@ static void emit_blame_entry_hash(struct blame_entry *ent)
 	html("</span>");
 	free(detail);
 
+	if (!parse_commit(suspect->commit) && suspect->commit->parents) {
+		struct commit *parent = suspect->commit->parents->item;
+
+		html(" ");
+		cgit_blame_link("^", "Blame the previous revision", NULL,
+				ctx.qry.head, oid_to_hex(&parent->object.oid),
+				suspect->path);
+	}
+
 	while (line++ < ent->num_lines)
 		html("\n");
 }
