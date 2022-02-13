@@ -149,8 +149,7 @@ void cgit_print_atom(char *tip, const char *path, int max_count)
 			first = false;
 		}
 		add_entry(commit, host);
-		free_commit_buffer(the_repository->parsed_objects, commit);
-		free_commit_list(commit->parents);
+		release_commit_memory(the_repository->parsed_objects, commit);
 		commit->parents = NULL;
 	}
 	html("</feed>\n");

@@ -489,8 +489,7 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 	for (i = 0; i < ofs && (commit = get_revision(&rev)) != NULL; /* nop */) {
 		if (show_commit(commit, &rev))
 			i++;
-		free_commit_buffer(the_repository->parsed_objects, commit);
-		free_commit_list(commit->parents);
+		release_commit_memory(the_repository->parsed_objects, commit);
 		commit->parents = NULL;
 	}
 
@@ -511,8 +510,7 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 			i++;
 			print_commit(commit, &rev);
 		}
-		free_commit_buffer(the_repository->parsed_objects, commit);
-		free_commit_list(commit->parents);
+		release_commit_memory(the_repository->parsed_objects, commit);
 		commit->parents = NULL;
 	}
 	if (pager) {
