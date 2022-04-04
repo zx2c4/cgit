@@ -159,7 +159,7 @@ static int show_commit(struct commit *commit, struct rev_info *revs)
 		      "", &revs->diffopt);
 	diffcore_std(&revs->diffopt);
 
-	found = !diff_queue_is_empty();
+	found = !diff_queue_is_empty(&revs->diffopt);
 	saved_fmt = revs->diffopt.output_format;
 	revs->diffopt.output_format = DIFF_FORMAT_CALLBACK;
 	revs->diffopt.format_callback = cgit_diff_tree_cb;
