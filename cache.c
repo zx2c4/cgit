@@ -85,40 +85,45 @@ static int close_slot(struct cache_slot *slot)
 /* Print the content of the active cache slot (but skip the key). */
 static int print_slot(struct cache_slot *slot)
 {
+	off_t off;
 #ifdef HAVE_LINUX_SENDFILE
-	off_t start_off;
-	int ret;
+	off_t size;
+#endif
 
-	start_off = slot->keylen + 1;
+	off = slot->keylen + 1;
+
+#ifdef HAVE_LINUX_SENDFILE
+	size = slot->cache_st.st_size;
 
 	do {
-		ret = sendfile(STDOUT_FILENO, slot->cache_fd, &start_off,
-				slot->cache_st.st_size - start_off);
+		ssize_t ret;
+		ret = sendfile(STDOUT_FILENO, slot->cache_fd, &off, size - off);
 		if (ret < 0) {
 			if (errno == EAGAIN || errno == EINTR)
 				continue;
+			/* Fall back to read/write on EINVAL or ENOSYS */
+			if (errno == EINVAL || errno == ENOSYS)
+				break;
 			return errno;
 		}
-		return 0;
+		if (off == size)
+			return 0;
 	} while (1);
-#else
-	ssize_t i, j;
+#endif
 
-	i = lseek(slot->cache_fd, slot->keylen + 1, SEEK_SET);
-	if (i != slot->keylen + 1)
+	if (lseek(slot->cache_fd, off, SEEK_SET) != off)
 		return errno;
 
 	do {
-		i = j = xread(slot->cache_fd, slot->buf, sizeof(slot->buf));
-		if (i > 0)
-			j = xwrite(STDOUT_FILENO, slot->buf, i);
-	} while (i > 0 && j == i);
-
-	if (i < 0 || j != i)
-		return errno;
-	else
-		return 0;
-#endif
+		ssize_t ret;
+		ret = xread(slot->cache_fd, slot->buf, sizeof(slot->buf));
+		if (ret < 0)
+			return errno;
+		if (ret == 0)
+			return 0;
+		if (write_in_full(STDOUT_FILENO, slot->buf, ret) < 0)
+			return errno;
+	} while (1);
 }
 
 /* Check if the slot has expired */
