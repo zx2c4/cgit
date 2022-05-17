@@ -341,9 +341,8 @@ void cgit_diff_tree(const struct object_id *old_oid,
 		    filepair_fn fn, const char *prefix, int ignorews)
 {
 	struct diff_options opt;
-	struct pathspec_item item;
+	struct pathspec_item *item;
 
-	memset(&item, 0, sizeof(item));
 	diff_setup(&opt);
 	opt.output_format = DIFF_FORMAT_CALLBACK;
 	opt.detect_rename = 1;
@@ -354,10 +353,11 @@ void cgit_diff_tree(const struct object_id *old_oid,
 	opt.format_callback = cgit_diff_tree_cb;
 	opt.format_callback_data = fn;
 	if (prefix) {
-		item.match = xstrdup(prefix);
-		item.len = strlen(prefix);
+		item = xcalloc(1, sizeof(*item));
+		item->match = xstrdup(prefix);
+		item->len = strlen(prefix);
 		opt.pathspec.nr = 1;
-		opt.pathspec.items = &item;
+		opt.pathspec.items = item;
 	}
 	diff_setup_done(&opt);
 
@@ -367,8 +367,6 @@ void cgit_diff_tree(const struct object_id *old_oid,
 		diff_root_tree_oid(new_oid, "", &opt);
 	diffcore_std(&opt);
 	diff_flush(&opt);
-
-	free(item.match);
 }
 
 void cgit_diff_commit(struct commit *commit, filepair_fn fn, const char *prefix)
