@@ -678,6 +678,15 @@ div#cgit div.footer a:hover {
 	text-decoration: underline;
 }
 
+div#cgit span.msg-avail {
+	color: #000;
+	margin: 0px 0.5em;
+	padding: 0px 0.25em;
+	background-color: #f0f0f0;
+	border: solid 1px #777777;
+	border-radius: 5px;
+}
+
 div#cgit a.branch-deco {
 	color: #000;
 	margin: 0px 0.5em;
