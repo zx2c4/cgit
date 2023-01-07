@@ -770,6 +770,10 @@ static void print_rel_vcs_link(const char *url)
 
 static int emit_css_link(struct string_list_item *s, void *arg)
 {
+	/* Do not emit anything if css= is specified. */
+	if (s && *s->string == '\0')
+		return 0;
+
 	html("<link rel='stylesheet' type='text/css' href='");
 	if (s)
 		html_attr(s->string);
@@ -782,6 +786,10 @@ static int emit_css_link(struct string_list_item *s, void *arg)
 
 static int emit_js_link(struct string_list_item *s, void *arg)
 {
+	/* Do not emit anything if js= is specified. */
+	if (s && *s->string == '\0')
+		return 0;
+
 	html("<script type='text/javascript' src='");
 	if (s)
 		html_attr(s->string);
