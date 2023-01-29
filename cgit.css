@@ -940,3 +940,116 @@ div#cgit span.libravatar:hover > img.onhover {
         background-color: #eeeeee;
         box-shadow: 2px 2px 7px rgba(100,100,100,0.75);
 }
+
+/*
+   Color overrides for browsers running in dark mode.
+   "only all and ..." forces very old browsers to ignore the media query:
+   https://developer.mozilla.org/en-US/docs/Web/CSS/Media_Queries/Using_media_queries#improving_compatibility_with_older_browsers
+*/
+:root { color-scheme: light dark; }
+@media only all and (prefers-color-scheme: dark) {
+	html, div#cgit { color: #eee; background: #171717; }
+	div#cgit a { color: #3af; }
+	div#cgit .diffstat-header a { color: #28d; }
+	div#cgit table#header td.main a { color: #eee; }
+	div#cgit table#header td.sub { color: #999; }
+	div#cgit table.tabs { border-bottom-color: #444; }
+	div#cgit table.tabs td a { color: #888; }
+	div#cgit table.tabs td a.active { color: #fff; background-color: #444; }
+	div#cgit div.path { color: #eee; background-color: #333; }
+	div#cgit div.content { border-bottom-color: #bbb; }
+	div#cgit table.list tr { background: #171717; }
+	div#cgit table.list tr.logheader { background: #171717; }
+	div#cgit table.list tr:nth-child(even) { background: #171717; }
+	div#cgit table.list tr:nth-child(odd) { background: #1f1f1f; }
+	div#cgit table.list tr:hover { background: #333; }
+	div#cgit table.list tr.nohover { background: #171717; }
+	div#cgit table.list tr.nohover:hover { background: #171717; }
+	div#cgit table.list tr.nohover-highlight:hover:nth-child(even) { background: #171717; }
+	div#cgit table.list tr.nohover-highlight:hover:nth-child(odd) { background: #1f1f1f; }
+	div#cgit table.list td.commitgraph .column1 { color: #f55; }
+	div#cgit table.list td.commitgraph .column2 { color: #5f5; }
+	div#cgit table.list td.commitgraph .column3 { color: #ff5; }
+	div#cgit table.list td.commitgraph .column4 { color: #55f; }
+	div#cgit table.list td.commitgraph .column5 { color: #f5f; }
+	div#cgit table.list td.commitgraph .column6 { color: #5ff; }
+	div#cgit table.list td a { color: #eee; }
+	div#cgit table.list td a.ls-dir { color: #28d; }
+	div#cgit table.list td a:hover { color: #3af; }
+	div#cgit table#downloads { border-color: #888; }
+	div#cgit table#downloads th { background-color: #333; }
+	div#cgit div#blob { border-color: #eee; }
+	div#cgit table.blob { border-top-color: #eee; }
+	div#cgit table.blob td.hashes,
+	div#cgit table.blob td.lines { color: #eee; }
+	div#cgit table.blob td.linenumbers { border-right-color: gray; }
+	div#cgit table.blob td.linenumbers a,
+	div#cgit table.ssdiff td.lineno a { color: gray; }
+	div#cgit table.blob td.linenumbers a:hover,
+	div#cgit table.ssdiff td.lineno a:hover { color: #eee; }
+	div#cgit table.blame div.alt:nth-child(even) { background: #171717; }
+	div#cgit table.blame div.alt:nth-child(odd) { background: #1f1f1f; }
+	div#cgit table.bin-blob { border-color: #eee; }
+	div#cgit table.bin-blob th { border-color: #888; }
+	div#cgit table.bin-blob td { border-left-color: #888; }
+	div#cgit div.cgit-panel table { border-color: #555; background-color: #282828; }
+	div#cgit div.notes { border-color: #661; background-color: #220; }
+	div#cgit table.diffstat { border-color: #555; background-color: #282828; }
+	div#cgit table.diffstat td span.modechange { color: #c66; }
+	div#cgit table.diffstat td.add a { color: #6c6; }
+	div#cgit table.diffstat td.del a { color: #c66; }
+	div#cgit table.diffstat td.upd a { color: #3af; }
+	div#cgit table.diffstat td.graph td.add { background-color: #3a3; }
+	div#cgit table.diffstat td.graph td.rem { background-color: #a33; }
+	div#cgit div.diffstat-summary { color: #777; }
+	div#cgit table.diff td div.head { color: #eee; }
+	div#cgit table.diff td div.hunk { color: #28d; }
+	div#cgit table.diff td div.add { color: #6c6; }
+	div#cgit table.diff td div.del { color: #c66; }
+	div#cgit table.list td.reposection { color: #777; }
+	div#cgit ul.pager a { color: #888; }
+	div#cgit span.age-mins { color: #7f7; }
+	div#cgit span.age-hours { color: #7f7; }
+	div#cgit span.age-days { color: #9d9; }
+	div#cgit span.age-weeks { color: #bbb; }
+	div#cgit span.age-months { color: #888; }
+	div#cgit span.age-years { color: #666; }
+	div#cgit span.insertions { color: #7f7; }
+	div#cgit span.deletions { color: #e33; }
+	div#cgit div.footer { color: #555; }
+	div#cgit div.footer a { color: #555; }
+	div#cgit a.branch-deco { color: #fff; background-color: #361; border-color: #3b2; }
+	div#cgit a.tag-deco { color: #fff; background-color: #650; border-color: #ba3; }
+	div#cgit a.tag-annotated-deco { color: #fff; background-color: #840; border-color: #b96; }
+	div#cgit a.remote-deco { color: #fff; background-color: #348; border-color: #67c; }
+	div#cgit a.deco { color: #fff; background-color: #922; border-color: #d55; }
+	div#cgit a.branch-deco:hover, div#cgit table.list td a.branch-deco:hover,
+	div#cgit a.tag-deco:hover, div#cgit table.list td a.tag-deco:hover,
+	div#cgit a.tag-annotated-deco:hover, div#cgit table.list td a.tag-annotated-deco:hover,
+	div#cgit a.remote-deco:hover, div#cgit table.list td a.remote-deco:hover,
+	div#cgit a.deco:hover, div#cgit table.list td a.deco:hover { color: #fff; }
+	div#cgit table.stats { border-color: #555; }
+	div#cgit table.stats th { background-color: #333; border-color: #555; }
+	div#cgit table.stats td { border-color: #555; }
+	div#cgit table.stats td.sum { color: #5C7E9B; }
+	div#cgit table.vgraph { border-color: #eee; }
+	div#cgit table.vgraph th { background-color: #1f1f1f; border-color: black; }
+	div#cgit table.vgraph div.bar { background-color: #1f1f1f; }
+	div#cgit table.hgraph { border-color: #eee; }
+	div#cgit table.hgraph th { background-color: #1f1f1f; border-color: #eee; }
+	div#cgit table.hgraph div.bar { background-color: #1f1f1f; }
+	div#cgit table.ssdiff td { border-left-color: #555; border-right-color: #555; }
+	div#cgit table.ssdiff td.add { color: #eee; background: #353; }
+	div#cgit table.ssdiff td.add_dark { color: #eee; background: #030; }
+	div#cgit table.ssdiff span.add { background: #030; }
+	div#cgit table.ssdiff td.del { color: #eee; background: #533; }
+	div#cgit table.ssdiff td.del_dark { color: #eee; background: #411; }
+	div#cgit table.ssdiff span.del { background: #300; }
+	div#cgit table.ssdiff td.changed { color: #eee; background: #553; }
+	div#cgit table.ssdiff td.changed_dark { color: #eee; background: #330; }
+	div#cgit table.ssdiff td.lineno { color: #eee; background: #1f1f1f; }
+	div#cgit table.ssdiff td.hunk { color: #eee; background: #0D3D64; border-top-color: #555; border-bottom-color: #555; }
+	div#cgit table.ssdiff td.head { border-top-color: #555; border-bottom-color: #555; }
+	div#cgit table.ssdiff td.head div.head { color: #eee; }
+	div#cgit table.ssdiff td.foot { border-top-color: #555; }
+}

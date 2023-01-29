@@ -29,12 +29,16 @@ from pygments.lexers import guess_lexer
 from pygments.lexers import guess_lexer_for_filename
 from pygments.formatters import HtmlFormatter
 
+# The dark style is automatically selected if the browser is in dark mode
+light_style='pastie'
+dark_style='monokai'
 
 sys.stdin = io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8', errors='replace')
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
 data = sys.stdin.read()
 filename = sys.argv[1]
-formatter = HtmlFormatter(style='pastie', nobackground=True)
+light_formatter = HtmlFormatter(style=light_style, nobackground=True)
+dark_formatter = HtmlFormatter(style=dark_style, nobackground=True)
 
 try:
 	lexer = guess_lexer_for_filename(filename, data)
@@ -50,6 +54,10 @@ except TypeError:
 # highlight! :-)
 # printout pygments' css definitions as well
 sys.stdout.write('<style>')
-sys.stdout.write(formatter.get_style_defs('.highlight'))
+sys.stdout.write('\n@media only all and (prefers-color-scheme: dark) {\n')
+sys.stdout.write(dark_formatter.get_style_defs('.highlight'))
+sys.stdout.write('\n}\n@media (prefers-color-scheme: light) {\n')
+sys.stdout.write(light_formatter.get_style_defs('.highlight'))
+sys.stdout.write('\n}\n')
 sys.stdout.write('</style>')
-sys.stdout.write(highlight(data, lexer, formatter, outfile=None))
+sys.stdout.write(highlight(data, lexer, light_formatter, outfile=None))
