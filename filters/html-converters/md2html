@@ -4,6 +4,11 @@ import sys
 import io
 from pygments.formatters import HtmlFormatter
 from markdown.extensions.toc import TocExtension
+
+# The dark style is automatically selected if the browser is in dark mode
+light_style='pastie'
+dark_style='monokai'
+
 sys.stdin = io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8')
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 sys.stdout.write('''
@@ -283,10 +288,31 @@ div#cgit .markdown-body h1 a.toclink, div#cgit .markdown-body h2 a.toclink, div#
     background-color: transparent;
     border: none;
 }
+@media only all and (prefers-color-scheme: dark) {
+.markdown-body a.absent { color: #f33; }
+.markdown-body h1 .mini-icon-link, .markdown-body h2 .mini-icon-link, .markdown-body h3 .mini-icon-link, .markdown-body h4 .mini-icon-link, .markdown-body h5 .mini-icon-link, .markdown-body h6 .mini-icon-link { color: #eee; }
+div#cgit .markdown-body h1 a.toclink, div#cgit .markdown-body h2 a.toclink, div#cgit .markdown-body h3 a.toclink, div#cgit .markdown-body h4 a.toclink, div#cgit .markdown-body h5 a.toclink, div#cgit .markdown-body h6 a.toclink { color: #eee; }
+.markdown-body h1 { color: #eee; }
+.markdown-body h2 { border-bottom-color: #333; color: #eee; }
+.markdown-body h6 { color: #888; }
+.markdown-body hr { border-color: #333; }
+.markdown-body blockquote { border-left-color: #222; color: #888; }
+.markdown-body table th, .markdown-body table td { border-color: #333; }
+.markdown-body table tr { border-top-color: #333; background-color: #111; }
+.markdown-body table tr:nth-child(2n) { background-color: #070707; }
+.markdown-body span.frame span span { color: #ccc; }
+.markdown-body code, .markdown-body tt { border-color: #151515; background-color: #070707; }
+.markdown-body .highlight pre, .markdown-body pre { background-color: #070707; border-color: #333; }
 ''')
-sys.stdout.write(HtmlFormatter(style='pastie').get_style_defs('.highlight'))
+sys.stdout.write(HtmlFormatter(style=dark_style).get_style_defs('.highlight'))
 sys.stdout.write('''
-</style>   
+}
+@media (prefers-color-scheme: light) {
+''')
+sys.stdout.write(HtmlFormatter(style=light_style).get_style_defs('.highlight'))
+sys.stdout.write('''
+}
+</style>
 ''')
 sys.stdout.write("<div class='markdown-body'>")
 sys.stdout.flush()
