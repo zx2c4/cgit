@@ -241,7 +241,7 @@ static int load_mmfile(mmfile_t *file, const struct object_id *oid)
 		file->ptr = (char *)"";
 		file->size = 0;
 	} else {
-		file->ptr = read_object_file(oid, &type,
+		file->ptr = repo_read_object_file(the_repository, oid, &type,
 		                           (unsigned long *)&file->size);
 	}
 	return 1;
@@ -343,7 +343,7 @@ void cgit_diff_tree(const struct object_id *old_oid,
 	struct diff_options opt;
 	struct pathspec_item *item;
 
-	diff_setup(&opt);
+	repo_diff_setup(the_repository, &opt);
 	opt.output_format = DIFF_FORMAT_CALLBACK;
 	opt.detect_rename = 1;
 	opt.rename_limit = ctx.cfg.renamelimit;
@@ -539,7 +539,9 @@ char *expand_macros(const char *txt)
 
 char *get_mimetype_for_filename(const char *filename)
 {
-	char *ext, *mimetype, *token, line[1024], *saveptr;
+	char *ext, *mimetype, line[1024];
+	struct string_list list = STRING_LIST_INIT_NODUP;
+	int i;
 	FILE *file;
 	struct string_list_item *mime;
 
@@ -564,13 +566,16 @@ char *get_mimetype_for_filename(const char *filename)
 	while (fgets(line, sizeof(line), file)) {
 		if (!line[0] || line[0] == '#')
 			continue;
-		mimetype = strtok_r(line, " \t\r\n", &saveptr);
-		while ((token = strtok_r(NULL, " \t\r\n", &saveptr))) {
-			if (!strcasecmp(ext, token)) {
+		string_list_split_in_place(&list, line, " \t\r\n", -1);
+		string_list_remove_empty_items(&list, 0);
+		mimetype = list.items[0].string;
+		for (i = 1; i < list.nr; i++) {
+			if (!strcasecmp(ext, list.items[i].string)) {
 				fclose(file);
 				return xstrdup(mimetype);
 			}
 		}
+		string_list_clear(&list, 0);
 	}
 	fclose(file);
 	return NULL;

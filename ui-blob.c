@@ -52,7 +52,7 @@ int cgit_ref_path_exists(const char *path, const char *ref, int file_only)
 		.file_only = file_only
 	};
 
-	if (get_oid(ref, &oid))
+	if (repo_get_oid(the_repository, ref, &oid))
 		goto done;
 	if (oid_object_info(the_repository, &oid, &size) != OBJ_COMMIT)
 		goto done;
@@ -87,7 +87,7 @@ int cgit_print_file(char *path, const char *head, int file_only)
 		.file_only = file_only
 	};
 
-	if (get_oid(head, &oid))
+	if (repo_get_oid(the_repository, head, &oid))
 		return -1;
 	type = oid_object_info(the_repository, &oid, &size);
 	if (type == OBJ_COMMIT) {
@@ -100,7 +100,7 @@ int cgit_print_file(char *path, const char *head, int file_only)
 	}
 	if (type == OBJ_BAD)
 		return -1;
-	buf = read_object_file(&oid, &type, &size);
+	buf = repo_read_object_file(the_repository, &oid, &type, &size);
 	if (!buf)
 		return -1;
 	buf[size] = '\0';
@@ -138,7 +138,7 @@ void cgit_print_blob(const char *hex, char *path, const char *head, int file_onl
 			return;
 		}
 	} else {
-		if (get_oid(head, &oid)) {
+		if (repo_get_oid(the_repository, head, &oid)) {
 			cgit_print_error_page(404, "Not found",
 					"Bad ref: %s", head);
 			return;
@@ -160,7 +160,7 @@ void cgit_print_blob(const char *hex, char *path, const char *head, int file_onl
 		return;
 	}
 
-	buf = read_object_file(&oid, &type, &size);
+	buf = repo_read_object_file(the_repository, &oid, &type, &size);
 	if (!buf) {
 		cgit_print_error_page(500, "Internal server error",
 				"Error reading object %s", hex);

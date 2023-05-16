@@ -98,7 +98,7 @@ static void print_object(const struct object_id *oid, const char *path, const ch
 		return;
 	}
 
-	buf = read_object_file(oid, &type, &size);
+	buf = repo_read_object_file(the_repository, oid, &type, &size);
 	if (!buf) {
 		cgit_print_error_page(500, "Internal server error",
 			"Error reading object %s", oid_to_hex(oid));
@@ -242,7 +242,7 @@ static int ls_item(const struct object_id *oid, struct strbuf *base,
 	}
 	if (S_ISLNK(mode)) {
 		html(" -> ");
-		buf = read_object_file(oid, &type, &size);
+		buf = repo_read_object_file(the_repository, oid, &type, &size);
 		if (!buf) {
 			htmlf("Error reading object: %s", oid_to_hex(oid));
 			goto cleanup;
@@ -372,13 +372,13 @@ void cgit_print_tree(const char *rev, char *path)
 	if (!rev)
 		rev = ctx.qry.head;
 
-	if (get_oid(rev, &oid)) {
+	if (repo_get_oid(the_repository, rev, &oid)) {
 		cgit_print_error_page(404, "Not found",
 			"Invalid revision name: %s", rev);
 		return;
 	}
 	commit = lookup_commit_reference(the_repository, &oid);
-	if (!commit || parse_commit(commit)) {
+	if (!commit || repo_parse_commit(the_repository, commit)) {
 		cgit_print_error_page(404, "Not found",
 			"Invalid commit reference: %s", rev);
 		return;

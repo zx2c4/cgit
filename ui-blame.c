@@ -49,12 +49,12 @@ static void emit_blame_entry_hash(struct blame_entry *ent)
 
 	char *detail = emit_suspect_detail(suspect);
 	html("<span class='oid'>");
-	cgit_commit_link(find_unique_abbrev(oid, DEFAULT_ABBREV), detail,
+	cgit_commit_link(repo_find_unique_abbrev(the_repository, oid, DEFAULT_ABBREV), detail,
 			 NULL, ctx.qry.head, oid_to_hex(oid), suspect->path);
 	html("</span>");
 	free(detail);
 
-	if (!parse_commit(suspect->commit) && suspect->commit->parents) {
+	if (!repo_parse_commit(the_repository, suspect->commit) && suspect->commit->parents) {
 		struct commit *parent = suspect->commit->parents->item;
 
 		html(" ");
@@ -126,7 +126,7 @@ static void print_object(const struct object_id *oid, const char *path,
 		return;
 	}
 
-	buf = read_object_file(oid, &type, &size);
+	buf = repo_read_object_file(the_repository, oid, &type, &size);
 	if (!buf) {
 		cgit_print_error_page(500, "Internal server error",
 			"Error reading object %s", oid_to_hex(oid));
@@ -135,7 +135,7 @@ static void print_object(const struct object_id *oid, const char *path,
 
 	strvec_push(&rev_argv, "blame");
 	strvec_push(&rev_argv, rev);
-	init_revisions(&revs, NULL);
+	repo_init_revisions(the_repository, &revs, NULL);
 	revs.diffopt.flags.allow_textconv = 1;
 	setup_revisions(rev_argv.nr, rev_argv.v, &revs, NULL);
 	init_scoreboard(&sb);
@@ -287,13 +287,13 @@ void cgit_print_blame(void)
 	if (!rev)
 		rev = ctx.qry.head;
 
-	if (get_oid(rev, &oid)) {
+	if (repo_get_oid(the_repository, rev, &oid)) {
 		cgit_print_error_page(404, "Not found",
 			"Invalid revision name: %s", rev);
 		return;
 	}
 	commit = lookup_commit_reference(the_repository, &oid);
-	if (!commit || parse_commit(commit)) {
+	if (!commit || repo_parse_commit(the_repository, commit)) {
 		cgit_print_error_page(404, "Not found",
 			"Invalid commit reference: %s", rev);
 		return;

@@ -631,7 +631,7 @@ static int prepare_repo_cmd(int nongit)
 		return 1;
 	}
 
-	if (get_oid(ctx.qry.head, &oid)) {
+	if (repo_get_oid(the_repository, ctx.qry.head, &oid)) {
 		char *old_head = ctx.qry.head;
 		ctx.qry.head = xstrdup(ctx.repo->defbranch);
 		cgit_print_error_page(404, "Not found",

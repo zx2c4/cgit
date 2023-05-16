@@ -48,7 +48,7 @@ void cgit_print_tag(char *revname)
 		revname = ctx.qry.head;
 
 	strbuf_addf(&fullref, "refs/tags/%s", revname);
-	if (get_oid(fullref.buf, &oid)) {
+	if (repo_get_oid(the_repository, fullref.buf, &oid)) {
 		cgit_print_error_page(404, "Not found",
 			"Bad tag reference: %s", revname);
 		goto cleanup;

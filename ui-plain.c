@@ -28,7 +28,7 @@ static int print_object(const struct object_id *oid, const char *path)
 		return 0;
 	}
 
-	buf = read_object_file(oid, &type, &size);
+	buf = repo_read_object_file(the_repository, oid, &type, &size);
 	if (!buf) {
 		cgit_print_error_page(404, "Not found", "Not found");
 		return 0;
@@ -181,12 +181,12 @@ void cgit_print_plain(void)
 	if (!rev)
 		rev = ctx.qry.head;
 
-	if (get_oid(rev, &oid)) {
+	if (repo_get_oid(the_repository, rev, &oid)) {
 		cgit_print_error_page(404, "Not found", "Not found");
 		return;
 	}
 	commit = lookup_commit_reference(the_repository, &oid);
-	if (!commit || parse_commit(commit)) {
+	if (!commit || repo_parse_commit(the_repository, commit)) {
 		cgit_print_error_page(404, "Not found", "Not found");
 		return;
 	}

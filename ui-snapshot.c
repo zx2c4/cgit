@@ -117,7 +117,7 @@ const struct object_id *cgit_snapshot_get_sig(const char *ref,
 	struct notes_tree *tree;
 	struct object_id oid;
 
-	if (get_oid(ref, &oid))
+	if (repo_get_oid(the_repository, ref, &oid))
 		return NULL;
 
 	tree = &snapshot_sig_notes[f - &cgit_snapshot_formats[0]];
@@ -156,7 +156,7 @@ static int make_snapshot(const struct cgit_snapshot_format *format,
 {
 	struct object_id oid;
 
-	if (get_oid(hex, &oid)) {
+	if (repo_get_oid(the_repository, hex, &oid)) {
 		cgit_print_error_page(404, "Not found",
 				"Bad object id: %s", hex);
 		return 1;
@@ -190,7 +190,7 @@ static int write_sig(const struct cgit_snapshot_format *format,
 		return 0;
 	}
 
-	buf = read_object_file(note, &type, &size);
+	buf = repo_read_object_file(the_repository, note, &type, &size);
 	if (!buf) {
 		cgit_print_error_page(404, "Not found", "Not found");
 		return 0;
@@ -230,7 +230,7 @@ static const char *get_ref_from_filename(const struct cgit_repo *repo,
 	strbuf_addstr(&snapshot, filename);
 	strbuf_setlen(&snapshot, snapshot.len - strlen(format->suffix));
 
-	if (get_oid(snapshot.buf, &oid) == 0)
+	if (repo_get_oid(the_repository, snapshot.buf, &oid) == 0)
 		goto out;
 
 	reponame = cgit_snapshot_prefix(repo);
@@ -242,15 +242,15 @@ static const char *get_ref_from_filename(const struct cgit_repo *repo,
 		strbuf_splice(&snapshot, 0, new_start - snapshot.buf, "", 0);
 	}
 
-	if (get_oid(snapshot.buf, &oid) == 0)
+	if (repo_get_oid(the_repository, snapshot.buf, &oid) == 0)
 		goto out;
 
 	strbuf_insert(&snapshot, 0, "v", 1);
-	if (get_oid(snapshot.buf, &oid) == 0)
+	if (repo_get_oid(the_repository, snapshot.buf, &oid) == 0)
 		goto out;
 
 	strbuf_splice(&snapshot, 0, 1, "V", 1);
-	if (get_oid(snapshot.buf, &oid) == 0)
+	if (repo_get_oid(the_repository, snapshot.buf, &oid) == 0)
 		goto out;
 
 	result = 0;
