@@ -6,7 +6,6 @@
 #include <git-compat-util.h>
 
 #include <archive.h>
-#include <cache.h>
 #include <commit.h>
 #include <diffcore.h>
 #include <diff.h>
@@ -19,6 +18,7 @@
 #include <object.h>
 #include <object-name.h>
 #include <object-store.h>
+#include <path.h>
 #include <refs.h>
 #include <revision.h>
 #include <setup.h>
