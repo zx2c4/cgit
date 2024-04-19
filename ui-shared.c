@@ -662,12 +662,12 @@ void cgit_submodule_link(const char *class, char *path, const char *rev)
 		path[len - 1] = tail;
 }
 
-const struct date_mode *cgit_date_mode(enum date_mode_type type)
+const struct date_mode cgit_date_mode(enum date_mode_type type)
 {
 	static struct date_mode mode;
 	mode.type = type;
 	mode.local = ctx.cfg.local_time;
-	return &mode;
+	return mode;
 }
 
 static void print_rel_date(time_t t, int tz, double value,
