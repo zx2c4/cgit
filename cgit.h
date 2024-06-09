@@ -65,7 +65,7 @@ typedef enum {
 struct cgit_filter {
 	int (*open)(struct cgit_filter *, va_list ap);
 	int (*close)(struct cgit_filter *);
-	void (*fprintf)(struct cgit_filter *, FILE *, const char *prefix);
+	void (*fprintfp)(struct cgit_filter *, FILE *, const char *prefix);
 	void (*cleanup)(struct cgit_filter *);
 	int argument_count;
 };
