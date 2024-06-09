@@ -128,7 +128,7 @@ void cgit_exec_filter_init(struct cgit_exec_filter *filter, char *cmd, char **ar
 	memset(filter, 0, sizeof(*filter));
 	filter->base.open = open_exec_filter;
 	filter->base.close = close_exec_filter;
-	filter->base.fprintf = fprintf_exec_filter;
+	filter->base.fprintfp = fprintf_exec_filter;
 	filter->base.cleanup = cleanup_exec_filter;
 	filter->cmd = cmd;
 	filter->argv = argv;
@@ -353,7 +353,7 @@ static struct cgit_filter *new_lua_filter(const char *cmd, int argument_count)
 	memset(filter, 0, sizeof(*filter));
 	filter->base.open = open_lua_filter;
 	filter->base.close = close_lua_filter;
-	filter->base.fprintf = fprintf_lua_filter;
+	filter->base.fprintfp = fprintf_lua_filter;
 	filter->base.cleanup = cleanup_lua_filter;
 	filter->base.argument_count = argument_count;
 	filter->script_file = xstrdup(cmd);
@@ -385,7 +385,7 @@ int cgit_close_filter(struct cgit_filter *filter)
 
 void cgit_fprintf_filter(struct cgit_filter *filter, FILE *f, const char *prefix)
 {
-	filter->fprintf(filter, f, prefix);
+	filter->fprintfp(filter, f, prefix);
 }
 
 
