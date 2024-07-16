@@ -6,6 +6,8 @@
  *   (see COPYING for full license text)
  */
 
+#define USE_THE_REPOSITORY_VARIABLE
+
 #include "cgit.h"
 #include "ui-shared.h"
 #include "cmd.h"
@@ -1041,9 +1043,11 @@ static void print_header(void)
 			html("<form method='get'>\n");
 			cgit_add_hidden_formfields(0, 1, ctx.qry.page);
 			html("<select name='h' onchange='this.form.submit();'>\n");
-			for_each_branch_ref(print_branch_option, ctx.qry.head);
+			refs_for_each_branch_ref(get_main_ref_store(the_repository),
+						 print_branch_option, ctx.qry.head);
 			if (ctx.repo->enable_remote_branches)
-				for_each_remote_ref(print_branch_option, ctx.qry.head);
+				refs_for_each_remote_ref(get_main_ref_store(the_repository),
+							 print_branch_option, ctx.qry.head);
 			html("</select> ");
 			html("<input type='submit' value='switch'/>");
 			html("</form>");

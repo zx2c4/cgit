@@ -6,6 +6,8 @@
  *   (see COPYING for full license text)
  */
 
+#define USE_THE_REPOSITORY_VARIABLE
+
 #include "cgit.h"
 #include "ui-diff.h"
 #include "html.h"
@@ -424,7 +426,7 @@ void cgit_print_diff(const char *new_rev, const char *old_rev,
 	} else if (commit->parents && commit->parents->item) {
 		oidcpy(old_rev_oid, &commit->parents->item->object.oid);
 	} else {
-		oidclr(old_rev_oid);
+		oidclr(old_rev_oid, the_repository->hash_algo);
 	}
 
 	if (!is_null_oid(old_rev_oid)) {

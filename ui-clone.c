@@ -7,6 +7,8 @@
  *   (see COPYING for full license text)
  */
 
+#define USE_THE_REPOSITORY_VARIABLE
+
 #include "cgit.h"
 #include "ui-clone.h"
 #include "html.h"
@@ -87,7 +89,8 @@ void cgit_clone_info(void)
 	ctx.page.mimetype = "text/plain";
 	ctx.page.filename = "info/refs";
 	cgit_print_http_headers();
-	for_each_ref(print_ref_info, NULL);
+	refs_for_each_ref(get_main_ref_store(the_repository),
+			  print_ref_info, NULL);
 }
 
 void cgit_clone_objects(void)

@@ -6,6 +6,8 @@
  *   (see COPYING for full license text)
  */
 
+#define USE_THE_REPOSITORY_VARIABLE
+
 #include "cgit.h"
 #include "ui-refs.h"
 #include "html.h"
@@ -155,9 +157,11 @@ void cgit_print_branches(int maxcount)
 
 	list.refs = NULL;
 	list.alloc = list.count = 0;
-	for_each_branch_ref(cgit_refs_cb, &list);
+	refs_for_each_branch_ref(get_main_ref_store(the_repository),
+				 cgit_refs_cb, &list);
 	if (ctx.repo->enable_remote_branches)
-		for_each_remote_ref(cgit_refs_cb, &list);
+		refs_for_each_remote_ref(get_main_ref_store(the_repository),
+					 cgit_refs_cb, &list);
 
 	if (maxcount == 0 || maxcount > list.count)
 		maxcount = list.count;
@@ -182,7 +186,8 @@ void cgit_print_tags(int maxcount)
 
 	list.refs = NULL;
 	list.alloc = list.count = 0;
-	for_each_tag_ref(cgit_refs_cb, &list);
+	refs_for_each_tag_ref(get_main_ref_store(the_repository),
+			      cgit_refs_cb, &list);
 	if (list.count == 0)
 		return;
 	qsort(list.refs, list.count, sizeof(*list.refs), cmp_tag_age);
