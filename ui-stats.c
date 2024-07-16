@@ -1,3 +1,11 @@
+/* ui-stats.c: generate stats view
+ *
+ * Copyright (C) 2006-2014 cgit Development Team <cgit@lists.zx2c4.com>
+ *
+ * Licensed under GNU General Public License v2
+ *   (see COPYING for full license text)
+ */
+
 #include "cgit.h"
 #include "ui-stats.h"
 #include "html.h"
