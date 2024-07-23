@@ -684,6 +684,7 @@ div#cgit a.branch-deco {
 	padding: 0px 0.25em;
 	background-color: #88ff88;
 	border: solid 1px #007700;
+	border-radius: 2px;
 }
 
 div#cgit a.tag-deco {
@@ -692,6 +693,7 @@ div#cgit a.tag-deco {
 	padding: 0px 0.25em;
 	background-color: #ffff88;
 	border: solid 1px #777700;
+	border-radius: 2px;
 }
 
 div#cgit a.tag-annotated-deco {
@@ -700,6 +702,7 @@ div#cgit a.tag-annotated-deco {
 	padding: 0px 0.25em;
 	background-color: #ffcc88;
 	border: solid 1px #777700;
+	border-radius: 2px;
 }
 
 div#cgit a.remote-deco {
@@ -708,6 +711,7 @@ div#cgit a.remote-deco {
 	padding: 0px 0.25em;
 	background-color: #ccccff;
 	border: solid 1px #000077;
+	border-radius: 2px;
 }
 
 div#cgit a.deco {
@@ -716,6 +720,7 @@ div#cgit a.deco {
 	padding: 0px 0.25em;
 	background-color: #ff8888;
 	border: solid 1px #770000;
+	border-radius: 2px;
 }
 
 div#cgit div.commit-subject a.branch-deco,
