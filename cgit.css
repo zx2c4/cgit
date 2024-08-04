@@ -687,6 +687,24 @@ div#cgit span.msg-avail {
 	border-radius: 5px;
 }
 
+div#cgit span.msg-avail span.msg-tooltip {
+	color: #000;
+	margin: 0px 0.5em;
+	padding: 0px 0.25em;
+	background-color: #f0f0f0;
+	border: solid 1px #777777;
+	border-radius: 5px;
+	box-shadow: 2px 2px 7px rgba(100,100,100,0.75);
+	visibility: hidden;
+	position: absolute;
+	white-space: pre;
+	z-index: 1;
+}
+
+div#cgit span.msg-avail:hover span.msg-tooltip {
+	visibility: visible;
+}
+
 div#cgit a.branch-deco {
 	color: #000;
 	margin: 0px 0.5em;
