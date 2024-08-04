@@ -54,7 +54,8 @@ static void scan_tree_repo_config(const char *name, const char *value)
 	config_fn(repo, name, value);
 }
 
-static int gitconfig_config(const char *key, const char *value, const struct config_context *, void *cb)
+static int gitconfig_config(const char *key, const char *value,
+		const __attribute__((unused)) struct config_context *ctx, void *cb)
 {
 	const char *name;
 
