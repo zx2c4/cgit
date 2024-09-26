@@ -448,8 +448,8 @@ struct refmatch {
 	int match;
 };
 
-static int find_current_ref(const char *refname, const struct object_id *oid,
-			    int flags, void *cb_data)
+static int find_current_ref(const char *refname, const char *referent UNUSED,
+                            const struct object_id *oid, int flags, void *cb_data)
 {
 	struct refmatch *info;
 

@@ -212,8 +212,8 @@ void cgit_free_reflist_inner(struct reflist *list)
 	free(list->refs);
 }
 
-int cgit_refs_cb(const char *refname, const struct object_id *oid, int flags,
-		  void *cb_data)
+int cgit_refs_cb(const char *refname, const char *referent UNUSED,
+		 const struct object_id *oid, int flags, void *cb_data)
 {
 	struct reflist *list = (struct reflist *)cb_data;
 	struct refinfo *info = cgit_mk_refinfo(refname, oid);

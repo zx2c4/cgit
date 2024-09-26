@@ -936,8 +936,8 @@ void cgit_add_clone_urls(void (*fn)(const char *))
 		add_clone_urls(fn, ctx.cfg.clone_prefix, ctx.repo->url);
 }
 
-static int print_branch_option(const char *refname, const struct object_id *oid,
-			       int flags, void *cb_data)
+static int print_branch_option(const char *refname, const char *referent UNUSED,
+			       const struct object_id *oid, int flags, void *cb_data)
 {
 	char *name = (char *)refname;
 	html_option(name, name, ctx.qry.head);
