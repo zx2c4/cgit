@@ -245,7 +245,7 @@ static void print_commit(struct commit *commit, struct rev_info *revs)
 	cgit_commit_link(info->subject, NULL, NULL, ctx.qry.head,
 			 oid_to_hex(&commit->object.oid), ctx.qry.vpath);
 	if (!ctx.qry.showmsg && info->msg && *(info->msg)) {
-		html("<span class='msg-avail'>...<span class='msg-tooltip'>");
+		html("<span class='msg-avail'>&bull;&bull;&bull;<span class='msg-tooltip'>");
 		html_txt(info->msg);
 		html("</span></span>");
 	}
