@@ -95,7 +95,7 @@ void cgit_clone_info(void)
 
 void cgit_clone_objects(void)
 {
-	char *p;
+	char *p, *path;
 
 	if (!ctx.qry.path)
 		goto err;
@@ -116,7 +116,9 @@ void cgit_clone_objects(void)
 			goto err;
 	}
 
-	send_file(git_path("objects/%s", ctx.qry.path));
+	path = repo_git_path(the_repository, "objects/%s", ctx.qry.path);
+	send_file(path);
+	free(path);
 	return;
 
 err:
@@ -125,5 +127,9 @@ err:
 
 void cgit_clone_head(void)
 {
-	send_file(git_path("%s", "HEAD"));
+	char *path;
+
+	path = repo_git_path(the_repository, "HEAD");
+	send_file(path);
+	free(path);
 }
