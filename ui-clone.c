@@ -14,7 +14,6 @@
 #include "html.h"
 #include "ui-shared.h"
 #include "packfile.h"
-#include "object-store.h"
 
 static int print_ref_info(const char *refname, const char *referent UNUSED,
 			  const struct object_id *oid, int flags, void *cb_data)

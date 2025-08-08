@@ -17,7 +17,7 @@
 #include <notes.h>
 #include <object.h>
 #include <object-name.h>
-#include <object-store.h>
+#include <odb.h>
 #include <path.h>
 #include <refs.h>
 #include <revision.h>
