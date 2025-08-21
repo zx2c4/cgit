@@ -832,7 +832,7 @@ void cgit_print_docstart(void)
 	else
 		emit_js_link(NULL, "/cgit.js");
 
-	if (ctx.cfg.favicon) {
+	if (ctx.cfg.favicon && *ctx.cfg.favicon) {
 		html("<link rel='shortcut icon' href='");
 		html_attr(ctx.cfg.favicon);
 		html("'/>\n");
