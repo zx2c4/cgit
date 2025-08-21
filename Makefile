@@ -111,8 +111,10 @@ install-pdf: doc-pdf
 uninstall:
 	rm -f $(DESTDIR)$(CGIT_SCRIPT_PATH)/$(CGIT_SCRIPT_NAME)
 	rm -f $(DESTDIR)$(CGIT_DATA_PATH)/cgit.css
+	rm -f $(DESTDIR)$(CGIT_DATA_PATH)/cgit.js
 	rm -f $(DESTDIR)$(CGIT_DATA_PATH)/cgit.png
 	rm -f $(DESTDIR)$(CGIT_DATA_PATH)/favicon.ico
+	rm -f $(DESTDIR)$(CGIT_DATA_PATH)/robots.txt
 
 uninstall-doc: uninstall-man uninstall-html uninstall-pdf
 
