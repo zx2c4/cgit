@@ -24,13 +24,13 @@ static int print_object(const struct object_id *oid, const char *path)
 	char *buf, *mimetype;
 	unsigned long size;
 
-	type = oid_object_info(the_repository, oid, &size);
+	type = odb_read_object_info(the_repository->objects, oid, &size);
 	if (type == OBJ_BAD) {
 		cgit_print_error_page(404, "Not found", "Not found");
 		return 0;
 	}
 
-	buf = repo_read_object_file(the_repository, oid, &type, &size);
+	buf = odb_read_object(the_repository->objects, oid, &type, &size);
 	if (!buf) {
 		cgit_print_error_page(404, "Not found", "Not found");
 		return 0;

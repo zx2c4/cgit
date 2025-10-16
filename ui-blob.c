@@ -56,7 +56,7 @@ int cgit_ref_path_exists(const char *path, const char *ref, int file_only)
 
 	if (repo_get_oid(the_repository, ref, &oid))
 		goto done;
-	if (oid_object_info(the_repository, &oid, &size) != OBJ_COMMIT)
+	if (odb_read_object_info(the_repository->objects, &oid, &size) != OBJ_COMMIT)
 		goto done;
 	read_tree(the_repository,
 		  repo_get_commit_tree(the_repository, lookup_commit_reference(the_repository, &oid)),
@@ -91,18 +91,18 @@ int cgit_print_file(char *path, const char *head, int file_only)
 
 	if (repo_get_oid(the_repository, head, &oid))
 		return -1;
-	type = oid_object_info(the_repository, &oid, &size);
+	type = odb_read_object_info(the_repository->objects, &oid, &size);
 	if (type == OBJ_COMMIT) {
 		commit = lookup_commit_reference(the_repository, &oid);
 		read_tree(the_repository, repo_get_commit_tree(the_repository, commit),
 			  &paths, walk_tree, &walk_tree_ctx);
 		if (!walk_tree_ctx.found_path)
 			return -1;
-		type = oid_object_info(the_repository, &oid, &size);
+		type = odb_read_object_info(the_repository->objects, &oid, &size);
 	}
 	if (type == OBJ_BAD)
 		return -1;
-	buf = repo_read_object_file(the_repository, &oid, &type, &size);
+	buf = odb_read_object(the_repository->objects, &oid, &type, &size);
 	if (!buf)
 		return -1;
 	buf[size] = '\0';
@@ -147,13 +147,13 @@ void cgit_print_blob(const char *hex, char *path, const char *head, int file_onl
 		}
 	}
 
-	type = oid_object_info(the_repository, &oid, &size);
+	type = odb_read_object_info(the_repository->objects, &oid, &size);
 
 	if ((!hex) && type == OBJ_COMMIT && path) {
 		commit = lookup_commit_reference(the_repository, &oid);
 		read_tree(the_repository, repo_get_commit_tree(the_repository, commit),
 			  &paths, walk_tree, &walk_tree_ctx);
-		type = oid_object_info(the_repository, &oid, &size);
+		type = odb_read_object_info(the_repository->objects, &oid, &size);
 	}
 
 	if (type == OBJ_BAD) {
@@ -162,7 +162,7 @@ void cgit_print_blob(const char *hex, char *path, const char *head, int file_onl
 		return;
 	}
 
-	buf = repo_read_object_file(the_repository, &oid, &type, &size);
+	buf = odb_read_object(the_repository->objects, &oid, &type, &size);
 	if (!buf) {
 		cgit_print_error_page(500, "Internal server error",
 				"Error reading object %s", hex);

@@ -192,7 +192,7 @@ static int write_sig(const struct cgit_snapshot_format *format,
 		return 0;
 	}
 
-	buf = repo_read_object_file(the_repository, note, &type, &size);
+	buf = odb_read_object(the_repository->objects, note, &type, &size);
 	if (!buf) {
 		cgit_print_error_page(404, "Not found", "Not found");
 		return 0;

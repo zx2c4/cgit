@@ -243,7 +243,7 @@ static int load_mmfile(mmfile_t *file, const struct object_id *oid)
 		file->ptr = (char *)"";
 		file->size = 0;
 	} else {
-		file->ptr = repo_read_object_file(the_repository, oid, &type,
+		file->ptr = odb_read_object(the_repository->objects, oid, &type,
 		                           (unsigned long *)&file->size);
 	}
 	return 1;
