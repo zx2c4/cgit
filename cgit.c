@@ -448,16 +448,15 @@ struct refmatch {
 	int match;
 };
 
-static int find_current_ref(const char *refname, const char *referent UNUSED,
-                            const struct object_id *oid, int flags, void *cb_data)
+static int find_current_ref(const struct reference *ref, void *cb_data)
 {
 	struct refmatch *info;
 
 	info = (struct refmatch *)cb_data;
-	if (!strcmp(refname, info->req_ref))
+	if (!strcmp(ref->name, info->req_ref))
 		info->match = 1;
 	if (!info->first_ref)
-		info->first_ref = xstrdup(refname);
+		info->first_ref = xstrdup(ref->name);
 	return info->match;
 }
 

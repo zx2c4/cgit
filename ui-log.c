@@ -83,7 +83,7 @@ void show_commit_decorations(struct commit *commit)
 			break;
 		case DECORATION_REF_TAG:
 			if (!refs_read_ref(get_main_ref_store(the_repository), deco->name, &oid_tag) &&
-			    !peel_iterated_oid(the_repository, &oid_tag, &peeled))
+			    !peel_object(the_repository, &oid_tag, &peeled, PEEL_OBJECT_VERIFY_TAGGED_OBJECT_TYPE))
 				is_annotated = !oideq(&oid_tag, &peeled);
 			cgit_tag_link(buf, NULL, is_annotated ? "tag-annotated-deco" : "tag-deco", buf);
 			break;

@@ -66,7 +66,7 @@ void cgit_print_tag(char *revname)
 		struct taginfo *info;
 
 		tag = lookup_tag(the_repository, &oid);
-		if (!tag || parse_tag(tag) || !(info = cgit_parse_tag(tag))) {
+		if (!tag || parse_tag(the_repository, tag) || !(info = cgit_parse_tag(tag))) {
 			cgit_print_error_page(500, "Internal server error",
 				"Bad tag object: %s", revname);
 			goto cleanup;
