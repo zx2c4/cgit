@@ -503,6 +503,10 @@ repo.enable-commit-graph::
 	A flag which can be used to disable the global setting
 	`enable-commit-graph'. Default value: none.
 
+repo.enable-follow-links::
+	A flag which can be used to disable the global setting
+	`enable-follow-links'. Default value: none.
+
 repo.enable-html-serving::
 	A flag which can be used to override the global setting
 	`enable-html-serving`. Default value: none.

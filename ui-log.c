@@ -407,7 +407,7 @@ void cgit_print_log(const char *tip, int ofs, int cnt, char *grep, char *pattern
 		}
 	}
 
-	if (!path || !ctx.cfg.enable_follow_links) {
+	if (!path || !ctx.repo->enable_follow_links) {
 		/*
 		 * If we don't have a path, "follow" is a no-op so make sure
 		 * the variable is set to false to avoid needing to check

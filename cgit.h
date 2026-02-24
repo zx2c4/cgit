@@ -101,6 +101,7 @@ struct cgit_repo {
 	int snapshots;
 	int enable_blame;
 	int enable_commit_graph;
+	int enable_follow_links;
 	int enable_log_filecount;
 	int enable_log_linecount;
 	int enable_remote_branches;

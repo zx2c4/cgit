@@ -66,6 +66,8 @@ static void repo_config(struct cgit_repo *repo, const char *name, const char *va
 		repo->enable_blame = atoi(value);
 	else if (!strcmp(name, "enable-commit-graph"))
 		repo->enable_commit_graph = atoi(value);
+	else if (!strcmp(name, "enable-follow-links"))
+		repo->enable_follow_links = atoi(value);
 	else if (!strcmp(name, "enable-log-filecount"))
 		repo->enable_log_filecount = atoi(value);
 	else if (!strcmp(name, "enable-log-linecount"))
@@ -828,6 +830,8 @@ static void print_repo(FILE *f, struct cgit_repo *repo)
 	        repo->enable_blame);
 	fprintf(f, "repo.enable-commit-graph=%d\n",
 	        repo->enable_commit_graph);
+	fprintf(f, "repo.enable-follow-links=%d\n",
+		repo->enable_follow_links);
 	fprintf(f, "repo.enable-log-filecount=%d\n",
 	        repo->enable_log_filecount);
 	fprintf(f, "repo.enable-log-linecount=%d\n",

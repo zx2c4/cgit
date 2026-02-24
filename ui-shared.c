@@ -1153,7 +1153,7 @@ void cgit_print_pageheader(void)
 		html("<div class='path'>");
 		html("path: ");
 		cgit_print_path_crumbs(ctx.qry.vpath);
-		if (ctx.cfg.enable_follow_links && !strcmp(ctx.qry.page, "log")) {
+		if (ctx.repo->enable_follow_links && !strcmp(ctx.qry.page, "log")) {
 			html(" (");
 			ctx.qry.follow = !ctx.qry.follow;
 			cgit_self_link(ctx.qry.follow ? "follow" : "unfollow",

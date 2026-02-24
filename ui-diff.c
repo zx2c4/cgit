@@ -395,7 +395,7 @@ void cgit_print_diff(const char *new_rev, const char *old_rev,
 	 * entire commit to detect renames so we must limit the paths in our
 	 * own callbacks and not pass the prefix to the diff machinery.
 	 */
-	if (ctx.qry.follow && ctx.cfg.enable_follow_links) {
+	if (ctx.qry.follow && ctx.repo->enable_follow_links) {
 		current_prefix = prefix;
 		prefix = "";
 	} else {
