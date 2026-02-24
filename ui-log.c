@@ -167,6 +167,7 @@ static int show_commit(struct commit *commit, struct rev_info *revs)
 	revs->diffopt.output_format = DIFF_FORMAT_CALLBACK;
 	revs->diffopt.format_callback = cgit_diff_tree_cb;
 	revs->diffopt.format_callback_data = handle_rename;
+	revs->diffopt.no_free = 1;
 	diff_flush(&revs->diffopt);
 	revs->diffopt.output_format = saved_fmt;
 	revs->diffopt.flags = saved_flags;
