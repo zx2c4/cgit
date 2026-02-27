@@ -496,7 +496,7 @@ static char *guess_defbranch(void)
 
 	ref = refs_resolve_ref_unsafe(get_main_ref_store(the_repository),
 				     "HEAD", 0, &oid, NULL);
-	if (!ref || !skip_prefix(ref, "refs/heads/", &refname))
+	if (!ref || !skip_prefix(ref, "ref: refs/heads/", &refname))
 		return "master";
 	return xstrdup(refname);
 }
