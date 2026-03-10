@@ -73,6 +73,7 @@ extern void cgit_print_docstart(void);
 extern void cgit_print_docend(void);
 __attribute__((format (printf,3,4)))
 extern void cgit_print_error_page(int code, const char *msg, const char *fmt, ...);
+extern void cgit_vprint_error_page(int code, const char *msg, const char *fmt, va_list ap);
 extern void cgit_print_pageheader(void);
 extern void cgit_print_filemode(unsigned short mode);
 extern void cgit_compose_snapshot_prefix(struct strbuf *filename,

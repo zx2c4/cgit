@@ -1058,6 +1058,12 @@ static int calc_ttl(void)
 	return ctx.cfg.cache_repo_ttl;
 }
 
+static NORETURN void cgit_die_routine(const char *msg, va_list params)
+{
+	cgit_vprint_error_page(400, "Bad request", msg, params);
+	exit(0);
+}
+
 int cmd_main(int argc, const char **argv)
 {
 	const char *path;
@@ -1065,6 +1071,7 @@ int cmd_main(int argc, const char **argv)
 
 	cgit_init_filters();
 	atexit(cgit_cleanup_filters);
+	set_die_routine(cgit_die_routine);
 
 	prepare_context();
 	cgit_repolist.length = 0;
