@@ -33,22 +33,26 @@ static int print_ref_info(const struct reference *ref, void *cb_data)
 
 static void print_pack_info(void)
 {
-	struct packfile_list_entry *e;
+	struct odb_source *source;
 	char *offset;
 
 	ctx.page.mimetype = "text/plain";
 	ctx.page.filename = "objects/info/packs";
 	cgit_print_http_headers();
 	odb_reprepare(the_repository->objects);
-	for (e = packfile_store_get_packs(the_repository->objects->sources->packfiles); e; e = e->next) {
-		struct packed_git *p = e->pack;
-		if (p->pack_local) {
-			offset = strrchr(p->pack_name, '/');
-			if (offset && offset[1] != '\0')
-				++offset;
-			else
-				offset = p->pack_name;
-			htmlf("P %s\n", offset);
+	for (source = the_repository->objects->sources; source; source = source->next) {
+		struct odb_source_files *files = odb_source_files_downcast(source);
+		struct packfile_list_entry *e;
+		for (e = files->packed->packs.head; e; e = e->next) {
+			struct packed_git *p = e->pack;
+			if (p->pack_local) {
+				offset = strrchr(p->pack_name, '/');
+				if (offset && offset[1] != '\0')
+					++offset;
+				else
+					offset = p->pack_name;
+				htmlf("P %s\n", offset);
+			}
 		}
 	}
 }
