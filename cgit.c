@@ -789,9 +789,7 @@ static char *build_snapshot_setting(int bitmap)
 static char *get_first_line(char *txt)
 {
 	char *t = xstrdup(txt);
-	char *p = strchr(t, '\n');
-	if (p)
-		*p = '\0';
+	*strchrnul(t, '\n') = '\0';
 	return t;
 }
 
