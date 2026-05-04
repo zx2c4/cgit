@@ -121,9 +121,6 @@ struct cgit_repo {
 	int ignore;
 };
 
-typedef void (*repo_config_fn)(struct cgit_repo *repo, const char *name,
-	      const char *value);
-
 struct cgit_repolist {
 	int length;
 	int count;
@@ -334,7 +331,8 @@ extern const struct cgit_snapshot_format cgit_snapshot_formats[];
 extern char *cgit_default_repo_desc;
 extern struct cgit_repo *cgit_add_repo(const char *url);
 extern struct cgit_repo *cgit_get_repoinfo(const char *url);
-extern void cgit_repo_config_cb(const char *name, const char *value);
+extern void cgit_repo_config(struct cgit_repo *repo, const char *name,
+			     const char *value);
 
 extern int chk_zero(int result, char *msg);
 extern int chk_positive(int result, char *msg);

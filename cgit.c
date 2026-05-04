@@ -41,7 +41,7 @@ static void add_mimetype(const char *name, const char *value)
 
 static void process_cached_repolist(const char *path);
 
-static void repo_config(struct cgit_repo *repo, const char *name, const char *value)
+void cgit_repo_config(struct cgit_repo *repo, const char *name, const char *value)
 {
 	const char *path;
 	struct string_list_item *item;
@@ -136,7 +136,7 @@ static void config_cb(const char *name, const char *value)
 	else if (ctx.repo && !strcmp(name, "repo.path"))
 		ctx.repo->path = trim_end(value, '/');
 	else if (ctx.repo && skip_prefix(name, "repo.", &arg))
-		repo_config(ctx.repo, arg, value);
+		cgit_repo_config(ctx.repo, arg, value);
 	else if (!strcmp(name, "readme"))
 		string_list_append(&ctx.cfg.readme, xstrdup(value));
 	else if (!strcmp(name, "root-title"))
@@ -256,9 +256,9 @@ static void config_cb(const char *name, const char *value)
 			process_cached_repolist(expand_macros(value));
 		else if (ctx.cfg.project_list)
 			scan_projects(expand_macros(value),
-				      ctx.cfg.project_list, repo_config);
+				      ctx.cfg.project_list);
 		else
-			scan_tree(expand_macros(value), repo_config);
+			scan_tree(expand_macros(value));
 	else if (!strcmp(name, "scan-hidden-path"))
 		ctx.cfg.scan_hidden_path = atoi(value);
 	else if (!strcmp(name, "section-from-path"))
@@ -908,9 +908,9 @@ static int generate_cached_repolist(const char *path, const char *cached_rc)
 	}
 	idx = cgit_repolist.count;
 	if (ctx.cfg.project_list)
-		scan_projects(path, ctx.cfg.project_list, repo_config);
+		scan_projects(path, ctx.cfg.project_list);
 	else
-		scan_tree(path, repo_config);
+		scan_tree(path);
 	print_repolist(f, &cgit_repolist, idx);
 	if (rename(locked_rc.buf, cached_rc))
 		fprintf(stderr, "[cgit] Error renaming %s to %s: %s (%d)\n",
@@ -940,10 +940,9 @@ static void process_cached_repolist(const char *path)
 		 */
 		if (generate_cached_repolist(path, cached_rc.buf)) {
 			if (ctx.cfg.project_list)
-				scan_projects(path, ctx.cfg.project_list,
-					      repo_config);
+				scan_projects(path, ctx.cfg.project_list);
 			else
-				scan_tree(path, repo_config);
+				scan_tree(path);
 		}
 		goto out;
 	}
@@ -1024,7 +1023,7 @@ static void cgit_parse_args(int argc, const char **argv)
 			 */
 			ctx.cfg.snapshots = 0xFF;
 			scan++;
-			scan_tree(arg, repo_config);
+			scan_tree(arg);
 		}
 	}
 	if (scan) {

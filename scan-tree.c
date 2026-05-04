@@ -47,11 +47,10 @@ out:
 }
 
 static struct cgit_repo *repo;
-static repo_config_fn config_fn;
 
 static void scan_tree_repo_config(const char *name, const char *value)
 {
-	config_fn(repo, name, value);
+	cgit_repo_config(repo, name, value);
 }
 
 static int gitconfig_config(const char *key, const char *value,
@@ -60,15 +59,15 @@ static int gitconfig_config(const char *key, const char *value,
 	const char *name;
 
 	if (!strcmp(key, "gitweb.owner"))
-		config_fn(repo, "owner", value);
+		cgit_repo_config(repo, "owner", value);
 	else if (!strcmp(key, "gitweb.description"))
-		config_fn(repo, "desc", value);
+		cgit_repo_config(repo, "desc", value);
 	else if (!strcmp(key, "gitweb.category"))
-		config_fn(repo, "section", value);
+		cgit_repo_config(repo, "section", value);
 	else if (!strcmp(key, "gitweb.homepage"))
-		config_fn(repo, "homepage", value);
+		cgit_repo_config(repo, "homepage", value);
 	else if (skip_prefix(key, "cgit.", &name))
-		config_fn(repo, name, value);
+		cgit_repo_config(repo, name, value);
 
 	return 0;
 }
@@ -80,7 +79,7 @@ static char *xstrrchr(char *s, char *from, int c)
 	return from < s ? NULL : from;
 }
 
-static void add_repo(const char *base, struct strbuf *path, repo_config_fn fn)
+static void add_repo(const char *base, struct strbuf *path)
 {
 	struct stat st;
 	struct passwd *pwd;
@@ -122,7 +121,6 @@ static void add_repo(const char *base, struct strbuf *path, repo_config_fn fn)
 		strbuf_setlen(&rel, rel.len - 1);
 
 	repo = cgit_add_repo(rel.buf);
-	config_fn = fn;
 	if (ctx.cfg.enable_git_config) {
 		strbuf_addstr(path, "config");
 		git_config_from_file(gitconfig_config, path->buf, NULL);
@@ -185,7 +183,7 @@ static void add_repo(const char *base, struct strbuf *path, repo_config_fn fn)
 	strbuf_release(&rel);
 }
 
-static void scan_path(const char *base, const char *path, repo_config_fn fn)
+static void scan_path(const char *base, const char *path)
 {
 	DIR *dir = opendir(path);
 	struct dirent *ent;
@@ -201,12 +199,12 @@ static void scan_path(const char *base, const char *path, repo_config_fn fn)
 
 	strbuf_add(&pathbuf, path, strlen(path));
 	if (is_git_dir(pathbuf.buf)) {
-		add_repo(base, &pathbuf, fn);
+		add_repo(base, &pathbuf);
 		goto end;
 	}
 	strbuf_addstr(&pathbuf, "/.git");
 	if (is_git_dir(pathbuf.buf)) {
-		add_repo(base, &pathbuf, fn);
+		add_repo(base, &pathbuf);
 		goto end;
 	}
 	/*
@@ -231,14 +229,14 @@ static void scan_path(const char *base, const char *path, repo_config_fn fn)
 			continue;
 		}
 		if (S_ISDIR(st.st_mode))
-			scan_path(base, pathbuf.buf, fn);
+			scan_path(base, pathbuf.buf);
 	}
 end:
 	strbuf_release(&pathbuf);
 	closedir(dir);
 }
 
-void scan_projects(const char *path, const char *projectsfile, repo_config_fn fn)
+void scan_projects(const char *path, const char *projectsfile)
 {
 	struct strbuf line = STRBUF_INIT;
 	FILE *projects;
@@ -255,7 +253,7 @@ void scan_projects(const char *path, const char *projectsfile, repo_config_fn fn
 			continue;
 		strbuf_insert(&line, 0, "/", 1);
 		strbuf_insert(&line, 0, path, strlen(path));
-		scan_path(path, line.buf, fn);
+		scan_path(path, line.buf);
 	}
 	if ((err = ferror(projects))) {
 		fprintf(stderr, "Error reading from projectsfile %s: %s (%d)\n",
@@ -265,7 +263,7 @@ void scan_projects(const char *path, const char *projectsfile, repo_config_fn fn
 	strbuf_release(&line);
 }
 
-void scan_tree(const char *path, repo_config_fn fn)
+void scan_tree(const char *path)
 {
-	scan_path(path, path, fn);
+	scan_path(path, path);
 }
