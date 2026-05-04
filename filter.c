@@ -402,7 +402,7 @@ static const struct {
 
 struct cgit_filter *cgit_new_filter(const char *cmd, filter_type filtertype)
 {
-	char *colon;
+	const char *colon;
 	int i;
 	size_t len;
 	int argument_count;

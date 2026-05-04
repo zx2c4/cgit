@@ -551,7 +551,8 @@ char *expand_macros(const char *txt)
 
 char *get_mimetype_for_filename(const char *filename)
 {
-	char *ext, *mimetype, line[1024];
+	const char *ext;
+	char *mimetype, line[1024];
 	struct string_list list = STRING_LIST_INIT_NODUP;
 	int i;
 	FILE *file;

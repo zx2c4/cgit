@@ -19,7 +19,7 @@
  */
 void cgit_parse_url(const char *url)
 {
-	char *c, *cmd, *p;
+	char *c, *cmd, *p, *buf;
 	struct cgit_repo *repo;
 
 	if (!url || url[0] == '\0')
@@ -32,11 +32,12 @@ void cgit_parse_url(const char *url)
 		return;
 	}
 
+	buf = xstrdup(url);
 	cmd = NULL;
-	c = strchr(url, '/');
+	c = strchr(buf, '/');
 	while (c) {
 		c[0] = '\0';
-		repo = cgit_get_repoinfo(url);
+		repo = cgit_get_repoinfo(buf);
 		if (repo) {
 			ctx.repo = repo;
 			cmd = c;
@@ -56,6 +57,7 @@ void cgit_parse_url(const char *url)
 		if (cmd[1])
 			ctx.qry.page = xstrdup(cmd + 1);
 	}
+	free(buf);
 }
 
 static char *substr(const char *head, const char *tail)

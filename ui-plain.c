@@ -157,7 +157,7 @@ static int walk_tree(const struct object_id *oid, struct strbuf *base,
 
 static int basedir_len(const char *path)
 {
-	char *p = strrchr(path, '/');
+	const char *p = strrchr(path, '/');
 	if (p)
 		return p - path + 1;
 	return 0;
