@@ -52,6 +52,7 @@ struct cgit_repo *cgit_add_repo(const char *url)
 	ret = &cgit_repolist.repos[cgit_repolist.count-1];
 	memset(ret, 0, sizeof(struct cgit_repo));
 	ret->url = trim_end(url, '/');
+	*strchrnul(ret->url, '\n') = '\0';
 	ret->name = ret->url;
 	ret->path = NULL;
 	ret->desc = cgit_default_repo_desc;
@@ -440,9 +441,10 @@ void cgit_prepare_repo_env(struct cgit_repo * repo)
 }
 
 /* Read the content of the specified file into a newly allocated buffer,
- * zeroterminate the buffer and return 0 on success, errno otherwise.
+ * zeroterminate the buffer, truncate at a new line, and return 0 on success,
+ * errno otherwise.
  */
-int readfile(const char *path, char **buf, size_t *size)
+int read_first_line(const char *path, char **buf, size_t *size)
 {
 	int fd, e;
 	struct stat st;
@@ -463,8 +465,16 @@ int readfile(const char *path, char **buf, size_t *size)
 	*size = read_in_full(fd, *buf, st.st_size);
 	e = errno;
 	(*buf)[*size] = '\0';
+	*strchrnul(*buf, '\n') = '\0';
 	close(fd);
 	return (*size == st.st_size ? 0 : e);
+}
+
+char *strdup_first_line(const char *txt)
+{
+	char *t = xstrdup(txt);
+	*strchrnul(t, '\n') = '\0';
+	return t;
 }
 
 static int is_token_char(char c)

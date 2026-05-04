@@ -133,7 +133,7 @@ static void add_repo(const char *base, struct strbuf *path)
 		strip_suffix_mem(repo->url, &urllen, "/");
 		repo->url[urllen] = '\0';
 	}
-	repo->path = xstrdup(path->buf);
+	repo->path = strdup_first_line(path->buf);
 	while (!repo->owner) {
 		if ((pwd = getpwuid(st.st_uid)) == NULL) {
 			fprintf(stderr, "Error reading owner-info for %s: %s (%d)\n",
@@ -143,13 +143,13 @@ static void add_repo(const char *base, struct strbuf *path)
 		if (pwd->pw_gecos)
 			if ((p = strchr(pwd->pw_gecos, ',')))
 				*p = '\0';
-		repo->owner = xstrdup(pwd->pw_gecos ? pwd->pw_gecos : pwd->pw_name);
+		repo->owner = strdup_first_line(pwd->pw_gecos ? pwd->pw_gecos : pwd->pw_name);
 	}
 
 	if (repo->desc == cgit_default_repo_desc || !repo->desc) {
 		strbuf_addstr(path, "description");
 		if (!stat(path->buf, &st))
-			readfile(path->buf, &repo->desc, &size);
+			read_first_line(path->buf, &repo->desc, &size);
 		strbuf_setlen(path, pathlen);
 	}
 
@@ -166,7 +166,7 @@ static void add_repo(const char *base, struct strbuf *path)
 		}
 		if (slash && !n) {
 			*slash = '\0';
-			repo->section = xstrdup(rel.buf);
+			repo->section = strdup_first_line(rel.buf);
 			*slash = '/';
 			if (starts_with(repo->name, repo->section)) {
 				repo->name += strlen(repo->section);

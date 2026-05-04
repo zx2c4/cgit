@@ -393,7 +393,9 @@ extern void cgit_init_filters(void);
 
 extern void cgit_prepare_repo_env(struct cgit_repo * repo);
 
-extern int readfile(const char *path, char **buf, size_t *size);
+extern int read_first_line(const char *path, char **buf, size_t *size);
+
+extern char *strdup_first_line(const char *txt);
 
 extern char *expand_macros(const char *txt);
 

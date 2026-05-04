@@ -47,19 +47,19 @@ void cgit_repo_config(struct cgit_repo *repo, const char *name, const char *valu
 	struct string_list_item *item;
 
 	if (!strcmp(name, "name"))
-		repo->name = xstrdup(value);
+		repo->name = strdup_first_line(value);
 	else if (!strcmp(name, "clone-url"))
-		repo->clone_url = xstrdup(value);
+		repo->clone_url = strdup_first_line(value);
 	else if (!strcmp(name, "desc"))
-		repo->desc = xstrdup(value);
+		repo->desc = strdup_first_line(value);
 	else if (!strcmp(name, "owner"))
-		repo->owner = xstrdup(value);
+		repo->owner = strdup_first_line(value);
 	else if (!strcmp(name, "homepage"))
-		repo->homepage = xstrdup(value);
+		repo->homepage = strdup_first_line(value);
 	else if (!strcmp(name, "defbranch"))
-		repo->defbranch = xstrdup(value);
+		repo->defbranch = strdup_first_line(value);
 	else if (!strcmp(name, "extra-head-content"))
-		repo->extra_head_content = xstrdup(value);
+		repo->extra_head_content = strdup_first_line(value);
 	else if (!strcmp(name, "snapshots"))
 		repo->snapshots = ctx.cfg.snapshots & cgit_parse_snapshots_mask(value);
 	else if (!strcmp(name, "enable-blame"))
@@ -91,22 +91,22 @@ void cgit_repo_config(struct cgit_repo *repo, const char *name, const char *valu
 	} else if (!strcmp(name, "max-stats"))
 		repo->max_stats = cgit_find_stats_period(value, NULL);
 	else if (!strcmp(name, "module-link"))
-		repo->module_link= xstrdup(value);
+		repo->module_link= strdup_first_line(value);
 	else if (skip_prefix(name, "module-link.", &path)) {
-		item = string_list_append(&repo->submodules, xstrdup(path));
-		item->util = xstrdup(value);
+		item = string_list_append(&repo->submodules, strdup_first_line(path));
+		item->util = strdup_first_line(value);
 	} else if (!strcmp(name, "section"))
-		repo->section = xstrdup(value);
+		repo->section = strdup_first_line(value);
 	else if (!strcmp(name, "snapshot-prefix"))
-		repo->snapshot_prefix = xstrdup(value);
+		repo->snapshot_prefix = strdup_first_line(value);
 	else if (!strcmp(name, "readme") && value != NULL) {
 		if (repo->readme.items == ctx.cfg.readme.items)
 			memset(&repo->readme, 0, sizeof(repo->readme));
-		string_list_append(&repo->readme, xstrdup(value));
+		string_list_append(&repo->readme, strdup_first_line(value));
 	} else if (!strcmp(name, "logo") && value != NULL)
-		repo->logo = xstrdup(value);
+		repo->logo = strdup_first_line(value);
 	else if (!strcmp(name, "logo-link") && value != NULL)
-		repo->logo_link = xstrdup(value);
+		repo->logo_link = strdup_first_line(value);
 	else if (!strcmp(name, "hide"))
 		repo->hide = atoi(value);
 	else if (!strcmp(name, "ignore"))
@@ -130,7 +130,7 @@ static void config_cb(const char *name, const char *value)
 	const char *arg;
 
 	if (!strcmp(name, "section"))
-		ctx.cfg.section = xstrdup(value);
+		ctx.cfg.section = strdup_first_line(value);
 	else if (!strcmp(name, "repo.url"))
 		ctx.repo = cgit_add_repo(value);
 	else if (ctx.repo && !strcmp(name, "repo.path"))
@@ -138,33 +138,33 @@ static void config_cb(const char *name, const char *value)
 	else if (ctx.repo && skip_prefix(name, "repo.", &arg))
 		cgit_repo_config(ctx.repo, arg, value);
 	else if (!strcmp(name, "readme"))
-		string_list_append(&ctx.cfg.readme, xstrdup(value));
+		string_list_append(&ctx.cfg.readme, strdup_first_line(value));
 	else if (!strcmp(name, "root-title"))
-		ctx.cfg.root_title = xstrdup(value);
+		ctx.cfg.root_title = strdup_first_line(value);
 	else if (!strcmp(name, "root-desc"))
-		ctx.cfg.root_desc = xstrdup(value);
+		ctx.cfg.root_desc = strdup_first_line(value);
 	else if (!strcmp(name, "root-readme"))
-		ctx.cfg.root_readme = xstrdup(value);
+		ctx.cfg.root_readme = strdup_first_line(value);
 	else if (!strcmp(name, "css"))
-		string_list_append(&ctx.cfg.css, xstrdup(value));
+		string_list_append(&ctx.cfg.css, strdup_first_line(value));
 	else if (!strcmp(name, "js"))
-		string_list_append(&ctx.cfg.js, xstrdup(value));
+		string_list_append(&ctx.cfg.js, strdup_first_line(value));
 	else if (!strcmp(name, "favicon"))
-		ctx.cfg.favicon = xstrdup(value);
+		ctx.cfg.favicon = strdup_first_line(value);
 	else if (!strcmp(name, "footer"))
-		ctx.cfg.footer = xstrdup(value);
+		ctx.cfg.footer = strdup_first_line(value);
 	else if (!strcmp(name, "head-include"))
-		ctx.cfg.head_include = xstrdup(value);
+		ctx.cfg.head_include = strdup_first_line(value);
 	else if (!strcmp(name, "header"))
-		ctx.cfg.header = xstrdup(value);
+		ctx.cfg.header = strdup_first_line(value);
 	else if (!strcmp(name, "logo"))
-		ctx.cfg.logo = xstrdup(value);
+		ctx.cfg.logo = strdup_first_line(value);
 	else if (!strcmp(name, "logo-link"))
-		ctx.cfg.logo_link = xstrdup(value);
+		ctx.cfg.logo_link = strdup_first_line(value);
 	else if (!strcmp(name, "module-link"))
-		ctx.cfg.module_link = xstrdup(value);
+		ctx.cfg.module_link = strdup_first_line(value);
 	else if (!strcmp(name, "strict-export"))
-		ctx.cfg.strict_export = xstrdup(value);
+		ctx.cfg.strict_export = strdup_first_line(value);
 	else if (!strcmp(name, "virtual-root"))
 		ctx.cfg.virtual_root = ensure_end(value, '/');
 	else if (!strcmp(name, "noplainemail"))
@@ -206,7 +206,7 @@ static void config_cb(const char *name, const char *value)
 	else if (!strcmp(name, "cache-size"))
 		ctx.cfg.cache_size = atoi(value);
 	else if (!strcmp(name, "cache-root"))
-		ctx.cfg.cache_root = xstrdup(expand_macros(value));
+		ctx.cfg.cache_root = strdup_first_line(expand_macros(value));
 	else if (!strcmp(name, "cache-root-ttl"))
 		ctx.cfg.cache_root_ttl = atoi(value);
 	else if (!strcmp(name, "cache-repo-ttl"))
@@ -250,7 +250,7 @@ static void config_cb(const char *name, const char *value)
 	} else if (!strcmp(name, "max-commit-count"))
 		ctx.cfg.max_commit_count = atoi(value);
 	else if (!strcmp(name, "project-list"))
-		ctx.cfg.project_list = xstrdup(expand_macros(value));
+		ctx.cfg.project_list = strdup_first_line(expand_macros(value));
 	else if (!strcmp(name, "scan-path"))
 		if (ctx.cfg.cache_size)
 			process_cached_repolist(expand_macros(value));
@@ -264,7 +264,7 @@ static void config_cb(const char *name, const char *value)
 	else if (!strcmp(name, "section-from-path"))
 		ctx.cfg.section_from_path = atoi(value);
 	else if (!strcmp(name, "repository-sort"))
-		ctx.cfg.repository_sort = xstrdup(value);
+		ctx.cfg.repository_sort = strdup_first_line(value);
 	else if (!strcmp(name, "section-sort"))
 		ctx.cfg.section_sort = atoi(value);
 	else if (!strcmp(name, "source-filter"))
@@ -278,19 +278,19 @@ static void config_cb(const char *name, const char *value)
 	else if (!strcmp(name, "side-by-side-diffs"))
 		ctx.cfg.difftype = atoi(value) ? DIFF_SSDIFF : DIFF_UNIFIED;
 	else if (!strcmp(name, "agefile"))
-		ctx.cfg.agefile = xstrdup(value);
+		ctx.cfg.agefile = strdup_first_line(value);
 	else if (!strcmp(name, "mimetype-file"))
-		ctx.cfg.mimetype_file = xstrdup(value);
+		ctx.cfg.mimetype_file = strdup_first_line(value);
 	else if (!strcmp(name, "renamelimit"))
 		ctx.cfg.renamelimit = atoi(value);
 	else if (!strcmp(name, "remove-suffix"))
 		ctx.cfg.remove_suffix = atoi(value);
 	else if (!strcmp(name, "robots"))
-		ctx.cfg.robots = xstrdup(value);
+		ctx.cfg.robots = strdup_first_line(value);
 	else if (!strcmp(name, "clone-prefix"))
-		ctx.cfg.clone_prefix = xstrdup(value);
+		ctx.cfg.clone_prefix = strdup_first_line(value);
 	else if (!strcmp(name, "clone-url"))
-		ctx.cfg.clone_url = xstrdup(value);
+		ctx.cfg.clone_url = strdup_first_line(value);
 	else if (!strcmp(name, "local-time"))
 		ctx.cfg.local_time = atoi(value);
 	else if (!strcmp(name, "commit-sort")) {
@@ -786,13 +786,6 @@ static char *build_snapshot_setting(int bitmap)
 	return strbuf_detach(&result, NULL);
 }
 
-static char *get_first_line(char *txt)
-{
-	char *t = xstrdup(txt);
-	*strchrnul(t, '\n') = '\0';
-	return t;
-}
-
 static void print_repo(FILE *f, struct cgit_repo *repo)
 {
 	struct string_list_item *item;
@@ -801,11 +794,8 @@ static void print_repo(FILE *f, struct cgit_repo *repo)
 	fprintf(f, "repo.path=%s\n", repo->path);
 	if (repo->owner)
 		fprintf(f, "repo.owner=%s\n", repo->owner);
-	if (repo->desc) {
-		char *tmp = get_first_line(repo->desc);
-		fprintf(f, "repo.desc=%s\n", tmp);
-		free(tmp);
-	}
+	if (repo->desc)
+		fprintf(f, "repo.desc=%s\n", repo->desc);
 	for_each_string_list_item(item, &repo->readme) {
 		if (item->util)
 			fprintf(f, "repo.readme=%s:%s\n", (char *)item->util, item->string);

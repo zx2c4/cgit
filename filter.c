@@ -114,7 +114,7 @@ static struct cgit_filter *new_exec_filter(const char *cmd, int argument_count)
 
 	f = xmalloc(sizeof(*f));
 	/* We leave argv for now and assign it below. */
-	cgit_exec_filter_init(f, xstrdup(cmd), NULL);
+	cgit_exec_filter_init(f, strdup_first_line(cmd), NULL);
 	f->base.argument_count = argument_count;
 	args_size = (2 + argument_count) * sizeof(char *);
 	f->argv = xmalloc(args_size);
@@ -356,7 +356,7 @@ static struct cgit_filter *new_lua_filter(const char *cmd, int argument_count)
 	filter->base.fprintfp = fprintf_lua_filter;
 	filter->base.cleanup = cleanup_lua_filter;
 	filter->base.argument_count = argument_count;
-	filter->script_file = xstrdup(cmd);
+	filter->script_file = strdup_first_line(cmd);
 
 	return &filter->base;
 }
