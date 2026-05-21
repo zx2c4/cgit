@@ -48,6 +48,7 @@ static int open_exec_filter(struct cgit_filter *base, va_list ap)
 	for (i = 0; i < filter->base.argument_count; i++)
 		filter->argv[i + 1] = va_arg(ap, char *);
 
+	chk_zero(fflush(stdout), "unable to flush STDOUT");
 	filter->old_stdout = chk_positive(dup(STDOUT_FILENO),
 		"Unable to duplicate STDOUT");
 	chk_zero(pipe(pipe_fh), "Unable to create pipe to subprocess");
@@ -71,6 +72,7 @@ static int close_exec_filter(struct cgit_filter *base)
 	struct cgit_exec_filter *filter = (struct cgit_exec_filter *)base;
 	int i, exit_status = 0;
 
+	chk_zero(fflush(stdout), "unable to flush STDOUT");
 	chk_non_negative(dup2(filter->old_stdout, STDOUT_FILENO),
 		"Unable to restore STDOUT");
 	close(filter->old_stdout);
@@ -143,15 +145,30 @@ void cgit_init_filters(void)
 #endif
 
 #ifndef NO_LUA
-static ssize_t (*libc_write)(int fd, const void *buf, size_t count);
+static size_t (*libc_fwrite)(const void *buf, size_t size, size_t n, FILE *);
+static ssize_t (*libc_write)(int fd, const void *buf, size_t size);
 static ssize_t (*filter_write)(struct cgit_filter *base, const void *buf, size_t count) = NULL;
 static struct cgit_filter *current_write_filter = NULL;
 
 void cgit_init_filters(void)
 {
+	/*
+	 * we need to wrap both functions since the Lua filter may
+	 * have code which calls write(2) directly, bypassing fwrite(3)
+	 */
+	libc_fwrite = dlsym(RTLD_NEXT, "fwrite");
+	if (!libc_fwrite)
+		die("Could not locate libc's write function");
 	libc_write = dlsym(RTLD_NEXT, "write");
 	if (!libc_write)
 		die("Could not locate libc's write function");
+}
+
+size_t fwrite(const void *buf, size_t size, size_t n, FILE *f)
+{
+	if (f != stdout || !filter_write)
+		return libc_fwrite(buf, size, n, f);
+	return filter_write(current_write_filter, buf, size * n);
 }
 
 ssize_t write(int fd, const void *buf, size_t count)
@@ -304,6 +321,9 @@ static int open_lua_filter(struct cgit_filter *base, va_list ap)
 {
 	struct lua_filter *filter = (struct lua_filter *)base;
 	int i;
+
+	if (fflush(stdout))
+		return 1;
 
 	if (init_lua_filter(filter))
 		return 1;
