@@ -272,6 +272,13 @@ static int process_slot(struct cache_slot *slot)
 {
 	int err;
 
+	/*
+	 * Make sure any buffered data is flushed before we redirect,
+	 * do sendfile(2) or write(2)
+	 */
+	if (fflush(stdout))
+		return errno;
+
 	err = open_slot(slot);
 	if (!err && slot->match) {
 		if (is_expired(slot)) {

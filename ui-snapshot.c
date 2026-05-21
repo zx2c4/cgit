@@ -39,6 +39,9 @@ static int write_archive_type(const char *format, const char *hex, const char *p
 	/* strvec guarantees a trailing NULL entry. */
 	memcpy(nargv, argv.v, sizeof(char *) * (argv.nr + 1));
 
+	if (fflush(stdout))
+		return errno;
+
 	result = write_archive(argv.nr, nargv, NULL, the_repository, NULL, 0);
 	strvec_clear(&argv);
 	free(nargv);

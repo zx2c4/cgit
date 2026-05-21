@@ -684,7 +684,7 @@ static inline void authenticate_post(void)
 		len = MAX_AUTHENTICATION_POST_BYTES;
 	if ((len = read(STDIN_FILENO, buffer, len)) < 0)
 		die_errno("Could not read POST from stdin");
-	if (write(STDOUT_FILENO, buffer, len) < 0)
+	if (fwrite(buffer, 1, len, stdout) < len)
 		die_errno("Could not write POST to stdout");
 	cgit_close_filter(ctx.cfg.auth_filter);
 	exit(0);

@@ -80,7 +80,7 @@ char *fmtalloc(const char *format, ...)
 
 void html_raw(const char *data, size_t size)
 {
-	if (write(STDOUT_FILENO, data, size) != size)
+	if (fwrite(data, 1, size, stdout) != size)
 		die_errno("write error on html output");
 }
 
