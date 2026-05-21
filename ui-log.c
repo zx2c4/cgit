@@ -77,11 +77,13 @@ void show_commit_decorations(struct commit *commit)
 			 * don't display anything. */
 			break;
 		case DECORATION_REF_LOCAL:
+			html(" ");
 			cgit_log_link(buf, NULL, "branch-deco", buf, NULL,
 				ctx.qry.vpath, 0, NULL, NULL,
 				ctx.qry.showmsg, 0);
 			break;
 		case DECORATION_REF_TAG:
+			html(" ");
 			if (!refs_read_ref(get_main_ref_store(the_repository), deco->name, &oid_tag) &&
 			    !peel_object(the_repository, &oid_tag, &peeled, PEEL_OBJECT_VERIFY_TAGGED_OBJECT_TYPE))
 				is_annotated = !oideq(&oid_tag, &peeled);
@@ -90,12 +92,14 @@ void show_commit_decorations(struct commit *commit)
 		case DECORATION_REF_REMOTE:
 			if (!ctx.repo->enable_remote_branches)
 				break;
+			html(" ");
 			cgit_log_link(buf, NULL, "remote-deco", NULL,
 				oid_to_hex(&commit->object.oid),
 				ctx.qry.vpath, 0, NULL, NULL,
 				ctx.qry.showmsg, 0);
 			break;
 		default:
+			html(" ");
 			cgit_commit_link(buf, NULL, "deco", ctx.qry.head,
 					oid_to_hex(&commit->object.oid),
 					ctx.qry.vpath);
