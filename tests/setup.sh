@@ -45,6 +45,7 @@ IFS=$OLDIFS
 : ${TEST_DIRECTORY=$(pwd)/../git/t}
 : ${TEST_OUTPUT_DIRECTORY=$(pwd)}
 TEST_NO_CREATE_REPO=YesPlease
+GIT_TEST_USE_SET_E=false
 . "$TEST_DIRECTORY"/test-lib.sh
 
 # Prepend the directory containing cgit to PATH.
