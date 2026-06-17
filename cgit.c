@@ -588,7 +588,7 @@ static void prepare_repo_env(int *nongit)
 	/* Setup the git directory and initialize the notes system. Both of these
 	 * load local configuration from the git repository, so we do them both while
 	 * the HOME variables are unset. */
-	setup_git_directory_gently(nongit);
+	setup_git_directory_gently(the_repository, nongit);
 	load_display_notes(NULL);
 }
 
