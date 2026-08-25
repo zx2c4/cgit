@@ -896,7 +896,7 @@ void cgit_print_error_page(int code, const char *msg, const char *fmt, ...)
 
 void cgit_vprint_error_page(int code, const char *msg, const char *fmt, va_list ap)
 {
-	ctx.page.expires = ctx.cfg.cache_dynamic_ttl;
+	ctx.page.expires = ctx.page.modified + ctx.cfg.cache_dynamic_ttl * 60;
 	ctx.page.status = code;
 	ctx.page.statusmsg = msg;
 	cgit_print_layout_start();
