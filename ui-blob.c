@@ -40,7 +40,7 @@ int cgit_ref_path_exists(const char *path, const char *ref, int file_only)
 	struct object_id oid;
 	unsigned long size;
 	struct pathspec_item path_items = {
-		.match = xstrdup(path),
+		.match = path,
 		.len = strlen(path)
 	};
 	struct pathspec paths = {
@@ -63,7 +63,6 @@ int cgit_ref_path_exists(const char *path, const char *ref, int file_only)
 		  &paths, walk_tree, &walk_tree_ctx);
 
 done:
-	free(path_items.match);
 	return walk_tree_ctx.found_path;
 }
 
