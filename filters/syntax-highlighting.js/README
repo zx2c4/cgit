@@ -1,0 +1,14 @@
+Serve this directory at /syntax-highlighting.js/ (by symlinking it from
+filters/, for example) and configure cgit:
+
+    js=/cgit.js
+    js=/syntax-highlighting.js/loader.js
+
+Remove source-filter and repo.source-filter settings. Styles and language
+modules load automatically from the same directory as loader.js.
+Pastie and Pastie Dark follow the browser's color preference.
+
+To generate the required files, install Python 3, Pygments, and Node.js,
+then run from this directory:
+
+    ./generate.py

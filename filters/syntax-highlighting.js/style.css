@@ -1,0 +1,229 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+
+#cgit table.blob {
+	--hl-text: currentColor;
+	--hl-comment: #888888;
+	--hl-meta: #cc0000;
+	--hl-keyword: #008800;
+	--hl-string: #dd2200;
+	--hl-symbol: #aa6600;
+	--hl-subst: #3333bb;
+	--hl-escape: #0044dd;
+	--hl-function: #0066bb;
+	--hl-class: #bb0066;
+	--hl-builtin: #003388;
+	--hl-variable: #336699;
+	--hl-constant: #003366;
+	--hl-number: #0000dd;
+	--hl-heading: #333333;
+	--hl-change-text: #000000;
+	--hl-string-bg: #fff0f0;
+	--hl-regexp-bg: #fff0ff;
+	--hl-addition-bg: #ddffdd;
+	--hl-deletion-bg: #ffdddd;
+}
+
+@media (prefers-color-scheme: dark) {
+	#cgit table.blob {
+		--hl-text: #e6e6e6;
+		--hl-comment: #999999;
+		--hl-meta: #ff7070;
+		--hl-keyword: #8fd46a;
+		--hl-string: #ff9777;
+		--hl-symbol: #e3b66e;
+		--hl-subst: #b6a2ff;
+		--hl-escape: #82bcff;
+		--hl-function: #79bbff;
+		--hl-class: #f28fc6;
+		--hl-builtin: #99aaff;
+		--hl-variable: #8fc7de;
+		--hl-constant: #a8d7ed;
+		--hl-number: #879dff;
+		--hl-heading: #e8e8e8;
+		--hl-change-text: #e6e6e6;
+		--hl-string-bg: #2c201f;
+		--hl-regexp-bg: #2b2132;
+		--hl-addition-bg: #203626;
+		--hl-deletion-bg: #3a2024;
+	}
+}
+
+#cgit table.blob pre > code {
+	font: inherit;
+}
+
+#cgit table.blob .hljs {
+	color: var(--hl-text);
+	font-weight: normal;
+	font-style: normal;
+}
+
+#cgit table.blob .hljs-comment,
+#cgit table.blob .hljs-quote,
+#cgit table.blob .hljs-code,
+#cgit table.blob .hljs-formula {
+	color: var(--hl-comment);
+	font-weight: normal;
+	font-style: normal;
+}
+
+#cgit table.blob .hljs-meta,
+#cgit table.blob .hljs-meta .hljs-keyword {
+	color: var(--hl-meta);
+	font-weight: bold;
+	font-style: normal;
+}
+
+#cgit table.blob .hljs-doctag {
+	color: var(--hl-meta);
+	font-weight: bold;
+	font-style: normal;
+	background-color: var(--hl-string-bg);
+}
+
+#cgit table.blob .hljs-keyword,
+#cgit table.blob .hljs-template-tag,
+#cgit table.blob .hljs-selector-tag {
+	color: var(--hl-keyword);
+	font-weight: bold;
+	font-style: normal;
+}
+
+#cgit table.blob .hljs-type {
+	color: var(--hl-comment);
+	font-weight: bold;
+	font-style: normal;
+}
+
+#cgit table.blob .hljs-string,
+#cgit table.blob .hljs-meta .hljs-string {
+	color: var(--hl-string);
+	font-weight: normal;
+	font-style: normal;
+	background-color: var(--hl-string-bg);
+}
+
+#cgit table.blob .hljs-regexp {
+	color: var(--hl-keyword);
+	font-weight: normal;
+	font-style: normal;
+	background-color: var(--hl-regexp-bg);
+}
+
+#cgit table.blob .hljs-symbol {
+	color: var(--hl-symbol);
+	font-weight: normal;
+	font-style: normal;
+	background-color: var(--hl-string-bg);
+}
+
+#cgit table.blob .hljs-subst,
+#cgit table.blob .hljs-template-variable {
+	color: var(--hl-subst);
+	font-weight: normal;
+	font-style: normal;
+	background-color: var(--hl-string-bg);
+}
+
+#cgit table.blob .hljs-char.escape_ {
+	color: var(--hl-escape);
+	font-weight: normal;
+	font-style: normal;
+	background-color: var(--hl-string-bg);
+}
+
+#cgit table.blob .hljs-title {
+	color: var(--hl-function);
+	font-weight: bold;
+	font-style: normal;
+}
+
+#cgit table.blob .hljs-title.class_,
+#cgit table.blob .hljs-class .hljs-title,
+#cgit table.blob .hljs-name,
+#cgit table.blob .hljs-selector-class,
+#cgit table.blob .hljs-selector-id,
+#cgit table.blob .hljs-selector-pseudo {
+	color: var(--hl-class);
+	font-weight: bold;
+	font-style: normal;
+}
+
+#cgit table.blob .hljs-built_in {
+	color: var(--hl-builtin);
+	font-weight: normal;
+	font-style: normal;
+}
+
+#cgit table.blob .hljs-variable,
+#cgit table.blob .hljs-attr,
+#cgit table.blob .hljs-attribute,
+#cgit table.blob .hljs-selector-attr {
+	color: var(--hl-variable);
+	font-weight: normal;
+	font-style: normal;
+}
+
+#cgit table.blob .hljs-variable.language_ {
+	color: var(--hl-subst);
+	font-weight: normal;
+	font-style: normal;
+}
+
+#cgit table.blob .hljs-literal,
+#cgit table.blob .hljs-variable.constant_ {
+	color: var(--hl-constant);
+	font-weight: bold;
+	font-style: normal;
+}
+
+#cgit table.blob .hljs-property {
+	color: var(--hl-variable);
+	font-weight: bold;
+	font-style: normal;
+}
+
+#cgit table.blob .hljs-number {
+	color: var(--hl-number);
+	font-weight: bold;
+	font-style: normal;
+}
+
+#cgit table.blob .hljs-section {
+	color: var(--hl-heading);
+	font-weight: normal;
+	font-style: normal;
+}
+
+#cgit table.blob .hljs-bullet,
+#cgit table.blob .hljs-link {
+	color: var(--hl-variable);
+	font-weight: normal;
+	font-style: italic;
+}
+
+#cgit table.blob .hljs-addition {
+	color: var(--hl-change-text);
+	font-weight: normal;
+	font-style: normal;
+	background-color: var(--hl-addition-bg);
+}
+
+#cgit table.blob .hljs-deletion {
+	color: var(--hl-change-text);
+	font-weight: normal;
+	font-style: normal;
+	background-color: var(--hl-deletion-bg);
+}
+
+#cgit table.blob .hljs-emphasis {
+	color: var(--hl-text);
+	font-weight: normal;
+	font-style: italic;
+}
+
+#cgit table.blob .hljs-strong {
+	color: var(--hl-text);
+	font-weight: bold;
+	font-style: normal;
+}
